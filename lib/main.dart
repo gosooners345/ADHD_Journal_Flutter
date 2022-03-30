@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'project_colors.dart';
 import 'project_strings_file.dart';
 import 'recordsdatabase_handler.dart';
+import 'login_screen_file.dart';
 
 
 void main() {
@@ -28,7 +29,13 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.red,
       ),
-      home: const MyHomePage(title: 'ADHD Journal'),
+      //home: const MyHomePage(title: 'ADHD Journal'),
+      initialRoute: '/',
+      routes: {
+        '/' : (context) => const LoginScreen(),
+        '/success': (context) => const MyHomePage(title: 'ADHD Journal'),
+        '/fail': (context) => const LoginScreen()
+      },
     );
   }
 }
