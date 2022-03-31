@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'project_colors.dart';
 import 'project_strings_file.dart';
 import 'recordsdatabase_handler.dart';
@@ -8,7 +9,7 @@ import 'login_screen_file.dart';
 import 'compose_records_screen.dart';
 
 
-void main() {
+void main() async {
   runApp(const MyApp());
 }
 
@@ -69,6 +70,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
     super.initState();
     titleHdr = Text('Home', style: optionStyle);
+
+
 
   }
   int _selectedIndex = 0;
@@ -156,3 +159,4 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
 /// Variables that affect other widgets
+late Database db;

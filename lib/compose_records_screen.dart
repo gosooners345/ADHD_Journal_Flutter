@@ -11,7 +11,7 @@ class ComposeRecords extends StatelessWidget{
     return MaterialApp(
       title: 'Compose Records',
       home: Scaffold(
-        appBar: AppBar(title: Text('Compose New Record'),),
+        appBar: AppBar(title: const Text('Compose New Record'),),
         body: const ComposeRecordsWidget(),
       ),
     );
@@ -24,12 +24,19 @@ class ComposeRecords extends StatelessWidget{
 class ComposeRecordsWidget extends StatefulWidget{
   const ComposeRecordsWidget({Key? key}) : super(key: key);
 
+
   @override
   State<ComposeRecordsWidget> createState() => _ComposeRecordsWidgetState();
 }
 
 class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget>{
   final _formKey = GlobalKey<FormState>();
+late Records newRecord ;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
