@@ -1,16 +1,21 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:adhd_journal_flutter/recordsdatabase_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'project_colors.dart';
 import 'project_strings_file.dart';
-import 'recordsdatabase_handler.dart';
+import 'records_data_class_db.dart';
 import 'login_screen_file.dart';
 import 'compose_records_screen.dart';
 
 
-void main() async {
+late RecordsDB recDB;
+
+
+void main() {
   runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
 }
 
 class MyApp extends StatelessWidget {
@@ -65,14 +70,13 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
  late Text titleHdr;
+ List<Records> _records =[];
   @override
   void initState() {
-
     super.initState();
+    WidgetsFlutterBinding.ensureInitialized();
     titleHdr = Text('Home', style: optionStyle);
-
-
-
+    _loadTestDB();
   }
   int _selectedIndex = 0;
   String header = "";
@@ -88,6 +92,19 @@ class _MyHomePageState extends State<MyHomePage> {
         titleHdr = Text('Dashboard');
       }
     });
+  }
+
+  void _loadTestDB() async {
+    try {
+      final data = await RecordsDB.records();
+      setState(() {
+        _records = data;
+      });
+      print("Success");
+      print(data.length);
+    } on Exception catch(err){
+      print(err);
+    }
   }
 
   void _createRecord(){
@@ -158,5 +175,4 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 
-/// Variables that affect other widgets
-late Database db;
+///Variables that affect other widgets
