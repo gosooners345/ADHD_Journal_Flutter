@@ -63,7 +63,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_lints:
-    dependency: "direct dev"
+    dependency: "direct overridden"
     description:
       name: flutter_lints
       url: "https://pub.dartlang.org"
@@ -110,7 +110,7 @@ packages:
     source: hosted
     version: "1.7.0"
   path:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path
       url: "https://pub.dartlang.org"
@@ -128,6 +128,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.1"
+  sqflite:
+    dependency: "direct overridden"
+    description:
+      path: sqflite
+      ref: fmdb_override
+      resolved-ref: b45da6460b235ad32a1b24653a7b2aa37515605a
+      url: "https://www.github.com/davidmartos96/sqflite_sqlcipher.git"
+    source: git
+    version: "2.0.0+3"
   sqflite_common:
     dependency: transitive
     description:

@@ -34,11 +34,8 @@ class _LoginScreenState extends State<LoginScreen>{
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.only(top: 60.0),
-              child: Center(
-
-              ),
+              child: Text('Welcome! Sign in with your password below.'),
             ),
-
             Padding(
               padding: const EdgeInsets.only(
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
@@ -49,6 +46,12 @@ class _LoginScreenState extends State<LoginScreen>{
                     border: OutlineInputBorder(),
                     labelText: 'Password',
                     hintText: 'Enter secure password'),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 60.0),
+              child: Center(
+
               ),
             ),
             Container(
@@ -68,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen>{
             SizedBox(
               height: 130,
             ),
-            Text('New User? Create Account')
+
           ],
         ),
       ),
