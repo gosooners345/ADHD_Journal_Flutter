@@ -1,51 +1,36 @@
 
 
 
-class Records {
+class Records{
   final int id;
   final String title;
   final String content;
-  /*final String sources;
+ /* final String sources;
   final String emotions;
   final String symptoms;
   final String tags;
   final double rating;
-  final bool success;
-  final DateTime timeCreated;
-  final DateTime timeUpdated;*/
+  final bool success;*/
 
-  const Records({
-    required this.id,
-    required this.title,
-    required this.content,
-    /*required this.sources,
-    required this.emotions,
+  Records({required this.id, required this.title,required this.content ,/*required this.emotions,required this.sources,
     required this.symptoms,
-    required this.tags,
-    required this.rating,
-    required this.success,
-    required this.timeCreated,
-    required this.timeUpdated*/
-  });
+required this.tags,required this.rating,required this.success*/});
 
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'title': title,
-      'content': content,
-      /*'sources': sources,
-      'emotions': emotions,
-      'symptoms': symptoms,
-      'tags': tags,
-      'rating': rating,
-      'success': success,
-      'timeCreated': timeCreated,
-      'timeUpdated': timeUpdated*/
-    };
-  }
+  Records.fromMap(Map<String,dynamic> record):
+      id = record['id'],
+  title=record['title'],
+  content=record['content'];
+/*  emotions=record['emotions'],
+  sources=record['sources'],
+  symptoms = record['symptoms'],
+  tags = record['tags'],
+  rating = record['rating'],
+  success = record['success']*/
 
-  @override
-  String toString() {
-    return 'Records{ id: $id, title: $title, content: $content}';
-  }
+
+  Map<String, Object>toMapForDB(){
+  return {'id':id,'title':title,'content':content,/*'emotions':emotions,
+  'sources':sources,'tags':tags,'rating':rating,'success':success*/};
+}
+
 }

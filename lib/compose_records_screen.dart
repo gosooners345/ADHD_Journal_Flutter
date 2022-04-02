@@ -31,11 +31,23 @@ class ComposeRecordsWidget extends StatefulWidget{
 
 class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget>{
   final _formKey = GlobalKey<FormState>();
-late Records newRecord ;
+  late TextField titleField;
+  late TextField contentField;
+  String titleContent ='',contentText='';
+
+
+
+//late Records newRecord ;
 
   @override
   void initState() {
     super.initState();
+  }
+
+  ///Placeholder method
+void saveRecord() async{
+
+
   }
 
   @override
@@ -44,33 +56,18 @@ return Form(
   key: _formKey,
     child: Column(
       children: <Widget>[
-        TextFormField(
-          // The validator receives the text that the user has entered.
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter some text';
-            }
-            return null;
-          },
-        ),
-        TextFormField(
-          // The validator receives the text that the user has entered.
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter some text';
-            }
-            return null;
-          },
-        ),
+        TextField(onChanged: (text) {
+          titleContent = text;
+        },)
+        ,
+        TextField(onChanged: (text){
+          contentText = text;
+        },),
         ElevatedButton(
           onPressed: () {
             // Validate returns true if the form is valid, or false otherwise.
-            if (_formKey.currentState!.validate()) {
-              // If the form is valid, display a snackbar. In the real world,
-              // you'd often call a server or save the information in a database.
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Processing Data')),
-              );
+
+
               //Navigator.push(context,MaterialPageRoute(builder: (context) => const MyHomePage(title: 'ADHD Journal')));
             }
           },
