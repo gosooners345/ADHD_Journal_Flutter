@@ -1,84 +1,121 @@
-import 'package:adhd_journal_flutter/main.dart';
+import 'package:flutter/foundation.dart';
+
+import 'main.dart';
 import 'package:flutter/material.dart';
 
 import 'records_data_class_db.dart';
 import 'recordsdatabase_handler.dart';
 
 
-class ComposeRecords extends StatelessWidget{
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Compose Records',
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Compose New Record'),),
-        body: const ComposeRecordsWidget(),
-      ),
-    );
 
-  }
-
-}
 
 
 class ComposeRecordsWidget extends StatefulWidget{
-  const ComposeRecordsWidget({Key? key}) : super(key: key);
+  const ComposeRecordsWidget({Key? key, required this.id}) : super(key: key);
 
+  final int id;
 
   @override
   State<ComposeRecordsWidget> createState() => _ComposeRecordsWidgetState();
 }
 
-class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget>{
+class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
   final _formKey = GlobalKey<FormState>();
   late TextField titleField;
+  late TextEditingController titleController;
   late TextField contentField;
-  String titleContent ='',contentText='';
+  late TextEditingController contentController;
+  String titleText = '',
+      contentText = '';
+  int recID = 0;
 
 
-
-//late Records newRecord ;
+  late Records newRecord;
 
   @override
   void initState() {
     super.initState();
+
+    titleController = TextEditingController();
+    contentController = TextEditingController();
+
+    if (super.widget.id != records.length+1) {
+      loadRecord(super.widget.id);
+    } else {
+      titleField = TextField(
+        textCapitalization: TextCapitalization.sentences,
+        controller: titleController, onChanged: (text) {
+        titleText = text;
+      },
+      );
+      contentField =
+          TextField(controller: contentController, onChanged: (text) {
+            contentText = text;
+          },);
+    }
   }
 
   ///Placeholder method
-void saveRecord() async{
+  void saveRecord() async {
+    if (super.widget.id != 0) {
+      recID = super.widget.id;
+    } else {
+      recID = records.length + 1;
+    }
+    newRecord = Records(id: recID, title: titleText, content: contentText);
+    try {
+      RecordsDB.insertRecord(newRecord);
+    } on Exception catch (ex) {
+      if (kDebugMode) {
+        print(ex);
+      }
+    }
+    records = await RecordsDB.records();
+    Navigator.pop(context);
+  }
 
+  void loadRecord(int id) async {
+    Records record = records.firstWhere((element) => element.id == id);
+    titleController.text = record.title;
+contentController.text=record.content;
 
+    titleField = TextField(
+      textCapitalization: TextCapitalization.sentences,
+      controller: titleController, onChanged: (text) {
+      titleText = text;
+    },
+    );
+    contentField = TextField(controller: contentController, onChanged: (text) {
+      contentText = text;
+    },);
   }
 
   @override
   Widget build(BuildContext context) {
-return Form(
-  key: _formKey,
-    child: Column(
-      children: <Widget>[
-        TextField(onChanged: (text) {
-          titleContent = text;
-        },)
-        ,
-        TextField(onChanged: (text){
-          contentText = text;
-        },),
-        ElevatedButton(
-          onPressed: () {
-            // Validate returns true if the form is valid, or false otherwise.
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Compose New Record'),
+      ),
+      key: _formKey,
+      body: Center(
+        child: ListView(padding:
+        const EdgeInsets.only(left: 80, top: 40, right: 80, bottom: 40),
+          children:
+          <Widget>[
+            titleField,
+            contentField,
+            ElevatedButton(
+              onPressed: () {
+                saveRecord();
+              },
 
-
-              //Navigator.push(context,MaterialPageRoute(builder: (context) => const MyHomePage(title: 'ADHD Journal')));
-            }
-          },
-          child: const Text('Submit'),
+              child: const Text('Submit'),
+            ),
+          ],
         ),
-      ],
-    ),
-);
-
+      ),
+    );
   }
-
 
 
 }

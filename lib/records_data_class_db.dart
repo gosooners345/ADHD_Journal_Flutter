@@ -2,9 +2,9 @@
 
 
 class Records{
-  final int id;
-  final String title;
-  final String content;
+   int id;
+   String title;
+   String content;
  /* final String sources;
   final String emotions;
   final String symptoms;
@@ -15,6 +15,10 @@ class Records{
   Records({required this.id, required this.title,required this.content ,/*required this.emotions,required this.sources,
     required this.symptoms,
 required this.tags,required this.rating,required this.success*/});
+
+
+
+
 
   Records.fromMap(Map<String,dynamic> record):
       id = record['id'],
@@ -27,6 +31,11 @@ required this.tags,required this.rating,required this.success*/});
   rating = record['rating'],
   success = record['success']*/
 
+
+@override
+  String toString(){
+    return'ID: $id \r\nTitle: $title \r\nDetails: $content';
+  }
 
   Map<String, Object>toMapForDB(){
   return {'id':id,'title':title,'content':content,/*'emotions':emotions,

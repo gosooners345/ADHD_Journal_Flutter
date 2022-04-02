@@ -9,9 +9,8 @@ import 'records_data_class_db.dart';
 import 'login_screen_file.dart';
 import 'compose_records_screen.dart';
 
-
 late RecordsDB recDB;
-
+List<Records> records = [];
 
 void main() {
   runApp(const MyApp());
@@ -70,18 +69,28 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
  late Text titleHdr;
- List<Records> _records =[];
+late ListView recordViews;
+
   @override
   void initState() {
     super.initState();
-    WidgetsFlutterBinding.ensureInitialized();
-    titleHdr = Text('Home', style: optionStyle);
-    _loadTestDB();
+
+
+ _loadTestDB();
+    getList();
+
+
   }
   int _selectedIndex = 0;
   String header = "";
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+
+
+void getList() async {
+  records = await RecordsDB.records();
+}
+
 
 
   void _onItemTapped(int index) {
@@ -94,11 +103,13 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _loadTestDB() async {
+ void _loadTestDB() async {
     try {
       final data = await RecordsDB.records();
       setState(() {
-        _records = data;
+        records = data;
+
+
       });
       print("Success");
       print(data.length);
@@ -110,31 +121,23 @@ class _MyHomePageState extends State<MyHomePage> {
   void _createRecord(){
     setState(() {
        titleHdr = Text('Record Created');
-       Navigator.push(context, MaterialPageRoute(builder: (context) => ComposeRecords()));
+       Navigator.push(context, MaterialPageRoute(builder: (context) => ComposeRecordsWidget(id: records.length+1,)));
     });
   }
 
-  void _editRecord(){
-
+  void _editRecord(int index){
+    int id = records[index].id;
+Navigator.push(context,MaterialPageRoute(builder: (context) => ComposeRecordsWidget(id: id)));
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: Column(
           children: <Widget>[
             SizedBox(
@@ -146,7 +149,18 @@ class _MyHomePageState extends State<MyHomePage> {
             SizedBox(
               height: 130,
             ),
-            Center(child:titleHdr)
+        ListView.builder(itemBuilder: (context,index) {
+          return Card(
+              child: ListTile(
+                onTap: (){
+                  _editRecord(index);
+                },
+                title: Text(records[index].toString()),
+              )
+          );
+        },itemCount: records.length,
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,)
           ],
         ),
       ),
