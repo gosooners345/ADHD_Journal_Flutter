@@ -11,7 +11,8 @@ import 'recordsdatabase_handler.dart';
 
 
 class ComposeRecordsWidget extends StatefulWidget{
-  const ComposeRecordsWidget({Key? key, required this.id}) : super(key: key);
+  const ComposeRecordsWidget({Key? key, required this.record,required this.id}) : super(key: key);
+ final Records record;
 
   final int id;
 
@@ -20,7 +21,7 @@ class ComposeRecordsWidget extends StatefulWidget{
 }
 
 class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
-  final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<_ComposeRecordsWidgetState>();
   late TextField titleField;
   late TextEditingController titleController;
   late TextField contentField;
@@ -29,8 +30,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
       contentText = '';
   int recID = 0;
 
-
-  late Records newRecord;
+  //late Records newRecord;
 
   @override
   void initState() {
@@ -39,11 +39,13 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
     titleController = TextEditingController();
     contentController = TextEditingController();
 
-    if (super.widget.id != records.length+1) {
-      loadRecord(super.widget.id);
-    } else {
+    if(super.widget.id==1)
+      {
+        loadRecord();
+      }
+    else{
       titleField = TextField(
-        textCapitalization: TextCapitalization.sentences,
+        textCapitalization: TextCapitalization.words,
         controller: titleController, onChanged: (text) {
         titleText = text;
       },
@@ -55,29 +57,31 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
     }
   }
 
-  ///Placeholder method
+
   void saveRecord() async {
-    if (super.widget.id != 0) {
-      recID = super.widget.id;
-    } else {
-      recID = records.length + 1;
-    }
-    newRecord = Records(id: recID, title: titleText, content: contentText);
-    try {
-      RecordsDB.insertRecord(newRecord);
-    } on Exception catch (ex) {
-      if (kDebugMode) {
-        print(ex);
+
+    if(super.widget.record.title=='')
+      {
+        super.widget.record.title=titleText;
+        super.widget.record.content = contentText;
+        RecordsDB.insertRecord(super.widget.record);
+        records.add(super.widget.record);
       }
-    }
-    records = await RecordsDB.records();
-    Navigator.pop(context);
+    else
+      {
+        super.widget.record.title=titleText;
+        super.widget.record.content = contentText;
+        RecordsDB.updateRecords(super.widget.record);
+
+      }
+
+    Navigator.pop(context,super.widget.record);
   }
 
-  void loadRecord(int id) async {
-    Records record = records.firstWhere((element) => element.id == id);
-    titleController.text = record.title;
-contentController.text=record.content;
+  void loadRecord() async {
+
+    titleController.text = super.widget.record.title;
+contentController.text=super.widget.record.content;
 
     titleField = TextField(
       textCapitalization: TextCapitalization.sentences,

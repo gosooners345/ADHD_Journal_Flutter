@@ -13,6 +13,9 @@ import 'package:flutter/material.dart';
 
 class RecordsDB {
 
+static late cipher.Database _database ;
+
+
 
 static Future<cipher.Database> db() async{
   return cipher.openDatabase(join(await getDatabasesPath(), 'activitylogger_db.db'),
@@ -38,6 +41,24 @@ static Future<int> insertRecord(Records record) async {
    await db.insert('records', record.toMapForDB(),conflictAlgorithm: ConflictAlgorithm.replace);
    return record.id;
 }
+
+Future<Database> get database async {
+  _database ??= await initializeDB();
+  return _database;
+}
+ Future<Database> initializeDB() async{
+  //locker.Directory directory = locker.Directory(join(await getDatabasesPath(), 'activitylogger_db.db'));
+  var ourDB = await cipher.openDatabase(join(await getDatabasesPath(), 'activitylogger_db.db'),
+    password: '1234',
+    onCreate: (database, version) {
+      return database.execute(
+          'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT)');
+    },
+    version: 1,
+  );
+  return ourDB;
+}
+
 static Future<List<Records>> records() async{
   final db = await RecordsDB.db();
 
@@ -64,3 +85,6 @@ static Future<void > deleteRecord(int id) async{
 }
 
 }
+
+
+
