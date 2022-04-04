@@ -56,12 +56,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
  late Text titleHdr;
  Future<List<Records>> _recordList = RecordsDB.records();
-
+ int _selectedIndex = 0;
+ String header = "";
+ static const TextStyle optionStyle =
+ TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
   @override
   void initState() {
     super.initState();
-
     setState(() {
       ///Load the DB into the app
       _recordList = RecordsDB.records();
@@ -89,39 +91,34 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     onHorizontalDragEnd: (_){
                       setState(() {
-                        RecordsDB.deleteRecord(index);
+                        final deletedRec = records[index];
+                        RecordsDB.deleteRecord(deletedRec.id);
                         records.removeAt(index);
                         updateDBListView();
                       });
                     },
                   );
-                },itemCount: records.length,
+                },
+                  itemCount: records.length,
                   scrollDirection: Axis.vertical,
-                  shrinkWrap: true,);
+                  shrinkWrap: true,
+                );
               }
             }
             return Center(
               child: CircularProgressIndicator(),
             );
-
           }
       );
-
-    });
-
-
+    }
+    );
   }
-  int _selectedIndex = 0;
-  String header = "";
-  static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+
 
 
 void getList() async {
   _recordList = RecordsDB.records();
 }
-
-
 
   void _onItemTapped(int index) {
     setState(() {
@@ -133,8 +130,6 @@ void getList() async {
     });
   }
 
-
-
   void _createRecord() {
     setState(() {
       titleHdr = Text('Record Created');
@@ -144,17 +139,10 @@ void getList() async {
               record: Records(id: id, title: '', content: ''),id:0)))
           .then((value) =>
           setState(() {
-            try {
-              RecordsDB.insertRecord(value);
-            }
-            on Exception catch (ex) {
-              print(ex);
-            }
           updateDBListView();
           }));
     });
   }
-
   void _editRecord(int index){
   setState(() {
     final Records loadRecord = records[index];
@@ -162,23 +150,14 @@ void getList() async {
     Navigator.push(context, MaterialPageRoute(builder: (_) =>
         ComposeRecordsWidget(
             record:loadRecord,id:1)))
-        .then((value) =>
+        .then((loadRecord) =>
         setState(() {
-          try {
-            RecordsDB.updateRecords(value);
-          }
-          on Exception catch (ex) {
-            print(ex);
-          }
+          updateDBListView();
         }));
-    updateDBListView();
   });
-
-
   }
+
 late FutureBuilder testMe ;
-
-
   @override
   Widget build(BuildContext context) {
 
@@ -194,9 +173,8 @@ late FutureBuilder testMe ;
             Text(
               'Welcome back! What would you like to record today?',
             ),
-           Expanded(child:
-         
-           testMe),
+           Expanded(child: testMe
+           ),
           ],
         ),
 
@@ -240,49 +218,6 @@ late FutureBuilder testMe ;
       Future<List<Records>> futureRecords = RecordsDB.records();
       futureRecords.then((records) {
         records = records;
-        testMe =FutureBuilder<List<Records>>(
-            future: _recordList,
-            builder: (BuildContext context, AsyncSnapshot<List<Records>> snapshot,)
-            {
-              if(snapshot.connectionState==ConnectionState.done){
-                if(snapshot.hasError)
-                {return Center(
-                  child: Text('Error has occurred ${snapshot.error}'),
-                );}
-                else if (snapshot.hasData) {
-                  records = snapshot.data as List<Records>;
-                  return ListView.builder(itemBuilder: (context,index) {
-                    return GestureDetector(
-                      child:  Card(
-                        child: ListTile(
-                        onTap: (){
-                      _editRecord(index);
-                    },
-
-                    title: Text(records[index].toString()),
-                    ),
-                    ),
-                      onHorizontalDragEnd: (_){
-                        setState(() {
-                          RecordsDB.deleteRecord(index);
-                          records.removeAt(index);
-
-                         // updateDBListView();
-                        });
-                      },
-                    );
-
-                  },itemCount: records.length,
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,);
-                }
-              }
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-
-            }
-        );
       });
     });
 

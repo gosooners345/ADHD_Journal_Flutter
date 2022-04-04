@@ -67,14 +67,12 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
         RecordsDB.insertRecord(super.widget.record);
         records.add(super.widget.record);
       }
-    else
-      {
-        super.widget.record.title=titleText;
-        super.widget.record.content = contentText;
-        RecordsDB.updateRecords(super.widget.record);
+    else {
+      //records.remove(super.widget.record);
+      RecordsDB.updateRecords(super.widget.record);
+      //records.add(super.widget.record);
 
-      }
-
+    }
     Navigator.pop(context,super.widget.record);
   }
 
@@ -86,11 +84,13 @@ contentController.text=super.widget.record.content;
     titleField = TextField(
       textCapitalization: TextCapitalization.sentences,
       controller: titleController, onChanged: (text) {
-      titleText = text;
+      //titleText = text;
+      super.widget.record.title = text;
     },
     );
     contentField = TextField(controller: contentController, onChanged: (text) {
-      contentText = text;
+      //contentText = text;
+      super.widget.record.content=text;
     },);
   }
 

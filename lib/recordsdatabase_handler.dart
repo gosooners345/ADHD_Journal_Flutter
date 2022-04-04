@@ -43,11 +43,10 @@ static Future<int> insertRecord(Records record) async {
 }
 
 Future<Database> get database async {
-  _database ??= await initializeDB();
+  _database = await initializeDB();
   return _database;
 }
  Future<Database> initializeDB() async{
-  //locker.Directory directory = locker.Directory(join(await getDatabasesPath(), 'activitylogger_db.db'));
   var ourDB = await cipher.openDatabase(join(await getDatabasesPath(), 'activitylogger_db.db'),
     password: '1234',
     onCreate: (database, version) {
@@ -75,14 +74,12 @@ static Future<int> updateRecords(Records record) async{
   final result = await db.update('records', record.toMapForDB(),where: 'id =?', whereArgs: [record.id]);
   return result;
 }
-static Future<void > deleteRecord(int id) async{
+static Future<int> deleteRecord(int id) async{
   final db = await RecordsDB.db();
-  try {
-    await db.delete('records',where: 'id =?',whereArgs: [id]);
-  }catch (err) {
-    debugPrint("Error something went wrong : $err");
-  }
+  return await db.delete('records',where: 'id =?',whereArgs: [id]);
+
 }
+
 
 }
 
