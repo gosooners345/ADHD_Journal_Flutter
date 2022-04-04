@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_final_fields
 
 import 'package:adhd_journal_flutter/recordsdatabase_handler.dart';
+import 'package:adhd_journal_flutter/settings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
         '/' : (context) => const LoginScreen(),
         '/success': (context) => const MyHomePage(title: 'ADHD Journal'),
         '/fail': (context) => const LoginScreen(),
+        '/settings': (context) => const SettingsWidget(),
         
       },
     );
