@@ -22,9 +22,10 @@ static Future<cipher.Database> db() async{
     password: '1234',
     onCreate: (database, version) {
       return database.execute(
-          'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT)');
+          'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT)');
     },
-    version: 1,
+
+    version: 2,
   );
 }
 
@@ -63,8 +64,8 @@ static Future<List<Records>> records() async{
 
   final List<Map<String, dynamic>> maps = await db.query('records');
   return List.generate(maps.length, (index) {
-    return Records(id :maps[index]['id'], title: maps[index]['title'], content: maps[index]['content'], /*rating: maps[index]['rating'],
-      tags: maps[index]['tags'], success: maps[index]['success'], sources: maps[index]['sources'], symptoms: maps[index]['symptoms'], emotions:maps[index]['emotions'],*/
+    return Records(id :maps[index]['id'], title: maps[index]['title'], content: maps[index]['content'],emotions:maps[index]['emotions'] /*rating: maps[index]['rating'],
+      tags: maps[index]['tags'], success: maps[index]['success'], sources: maps[index]['sources'], symptoms: maps[index]['symptoms'], ,*/
     );
   }
   );

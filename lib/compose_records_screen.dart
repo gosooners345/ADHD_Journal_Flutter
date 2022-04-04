@@ -26,11 +26,8 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
   late TextEditingController titleController;
   late TextField contentField;
   late TextEditingController contentController;
-  String titleText = '',
-      contentText = '';
-  int recID = 0;
-
-  //late Records newRecord;
+  late TextField emotionsField;
+  late TextEditingController emotionsController;
 
   @override
   void initState() {
@@ -38,6 +35,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
 
     titleController = TextEditingController();
     contentController = TextEditingController();
+    emotionsController = TextEditingController();
 
     if(super.widget.id==1)
       {
@@ -47,13 +45,18 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
       titleField = TextField(
         textCapitalization: TextCapitalization.words,
         controller: titleController, onChanged: (text) {
-        titleText = text;
-      },
-      );
+        super.widget.record.title = text;
+      },);
       contentField =
           TextField(controller: contentController, onChanged: (text) {
-            contentText = text;
+            super.widget.record.content = text;
           },);
+      emotionsField = TextField(
+        controller: emotionsController,
+        onChanged: (text){
+          super.widget.record.emotions = text;
+        },
+      );
     }
   }
 
@@ -62,15 +65,13 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
 
     if(super.widget.record.title=='')
       {
-        super.widget.record.title=titleText;
-        super.widget.record.content = contentText;
+        //super.widget.record.title=titleText;
+        //super.widget.record.content = contentText;
         RecordsDB.insertRecord(super.widget.record);
         records.add(super.widget.record);
       }
     else {
-      //records.remove(super.widget.record);
       RecordsDB.updateRecords(super.widget.record);
-      //records.add(super.widget.record);
 
     }
     Navigator.pop(context,super.widget.record);
@@ -80,18 +81,23 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
 
     titleController.text = super.widget.record.title;
 contentController.text=super.widget.record.content;
+emotionsController.text=super.widget.record.emotions;
 
     titleField = TextField(
       textCapitalization: TextCapitalization.sentences,
       controller: titleController, onChanged: (text) {
-      //titleText = text;
       super.widget.record.title = text;
     },
     );
     contentField = TextField(controller: contentController, onChanged: (text) {
-      //contentText = text;
       super.widget.record.content=text;
     },);
+    emotionsField = TextField(
+      controller: emotionsController,
+      onChanged: (text){
+        super.widget.record.emotions = text;
+      },
+    );
   }
 
   @override
@@ -108,6 +114,7 @@ contentController.text=super.widget.record.content;
           <Widget>[
             titleField,
             contentField,
+            emotionsField,
             ElevatedButton(
               onPressed: () {
                 saveRecord();
