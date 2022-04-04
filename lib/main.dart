@@ -138,7 +138,7 @@ void getList() async {
   void _createRecord() {
     setState(() {
       titleHdr = Text('Record Created');
-      id = records.length + 1;
+      id = records[records.length-1].id + 1;
       Navigator.push(context, MaterialPageRoute(builder: (_) =>
           ComposeRecordsWidget(
               record: Records(id: id, title: '', content: ''),id:0)))
