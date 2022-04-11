@@ -65,6 +65,8 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
 
     if(super.widget.record.title=='')
       {
+        //super.widget.record.title=titleText;
+        //super.widget.record.content = contentText;
         RecordsDB.insertRecord(super.widget.record);
         records.add(super.widget.record);
       }
