@@ -37,9 +37,6 @@ dependencies:
   material: ^1.0.0+2
   sqflite_sqlcipher: ^2.1.0
   path:
-  encrypted_shared_preferences: ^3.0.0
-  shared_preferences: ^2.0.13
-  encrypt: ^5.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
