@@ -1,28 +1,23 @@
-import 'package:objectbox/objectbox.dart';
 
 
-/*
+
 class Records{
    int id;
    String title;
    String content;
    String emotions;
   String sources='';
-*/
 /*   final String symptoms='';
   final String tags='';
   final double rating=0.0;
-  final bool success;*//*
-
+  final bool success;*/
 
   Records({required this.id, required this.title,required this.content ,required this.emotions,sources});
-    */
-/* required this.sources,
+    /* required this.sources,
     required this.symptoms,
 required this.tags,
 required this.rating,
-required this.success});*//*
-
+required this.success});*/
 
 
 
@@ -32,12 +27,10 @@ required this.success});*//*
   content=record['content'],
   emotions=record['emotions'],
   sources=record['sources'];
-*/
 /*  symptoms = record['symptoms'],
   tags = record['tags'],
   rating = record['rating'],
-  success = record['success']*//*
-
+  success = record['success']*/
 
 
 @override
@@ -49,39 +42,12 @@ required this.success});*//*
   Map<String, Object>toMapForDB(){
   return {'id':id,'title':title,'content':content,'emotions':emotions,
     'sources':sources,
- */
-/* 'sources':sources,'tags':tags,'rating':rating,'success':success*//*
-};
+ /* 'sources':sources,'tags':tags,'rating':rating,'success':success*/};
 }
 
 static Comparable comparableIDs(int a,int b){
   return a.compareTo(b);
 }
-
-
-}*/
-
-@Entity()
-class Records{
-
-  int id=0;
-  String? title;
-  String? content;
-  String? emotions;
-  String? sources;
-  String? symptoms;
-  String? tags;
-  double? rating;
-  bool? successState ;
-
-  @Property(type: PropertyType.date)
-  DateTime timeCreated;
-  @Property(type: PropertyType.date)
-  DateTime timeUpdated;
-
-  Records({this.title,this.content,this.emotions,this.sources,this.symptoms,
- this.tags, this.rating,this.successState,DateTime? timeCreated})
-      : timeCreated = timeCreated ?? DateTime.now(), timeUpdated = DateTime.now();
 
 
 }
