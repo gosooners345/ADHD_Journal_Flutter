@@ -22,6 +22,10 @@ class RecordsDB {
   late final Box<Records> recordBox;
   late final Future<List<Records>> recordList;
 
+  //static late final Future<Query<Records>> recordStream;
+  //late final List<Records> recordList;
+  //late final StreamController<Query<Records>> controllers;
+
   RecordsDB._create(recordStore){
   recordBox = Box<Records>(recordStore);
   final queryBuilder = recordBox.query()
@@ -44,6 +48,21 @@ class RecordsDB {
 return  maps.build().find();
   }
 
+
+/*   void insertRecords(Records record){
+    recordBox.put(record,mode: PutMode.insert);
+    recordList.add(record);
+   }*/
+   /*void deleteRecords(Records record){
+    recordBox.remove(record.id);
+    recordList.remove(record);
+
+   }*/
+/*   void updateRecords(Records record){
+    recordBox.put(record,mode: PutMode.update);
+    var ax =recordList.indexOf(record);
+    recordList.insert(ax, record);
+   }*/
 
   Future<bool> deleteRecord(Records record) async {
     return  recordBox.remove(record.id);
