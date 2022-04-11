@@ -61,27 +61,27 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
   }
 
 
-  void saveRecord() async {
+  void saveRecord() {
 
-    if(super.widget.record.title=='')
+    if(super.widget.id==0)
       {
-        //super.widget.record.title=titleText;
-        //super.widget.record.content = contentText;
-        RecordsDB.insertRecord(super.widget.record);
+
+       // super.widget.record.title=titleField;
+       // super.widget.record.content = contentText;
+        recDB.insertRecord(super.widget.record);
         records.add(super.widget.record);
       }
     else {
-      RecordsDB.updateRecords(super.widget.record);
-
+    recDB.updateRecord(super.widget.record);
     }
     Navigator.pop(context,super.widget.record);
   }
 
   void loadRecord() async {
 
-    titleController.text = super.widget.record.title;
-contentController.text=super.widget.record.content;
-emotionsController.text=super.widget.record.emotions;
+    titleController.text = super.widget.record.title!;
+contentController.text=super.widget.record.content!;
+emotionsController.text=super.widget.record.emotions!;
 
     titleField = TextField(
       textCapitalization: TextCapitalization.sentences,
