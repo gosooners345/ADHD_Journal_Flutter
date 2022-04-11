@@ -83,7 +83,5 @@ class Records{
  this.tags, this.rating,this.successState,DateTime? timeCreated})
       : timeCreated = timeCreated ?? DateTime.now(), timeUpdated = DateTime.now();
 
- String toString(){
-   return '$title \r\n $content \r\n $emotions';
- }
+
 }

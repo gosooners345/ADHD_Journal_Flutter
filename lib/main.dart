@@ -1,7 +1,5 @@
 // ignore_for_file: prefer_const_constructors, prefer_final_fields
 
-import 'dart:async';
-
 import 'package:adhd_journal_flutter/recordsdatabase_handler.dart';
 import 'package:adhd_journal_flutter/settings.dart';
 import 'package:flutter/foundation.dart';
@@ -17,11 +15,9 @@ import 'compose_records_screen.dart';
 late RecordsDB recDB;
 List<Records> records = [];
 int id =0;
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  recDB = await RecordsDB.create();
+void main() {
   runApp(const MyApp());
-
+  WidgetsFlutterBinding.ensureInitialized();
 }
 
 class MyApp extends StatelessWidget {
@@ -60,27 +56,24 @@ class MyHomePage extends StatefulWidget {
 late ListView recordViews;
 class _MyHomePageState extends State<MyHomePage> {
   late FutureBuilder testMe;
-late Future<List<Records>> _recordList;
 
   late Text titleHdr;
+  Future<List<Records>> _recordList = RecordsDB.records();
   var _selectedIndex = 0;
   String header = "";
   static const TextStyle optionStyle =
   TextStyle(fontSize: 15, fontWeight: FontWeight.bold);
- void loadDB() async{
-   recDB = await RecordsDB.create();
- }
+
   @override
   void initState() {
     super.initState();
     try {
       setState(() {
-_recordList = recDB.recordList;
         ///Load the DB into the app
+        _recordList = RecordsDB.records();
 
         /// This controls the ListView widget responsible for displaying user data on screen
-
-       testMe = FutureBuilder<List<Records>>(
+        testMe = FutureBuilder<List<Records>>(
             future: _recordList,
             builder: (BuildContext context,
                 AsyncSnapshot<List<Records>> snapshot,) {
@@ -106,7 +99,7 @@ _recordList = recDB.recordList;
                       onHorizontalDragEnd: (_) {
                         setState(() {
                           final deletedRec = records[index];
-                          recDB.deleteRecord(deletedRec);
+                          RecordsDB.deleteRecord(deletedRec.id);
                           records.removeAt(index);
                         });
                       },
@@ -123,8 +116,6 @@ _recordList = recDB.recordList;
               );
             }
         );
-
-
       }
       );
     } catch (e, s) {
@@ -132,29 +123,11 @@ _recordList = recDB.recordList;
     }
   }
 
-/*  @override
-  void dispose(){
-    _recordLists.close();
-    super.dispose();
-  }*/
-/// This is for each individual item
-  GestureDetector Function(BuildContext,int) _records(List<Records> records) =>
-      (BuildContext context, int index) => GestureDetector(
-          onHorizontalDragEnd: (_) {
-            setState(() {
-              final deletedRec = records[index];
-              recDB.deleteRecord(deletedRec);
-            });
-          },
-        onTap: () {
-          _editRecord(index);
-        },
-        child: Card(
-          child: ListTile(title: Text(records[index].toString(),)),
-        )
-      );
-  /// This loads the db list into the application for displaying.
 
+  /// This loads the db list into the application for displaying.
+  void getList() async {
+    _recordList = RecordsDB.records();
+  }
 
 
   /// This is for the bottom navigation bar, this isn't related to the records at all.
@@ -170,12 +143,19 @@ _recordList = recDB.recordList;
 
   /// Allows users to create entries for the db and journal. Once submitted, the screen will update on demand.
   /// Checked and passed : true
-
-  void createRecord() {
+  void _createRecord() {
     setState(() {
       titleHdr = Text('Record Created');
+      //id = records[records.length - 1].id + 1;
+      if(records.isEmpty) {
+        id =1;
+      } else {
+        id = records[records.length - 1].id + 1;
+      }
       Navigator.push(context, MaterialPageRoute(builder: (_) =>
-          ComposeRecordsWidget(record: Records(), id: 0))).then((value) =>
+          ComposeRecordsWidget(
+              record: Records(id: id, title: '', content: '',emotions: ''), id: 0)))
+          .then((value) =>
           setState(() {}));
     });
   }
@@ -207,15 +187,15 @@ _recordList = recDB.recordList;
           Text(
             'Welcome back! What would you like to record today?',
           ),
-Expanded(child: testMe)
-      ,
-                  ],
+          Expanded(child: testMe
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         label: Text('Record'), icon: Icon(Icons.edit),
         onPressed: () {
           setState(() {
-            createRecord();
+            _createRecord();
           }
           );
         },
