@@ -37,10 +37,10 @@ static Future<cipher.Database> db() async{
 
 
 
-static Future<int> insertRecord(Records record) async {
+static Future<void> insertRecord(Records record) async {
   final db = await RecordsDB.db();
    await db.insert('records', record.toMapForDB(),conflictAlgorithm: ConflictAlgorithm.replace);
-   return record.id;
+//   return record.id;
 }
 
 Future<Database> get database async {
@@ -54,7 +54,7 @@ Future<Database> get database async {
       return database.execute(
           'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT)');
     },
-    version: 1,
+    version: 2,
   );
   return ourDB;
 }
@@ -70,14 +70,14 @@ static Future<List<Records>> records() async{
   }
   );
 }
-static Future<int> updateRecords(Records record) async{
+static Future<void> updateRecords(Records record) async{
   final db = await RecordsDB.db();
-  final result = await db.update('records', record.toMapForDB(),where: 'id =?', whereArgs: [record.id]);
-  return result;
+          await db.update('records', record.toMapForDB(),where: 'id =?', whereArgs: [record.id]);
+  //return result;
 }
-static Future<int> deleteRecord(int id) async{
+static Future<void> deleteRecord(int id) async{
   final db = await RecordsDB.db();
-  return await db.delete('records',where: 'id =?',whereArgs: [id]);
+  await db.delete('records',where: 'id =?',whereArgs: [id]);
 
 }
 

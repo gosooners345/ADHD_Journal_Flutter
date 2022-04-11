@@ -63,7 +63,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
 
   void saveRecord() async {
 
-    if(super.widget.record.title=='')
+    if(super.widget.id==0)
       {
         //super.widget.record.title=titleText;
         //super.widget.record.content = contentText;
