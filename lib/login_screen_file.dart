@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'project_colors.dart';
 import 'project_strings_file.dart';
 import 'recordsdatabase_handler.dart';
@@ -19,8 +20,25 @@ const LoginScreen({Key? key}) : super(key: key);
 
 ///Handles the states of the application.
 class _LoginScreenState extends State<LoginScreen>{
+ 
+  late String? userPassword;
+  String loginPassword = '';
+  late SharedPreferences sharedPrefs;
+  
+  @override void initState()  async{
+    super.initState();
+    sharedPrefs = await SharedPreferences.getInstance();
+    userPassword = '';
+    userPassword = sharedPrefs.getString('loginPassword');
+    if(userPassword =='')
+      {
+        userPassword = '1234';
+        sharedPrefs.setString('loginPassword', userPassword!)
+        ;
+      }
 
-
+  }
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +64,9 @@ class _LoginScreenState extends State<LoginScreen>{
                     border: OutlineInputBorder(),
                     labelText: 'Password',
                     hintText: 'Enter secure password'),
+                onChanged: (text){
+                  loginPassword = text;
+                },
               ),
             ),
             Padding(
@@ -61,7 +82,8 @@ class _LoginScreenState extends State<LoginScreen>{
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/success');                },
+if(userPassword==loginPassword){
+                  Navigator.pushNamed(context, '/success');               } },
                 child: Text(
                   'Login',
                   style: TextStyle(color: Colors.white, fontSize: 25),

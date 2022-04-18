@@ -1,10 +1,9 @@
 // ignore_for_file: prefer_const_constructors, prefer_final_fields
 
 import 'package:adhd_journal_flutter/recordsdatabase_handler.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'project_colors.dart';
 import 'project_strings_file.dart';
 import 'records_data_class_db.dart';
@@ -54,7 +53,7 @@ class MyHomePage extends StatefulWidget {
 late ListView recordViews;
 class _MyHomePageState extends State<MyHomePage> {
   late FutureBuilder testMe;
-
+static const platform = MethodChannel('com.activitylogger.release1/ADHDJournal');
   late Text titleHdr;
   Future<List<Records>> _recordList = RecordsDB.records();
   var _selectedIndex = 0;

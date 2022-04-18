@@ -6,7 +6,8 @@ import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart' as cipher;
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 
@@ -14,12 +15,24 @@ import 'package:flutter/material.dart';
 class RecordsDB {
 
 static late cipher.Database _database ;
-
+static const platform = MethodChannel('com.activitylogger.release1/ADHDJournal');
 
 
 static Future<cipher.Database> db() async{
+  final sharedPrefs = await SharedPreferences.getInstance();
+  String? dbPassword = sharedPrefs.getString('dbPassword');
+  if( dbPassword == '') {
+    dbPassword = '1234';
+  }
+  String? newPassword = sharedPrefs.getString('loginPassword');
+  if(newPassword != dbPassword) {
+    _changeDBPasswords();
+  }
+
+
+
   return cipher.openDatabase(join(await getDatabasesPath(), 'activitylogger_db.db'),
-    password: '1234',
+    password: dbPassword,
     onCreate: (database, version) {
       return database.execute(
           'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT)');
@@ -35,7 +48,15 @@ static Future<cipher.Database> db() async{
   }
 
 
+static Future<void> _changeDBPasswords()async {
+  try{
+    await platform.invokeMethod('changeDBPasswords');
 
+ //   final int results = await platform.invokeMethod('changeDBPasswords');
+  }on Exception catch(ex){
+    print(ex);
+  }
+}
 
 static Future<void> insertRecord(Records record) async {
   final db = await RecordsDB.db();

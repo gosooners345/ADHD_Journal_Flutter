@@ -2,6 +2,8 @@ PODS:
   - Flutter (1.0.0)
   - FMDB/SQLCipher (2.7.5):
     - SQLCipher
+  - shared_preferences_ios (0.0.1):
+    - Flutter
   - sqflite (0.0.2):
     - Flutter
     - FMDB/SQLCipher (>= 2.7.5)
@@ -15,20 +17,27 @@ PODS:
   - SQLCipher/common (4.4.2)
   - SQLCipher/standard (4.4.2):
     - SQLCipher/common
+  - SQLite.swift/SQLCipher (0.13.3):
+    - SQLCipher (>= 4.0.0)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - shared_preferences_ios (from `.symlinks/plugins/shared_preferences_ios/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
   - sqflite_sqlcipher (from `.symlinks/plugins/sqflite_sqlcipher/ios`)
+  - SQLite.swift/SQLCipher (~> 0.13.3)
 
 SPEC REPOS:
   trunk:
     - FMDB
     - SQLCipher
+    - SQLite.swift
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
+  shared_preferences_ios:
+    :path: ".symlinks/plugins/shared_preferences_ios/ios"
   sqflite:
     :path: ".symlinks/plugins/sqflite/ios"
   sqflite_sqlcipher:
@@ -37,10 +46,12 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
+  shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
   sqflite: c0667567fd3e682beb9509976c08bc2325429aab
   sqflite_sqlcipher: 70eb7fd8d4f0b0352d0bde5cf345b810737f54bb
   SQLCipher: 1ab0b9486a77d141e72e92ff30681926ed79c07a
+  SQLite.swift: 903bfa3bc9ab06345fdfbb578e34f47cfcf417da
 
-PODFILE CHECKSUM: ffd7293eb7d5907b54a367fd400872baeef513a5
+PODFILE CHECKSUM: 5580f09e106d5e19686ae7b9a30a25b06d693e52
 
 COCOAPODS: 1.11.3
