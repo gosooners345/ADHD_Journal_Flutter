@@ -1,7 +1,7 @@
 import UIKit
 import Flutter
-import SQLCipher
-import NSUserDefaults
+//import SQLCipher
+//import Foundation
 import SQLite
 
 
@@ -10,8 +10,8 @@ import SQLite
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
 
-let prefs = NSUserDefaults.standardUserDefaults()
-
+//let prefs = NSUserDefaults.standardUserDefaults()
+//var prefs = UserDefaults
 
   override func application(
     _ application: UIApplication,
@@ -38,25 +38,28 @@ return
   }
 
 private func changeDBPasswords(){
-    let oldDBPassword = prefs.objectForKey("dbPassword")
-    let newDBPassword = prefs.objectForKey("loginPassword")
+    let oldDBPassword = UserDefaults.standard.object(forKey:"Flutter.dbPassword")
+    let newDBPassword = UserDefaults.standard.object(forKey:"Flutter.loginPassword")
 let dbName = "activitylogger_db.db"
-    let dbPath = [NSString stringWithFormat:@"%@/%@",[self applicationDocumentsDirectory], dbName];
-    
-    decryptDB(password: oldDBPassword, path: dbPath, newPassword: newDBPassword)
+var path = NSSearchPathForDirectoriesInDomains(.documentDirectory,.userDomainMask,true).first!
+do{
+let dbPath = try!  Connection("\(path)/\(dbName)")
+   // catch (exception){print(exception)}
+    let dbPasswordString : String = "\(String(describing: oldDBPassword))"
+    let sewDBPassString : String = "\(String(describing: newDBPassword))"
+    try dbPath.key( "\(dbPasswordString)")
+    try dbPath.rekey("\(sewDBPassString)")
+print(dbPasswordString)
+print(sewDBPassString)
+
+}
+catch {
+print(error)
+}
 //changeDBPassword()
 //encryptDB()
 
 }
-
-    func decryptDB(password: String,path : String, newPassword : String)  {
-        let db = try Connection(path)
-        try db.key(key: password)
-        try db.rekey(newPassword)
-    }        // changeDBPassword(){}
-    func encryptDB(newPassword : String , path : String) {
-        
-    }
 
 
 

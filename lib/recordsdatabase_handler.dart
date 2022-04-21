@@ -23,13 +23,12 @@ static Future<cipher.Database> db() async{
   String? dbPassword = sharedPrefs.getString('dbPassword');
   if( dbPassword == '') {
     dbPassword = '1234';
+    sharedPrefs.setString('dbPassword', dbPassword);
   }
   String? newPassword = sharedPrefs.getString('loginPassword');
   if(newPassword != dbPassword) {
     _changeDBPasswords();
   }
-
-
 
   return cipher.openDatabase(join(await getDatabasesPath(), 'activitylogger_db.db'),
     password: dbPassword,

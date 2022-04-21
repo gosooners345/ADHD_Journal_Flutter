@@ -24,22 +24,27 @@ class _LoginScreenState extends State<LoginScreen>{
   late String? userPassword;
   String loginPassword = '';
   late SharedPreferences sharedPrefs;
+  late TextEditingController stuff;
   
-  @override void initState()  async{
+  @override void initState()  {
     super.initState();
-    sharedPrefs = await SharedPreferences.getInstance();
-    userPassword = '';
-    userPassword = sharedPrefs.getString('loginPassword');
-    if(userPassword =='')
-      {
-        userPassword = '1234';
-        sharedPrefs.setString('loginPassword', userPassword!)
-        ;
-      }
+    stuff = TextEditingController();
+   loadStateStuff();
+
 
   }
  
-
+ void loadStateStuff() async{
+   sharedPrefs = await SharedPreferences.getInstance();
+   userPassword = '';
+   userPassword = sharedPrefs.getString('loginPassword') ?? '1234';
+   if(userPassword =='')
+   {
+     userPassword = '1234';
+     sharedPrefs.setString('loginPassword', userPassword!);
+     sharedPrefs.commit();
+   }
+ }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,6 +65,7 @@ class _LoginScreenState extends State<LoginScreen>{
               //padding: EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
                 obscureText: true,
+                controller: stuff,
                 decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Password',
@@ -82,8 +88,14 @@ class _LoginScreenState extends State<LoginScreen>{
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: ElevatedButton(
                 onPressed: () {
-if(userPassword==loginPassword){
-                  Navigator.pushNamed(context, '/success');               } },
+
+
+                    if (loginPassword == userPassword) {
+                      Navigator.pushNamed(context, '/success');
+                      stuff.clear();
+                    }
+
+ },
                 child: Text(
                   'Login',
                   style: TextStyle(color: Colors.white, fontSize: 25),
@@ -93,7 +105,23 @@ if(userPassword==loginPassword){
             SizedBox(
               height: 130,
             ),
-
+            Container(
+              height: 50,
+              width: 250,
+              decoration: BoxDecoration(
+                  color: Colors.blue, borderRadius: BorderRadius.circular(20)),
+              child: ElevatedButton(
+                onPressed: () {
+                sharedPrefs.setString('loginPassword', loginPassword);
+                userPassword=loginPassword;
+                
+                              },
+                child: Text(
+                  'Login',
+                  style: TextStyle(color: Colors.white, fontSize: 25),
+                ),
+              ),
+            ),
           ],
         ),
       ),
