@@ -34,7 +34,7 @@ static Future<cipher.Database> db() async{
     password: dbPassword,
     onCreate: (database, version) {
       return database.execute(
-          'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT)');
+          'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT)');
     },
 
     version: 2,
@@ -72,9 +72,10 @@ Future<Database> get database async {
     password: '1234',
     onCreate: (database, version) {
       return database.execute(
-          'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT)');
+          'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT)');
     },
-    version: 2,
+
+    version: 3,
   );
   return ourDB;
 }
@@ -84,7 +85,7 @@ static Future<List<Records>> records() async{
 
   final List<Map<String, dynamic>> maps = await db.query('records');
   return List.generate(maps.length, (index) {
-    return Records(id :maps[index]['id'], title: maps[index]['title'], content: maps[index]['content'],emotions:maps[index]['emotions'] /*rating: maps[index]['rating'],
+    return Records(id :maps[index]['id'], title: maps[index]['title'], content: maps[index]['content'],emotions:maps[index]['emotions'], sources: maps[index]['sources'] /*rating: maps[index]['rating'],
       tags: maps[index]['tags'], success: maps[index]['success'], sources: maps[index]['sources'], symptoms: maps[index]['symptoms'], ,*/
     );
   }

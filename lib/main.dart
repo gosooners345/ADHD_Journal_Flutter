@@ -151,7 +151,7 @@ static const platform = MethodChannel('com.activitylogger.release1/ADHDJournal')
       }
       Navigator.push(context, MaterialPageRoute(builder: (_) =>
           ComposeRecordsWidget(
-              record: Records(id: id, title: '', content: '',emotions: ''), id: 0)))
+              record: Records(id: id, title: '', content: '',emotions: '',sources: ''), id: 0)))
           .then((value) =>
           setState(() {}));
     });
