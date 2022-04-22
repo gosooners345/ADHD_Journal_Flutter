@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'login_screen_file.dart';
+
 
 
 
@@ -34,10 +36,10 @@ static Future<cipher.Database> db() async{
     password: dbPassword,
     onCreate: (database, version) {
       return database.execute(
-          'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT)');
+          'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT,symptoms TEXT,rating DOUBLE, tags TEXT,success TEXT, timeCreated TEXT, timeUpdated TEXT)');
     },
 
-    version: 2,
+    version: 3,
   );
 }
 
@@ -60,7 +62,6 @@ static Future<void> _changeDBPasswords()async {
 static Future<void> insertRecord(Records record) async {
   final db = await RecordsDB.db();
    await db.insert('records', record.toMapForDB(),conflictAlgorithm: ConflictAlgorithm.replace);
-//   return record.id;
 }
 
 Future<Database> get database async {
@@ -69,10 +70,11 @@ Future<Database> get database async {
 }
  Future<Database> initializeDB() async{
   var ourDB = await cipher.openDatabase(join(await getDatabasesPath(), 'activitylogger_db.db'),
-    password: '1234',
+    password: prefs.getString('dbPassword') ?? '1234',
     onCreate: (database, version) {
       return database.execute(
-          'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT)');
+          'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT,symptoms TEXT,rating DOUBLE, tags TEXT,success TEXT,timeCreated TEXT, timeCreated TEXT)'
+              );
     },
 
     version: 3,
@@ -86,8 +88,9 @@ static Future<List<Records>> records() async{
   final List<Map<String, dynamic>> maps = await db.query('records');
   return List.generate(maps.length, (index) {
     return Records(id :maps[index]['id'], title: maps[index]['title'], content: maps[index]['content'],emotions:maps[index]['emotions'],
-        sources: maps[index]['sources'] /*rating: maps[index]['rating'],
-      tags: maps[index]['tags'], success: maps[index]['success'], symptoms: maps[index]['symptoms'], ,*/
+        sources: maps[index]['sources'], rating: maps[index]['rating'],symptoms: maps[index]['symptoms'],
+      tags: maps[index]['tags'], success: maps[index]['success'],
+timeCreated:maps[index]['timeCreated'],timeUpdated: maps[index]['timeUpdated'],
     );
   }
   );

@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'project_colors.dart';
 import 'project_strings_file.dart';
+import 'package:intl/intl.dart';
 import 'records_data_class_db.dart';
 import 'login_screen_file.dart';
 import 'compose_records_screen.dart';
@@ -171,7 +172,9 @@ void loadPrefs() async{
       }
       Navigator.push(context, MaterialPageRoute(builder: (_) =>
           ComposeRecordsWidget(
-              record: Records(id: id, title: '', content: '',emotions: '',sources: ''), id: 0)))
+              record: Records(id: id, title: '', content: '',emotions: '',sources: '',symptoms: '',tags: '',rating: 0.0,success: 'success/fail',timeCreated:
+              DateFormat('MM/dd/yyyy kk:mm').format(DateTime.now().toLocal()),timeUpdated: DateFormat('MM/dd/yyyy kk:mm').format(DateTime.now().toLocal()))
+              , id: 0)))
           .then((value) =>
           setState(() {}));
     });

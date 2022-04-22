@@ -23,8 +23,6 @@ class SettingsPage extends StatefulWidget{
 
 class _SettingsPage extends State<SettingsPage>{
   static const platform = MethodChannel('com.activitylogger.release1/ADHDJournal');
-  // Preferences Variable
- // late SharedPreferences prefs;
 
   //Parameter setting stuff
   bool isChecked=false;
@@ -45,38 +43,7 @@ class _SettingsPage extends State<SettingsPage>{
   late TextEditingController greetingController = TextEditingController();
 
 
-  /// Load Preferences in settings and values into parameter variables.
- /*void loadPrefs() async{
-    prefs = await SharedPreferences.getInstance();
-  }
-*/
-/*
-  Future<String> getGreeting() {
-   return Future.delayed(Duration(milliseconds: 2),(){
-     return prefs.getString('greeting') ?? '';
-   });
-  }
 
-  Future<bool> getEnabled(){
-   return Future.delayed(Duration(milliseconds: 2),(){
-     return  prefs.getBool('passwordEnabled') ?? false;
-   });
-  }
-
-  Future<String> getPassword() {
-   return Future.delayed(Duration(milliseconds: 2),(){
-     return prefs.getString('loginPassword') ?? '';
-   });
-  }
-*/
- /* void loadParameters() async{
-    greetingController.text=await getGreeting();
-    greetingValue = greetingController.text;
-    passwordController.text = await getPassword();
-    passwordValue = passwordController.text;
-    isChecked = await getEnabled();
-passwordEnabled = isChecked;
-  }*/
   @override
   void initState() {
     super.initState();
