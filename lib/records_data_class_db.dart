@@ -37,7 +37,7 @@ required this.success*/});
 
 @override
   String toString(){
-    return'Title: $title \r\nDetails: $content \r\nEmotions: $emotions';
+    return'Title: $title \r\nDetails: $content \r\nEmotions: $emotions\r\nSources: $sources';
   }
 
   Map<String, Object>toMapForDB(){

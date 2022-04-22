@@ -14,7 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class RecordsDB {
 
-static late cipher.Database _database ;
+static late cipher.Database Databases ;
 static const platform = MethodChannel('com.activitylogger.release1/ADHDJournal');
 
 
@@ -64,8 +64,8 @@ static Future<void> insertRecord(Records record) async {
 }
 
 Future<Database> get database async {
-  _database = await initializeDB();
-  return _database;
+  Databases = await initializeDB();
+  return Databases;
 }
  Future<Database> initializeDB() async{
   var ourDB = await cipher.openDatabase(join(await getDatabasesPath(), 'activitylogger_db.db'),
@@ -85,8 +85,9 @@ static Future<List<Records>> records() async{
 
   final List<Map<String, dynamic>> maps = await db.query('records');
   return List.generate(maps.length, (index) {
-    return Records(id :maps[index]['id'], title: maps[index]['title'], content: maps[index]['content'],emotions:maps[index]['emotions'], sources: maps[index]['sources'] /*rating: maps[index]['rating'],
-      tags: maps[index]['tags'], success: maps[index]['success'], sources: maps[index]['sources'], symptoms: maps[index]['symptoms'], ,*/
+    return Records(id :maps[index]['id'], title: maps[index]['title'], content: maps[index]['content'],emotions:maps[index]['emotions'],
+        sources: maps[index]['sources'] /*rating: maps[index]['rating'],
+      tags: maps[index]['tags'], success: maps[index]['success'], symptoms: maps[index]['symptoms'], ,*/
     );
   }
   );

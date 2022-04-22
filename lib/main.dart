@@ -1,25 +1,39 @@
 // ignore_for_file: prefer_const_constructors, prefer_final_fields
 
 import 'package:adhd_journal_flutter/recordsdatabase_handler.dart';
+import 'package:adhd_journal_flutter/settings.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'project_colors.dart';
 import 'project_strings_file.dart';
 import 'records_data_class_db.dart';
 import 'login_screen_file.dart';
 import 'compose_records_screen.dart';
 
-late RecordsDB recDB;
 List<Records> records = [];
+//late SharedPreferences prefs;
 int id =0;
+StartStuff stuff = StartStuff();
 void main() {
-  runApp(const MyApp());
+  stuff = StartStuff();
+  runApp(MyApp());
   WidgetsFlutterBinding.ensureInitialized();
 }
 
+
+
+class StartStuff{
+ // static late SharedPreferences _prefs;
+  void start() async{
+  prefs = await SharedPreferences.getInstance();
+  }
+}
+
+
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({Key? key, }) : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -32,17 +46,18 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/' : (context) => const LoginScreen(),
-        '/success': (context) => const MyHomePage(title: 'ADHD Journal'),
-        '/fail': (context) => const LoginScreen(),
-        
+        '/' : (context) =>  LoginScreen()
+        ,
+        '/success': (context) => MyHomePage(title: 'ADHD Journal',),
+        '/fail': (context) =>  LoginScreen(),
+
       },
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title, }) : super(key: key);
 
 
   final String title;
@@ -53,11 +68,13 @@ class MyHomePage extends StatefulWidget {
 late ListView recordViews;
 class _MyHomePageState extends State<MyHomePage> {
   late FutureBuilder testMe;
+  //late SharedPreferences prefs;
 static const platform = MethodChannel('com.activitylogger.release1/ADHDJournal');
   late Text titleHdr;
   Future<List<Records>> _recordList = RecordsDB.records();
   var _selectedIndex = 0;
   String header = "";
+
   static const TextStyle optionStyle =
   TextStyle(fontSize: 15, fontWeight: FontWeight.bold);
 
@@ -65,10 +82,10 @@ static const platform = MethodChannel('com.activitylogger.release1/ADHDJournal')
   void initState() {
     super.initState();
     try {
+      loadPrefs();
       setState(() {
         ///Load the DB into the app
         _recordList = RecordsDB.records();
-
         /// This controls the ListView widget responsible for displaying user data on screen
         testMe = FutureBuilder<List<Records>>(
             future: _recordList,
@@ -120,6 +137,10 @@ static const platform = MethodChannel('com.activitylogger.release1/ADHDJournal')
     }
   }
 
+void loadPrefs() async{
+    prefs = await SharedPreferences.getInstance();
+    greeting = prefs.getString('greeting') ?? '';
+}
 
   /// This loads the db list into the application for displaying.
   void getList() async {
@@ -143,7 +164,6 @@ static const platform = MethodChannel('com.activitylogger.release1/ADHDJournal')
   void _createRecord() {
     setState(() {
       titleHdr = Text('Record Created');
-      //id = records[records.length - 1].id + 1;
       if(records.isEmpty) {
         id =1;
       } else {
@@ -169,20 +189,40 @@ static const platform = MethodChannel('com.activitylogger.release1/ADHDJournal')
           setState(() {}));
     });
   }
+
+
+
+
   /// This compiles the screen display for the application.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.title), actions: <Widget>[
+          IconButton(icon: Icon(Icons.settings),onPressed: (){
+            Navigator.push(context,MaterialPageRoute(builder: (_)=>
+            SettingsPage())).then((value) =>
+             {
+
+               RecordsDB.db(),
+
+               _recordList= RecordsDB.records()
+             }
+            );
+            },
+          ),
+      ],
       ),
       body: Column(key: UniqueKey(),
         children: <Widget>[
           SizedBox(
             height: 20,
-          ),
-          Text(
-            'Welcome back! What would you like to record today?',
+          ),Padding(
+            padding: const EdgeInsets.only(
+                left: 15.0, right: 15.0, top: 15, bottom: 0),
+            child: Text(
+              'Welcome back $greeting! What would you like to record today?',
+            ),
           ),
           Expanded(child: testMe
           ),

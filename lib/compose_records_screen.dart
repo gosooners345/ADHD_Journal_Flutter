@@ -152,7 +152,7 @@ sourceController.text = super.widget.record.sources;
       key: _formKey,
       body: Center(
         child: ListView(padding:
-        const EdgeInsets.only(left: 80, top: 40, right: 80, bottom: 40),
+        const EdgeInsets.only(left: 8, top: 40, right: 8, bottom: 40),
           children:
           <Widget>[
             titleField,

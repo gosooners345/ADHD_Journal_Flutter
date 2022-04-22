@@ -9,9 +9,12 @@ import 'main.dart';
 
 
 
+
+String greeting = '';
+late SharedPreferences prefs;
 /// Required to open the application , simple login form to start
 class LoginScreen extends StatefulWidget{
-const LoginScreen({Key? key}) : super(key: key);
+const LoginScreen({Key? key,}) : super(key: key);
 
 @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -23,28 +26,39 @@ class _LoginScreenState extends State<LoginScreen>{
  
   late String? userPassword;
   String loginPassword = '';
+
   late SharedPreferences sharedPrefs;
   late TextEditingController stuff;
   
   @override void initState()  {
     super.initState();
+    loadStateStuff();
+
+
     stuff = TextEditingController();
-   loadStateStuff();
-
-
   }
  
  void loadStateStuff() async{
-   sharedPrefs = await SharedPreferences.getInstance();
+   prefs = await SharedPreferences.getInstance();
+sharedPrefs = prefs;
+   greeting = sharedPrefs.getString('greeting') ?? '';
    userPassword = '';
    userPassword = sharedPrefs.getString('loginPassword') ?? '1234';
    if(userPassword =='')
    {
      userPassword = '1234';
      sharedPrefs.setString('loginPassword', userPassword!);
-     sharedPrefs.commit();
+
    }
- }
+  }
+
+  Future<String> getGreeting() async{
+    await Future.delayed(Duration(seconds: 3));
+    String opener = 'Welcome ';
+    String closer = '! Sign in with your password below.';
+    greeting =sharedPrefs.getString('greeting') ?? '';
+    return opener +greeting+ closer;
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,12 +66,32 @@ class _LoginScreenState extends State<LoginScreen>{
       appBar: AppBar(
         title: Text("Login Page"),
       ),
-      body: SingleChildScrollView(
+      body:
+      SingleChildScrollView(
         child: Column(
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.only(top: 60.0),
-              child: Text('Welcome! Sign in with your password below.'),
+              child:FutureBuilder(future: getGreeting(),
+              builder: (BuildContext context, AsyncSnapshot<String> snapshot,
+              ){
+                print(snapshot.connectionState);
+                if(snapshot.hasError){
+                  return Text('Error loading greeting');
+                }
+                else if(snapshot.connectionState==ConnectionState.waiting) {
+                    return Text('Welcome! Sign in below to continue.');
+                  }
+                else if(snapshot.hasData){
+                  return Text(snapshot.data!);
+                }
+                else{
+                  return const Text("Welcome! Sign in below to continue.");
+                }
+              },
+              )
+
+              //Text('Welcome $greeting! Sign in with your password below.'),
             ),
             Padding(
               padding: const EdgeInsets.only(
@@ -104,23 +138,6 @@ class _LoginScreenState extends State<LoginScreen>{
             ),
             SizedBox(
               height: 130,
-            ),
-            Container(
-              height: 50,
-              width: 250,
-              decoration: BoxDecoration(
-                  color: Colors.blue, borderRadius: BorderRadius.circular(20)),
-              child: ElevatedButton(
-                onPressed: () {
-                sharedPrefs.setString('loginPassword', loginPassword);
-                userPassword=loginPassword;
-                
-                              },
-                child: Text(
-                  'Login',
-                  style: TextStyle(color: Colors.white, fontSize: 25),
-                ),
-              ),
             ),
           ],
         ),
