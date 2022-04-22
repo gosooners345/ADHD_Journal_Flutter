@@ -95,10 +95,10 @@ timeCreated:maps[index]['timeCreated'],timeUpdated: maps[index]['timeUpdated'],
   }
   );
 }
+
 static Future<void> updateRecords(Records record) async{
   final db = await RecordsDB.db();
           await db.update('records', record.toMapForDB(),where: 'id =?', whereArgs: [record.id]);
-  //return result;
 }
 static Future<void> deleteRecord(int id) async{
   final db = await RecordsDB.db();
