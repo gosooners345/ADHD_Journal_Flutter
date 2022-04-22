@@ -28,6 +28,10 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
   late TextEditingController contentController;
   late TextField emotionsField;
   late TextEditingController emotionsController;
+  late TextField sourcesField;
+  late TextEditingController sourceController;
+  SizedBox space = SizedBox(height: 16);
+
 
   @override
   void initState() {
@@ -36,26 +40,49 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
     titleController = TextEditingController();
     contentController = TextEditingController();
     emotionsController = TextEditingController();
+    sourceController = TextEditingController();
 
     if(super.widget.id==1)
       {
         loadRecord();
       }
     else{
-      titleField = TextField(
+      titleField = TextField( decoration: const InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'What do you want to call this?'),
         textCapitalization: TextCapitalization.words,
         controller: titleController, onChanged: (text) {
         super.widget.record.title = text;
       },);
       contentField =
-          TextField(controller: contentController, onChanged: (text) {
+          TextField(
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'What\'s on your mind? ',),
+            controller: contentController, onChanged: (text) {
             super.widget.record.content = text;
           },);
       emotionsField = TextField(
+ decoration: const InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'How do you feel today?',
+        ),
+
         controller: emotionsController,
         onChanged: (text){
           super.widget.record.emotions = text;
         },
+      );
+      sourcesField = TextField(
+        decoration: const InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'Do you have anything to add to this?',),
+
+        controller: sourceController,
+        onChanged: (text){
+          super.widget.record.sources = text;
+        },
+        textCapitalization: TextCapitalization.sentences,
       );
     }
   }
@@ -63,10 +90,9 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
 
   void saveRecord() async {
 
-    if(super.widget.record.title=='')
+    if(super.widget.id==0)
       {
-        //super.widget.record.title=titleText;
-        //super.widget.record.content = contentText;
+
         RecordsDB.insertRecord(super.widget.record);
         records.add(super.widget.record);
       }
@@ -82,22 +108,39 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
     titleController.text = super.widget.record.title;
 contentController.text=super.widget.record.content;
 emotionsController.text=super.widget.record.emotions;
+sourceController.text = super.widget.record.sources;
 
-    titleField = TextField(
+    titleField = TextField( decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+        labelText: 'What do you want to call this?'),
       textCapitalization: TextCapitalization.sentences,
       controller: titleController, onChanged: (text) {
       super.widget.record.title = text;
     },
     );
-    contentField = TextField(controller: contentController, onChanged: (text) {
+    contentField = TextField(
+      decoration: const InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'What\'s on your mind? ',),
+      textCapitalization: TextCapitalization.sentences,controller: contentController, onChanged: (text) {
       super.widget.record.content=text;
     },);
-    emotionsField = TextField(
+    emotionsField = TextField( decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+        labelText: 'How do you feel today?',
+        ),
       controller: emotionsController,
       onChanged: (text){
         super.widget.record.emotions = text;
       },
     );
+    sourcesField = TextField( decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+        labelText: 'Do you have anything to add to this?',),
+      textCapitalization: TextCapitalization.sentences,
+      controller: sourceController, onChanged: (text) {
+      super.widget.record.sources = text;
+    },    );
   }
 
   @override
@@ -109,12 +152,17 @@ emotionsController.text=super.widget.record.emotions;
       key: _formKey,
       body: Center(
         child: ListView(padding:
-        const EdgeInsets.only(left: 80, top: 40, right: 80, bottom: 40),
+        const EdgeInsets.only(left: 8, top: 40, right: 8, bottom: 40),
           children:
           <Widget>[
             titleField,
+            space,
             contentField,
+            space,
             emotionsField,
+            space,
+            sourcesField,
+            space,
             ElevatedButton(
               onPressed: () {
                 saveRecord();

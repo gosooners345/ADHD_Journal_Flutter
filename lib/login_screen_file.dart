@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'project_colors.dart';
 import 'project_strings_file.dart';
 import 'recordsdatabase_handler.dart';
@@ -8,9 +9,12 @@ import 'main.dart';
 
 
 
+
+String greeting = '';
+late SharedPreferences prefs;
 /// Required to open the application , simple login form to start
 class LoginScreen extends StatefulWidget{
-const LoginScreen({Key? key}) : super(key: key);
+const LoginScreen({Key? key,}) : super(key: key);
 
 @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -19,9 +23,42 @@ const LoginScreen({Key? key}) : super(key: key);
 
 ///Handles the states of the application.
 class _LoginScreenState extends State<LoginScreen>{
+ 
+  late String? userPassword;
+  String loginPassword = '';
+
+  late SharedPreferences sharedPrefs;
+  late TextEditingController stuff;
+  
+  @override void initState()  {
+    super.initState();
+    loadStateStuff();
 
 
+    stuff = TextEditingController();
+  }
+ 
+ void loadStateStuff() async{
+   prefs = await SharedPreferences.getInstance();
+sharedPrefs = prefs;
+   greeting = sharedPrefs.getString('greeting') ?? '';
+   userPassword = '';
+   userPassword = sharedPrefs.getString('loginPassword') ?? '1234';
+   if(userPassword =='')
+   {
+     userPassword = '1234';
+     sharedPrefs.setString('loginPassword', userPassword!);
 
+   }
+  }
+
+  Future<String> getGreeting() async{
+    await Future.delayed(Duration(seconds: 3));
+    String opener = 'Welcome ';
+    String closer = '! Sign in with your password below.';
+    greeting =sharedPrefs.getString('greeting') ?? '';
+    return opener +greeting+ closer;
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,12 +66,32 @@ class _LoginScreenState extends State<LoginScreen>{
       appBar: AppBar(
         title: Text("Login Page"),
       ),
-      body: SingleChildScrollView(
+      body:
+      SingleChildScrollView(
         child: Column(
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.only(top: 60.0),
-              child: Text('Welcome! Sign in with your password below.'),
+              child:FutureBuilder(future: getGreeting(),
+              builder: (BuildContext context, AsyncSnapshot<String> snapshot,
+              ){
+                print(snapshot.connectionState);
+                if(snapshot.hasError){
+                  return Text('Error loading greeting');
+                }
+                else if(snapshot.connectionState==ConnectionState.waiting) {
+                    return Text('Welcome! Sign in below to continue.');
+                  }
+                else if(snapshot.hasData){
+                  return Text(snapshot.data!);
+                }
+                else{
+                  return const Text("Welcome! Sign in below to continue.");
+                }
+              },
+              )
+
+              //Text('Welcome $greeting! Sign in with your password below.'),
             ),
             Padding(
               padding: const EdgeInsets.only(
@@ -42,10 +99,14 @@ class _LoginScreenState extends State<LoginScreen>{
               //padding: EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
                 obscureText: true,
+                controller: stuff,
                 decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Password',
                     hintText: 'Enter secure password'),
+                onChanged: (text){
+                  loginPassword = text;
+                },
               ),
             ),
             Padding(
@@ -61,7 +122,14 @@ class _LoginScreenState extends State<LoginScreen>{
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/success');                },
+
+
+                    if (loginPassword == userPassword) {
+                      Navigator.pushNamed(context, '/success');
+                      stuff.clear();
+                    }
+
+ },
                 child: Text(
                   'Login',
                   style: TextStyle(color: Colors.white, fontSize: 25),
@@ -71,7 +139,6 @@ class _LoginScreenState extends State<LoginScreen>{
             SizedBox(
               height: 130,
             ),
-
           ],
         ),
       ),
