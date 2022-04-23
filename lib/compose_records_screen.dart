@@ -1,9 +1,8 @@
-import 'package:flutter/foundation.dart';
 
 import 'main.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
+import 'symptom_selector_screen.dart';
 import 'records_data_class_db.dart';
 import 'recordsdatabase_handler.dart';
 
@@ -239,7 +238,21 @@ else{
             space,
             sourcesField,
             space,
-            symptomField,
+            //symptomField,
+           Card( child: ListTile(
+             title: Text('ADHD Symptoms: ${super.widget.record.symptoms}'),
+             onTap: (){
+               Navigator.push(context,MaterialPageRoute(builder: (_) =>
+               SymptomSelectorScreen(symptoms: super.widget.record.symptoms,)
+               )).then((value){
+                 print(value);
+                 setState(() {
+                   super.widget.record.symptoms = value as String;
+                 });
+
+               });
+             },),
+            ),
             space,
             tagsField,
             space,
@@ -263,8 +276,7 @@ else{
               });
             },
               title: successStateWidget,
-            )
-,
+            ),
             space,
             ElevatedButton(
               onPressed: () {
