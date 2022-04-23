@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'compose_records_screen.dart';
+
 import 'project_strings_file.dart';
 
 
@@ -10,12 +10,9 @@ String symptoms;
 
 @override
   State<SymptomSelectorScreen> createState() => _SymptomSelectorScreen();
-
-
 }
 
 class _SymptomSelectorScreen extends State<SymptomSelectorScreen>{
-//String symptoms ='';
 Set<String> symptomsChecked = <String>{};
 List<Symptoms> symptomListSelection = Symptoms.getSymptoms();
 @override
@@ -23,8 +20,13 @@ List<Symptoms> symptomListSelection = Symptoms.getSymptoms();
     super.initState();
 loadSymptoms();
   }
+
+  //Load symptoms into widget for the user to select and save to record
  void loadSymptoms(){
+// Add symptoms to list and remove empty elements from list
   symptomsChecked.addAll(super.widget.symptoms.split(','));
+  symptomsChecked.removeWhere((item) => (item.isEmpty));
+// Check to see if the symptoms in the list are in the set from the record.
   for(Symptoms element in symptomListSelection){
     if(symptomsChecked.contains(element.symptom)){
     element.isChecked = true;
@@ -34,15 +36,13 @@ loadSymptoms();
 
 
   void addItemsToSymptomList(){
+  //clear the string so it can be updated with new symptoms.
   super.widget.symptoms = '';
-  for(String element in symptomsChecked)
+ for(String element in symptomsChecked)
     {
       super.widget.symptoms+=element + ',';
     }
-
-
   }
-
 
   @override
   Widget build(BuildContext context) {

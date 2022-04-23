@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'project_colors.dart';
 import 'project_strings_file.dart';
@@ -80,13 +81,13 @@ sharedPrefs = prefs;
                   return Text('Error loading greeting');
                 }
                 else if(snapshot.connectionState==ConnectionState.waiting) {
-                    return Text('Welcome! Sign in below to continue.');
+                    return Text('Welcome! Sign in below to continue.',style: TextStyle(fontSize: 20.0));
                   }
                 else if(snapshot.hasData){
-                  return Text(snapshot.data!);
+                  return Row(children:[Expanded(child:Text(snapshot.data!,style: TextStyle(fontSize: 20.0,),textAlign: TextAlign.center,))]);
                 }
                 else{
-                  return const Text("Welcome! Sign in below to continue.");
+                  return const Text("Welcome! Sign in below to continue.",style: TextStyle(fontSize: 20.0));
                 }
               },
               )

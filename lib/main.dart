@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_final_fields
 
+import 'package:adhd_journal_flutter/record_view_card_class.dart';
 import 'package:adhd_journal_flutter/recordsdatabase_handler.dart';
 import 'package:adhd_journal_flutter/settings.dart';
 import 'package:flutter/services.dart';
@@ -69,8 +70,6 @@ class MyHomePage extends StatefulWidget {
 late ListView recordViews;
 class _MyHomePageState extends State<MyHomePage> {
   late FutureBuilder testMe;
-  //late SharedPreferences prefs;
-static const platform = MethodChannel('com.activitylogger.release1/ADHDJournal');
   late Text titleHdr;
   Future<List<Records>> _recordList = RecordsDB.records();
   var _selectedIndex = 0;
@@ -104,14 +103,16 @@ static const platform = MethodChannel('com.activitylogger.release1/ADHDJournal')
                   return ListView.builder(itemBuilder: (context, index) {
                     return GestureDetector(
                       child: Card(
-                          child: ListTile(
+                          child:
+                        ListTile(
                             onTap: () {
                               _editRecord(index);
                             },
-                            title: Text(records[index].toString(),),
+                            title: RecordCardViewWidget(record: records[index],),
                           )
                       ),
                       onHorizontalDragEnd: (_) {
+                        //Add a dialog box method to allow for challenges to deleting entries
                         setState(() {
                           final deletedRec = records[index];
                           RecordsDB.deleteRecord(deletedRec.id);
@@ -206,9 +207,7 @@ void loadPrefs() async{
             Navigator.push(context,MaterialPageRoute(builder: (_)=>
             SettingsPage())).then((value) =>
              {
-
                RecordsDB.db(),
-
                _recordList= RecordsDB.records()
              }
             );
@@ -223,9 +222,10 @@ void loadPrefs() async{
           ),Padding(
             padding: const EdgeInsets.only(
                 left: 15.0, right: 15.0, top: 15, bottom: 0),
-            child: Text(
+            child:Row(children:[Expanded(child: Text(
               'Welcome back $greeting! What would you like to record today?',
-            ),
+              style: TextStyle(fontSize: 18.0),textAlign: TextAlign.center,),),],
+             ),
           ),
           Expanded(child: testMe
           ),
@@ -254,7 +254,7 @@ void loadPrefs() async{
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
+        selectedItemColor: Colors.red,
         onTap: _onItemTapped,
       ),
 
