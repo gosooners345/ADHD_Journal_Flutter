@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_final_fields
 
+import 'package:adhd_journal_flutter/dashboard_stats_display_widget.dart';
 import 'package:adhd_journal_flutter/record_view_card_class.dart';
 import 'package:adhd_journal_flutter/recordsdatabase_handler.dart';
 import 'package:adhd_journal_flutter/settings.dart';
@@ -48,8 +49,8 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/' : (context) =>  LoginScreen()
-        ,
+        '/' : (context) =>  LoginScreen(),
+       '/dashboard': (context) => DashboardViewWidget(),
         '/success': (context) => MyHomePage(title: 'ADHD Journal',),
         '/fail': (context) =>  LoginScreen(),
 
