@@ -66,7 +66,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
 
 //Saves the record in the database
   void saveRecord() {
-    super.widget.record.timeUpdated = DateFormat('MM/dd/yyyy kk:mm').format(DateTime.now().toLocal());
+    super.widget.record.timeUpdated = DateFormat('MM/dd/yyyy hh:mm:ss:aa').format(DateTime.now().toLocal());
     if(super.widget.id==0)
       {
         RecordsDB.insertRecord(super.widget.record);

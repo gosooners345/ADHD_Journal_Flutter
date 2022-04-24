@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'records_data_class_db.dart';
 
 
@@ -42,7 +43,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget>{
           Row(children: [Expanded(child:Text('Time created: ' +
               super.widget.record.timeCreated,style: TextStyle(fontStyle: FontStyle.italic),))
           ,space2,Expanded(child:Text('Time updated: '
-          + super.widget.record.timeUpdated,style: TextStyle(fontStyle: FontStyle.italic),)),],),
+          + (super.widget.record.timeUpdated),style: TextStyle(fontStyle: FontStyle.italic),)),],),
           /*Row(children: [
           ],),*/
         ],

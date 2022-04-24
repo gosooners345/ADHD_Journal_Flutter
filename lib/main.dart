@@ -155,9 +155,9 @@ void loadPrefs() async{
   void _onItemTapped(int index) {
     setState(() {
       if (index == 0) {
-        titleHdr = Text('Home');
+       Navigator.pushNamed(context, '/success');
       } else {
-        titleHdr = Text('Dashboard');
+       Navigator.pushNamed(context, '/dashboard');
       }
     });
   }
@@ -175,7 +175,7 @@ void loadPrefs() async{
       Navigator.push(context, MaterialPageRoute(builder: (_) =>
           ComposeRecordsWidget(
               record: Records(id: id, title: '', content: '',emotions: '',sources: '',symptoms: '',tags: '',rating: 0.0,success: 'success/fail',timeCreated:
-              DateFormat('MM/dd/yyyy kk:mm').format(DateTime.now().toLocal()),timeUpdated: DateFormat('MM/dd/yyyy kk:mm').format(DateTime.now().toLocal()))
+DateFormat('MM/dd/yyyy hh:mm:ss:aa').format(DateTime.now().toLocal()) ,timeUpdated: DateFormat('MM/dd/yyyy hh:mm:ss:aa').format(DateTime.now().toLocal()))
               , id: 0)))
           .then((value) =>
           setState(() {}));
