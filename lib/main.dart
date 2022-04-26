@@ -176,7 +176,7 @@ void loadPrefs() async{
           ComposeRecordsWidget(
               record: Records(id: id, title: '', content: '',emotions: '',sources: '',symptoms: '',tags: '',rating: 0.0,success: 'success/fail',timeCreated:
 DateFormat('MM/dd/yyyy hh:mm:ss:aa').format(DateTime.now().toLocal()) ,timeUpdated: DateFormat('MM/dd/yyyy hh:mm:ss:aa').format(DateTime.now().toLocal()))
-              , id: 0)))
+              , id: 0,title: 'Compose New Record')))
           .then((value) =>
           setState(() {}));
     });
@@ -189,7 +189,7 @@ DateFormat('MM/dd/yyyy hh:mm:ss:aa').format(DateTime.now().toLocal()) ,timeUpdat
       final Records loadRecord = records[index];
       Navigator.push(context, MaterialPageRoute(builder: (_) =>
           ComposeRecordsWidget(
-              record: loadRecord, id: 1)))
+              record: loadRecord, id: 1,title: 'Edit Record',)))
           .then((loadRecord) =>
           setState(() {}));
     });

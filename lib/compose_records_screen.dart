@@ -11,9 +11,9 @@ import 'recordsdatabase_handler.dart';
 
 
 class ComposeRecordsWidget extends StatefulWidget{
-  const ComposeRecordsWidget({Key? key, required this.record,required this.id}) : super(key: key);
+  const ComposeRecordsWidget({Key? key, required this.record,required this.id,required this.title}) : super(key: key);
  final Records record;
-
+final String title;
   final int id;
 
   @override
@@ -131,7 +131,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Compose New Record'),
+        title:  Text(super.widget.title),
       ),
       key: _formKey,
       body: Center(
