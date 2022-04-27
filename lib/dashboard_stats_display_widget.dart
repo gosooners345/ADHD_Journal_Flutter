@@ -23,7 +23,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget>{
 
 
    List<charts.Series<Records, DateTime>> seriesList= _getRatingsData();
-   List<charts.Series<RecordSuccessCount,Object>> successSeries = _getSuccessData();
+   List<charts.Series<Records,DateTime>> successSeries = _getSuccessData();
 
   @override
   void initState() {
@@ -36,10 +36,15 @@ class _DashboardViewWidget extends State<DashboardViewWidget>{
 static List<charts.Series<Records,DateTime>> _getRatingsData()
    {     return [
         charts.Series(id: 'Ratings', data: records,  domainFn: (Records record,_) => DateFormat('MM/dd/yyyy hh:mm:ss:aa').parse(record.timeCreated),
-            measureFn: (Records record,_) =>record.rating)
+            measureFn: (Records record,_) =>record.rating,)
      ];
 }
-static List<charts.Series<RecordSuccessCount,Object>> _getSuccessData() {
+
+static List<charts.Series<Records,DateTime>> _getSuccessData(){
+    return[];
+}
+
+/*static List<charts.Series<RecordSuccessCount,Object>> _getSuccessData() {
   List<RecordSuccessCount> recordCounts = List.empty(growable: true);
   recordCounts.add(RecordSuccessCount('Success', 0.0));
   recordCounts.add(RecordSuccessCount('Fail', 0.0));
@@ -57,24 +62,30 @@ static List<charts.Series<RecordSuccessCount,Object>> _getSuccessData() {
       data: recordCounts,
       domainFn: (RecordSuccessCount success, _) => success.words,
       measureFn: (RecordSuccessCount counts, _) => counts.count,
+      labelAccessorFn: (RecordSuccessCount tag,_) => '${tag.words}: ${tag.count}'
     )
   ];
-}
+}*/
+
   @override
   Widget build(BuildContext context) {
- return ListView(padding: EdgeInsets.all(8.0),children: [
+ return ListView(padding: const EdgeInsets.all(8.0),children: [
    //Text('Statistics Data from your journal',textAlign: TextAlign.center, style: TextStyle(fontSize: 20.0),),
    Card(child:SizedBox(height: 300,child:charts.TimeSeriesChart(seriesList,behaviors: [
      charts.ChartTitle('Record Ratings from Journal Entries',behaviorPosition: charts.BehaviorPosition.top),
      charts.ChartTitle('Rating Values',behaviorPosition: charts.BehaviorPosition.start),
      charts.ChartTitle('Date',behaviorPosition: charts.BehaviorPosition.bottom),
    ],   ),   )   ),
-   /*Card(child: SizedBox(height:300 ,child:charts.PieChart(successSeries,animate: false,
-defaultRenderer: charts.ArcRendererConfig(
-    arcRendererDecorators:[]
+  ///This code needs to be investigated further to see why the "has size" bug keeps appearing.
+  /* Card(child: SizedBox(height:300 ,child:charts.PieChart(successSeries,animate: false,
+defaultRenderer:
+charts.ArcRendererConfig(
+    arcRendererDecorators:[
+      charts.ArcLabelDecorator(labelPosition: charts.ArcLabelPosition.outside,outsideLabelStyleSpec: const charts.TextStyleSpec(fontSize: 16),)
+    ]
 
-   ),),)
-*/
+   ),),),),*/
+
  ],) ;
   }
 }
