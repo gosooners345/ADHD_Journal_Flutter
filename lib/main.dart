@@ -51,7 +51,6 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/' : (context) =>  LoginScreen(),
-       //'/dashboard': (context) => DashboardViewWidget(),
         '/success': (context) => MyHomePage(title: 'ADHD Journal',),
         '/fail': (context) =>  LoginScreen(),
 
@@ -113,13 +112,7 @@ void loadPrefs() async{
   /// This is for the bottom navigation bar, this isn't related to the records at all.
   void _onItemTapped(int index) {
     setState(() {
-      /*if (index == 0) {
-        _selectedIndex = index;
-       //Navigator.pushNamed(context, '/success');
-      } else {
-        _selectedIndex = index;
-       //Navigator.pushNamed(context, '/dashboard');
-      }*/
+     
       _selectedIndex = index;
     });
   }
