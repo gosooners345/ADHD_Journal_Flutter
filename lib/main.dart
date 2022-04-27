@@ -131,7 +131,7 @@ void loadPrefs() async{
           ComposeRecordsWidget(
               record: Records(id: id, title: '', content: '',emotions: '',sources: '',symptoms: '',tags: '',rating: 0.0,success: 'success/fail',timeCreated:
 DateFormat('MM/dd/yyyy hh:mm:ss:aa').format(DateTime.now().toLocal()) ,timeUpdated: DateFormat('MM/dd/yyyy hh:mm:ss:aa').format(DateTime.now().toLocal()))
-              , id: 0,title: 'Compose New Record')))
+              , id: 0,title: 'Compose New Entry')))
           .then((value) =>
           setState(() {}));
     });
