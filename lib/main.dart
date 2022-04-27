@@ -5,6 +5,7 @@ import 'package:adhd_journal_flutter/record_view_card_class.dart';
 import 'package:adhd_journal_flutter/recordsdatabase_handler.dart';
 import 'package:adhd_journal_flutter/settings.dart';
 import 'package:flutter/services.dart';
+import 'record_display_widget.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -50,7 +51,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/' : (context) =>  LoginScreen(),
-       '/dashboard': (context) => DashboardViewWidget(),
+       //'/dashboard': (context) => DashboardViewWidget(),
         '/success': (context) => MyHomePage(title: 'ADHD Journal',),
         '/fail': (context) =>  LoginScreen(),
 
@@ -76,9 +77,6 @@ class _MyHomePageState extends State<MyHomePage> {
   var _selectedIndex = 0;
   String header = "";
 
-  static const TextStyle optionStyle =
-  TextStyle(fontSize: 15, fontWeight: FontWeight.bold);
-
   @override
   void initState() {
     super.initState();
@@ -87,57 +85,18 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         ///Load the DB into the app
         _recordList = RecordsDB.records();
-        /// This controls the ListView widget responsible for displaying user data on screen
-        testMe = FutureBuilder<List<Records>>(
-            future: _recordList,
-            builder: (BuildContext context,
-                AsyncSnapshot<List<Records>> snapshot,) {
-              /// If all goes well, data is displayed, if not, then the errors show up.
-              if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Error has occurred ${snapshot.error}'),
-                  );
-                }
-                else if (snapshot.hasData) {
-                  records = snapshot.data as List<Records>;
-                  return ListView.builder(itemBuilder: (context, index) {
-                    return GestureDetector(
-                      child: Card(
-                          child:
-                        ListTile(
-                            onTap: () {
-                              _editRecord(index);
-                            },
-                            title: RecordCardViewWidget(record: records[index],),
-                          )
-                      ),
-                      onHorizontalDragEnd: (_) {
-                        //Add a dialog box method to allow for challenges to deleting entries
-                        setState(() {
-                          final deletedRec = records[index];
-                          RecordsDB.deleteRecord(deletedRec.id);
-                          records.removeAt(index);
-                        });
-                      },
-                    );
-                  },
-                    itemCount: records.length,
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                  );
-                }
-              }
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-        );
       }
       );
     } catch (e, s) {
       print(s);
     }
+  }
+
+
+  List<Widget> screens(){
+  return [
+    RecordDisplayWidget(),DashboardViewWidget()
+  ];
   }
 
 void loadPrefs() async{
@@ -154,11 +113,14 @@ void loadPrefs() async{
   /// This is for the bottom navigation bar, this isn't related to the records at all.
   void _onItemTapped(int index) {
     setState(() {
-      if (index == 0) {
-       Navigator.pushNamed(context, '/success');
+      /*if (index == 0) {
+        _selectedIndex = index;
+       //Navigator.pushNamed(context, '/success');
       } else {
-       Navigator.pushNamed(context, '/dashboard');
-      }
+        _selectedIndex = index;
+       //Navigator.pushNamed(context, '/dashboard');
+      }*/
+      _selectedIndex = index;
     });
   }
 
@@ -184,18 +146,20 @@ DateFormat('MM/dd/yyyy hh:mm:ss:aa').format(DateTime.now().toLocal()) ,timeUpdat
 
   /// This method allows users to access an existing record to edit. The future implementations will prevent timestamps from being edited
   /// Checked and Passed : true
-  void _editRecord(int index) {
-    setState(() {
-      final Records loadRecord = records[index];
-      Navigator.push(context, MaterialPageRoute(builder: (_) =>
-          ComposeRecordsWidget(
-              record: loadRecord, id: 1,title: 'Edit Record',)))
-          .then((loadRecord) =>
-          setState(() {}));
-    });
+
+
+// This is where the Buttons associated with the bottom navigation bar will be located.
+  var dashboardButtonItem = BottomNavigationBarItem(
+      label: 'Dashboard',
+  icon: Icon(Icons.dashboard)
+      );
+  var homeButtonItem = BottomNavigationBarItem(icon: Icon(Icons.home),
+  label: 'Home');
+
+  BottomNavigationBar bottomBar(){
+    List<BottomNavigationBarItem> navBar = [homeButtonItem,dashboardButtonItem];
+    return BottomNavigationBar(items: navBar,onTap: _onItemTapped,currentIndex: _selectedIndex,);
   }
-
-
 
 
   /// This compiles the screen display for the application.
@@ -210,28 +174,8 @@ DateFormat('MM/dd/yyyy hh:mm:ss:aa').format(DateTime.now().toLocal()) ,timeUpdat
              {
                RecordsDB.db(),
                _recordList= RecordsDB.records()
-             }
-            );
-            },
-          ),
-      ],
-      ),
-      body: Column(key: UniqueKey(),
-        children: <Widget>[
-          SizedBox(
-            height: 20,
-          ),Padding(
-            padding: const EdgeInsets.only(
-                left: 15.0, right: 15.0, top: 15, bottom: 0),
-            child:Row(children:[Expanded(child: Text(
-              'Welcome back $greeting! What would you like to record today?',
-              style: TextStyle(fontSize: 18.0),textAlign: TextAlign.center,),),],
-             ),
-          ),
-          Expanded(child: testMe
-          ),
-        ],
-      ),
+             });},),],),
+      body: Center(child: screens().elementAt(_selectedIndex)),
       floatingActionButton: FloatingActionButton.extended(
         label: Text('Record'), icon: Icon(Icons.edit),
         onPressed: () {
@@ -241,23 +185,7 @@ DateFormat('MM/dd/yyyy hh:mm:ss:aa').format(DateTime.now().toLocal()) ,timeUpdat
           );
         },
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-            backgroundColor: Colors.red,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
-            backgroundColor: Colors.pink,
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.red,
-        onTap: _onItemTapped,
-      ),
+      bottomNavigationBar: bottomBar(),
 
     );
   }
