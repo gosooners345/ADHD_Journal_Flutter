@@ -1,16 +1,9 @@
 # adhd_journal_flutter
 
-ADHD Journal app for iOS and Android
+ADHD Journal app for iOS 
 
-## Getting Started
+This application is a port of the ADHD Journal Android App. It is developed using Flutter and Swift.
 
-This project is a starting point for a Flutter application.
+Purpose:
+The application is designed to help people with ADHD journal things that take place in their lives that are being affected by their symptoms. This is useful for symptom management, jotting down important things, counseling, and more. I designed it because I myself have ADHD and needed an easier way to journal things going on in my life so I could see where things were headed for me in terms of treating my own ADHD. 
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
