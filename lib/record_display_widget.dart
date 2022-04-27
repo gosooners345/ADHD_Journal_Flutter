@@ -108,28 +108,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget>{
   }
 
 
-  /// This is for the bottom navigation bar, this isn't related to the records at all.
-
-
-  /// Allows users to create entries for the db and journal. Once submitted, the screen will update on demand.
-  /// Checked and passed : true
-  /*void _createRecord() {
-    setState(() {
-      titleHdr = Text('Record Created');
-      if(records.isEmpty) {
-        id =1;
-      } else {
-        id = records[records.length - 1].id + 1;
-      }
-      Navigator.push(context, MaterialPageRoute(builder: (_) =>
-          ComposeRecordsWidget(
-              record: Records(id: id, title: '', content: '',emotions: '',sources: '',symptoms: '',tags: '',rating: 0.0,success: 'success/fail',timeCreated:
-              DateFormat('MM/dd/yyyy hh:mm:ss:aa').format(DateTime.now().toLocal()) ,timeUpdated: DateFormat('MM/dd/yyyy hh:mm:ss:aa').format(DateTime.now().toLocal()))
-              , id: 0,title: 'Compose New Record')))
-          .then((value) =>
-          setState(() {}));
-    });
-  }*/
+ 
 
   /// This method allows users to access an existing record to edit. The future implementations will prevent timestamps from being edited
   /// Checked and Passed : true
@@ -138,7 +117,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget>{
       final Records loadRecord = records[index];
       Navigator.push(context, MaterialPageRoute(builder: (_) =>
           ComposeRecordsWidget(
-            record: loadRecord, id: 1,title: 'Edit Record',)))
+            record: loadRecord, id: 1,title: 'Edit Entry',)))
           .then((loadRecord) =>
           setState(() {}));
     });
@@ -162,68 +141,9 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget>{
             style: TextStyle(fontSize: 18.0),textAlign: TextAlign.center,),),],
           ),
         ),
-        Expanded(child: testMe
-        ),
+        Expanded(child: testMe),
       ],
     );
-    /*return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title), actions: <Widget>[
-        IconButton(icon: Icon(Icons.settings),onPressed: (){
-          Navigator.push(context,MaterialPageRoute(builder: (_)=>
-              SettingsPage())).then((value) =>
-          {
-            RecordsDB.db(),
-            _recordList= RecordsDB.records()
-          }
-          );
-        },
-        ),
-      ],
-      ),
-      body: Column(key: UniqueKey(),
-        children: <Widget>[
-          SizedBox(
-            height: 20,
-          ),Padding(
-            padding: const EdgeInsets.only(
-                left: 15.0, right: 15.0, top: 15, bottom: 0),
-            child:Row(children:[Expanded(child: Text(
-              'Welcome back $greeting! What would you like to record today?',
-              style: TextStyle(fontSize: 18.0),textAlign: TextAlign.center,),),],
-            ),
-          ),
-          Expanded(child: testMe
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        label: Text('Record'), icon: Icon(Icons.edit),
-        onPressed: () {
-          setState(() {
-            _createRecord();
-          }
-          );
-        },
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-            backgroundColor: Colors.red,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
-            backgroundColor: Colors.pink,
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.red,
-        onTap: _onItemTapped,
-      ),
-
-    );*/
+   
   }
 }
