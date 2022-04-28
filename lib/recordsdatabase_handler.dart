@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io' as locker;
 import 'package:adhd_journal_flutter/records_data_class_db.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart' as cipher;
@@ -53,9 +54,8 @@ static Future<void> _changeDBPasswords()async {
   try{
     await platform.invokeMethod('changeDBPasswords');
 
- //   final int results = await platform.invokeMethod('changeDBPasswords');
   }on Exception catch(ex){
-    print(ex);
+      print(ex);
   }
 }
 
