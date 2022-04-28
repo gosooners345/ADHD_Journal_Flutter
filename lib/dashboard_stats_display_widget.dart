@@ -1,13 +1,7 @@
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'main.dart';
 import 'records_data_class_db.dart';
-import 'recordsdatabase_handler.dart';
-import 'compose_records_screen.dart';
-//import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 
