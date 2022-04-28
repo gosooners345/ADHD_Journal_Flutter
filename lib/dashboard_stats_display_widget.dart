@@ -16,16 +16,22 @@ class DashboardViewWidget extends StatefulWidget{
 
 class _DashboardViewWidget extends State<DashboardViewWidget>{
 
+
   @override
   void initState() {
     super.initState();
   }
-/// This is for the graphs
+
+
+
+  /// This is for the graphs
   static List<RecordDataStats> _recordRatingsData() {
     List<RecordDataStats> ratingsData = [];
     for (Records record in records) {
       ratingsData.add(RecordDataStats(record.timeCreated, record.rating));
     }
+    // The following is for later if needed
+    //DateFormat('MM/dd/yyyy hh:mm:ss:aa').parse(record.timeCreated)
     return ratingsData;
   }
   static List<RecordDataStats> _recordSuccessData(){
@@ -40,12 +46,13 @@ class _DashboardViewWidget extends State<DashboardViewWidget>{
         successData[1].value++;
       }
     }
+
+  // measurePercentages(successData[0].value, successData[1].value);
+
     return successData;
-
-
   }
-static List<RecordDataStats> _recordEmotionData(){
-    List<RecordDataStats> emotionData=[];
+static List<RecordDataStatsInt> _recordEmotionData(){
+    List<RecordDataStatsInt> emotionData=[];
     List<String> emotionCounts=[];
     for(Records record in records){
       var words = record.emotions.split(',');
@@ -54,7 +61,7 @@ static List<RecordDataStats> _recordEmotionData(){
       }
       for(String word in emotionCounts)
         {
-          RecordDataStats store = RecordDataStats(word, countWordsList(emotionCounts, word) );
+          RecordDataStatsInt store = RecordDataStatsInt(word, countWordsList(emotionCounts, word).toInt() );
           if(!emotionData.contains(store))
             {
               emotionData.add(store);
@@ -63,54 +70,88 @@ static List<RecordDataStats> _recordEmotionData(){
         }
     }
 emotionData.sort((a,b)=> a.compareTo(b));
+    emotionData= emotionData.reversed.toList();
     return emotionData;
 }
-static List<RecordDataStats> _recordSymptomData(){
-  List<RecordDataStats> symptomData=[];
+static List<RecordDataStatsInt> _recordSymptomData(){
+  List<RecordDataStatsInt> symptomData=[];
   List<String> symptomCounts=[];
   for(Records record in records){
     var words = record.symptoms.split(',');
     for(String symptom in words){
       symptomCounts.add(symptom);
     }
-    for(String word in symptomCounts)
-    {
-      RecordDataStats store = RecordDataStats(word, countWordsList(symptomCounts, word) );
-      if(!symptomData.contains(store))
-      {
+    for(String word in symptomCounts){
+      RecordDataStatsInt store = RecordDataStatsInt(word, countWordsList(symptomCounts, word).toInt());
+      if(!symptomData.contains(store)){
         symptomData.add(store);
       }
-
     }
   }
   symptomData.sort((a,b)=> a.compareTo(b));
+  symptomData=symptomData.reversed.toList();
   return symptomData;
 }
 
 //Method for collecting counts of Words in a list
-
  static double countWordsList(List<String> list, String element){
-    if(list.isEmpty || list == null){
+    if(list.isEmpty){
       return 0;
     }
     var wordCount = list.where((word) => word ==element);
     return wordCount.length.toDouble();
   }
 
+  static String summaryGen(){
+    String summaryString ='';
+    String successString ='';
+    double avgRating = 0.0;
+    // For the ratings
+    List<double> sum = _recordRatingsData().map((e) => e.value).toList();
+    double totalRtg = 0.0;
+    for(double rating in sum){
+      totalRtg +=rating;
+    }
+    avgRating = (totalRtg/records.length.toDouble());
+    // For the success/fail section
+    if(_recordSuccessData()[0].value > _recordSuccessData()[1].value){
+      successString = "Success";
+    }
+    else{
+      successString = "Fail";
+    }
+
+    //For the symptom and emotion section
+
+    summaryString = "You have ${records.length} entries in your journal.\r\n"
+        "Your average rating is $avgRating.\r\n"
+        "You're trending more  on $successString based on your Success/Fail ratings.\r\n"
+        "Your most recently occurring symptoms are: ${records.last.symptoms}.";
+
+    return  summaryString;
+  }
 
   @override
   Widget build(BuildContext context) {
 
  return ListView(padding: const EdgeInsets.all(8.0),children: [
-Card(child: SizedBox(child:SfCartesianChart(primaryXAxis: CategoryAxis(),primaryYAxis: NumericAxis(),
+   Card(child:SizedBox(
+     child: Text('Here\'s a summary of your statistics:\r\n ${summaryGen()}',style: TextStyle(fontSize:16.0,fontStyle: FontStyle.italic)),),),
+   //Ratings Chart
+Card(elevation: 2.0,child: SizedBox(child:SfCartesianChart(
+  zoomPanBehavior: ZoomPanBehavior(enablePinching: true,enableDoubleTapZooming: false,
+enablePanning: true,zoomMode: ZoomMode.xy),borderWidth: 2.0,
+  primaryXAxis: CategoryAxis(),primaryYAxis: NumericAxis(),
 series: <LineSeries<RecordDataStats,String>>[LineSeries(dataSource: _recordRatingsData(),
     xValueMapper: (RecordDataStats recLbl,_)=>recLbl.key,
+    color: Colors.red,
     yValueMapper: (RecordDataStats recLbl, _)=> recLbl.value,
 dataLabelSettings: const DataLabelSettings(isVisible: true),
 xAxisName: 'Entry Timestamps',yAxisName: 'Ratings',),],
-  title: ChartTitle(text: 'Record ratings data from journal entries'),
+  title: ChartTitle(text: 'Ratings data from journal entries'),
 ) ,height: 300,),),
-   Card(child: SizedBox(child:SfCircularChart(title: ChartTitle(text:'Success/Fail stats from Journal Entries'),
+   // Success/Fail Chart
+   Card(elevation: 2.0,child: SizedBox(child:SfCircularChart(title: ChartTitle(text:'Success/Fail Data from Journal Entries'),
      legend: Legend(isVisible: true),
      series: <PieSeries<RecordDataStats,String>>[
        PieSeries<RecordDataStats,String>(
@@ -119,32 +160,37 @@ xAxisName: 'Entry Timestamps',yAxisName: 'Ratings',),],
     dataSource: _recordSuccessData(),
            xValueMapper: (RecordDataStats recs,_) => recs.key,
            yValueMapper: (RecordDataStats recs,_) => recs.value,
-           dataLabelMapper: (RecordDataStats recs,_) => "${recs.key}: ${recs.value.toInt()}",
+           dataLabelMapper: (RecordDataStats recs,_)=> "${recs.key}: ${(recs.value/records.length.toDouble()) * 100.0 } % ",
            dataLabelSettings: const DataLabelSettings(isVisible: true),
     ),
     ],
     ),
      height: 300,),),
-   //Placeholder code for the rest of the charts. Emotions, Symptoms,
-   // and a summary.
-   Card(child: SizedBox(child: SfCartesianChart(primaryXAxis: CategoryAxis(),primaryYAxis: NumericAxis(),
-   series: <BarSeries<RecordDataStats, String>>[
-     BarSeries(dataSource: _recordEmotionData(),
-         xValueMapper: (RecordDataStats rec,_) => rec.key,
-         yValueMapper: (RecordDataStats rec,_) => rec.value,
+//Emotions Chart
+   Card(elevation: 2.0,child: SizedBox(child: SfCartesianChart(
+     zoomPanBehavior: ZoomPanBehavior(enablePinching: true,enableDoubleTapZooming: false,
+         enablePanning: true,zoomMode: ZoomMode.xy),borderWidth: 2.0,
+     primaryXAxis: CategoryAxis(),primaryYAxis: NumericAxis(),
+   series: <ColumnSeries<RecordDataStatsInt, String>>[
+     ColumnSeries(dataSource: _recordEmotionData(),
+         xValueMapper: (RecordDataStatsInt rec,_) => rec.key,
+         yValueMapper: (RecordDataStatsInt rec,_) => rec.value,
     name: 'Emotion Data from Journal Entries',
     color: Colors.red,
     xAxisName: 'Emotions',
     yAxisName: 'Counts',),],
      title: ChartTitle(text: 'Emotion Data from Journal Entries'),),
      height: 300,),),
-   Card(child: SizedBox(child: SfCartesianChart(
+   //Symptoms Chart
+   Card(elevation:2.0,child: SizedBox(child: SfCartesianChart(
+     zoomPanBehavior: ZoomPanBehavior(enablePinching: true,enableDoubleTapZooming: false,
+         enablePanning: true,zoomMode: ZoomMode.xy),borderWidth: 2.0,
      primaryXAxis: CategoryAxis(),
      primaryYAxis: NumericAxis(),
-    series:<BarSeries<RecordDataStats,String>>[
+    series:<BarSeries<RecordDataStatsInt,String>>[
     BarSeries(dataSource: _recordSymptomData(),
-    xValueMapper: (RecordDataStats rec,_) => rec.key,
-    yValueMapper: (RecordDataStats rec,_) => rec.value,
+    xValueMapper: (RecordDataStatsInt rec,_) => rec.key,
+    yValueMapper: (RecordDataStatsInt rec,_) => rec.value,
     name: 'Symptom Data from Journal Entries',
     color: Colors.red,
     xAxisName: 'Symptoms',
@@ -167,7 +213,24 @@ class RecordDataStats {
  /// This forces the list to organize itself based on count values
   int compareTo(RecordDataStats entryData) {
     if (value.compareTo(entryData.value) == 0) {
-      return key.compareTo(entryData.key);
+      return key.toUpperCase().compareTo(entryData.key.toUpperCase());
+    }
+    else {
+      return value.compareTo(entryData.value);
+    }
+  }
+
+}
+class RecordDataStatsInt {
+  String key = '';
+  int value = 0;
+
+  RecordDataStatsInt(this.key, this.value);
+
+  /// This forces the list to organize itself based on count values
+  int compareTo(RecordDataStatsInt entryData) {
+    if (value.compareTo(entryData.value) == 0) {
+      return key.toUpperCase().compareTo(entryData.key.toUpperCase());
     }
     else {
       return value.compareTo(entryData.value);

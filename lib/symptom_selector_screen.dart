@@ -38,10 +38,14 @@ loadSymptoms();
   void addItemsToSymptomList(){
   //clear the string so it can be updated with new symptoms.
   super.widget.symptoms = '';
+  String unfilteredString ='';
  for(String element in symptomsChecked)
     {
-      super.widget.symptoms+=element + ',';
+      unfilteredString+=element + ',';
     }
+ var indexComma = unfilteredString.lastIndexOf(',');
+var filteredString = unfilteredString.replaceRange(indexComma, indexComma+1, '');
+super.widget.symptoms = filteredString;
   }
 
   @override
@@ -63,8 +67,6 @@ setState(() {
   else{
     symptomsChecked.remove(symptomListSelection[index].symptom);
   }
-  print(symptomsChecked);
-  print(symptomListSelection);
 });
 },
       title: Text(symptomListSelection[index].symptom)),

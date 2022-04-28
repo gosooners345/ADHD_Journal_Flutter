@@ -85,7 +85,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget>{
                   );
                 }
               }
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(),
               );
             }
