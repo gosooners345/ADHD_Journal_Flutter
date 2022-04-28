@@ -44,13 +44,65 @@ class _DashboardViewWidget extends State<DashboardViewWidget>{
 
 
   }
+static List<RecordDataStats> _recordEmotionData(){
+    List<RecordDataStats> emotionData=[];
+    List<String> emotionCounts=[];
+    for(Records record in records){
+      var words = record.emotions.split(',');
+      for(String emotion in words){
+        emotionCounts.add(emotion);
+      }
+      for(String word in emotionCounts)
+        {
+          RecordDataStats store = RecordDataStats(word, countWordsList(emotionCounts, word) );
+          if(!emotionData.contains(store))
+            {
+              emotionData.add(store);
+            }
+
+        }
+    }
+emotionData.sort((a,b)=> a.compareTo(b));
+    return emotionData;
+}
+static List<RecordDataStats> _recordSymptomData(){
+  List<RecordDataStats> symptomData=[];
+  List<String> symptomCounts=[];
+  for(Records record in records){
+    var words = record.symptoms.split(',');
+    for(String symptom in words){
+      symptomCounts.add(symptom);
+    }
+    for(String word in symptomCounts)
+    {
+      RecordDataStats store = RecordDataStats(word, countWordsList(symptomCounts, word) );
+      if(!symptomData.contains(store))
+      {
+        symptomData.add(store);
+      }
+
+    }
+  }
+  symptomData.sort((a,b)=> a.compareTo(b));
+  return symptomData;
+}
+
+//Method for collecting counts of Words in a list
+
+ static double countWordsList(List<String> list, String element){
+    if(list.isEmpty || list == null){
+      return 0;
+    }
+    var wordCount = list.where((word) => word ==element);
+    return wordCount.length.toDouble();
+  }
 
 
   @override
   Widget build(BuildContext context) {
 
  return ListView(padding: const EdgeInsets.all(8.0),children: [
-Card(child: SizedBox(child:SfCartesianChart(primaryXAxis: CategoryAxis(),
+Card(child: SizedBox(child:SfCartesianChart(primaryXAxis: CategoryAxis(),primaryYAxis: NumericAxis(),
 series: <LineSeries<RecordDataStats,String>>[LineSeries(dataSource: _recordRatingsData(),
     xValueMapper: (RecordDataStats recLbl,_)=>recLbl.key,
     yValueMapper: (RecordDataStats recLbl, _)=> recLbl.value,
@@ -75,17 +127,51 @@ xAxisName: 'Entry Timestamps',yAxisName: 'Ratings',),],
      height: 300,),),
    //Placeholder code for the rest of the charts. Emotions, Symptoms,
    // and a summary.
-   /*Card(child: SizedBox(child: SfCartesianChart(),height: 300,),),
-   Card(child: SizedBox(child: SfCartesianChart(),height: 300,),),
-   Card(child: SizedBox(child: SfCartesianChart(),height: 300,),),
-*/
+   Card(child: SizedBox(child: SfCartesianChart(primaryXAxis: CategoryAxis(),primaryYAxis: NumericAxis(),
+   series: <BarSeries<RecordDataStats, String>>[
+     BarSeries(dataSource: _recordEmotionData(),
+         xValueMapper: (RecordDataStats rec,_) => rec.key,
+         yValueMapper: (RecordDataStats rec,_) => rec.value,
+    name: 'Emotion Data from Journal Entries',
+    color: Colors.red,
+    xAxisName: 'Emotions',
+    yAxisName: 'Counts',),],
+     title: ChartTitle(text: 'Emotion Data from Journal Entries'),),
+     height: 300,),),
+   Card(child: SizedBox(child: SfCartesianChart(
+     primaryXAxis: CategoryAxis(),
+     primaryYAxis: NumericAxis(),
+    series:<BarSeries<RecordDataStats,String>>[
+    BarSeries(dataSource: _recordSymptomData(),
+    xValueMapper: (RecordDataStats rec,_) => rec.key,
+    yValueMapper: (RecordDataStats rec,_) => rec.value,
+    name: 'Symptom Data from Journal Entries',
+    color: Colors.red,
+    xAxisName: 'Symptoms',
+    yAxisName: 'Counts',),],
+    title: ChartTitle(text: 'Symptom Data from Journal Entries'),),
+   height: 300,),),
+
+
  ],
  );
   }
 }
 // This allows for us to put the categories into their own lists so its easy to track and implement
-class RecordDataStats{
-  String key ='';
+class RecordDataStats {
+  String key = '';
   double value = 0.0;
-  RecordDataStats(this.key,this.value);
+
+  RecordDataStats(this.key, this.value);
+
+ /// This forces the list to organize itself based on count values
+  int compareTo(RecordDataStats entryData) {
+    if (value.compareTo(entryData.value) == 0) {
+      return key.compareTo(entryData.key);
+    }
+    else {
+      return value.compareTo(entryData.value);
+    }
+  }
+
 }
