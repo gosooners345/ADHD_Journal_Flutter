@@ -159,13 +159,18 @@ DateFormat('MM/dd/yyyy hh:mm:ss:aa').format(DateTime.now().toLocal()) ,timeUpdat
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title), actions: <Widget>[
+        title: Text(widget.title), leading:  IconButton(onPressed: (){
+        Navigator.pop(context);
+        },
+          icon: Icon(Icons.arrow_back)),
+        actions: <Widget>[
           IconButton(icon: Icon(Icons.settings),onPressed: (){
             Navigator.push(context,MaterialPageRoute(builder: (_)=>
             SettingsPage())).then((value) =>
              {
                RecordsDB.db(),
-               _recordList= RecordsDB.records()
+               _recordList= RecordsDB.records(),
+               prefs.reload()
              });},),],),
       body: Center(child: screens().elementAt(_selectedIndex)),
       floatingActionButton: FloatingActionButton.extended(

@@ -50,7 +50,7 @@ class _SettingsPage extends State<SettingsPage>{
 // Parameter Value setting
     greetingValue = prefs.getString('greeting') ?? '';
     passwordValue = prefs.getString('loginPassword') ?? '';
-    isChecked = prefs.getBool('passwordEnabled')?? false;
+    isChecked = prefs.getBool('passwordEnabled')?? true;
 
     setState(() {
       greetingController = TextEditingController(text : greetingValue);
@@ -80,12 +80,29 @@ class _SettingsPage extends State<SettingsPage>{
     prefs.setString(key, value);
   }
 
+  void saveSettings2(bool value, String key) async{
+    prefs.setBool(key, value);
+    prefs.commit();
+  }
+
   /// The display for the screen
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(title: const Text('Settings'),
+      leading: IconButton(onPressed: (){
+        prefs.setBool('passwordEnabled', isChecked);
+        saveSettings(passwordValue, 'loginPassword');
+        saveSettings(greetingValue, 'greeting');
+        setState(() {
+          greeting = greetingValue;
+        });
+        prefs.reload();
+        Navigator.pop(context);
+      },
+          icon: Icon(Icons.arrow_back)),
+      ),
       extendBody: true,
       body: SingleChildScrollView(
         child: Column(
@@ -120,10 +137,14 @@ class _SettingsPage extends State<SettingsPage>{
           if (value) {
             lockIcon = Icon(Icons.lock);
             passwordLabelText = "Password Enabled";
+            prefs.setBool('passwordEnabled', value);
+
           }
           else if (!value) {
             lockIcon = Icon(Icons.lock_open);
             passwordLabelText = "Password Disabled";
+            prefs.setBool('passwordEnabled', value);
+
           }
       passwordLabelWidget = Text(passwordLabelText);
         });
@@ -152,10 +173,15 @@ class _SettingsPage extends State<SettingsPage>{
             ),
             spacer,
             ElevatedButton(onPressed: () {
-              prefs.setBool('passwordEnabled', passwordEnabled);
-              saveSettings(passwordValue, 'loginPassword');
-              saveSettings(greetingValue, 'greeting');
-              greeting = greetingValue;
+              setState(() {
+                prefs.setBool('passwordEnabled', isChecked);
+                saveSettings(passwordValue, 'loginPassword');
+                saveSettings(greetingValue, 'greeting');
+                greeting = greetingValue;
+           prefs.reload();
+          Navigator.pop(context);
+              });
+
             }, child: const Text('Save Changes')),
           ],
         ),

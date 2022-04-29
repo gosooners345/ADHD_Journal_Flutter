@@ -14,6 +14,7 @@ import 'main.dart';
 String greeting = '';
 TextField loginField = TextField();
 late SharedPreferences prefs;
+
 /// Required to open the application , simple login form to start
 class LoginScreen extends StatefulWidget{
 const LoginScreen({Key? key,}) : super(key: key);
@@ -28,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   late String? userPassword;
   String loginPassword = '';
-
+bool passwordEnabled = true;
   late SharedPreferences sharedPrefs;
   late TextEditingController stuff;
 
@@ -46,6 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
     greeting = sharedPrefs.getString('greeting') ?? '';
     userPassword = '';
     userPassword = sharedPrefs.getString('loginPassword') ?? '1234';
+    passwordEnabled = sharedPrefs.getBool('passwordEnabled') ?? true;
     if (userPassword == '') {
       userPassword = '1234';
       sharedPrefs.setString('loginPassword', userPassword!);
@@ -117,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           'Error returning password enabled information');
                     }
                     else if (snapshot.hasData) {
-                      var passwordEnabled =prefs.getBool('passwordEnabled') ?? true;
+                      //var passwordEnabled =prefs.getBool('passwordEnabled') ?? true;
                       if (passwordEnabled) {
                         return TextField(
                           obscureText: true,
@@ -179,17 +181,19 @@ class _LoginScreenState extends State<LoginScreen> {
                     else if (snapshot.hasData) {
                       return ElevatedButton(
                         onPressed: () {
-                          if (sharedPrefs.getBool('passwordEnabled') == false) {
-                            print('Password Disabled');
-                            print('navigating to the home screen');
+                          prefs.reload();
+userPassword = prefs.getString('loginPassword');
+                          if (loginPassword == userPassword && passwordEnabled) {
+                         setState(() {
+                           stuff.clear();
+                         });
                             Navigator.pushNamed(context, '/success');
                           }
-                          else if (loginPassword == userPassword) {
-                            print('Password Enabled');
-                            print('navigating to the home screen');
+                          else if(!passwordEnabled)
+                          {
                             Navigator.pushNamed(context, '/success');
-                            stuff.clear();
                           }
+
                         },
                         child: Text('Login', style: TextStyle(color: Colors
                             .white, fontSize: 25),),);
