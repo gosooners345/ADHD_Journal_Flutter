@@ -44,20 +44,15 @@ let dbName = "activitylogger_db.db"
 var path = NSSearchPathForDirectoriesInDomains(.documentDirectory,.userDomainMask,true).first!
 do{
 let dbPath = try!  Connection("\(path)/\(dbName)")
-   // catch (exception){print(exception)}
     let dbPasswordString : String = "\(String(describing: oldDBPassword))"
-    let sewDBPassString : String = "\(String(describing: newDBPassword))"
+    let newDBPassString : String = "\(String(describing: newDBPassword))"
     try dbPath.key( "\(dbPasswordString)")
-    try dbPath.rekey("\(sewDBPassString)")
-print(dbPasswordString)
-print(sewDBPassString)
-
+    try dbPath.rekey("\(newDBPassString)")
 }
 catch {
 print(error)
 }
-//changeDBPassword()
-//encryptDB()
+
 
 }
 

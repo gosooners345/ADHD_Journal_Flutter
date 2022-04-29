@@ -117,7 +117,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           'Error returning password enabled information');
                     }
                     else if (snapshot.hasData) {
-                      if (prefs.getBool('passwordEnabled')==true) {
+                      var passwordEnabled =prefs.getBool('passwordEnabled') ?? true;
+                      if (passwordEnabled) {
                         return TextField(
                           obscureText: true,
                           controller: stuff,
