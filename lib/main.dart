@@ -26,7 +26,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 }
 
-
+String startRoute ='';
 
 class StartStuff{
  // static late SharedPreferences _prefs;
@@ -45,7 +45,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'ADHD Journal',
       theme: ThemeData(
-
         primarySwatch: Colors.red,
       ),
       initialRoute: '/',
