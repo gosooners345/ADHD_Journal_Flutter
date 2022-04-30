@@ -43,6 +43,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      debugShowMaterialGrid: false,
       title: 'ADHD Journal',
       theme: ThemeData(
         primarySwatch: Colors.red,
@@ -50,7 +52,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/' : (context) =>  LoginScreen(),
-        '/success': (context) => MyHomePage(title: 'ADHD Journal',),
+        '/success': (context) => ADHDJournalApp(title: 'ADHD Journal',),
         '/fail': (context) =>  LoginScreen(),
 
       },
@@ -58,17 +60,17 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title, }) : super(key: key);
+class ADHDJournalApp extends StatefulWidget {
+  const ADHDJournalApp({Key? key, required this.title, }) : super(key: key);
 
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<ADHDJournalApp> createState() => _ADHDJournalAppHPState();
 }
 late ListView recordViews;
-class _MyHomePageState extends State<MyHomePage> {
+class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
   late FutureBuilder testMe;
   late Text titleHdr;
   Future<List<Records>> _recordList = RecordsDB.records();

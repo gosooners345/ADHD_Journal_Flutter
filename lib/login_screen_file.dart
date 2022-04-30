@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'project_colors.dart';
 import 'project_strings_file.dart';
@@ -29,22 +30,30 @@ class _LoginScreenState extends State<LoginScreen> {
 
   late String? userPassword;
   String loginPassword = '';
+  String loginGreeting = '';
 bool passwordEnabled = true;
   late SharedPreferences sharedPrefs;
   late TextEditingController stuff;
+  late Widget loginField;
+  late Widget greetingField;
 
   @override void initState() {
     super.initState();
     loadStateStuff();
+    setState(() {
+      stuff = TextEditingController();
 
+   resetLoginFieldState();
+    });
 
-    stuff = TextEditingController();
   }
 
   void loadStateStuff() async {
     prefs = await SharedPreferences.getInstance();
     sharedPrefs = prefs;
-    greeting = sharedPrefs.getString('greeting') ?? '';
+    greeting =sharedPrefs.getString("greeting")??'';
+    loginGreeting = "Welcome $greeting !"
+        " Please sign in below to get started!";
     userPassword = '';
     userPassword = sharedPrefs.getString('loginPassword') ?? '1234';
     passwordEnabled = sharedPrefs.getBool('passwordEnabled') ?? true;
@@ -52,10 +61,17 @@ bool passwordEnabled = true;
       userPassword = '1234';
       sharedPrefs.setString('loginPassword', userPassword!);
     }
+setState(() {
+  resetLoginFieldState();
+
+
+});
+
+
   }
 
   Future<String> getGreeting() async {
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(Duration(seconds: 1));
     String opener = 'Welcome ';
     String closer = '! Sign in with your password below.';
     greeting = sharedPrefs.getString('greeting') ?? '';
@@ -63,8 +79,57 @@ bool passwordEnabled = true;
   }
 
   Future<bool> getPassword() async {
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 1));
     return sharedPrefs.getBool('passwordEnabled') ?? true;
+  }
+
+  void refreshPrefs() async{
+    prefs.reload();
+    passwordEnabled = prefs.getBool('passwordEnabled')?? true;
+    //getGreeting().whenComplete(() => (value){greeting = "Welcome "+value.toString()+"! Please sign in below to get started!" ;});
+    greeting =sharedPrefs.getString("greeting")??'';
+    loginGreeting="Welcome $greeting! Please sign in below to get started!";
+    userPassword = prefs.getString('loginPassword');
+
+  }
+
+  void resetLoginFieldState() {
+    setState(() {
+      greetingField = Row(children: [Expanded(child: Text(
+        loginGreeting, style: TextStyle(fontSize: 20.0,),
+        textAlign: TextAlign.center,))
+      ]);
+
+      if(passwordEnabled){
+        loginField =TextField(
+          obscureText: true,
+          controller: stuff,
+          decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Password',
+              hintText: 'Enter secure password'),
+          onChanged: (text) {
+            loginPassword = text;
+          },
+          enabled: true,
+        );
+      }
+      else{
+        loginField=TextField(
+          obscureText: true,
+          controller: stuff,
+          decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Password Disabled. Hit Login to continue',
+              hintText: 'Password Disabled. Hit Login to continue'),
+          onChanged: (text) {
+            loginPassword = text;
+          },
+          enabled: false,
+        );
+      }
+    });
+
   }
 
   @override
@@ -80,10 +145,10 @@ bool passwordEnabled = true;
           children: <Widget>[
             Padding(
                 padding: const EdgeInsets.only(top: 60.0),
-                child: FutureBuilder(future: getGreeting(),
+                child: greetingField,/*FutureBuilder(future: getGreeting(),
                   builder: (BuildContext context,
                       AsyncSnapshot<String> snapshot,) {
-                    print(snapshot.connectionState);
+                    //print(snapshot.connectionState);
                     if (snapshot.hasError) {
                       return Text('Error loading greeting');
                     }
@@ -103,66 +168,19 @@ bool passwordEnabled = true;
                           style: TextStyle(fontSize: 20.0));
                     }
                   },
-                )
+                )*/
             ),
             Padding(
               padding: const EdgeInsets.only(
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
               //padding: EdgeInsets.symmetric(horizontal: 15),
-              child: /*loginField*/
-              FutureBuilder(future: getPassword(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<bool> snapshot,) {
-                    print(snapshot.connectionState);
-                    if (snapshot.hasError) {
-                      return Text(
-                          'Error returning password enabled information');
-                    }
-                    else if (snapshot.hasData) {
-                      //var passwordEnabled =prefs.getBool('passwordEnabled') ?? true;
-                      if (passwordEnabled) {
-                        return TextField(
-                          obscureText: true,
-                          controller: stuff,
-                          decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Password',
-                              hintText: 'Enter secure password'),
-                          onChanged: (text) {
-                            loginPassword = text;
-                          },
-                          enabled: true,
-                        );
-                      }
-                      else {
-                        return TextField(
-                          obscureText: true,
-                          controller: stuff,
-                          decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Password Disabled. Hit Login to continue',
-                              hintText: 'Password Disabled. Hit Login to continue'),
-                          onChanged: (text) {
-                            loginPassword = text;
-                          },
-                          enabled: false,
-                        );
-                      }
-                    }
-                    else
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Text('Waiting for Password Info');
-                    }
-                    else {
-                      return Text('Waiting for password info');
-                    }
-                  }
-              ),
+              child: loginField
+              ,
             ),
             Padding(
               padding: const EdgeInsets.only(top: 60.0),
               child: Center(
-
+//child: loginField
               ),
             ),
             Container(
@@ -173,7 +191,7 @@ bool passwordEnabled = true;
               child: FutureBuilder(future: getPassword(),
                   builder: (BuildContext context,
                       AsyncSnapshot<bool> snapshot,) {
-                    print(snapshot.connectionState);
+
                     if (snapshot.hasError) {
                       return Text(
                           'Error returning password enabled information');
@@ -181,29 +199,38 @@ bool passwordEnabled = true;
                     else if (snapshot.hasData) {
                       return ElevatedButton(
                         onPressed: () {
-                          prefs.reload();
-userPassword = prefs.getString('loginPassword');
+                       refreshPrefs();
+
                           if (loginPassword == userPassword && passwordEnabled) {
-                         setState(() {
-                           stuff.clear();
-                         });
-                            Navigator.pushNamed(context, '/success');
+                            stuff.clear();
+                            loginPassword = '';
+                            Navigator.pushNamed(context, '/success').then((value) => {
+                              refreshPrefs(),
+                              resetLoginFieldState(),
+                            });
                           }
                           else if(!passwordEnabled)
                           {
-                            Navigator.pushNamed(context, '/success');
+                            loginPassword='';
+                            stuff.clear();
+                            Navigator.pushNamed(context, '/success').then((value) => {
+                             refreshPrefs(),
+                              resetLoginFieldState()
+                            });
                           }
-
                         },
                         child: Text('Login', style: TextStyle(color: Colors
                             .white, fontSize: 25),),);
                     }
                     else
                     if (snapshot.connectionState == ConnectionState.waiting) {
+
                       return ElevatedButton(
                         onPressed: () {
                           if (loginPassword == userPassword) {
-                            Navigator.pushNamed(context, '/success');
+                            Navigator.pushNamed(context, '/success').then((value) => {refreshPrefs(),
+                          resetLoginFieldState()
+                            });
                             stuff.clear();
                           }
                         },
