@@ -4,7 +4,9 @@ import 'package:adhd_journal_flutter/dashboard_stats_display_widget.dart';
 import 'package:adhd_journal_flutter/record_view_card_class.dart';
 import 'package:adhd_journal_flutter/recordsdatabase_handler.dart';
 import 'package:adhd_journal_flutter/settings.dart';
+import 'package:adhd_journal_flutter/splash_screendart.dart';
 import 'package:flutter/services.dart';
+import 'onboarding_widget_class.dart';
 import 'record_display_widget.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +53,10 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/' : (context) =>  LoginScreen(),
+        '/' : (context) =>  SplashScreen(),
+        '/onboarding' : (context) => OnBoardingWidget(),
+        '/savePassword' : (context) => LoginScreen(),
+        '/login' : (context) => LoginScreen(),
         '/success': (context) => ADHDJournalApp(title: 'ADHD Journal',),
         '/fail': (context) =>  LoginScreen(),
 

@@ -8,13 +8,13 @@ import 'project_colors.dart';
 import 'project_strings_file.dart';
 import 'recordsdatabase_handler.dart';
 import 'main.dart';
-
+import 'splash_screendart.dart';
 
 
 
 String greeting = '';
 TextField loginField = TextField();
-late SharedPreferences prefs;
+
 
 /// Required to open the application , simple login form to start
 class LoginScreen extends StatefulWidget{
@@ -63,15 +63,11 @@ bool passwordEnabled = true;
     }
 setState(() {
   resetLoginFieldState();
-
-
 });
-
-
   }
 
   Future<String> getGreeting() async {
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(Duration(seconds: 0));
     String opener = 'Welcome ';
     String closer = '! Sign in with your password below.';
     greeting = sharedPrefs.getString('greeting') ?? '';
@@ -79,7 +75,7 @@ setState(() {
   }
 
   Future<bool> getPassword() async {
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(Duration(seconds: 0));
     return sharedPrefs.getBool('passwordEnabled') ?? true;
   }
 
@@ -145,30 +141,7 @@ setState(() {
           children: <Widget>[
             Padding(
                 padding: const EdgeInsets.only(top: 60.0),
-                child: greetingField,/*FutureBuilder(future: getGreeting(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<String> snapshot,) {
-                    //print(snapshot.connectionState);
-                    if (snapshot.hasError) {
-                      return Text('Error loading greeting');
-                    }
-                    else
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Text('Welcome! Sign in below to continue.',
-                          style: TextStyle(fontSize: 20.0));
-                    }
-                    else if (snapshot.hasData) {
-                      return Row(children: [Expanded(child: Text(
-                        snapshot.data!, style: TextStyle(fontSize: 20.0,),
-                        textAlign: TextAlign.center,))
-                      ]);
-                    }
-                    else {
-                      return const Text("Welcome! Sign in below to continue.",
-                          style: TextStyle(fontSize: 20.0));
-                    }
-                  },
-                )*/
+                child: greetingField,
             ),
             Padding(
               padding: const EdgeInsets.only(

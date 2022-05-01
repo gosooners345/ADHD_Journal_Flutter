@@ -2,6 +2,7 @@ import 'package:onboarding/onboarding.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login_screen_file.dart';
+import 'splash_screendart.dart';
 
 
 class OnBoardingWidget extends StatefulWidget{
@@ -11,192 +12,15 @@ class OnBoardingWidget extends StatefulWidget{
 }
 class  _OnBoardingWidgetState extends State<OnBoardingWidget>{
 
-  late Material materialButton;
+
+
   late int index;
-  final onboardingPagesList = [
-    PageModel(
-      widget: DecoratedBox(
-        decoration: BoxDecoration(
-          color: background,
-          border: Border.all(
-            width: 0.0,
-            color: background,
-          ),
-        ),
-        child: SingleChildScrollView(
-          controller: ScrollController(),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 45.0,
-                  vertical: 90.0,
-                ),
-                child: Image.asset('assets/images/facebook.png',
-                    color: pageImageColor),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 45.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'SECURED BACKUP',
-                    style: pageTitleStyle,
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 45.0, vertical: 10.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Keep your files in closed safe so you can\'t lose them. Consider TrueNAS.',
-                    style: pageInfoStyle,
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 45.0, vertical: 10.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Keep your files in closed safe so you can\'t lose them. Consider TrueNAS.',
-                    style: pageInfoStyle,
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 45.0, vertical: 10.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Keep your files in closed safe so you can\'t lose them. Consider TrueNAS.',
-                    style: pageInfoStyle,
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 45.0, vertical: 10.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Keep your files in closed safe so you can\'t lose them. Consider TrueNAS.',
-                    style: pageInfoStyle,
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    ),
-    PageModel(
-      widget: DecoratedBox(
-        decoration: BoxDecoration(
-          color: background,
-          border: Border.all(
-            width: 0.0,
-            color: background,
-          ),
-        ),
-        child: SingleChildScrollView(
-          controller: ScrollController(),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 45.0,
-                  vertical: 90.0,
-                ),
-                child: Image.asset('assets/images/twitter.png',
-                    color: pageImageColor),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 45.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'CHANGE AND RISE',
-                    style: pageTitleStyle,
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 45.0, vertical: 10.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Give others access to any file or folders you choose',
-                    style: pageInfoStyle,
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    ),
-    PageModel(
-      widget: DecoratedBox(
-        decoration: BoxDecoration(
-          color: background,
-          border: Border.all(
-            width: 0.0,
-            color: background,
-          ),
-        ),
-        child: SingleChildScrollView(
-          controller: ScrollController(),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 45.0,
-                  vertical: 90.0,
-                ),
-                child: Image.asset('assets/images/instagram.png',
-                    color: pageImageColor),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 45.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'EASY ACCESS',
-                    style: pageTitleStyle,
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 45.0, vertical: 10.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Reach your files anytime from any devices anywhere',
-                    style: pageInfoStyle,
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    ),
-  ];
+
 
   @override
   void initState() {
     super.initState();
-    materialButton = _skipButton();
+
     index = 0;
   }
 
@@ -223,26 +47,40 @@ class  _OnBoardingWidgetState extends State<OnBoardingWidget>{
     );
   }
 
-  Material get _signupButton {
-    return Material(
-      borderRadius: defaultProceedButtonBorderRadius,
-      color: defaultProceedButtonColor,
-      child: InkWell(
-        borderRadius: defaultProceedButtonBorderRadius,
-        onTap: () {},
-        child: const Padding(
-          padding: defaultProceedButtonPadding,
-          child: Text(
-            'Sign up',
-            style: defaultProceedButtonTextStyle,
-          ),
-        ),
-      ),
-    );
-  }
+
   @override
   Widget build(BuildContext context){
-    return Column(children: [Onboarding( pages: onboardingPagesList,
+    return Scaffold(body:Onboarding( pages: <PageModel>[
+
+    PageModel(widget: DecoratedBox(
+    decoration: BoxDecoration(
+        color: background,),
+          child: Column(children: <Widget>[
+            Text('Welcome, Please enter a password below and enter a name so I can greet you when you log in.'),
+            SizedBox(height: 30,),
+            TextField(onChanged: (text){
+              savedPasswordValue = text;
+            },
+            ),
+            SizedBox(height: 30,),
+            Text("Enter your name here"),
+            SizedBox(height: 10,),
+            TextField(onChanged: (text){
+              greetingValueSaved = text;
+            },
+            ),
+            ElevatedButton(onPressed: (){
+              prefs.setString('loginPassword', savedPasswordValue);
+              prefs.setString('dbPassword', savedPasswordValue);
+              prefs.setBool('passwordEnabled', true);
+              prefs.setString('greeting', greetingValueSaved);
+              prefs.setBool('firstVisit',  false);
+              Navigator.pushReplacementNamed(context, '/login');
+            }, child: Text('Save'))
+          ],
+          ),
+        ))
+    ],
       onPageChange: (int pageIndex){
       index = pageIndex;
       },
@@ -274,14 +112,16 @@ class  _OnBoardingWidgetState extends State<OnBoardingWidget>{
     ),
     ),
     ),
-    index == pagesLength - 1
-    ? _signupButton
-        : _skipButton(setIndex: setIndex)
+    /*index == pagesLength - 1
+    ?
+         _skipButton(setIndex: setIndex),*/
     ],
     ),
     ),
     ),);},
-    ),],);
+    ),);
   }
 
 }
+String savedPasswordValue = '';
+String greetingValueSaved = '';

@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'project_colors.dart';
 import 'project_strings_file.dart';
+import 'splash_screendart.dart';
 import 'package:intl/intl.dart';
 import 'records_data_class_db.dart';
 import 'login_screen_file.dart';
@@ -132,10 +133,9 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget>{
     return  Column(key: UniqueKey(),
       children: <Widget>[
         SizedBox(
-          height: 20,
-        ),Padding(
+          height: 20),Padding(
           padding: const EdgeInsets.only(
-              left: 15.0, right: 15.0, top: 15, bottom: 0),
+              left: 15.0, right: 15.0, top: 15, bottom: 15.0),
           child:Row(children:[Expanded(child: Text(
             'Welcome back $greeting! What would you like to record today?',
             style: TextStyle(fontSize: 18.0),textAlign: TextAlign.center,),),],
