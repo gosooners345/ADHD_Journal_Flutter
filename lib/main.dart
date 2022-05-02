@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
       debugShowMaterialGrid: false,
       title: 'ADHD Journal',
       theme: ThemeData(
-        primarySwatch: Colors.red,
+        primarySwatch: Colors.brown,
       ),
       initialRoute: '/',
       routes: {

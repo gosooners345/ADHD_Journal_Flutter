@@ -184,6 +184,12 @@ class _SettingsPage extends State<SettingsPage>{
               });
 
             }, child: const Text('Save Changes')),
+
+            ElevatedButton(onPressed: (){
+              // Demo mode
+              Navigator.pushNamed(context, '/onboarding');
+
+            }, child: Text('Demo ME!'))
           ],
         ),
       ),

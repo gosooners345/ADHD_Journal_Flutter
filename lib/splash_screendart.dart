@@ -46,7 +46,7 @@ Navigator.pushReplacementNamed(context, '/login');
 
   initScreen(BuildContext context){
     return Scaffold(body:  Column(
-    children: <Widget>[SizedBox(height: 180,),
+    children: <Widget>[
       Container(
     child: Image.asset('images/app_icon_demo.png'),
     ),const Padding(padding: EdgeInsets.only(top:20.0),child:

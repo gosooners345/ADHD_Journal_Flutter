@@ -154,7 +154,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
             TextField(
               decoration: InputDecoration(
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(4),
-                    borderSide: BorderSide(color: Colors.red.withOpacity(1.0),width: 1)),
+                    borderSide: BorderSide(color: Colors.brown.withOpacity(1.0),width: 1)),
                 labelText: 'What\'s on your mind? ',),
               textCapitalization: TextCapitalization.sentences,
               controller: contentController, onChanged: (text) {
