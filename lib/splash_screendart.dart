@@ -31,7 +31,7 @@ startTimer();
     var duration = const Duration(seconds: 5);
     return Timer(duration,route);
   }
-  
+  //First time users go to the onboarding section to get a tutorial, returning users don't
   route(){
     var firstVisit = prefs.getBool('firstVisit') ?? true;
     if(firstVisit){
@@ -46,12 +46,12 @@ Navigator.pushReplacementNamed(context, '/login');
 
   initScreen(BuildContext context){
     return Scaffold(body: Container(
-      constraints: BoxConstraints.expand(),
-      decoration: BoxDecoration(image: DecorationImage(image: const AssetImage('images/testphoto.png'),fit: BoxFit.cover),
-    ),child: Column(
-    children: <Widget>[
+
+     // decoration: BoxDecoration(image: DecorationImage(image: const AssetImage('images/testphoto.png'),fit: BoxFit.cover),
+    child: Column(
+    children: <Widget>[SizedBox(height: 180,),
       Container(
-    child: Image.asset('images/testphoto.png'),
+    child: Image.asset('images/app_icon_demo.png'),
     ),Padding(padding: EdgeInsets.only(top:20.0),),
     Text('Welcome to ADHD Journal!'),
     Padding(padding: EdgeInsets.only(top:20.0)),

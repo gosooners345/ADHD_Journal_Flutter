@@ -54,7 +54,7 @@ class  _OnBoardingWidgetState extends State<OnBoardingWidget>{
 
     PageModel(widget: DecoratedBox(
     decoration: BoxDecoration(
-        color: background,),
+        color: Colors.white,),
           child: Column(children: <Widget>[
             Text('Welcome, Please enter a password below and enter a name so I can greet you when you log in.'),
             SizedBox(height: 30,),
