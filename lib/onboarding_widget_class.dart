@@ -56,18 +56,30 @@ class  _OnBoardingWidgetState extends State<OnBoardingWidget>{
     decoration: BoxDecoration(
         color: Colors.white,),
           child: Column(children: <Widget>[
-            Text('Welcome, Please enter a password below and enter a name so I can greet you when you log in.'),
+            Icon(Icons.lock_open),
+            SizedBox(height: 60,),
+            Text('Welcome, Please enter a password below and enter a name so I can greet you when you log in.',style: TextStyle(fontSize: 20.0,),
+              textAlign: TextAlign.center,),
             SizedBox(height: 30,),
-            TextField(onChanged: (text){
+            TextField( decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'New Password for diary',
+                hintText: 'Enter a secure Password'),
+              onChanged: (text){
               savedPasswordValue = text;
             },
             ),
             SizedBox(height: 30,),
-            Text("Enter your name here"),
             SizedBox(height: 10,),
-            TextField(onChanged: (text){
+              TextField( decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Enter your  name here',
+                  hintText: 'Enter your name here'),
+
+              onChanged: (text){
               greetingValueSaved = text;
             },
+
             ),
             ElevatedButton(onPressed: (){
               prefs.setString('loginPassword', savedPasswordValue);
