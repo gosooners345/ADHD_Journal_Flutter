@@ -45,21 +45,15 @@ Navigator.pushReplacementNamed(context, '/login');
   
 
   initScreen(BuildContext context){
-    return Scaffold(body: Container(
-
-     // decoration: BoxDecoration(image: DecorationImage(image: const AssetImage('images/testphoto.png'),fit: BoxFit.cover),
-    child: Column(
+    return Scaffold(body:  Column(
     children: <Widget>[SizedBox(height: 180,),
       Container(
     child: Image.asset('images/app_icon_demo.png'),
-    ),Padding(padding: EdgeInsets.only(top:20.0),),
-    Text('Welcome to ADHD Journal!'),
-    Padding(padding: EdgeInsets.only(top:20.0)),
-    SizedBox(height: 20,),
-    Text('Loading your journal up now...'),
+    ),const Padding(padding: EdgeInsets.only(top:20.0),child:
+    Text('Welcome to ADHD Journal! Loading up your journal  now...'),),
     ],
     ),
-    ),);
+    );
   }
 
 

@@ -19,7 +19,6 @@ import 'login_screen_file.dart';
 import 'compose_records_screen.dart';
 
 List<Records> records = [];
-//late SharedPreferences prefs;
 int id =0;
 StartStuff stuff = StartStuff();
 void main() {

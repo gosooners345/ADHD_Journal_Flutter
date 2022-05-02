@@ -50,44 +50,61 @@ class  _OnBoardingWidgetState extends State<OnBoardingWidget>{
 
   @override
   Widget build(BuildContext context){
-    return Scaffold(body:Onboarding( pages: <PageModel>[
-
+    return Scaffold(body: Onboarding( pages: <PageModel>[
+// On boarding screens (1 for now to test the password setting feature)
     PageModel(widget: DecoratedBox(
-    decoration: BoxDecoration(
+    decoration: const BoxDecoration(
         color: Colors.white,),
           child: Column(children: <Widget>[
-            Icon(Icons.lock_open),
-            SizedBox(height: 60,),
-            Text('Welcome, Please enter a password below and enter a name so I can greet you when you log in.',style: TextStyle(fontSize: 20.0,),
-              textAlign: TextAlign.center,),
-            SizedBox(height: 30,),
-            TextField( decoration: InputDecoration(
+            const Icon(Icons.lock_open),
+            const SizedBox(height: 60,),
+           const Padding(padding:EdgeInsets.all(16.0),child: Text('Welcome! Please enter a password below so your journal is secured.',style: TextStyle(fontSize: 20.0,),
+              textAlign: TextAlign.center,),),
+            const SizedBox(height: 30,),
+     const Padding(padding: EdgeInsets.all(16.0),child: Text('Please enter your name below so I can greet you when you log in!',style: TextStyle(fontSize: 20.0,)),),
+      Padding(
+        padding: const EdgeInsets.only(
+            left: 15.0, right: 15.0, top: 15, bottom: 0),child:TextField( decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'New Password for diary',
                 hintText: 'Enter a secure Password'),
               onChanged: (text){
               savedPasswordValue = text;
             },
-            ),
+            ),),
             SizedBox(height: 30,),
             SizedBox(height: 10,),
+      Padding(
+        padding: const EdgeInsets.only(
+            left: 15.0, right: 15.0, top: 15, bottom: 0),child:
               TextField( decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Enter your  name here',
+                  labelText: 'Enter your name here',
                   hintText: 'Enter your name here'),
 
               onChanged: (text){
               greetingValueSaved = text;
             },
 
-            ),
+            ),),SizedBox(height: 30,),
             ElevatedButton(onPressed: (){
-              prefs.setString('loginPassword', savedPasswordValue);
-              prefs.setString('dbPassword', savedPasswordValue);
-              prefs.setBool('passwordEnabled', true);
-              prefs.setString('greeting', greetingValueSaved);
-              prefs.setBool('firstVisit',  false);
-              Navigator.pushReplacementNamed(context, '/login');
+              if(savedPasswordValue !=''){
+                prefs.setString('loginPassword', savedPasswordValue);
+                prefs.setString('dbPassword', savedPasswordValue);
+                prefs.setBool('passwordEnabled', true);
+                prefs.setString('greeting', greetingValueSaved);
+                prefs.setBool('firstVisit',  false);
+                Navigator.pushReplacementNamed(context, '/login');
+              }
+              else{
+               savedPasswordValue = '1234';
+               prefs.setString('loginPassword', savedPasswordValue);
+               prefs.setString('dbPassword', savedPasswordValue);
+               prefs.setBool('passwordEnabled', true);
+               prefs.setString('greeting', greetingValueSaved);
+               prefs.setBool('firstVisit',  false);
+               Navigator.pushReplacementNamed(context, '/login');
+              }
             }, child: Text('Save'))
           ],
           ),
