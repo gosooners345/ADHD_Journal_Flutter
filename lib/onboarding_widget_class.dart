@@ -12,11 +12,22 @@ class OnBoardingWidget extends StatefulWidget{
   State<OnBoardingWidget>  createState() => _OnBoardingWidgetState();
 }
 class  _OnBoardingWidgetState extends State<OnBoardingWidget>{
-
+  var pageTitleStyle = TextStyle(
+    fontSize: 23.0,
+    wordSpacing: 1,
+    letterSpacing: 1.2,
+    fontWeight: FontWeight.bold,
+    color: Colors.black,
+  );
+  var pageInfoStyle = TextStyle(
+    color: Colors.black,
+    letterSpacing: 0.7,
+    height: 1.5,
+  );
 
 late Material materialButton;
   late int index;
-
+Color background = Colors.white;
 
   @override
   void initState() {
@@ -34,8 +45,8 @@ late Material materialButton;
         borderRadius: defaultSkipButtonBorderRadius,
         onTap: () {
           if (setIndex != null) {
-            index = 2;
-            setIndex(2);
+            index = 5;
+            setIndex(5);
           }
         },
         child: const Padding(
@@ -67,15 +78,16 @@ late Material materialButton;
               child: Image.asset('images/appicon-76x76.png',
                   ),
             ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 45.0),
+               Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 45.0),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     first_intro_paragraph_string,
                     style: pageTitleStyle,
                     textAlign: TextAlign.left,
-                  ),),),],),),),),
+                  ),),),],),),),
+      ),
      //Security page
       PageModel(widget: DecoratedBox(
         decoration: BoxDecoration(
@@ -84,19 +96,31 @@ late Material materialButton;
         child: SingleChildScrollView(
           controller: ScrollController(),
           child: Column(
-            children: [ Padding(padding: const EdgeInsets.symmetric(
+            children: [ Padding(padding: EdgeInsets.symmetric(
               horizontal: 45.0, vertical: 90.0,),
-              child: Icon(Icons.security_sharp,color: Colors.white,size: 60.0,),
+              child: Icon(Icons.security_sharp,color: Colors.black,size: 60.0,),
             ),
-              const Padding(
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 45.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Security',
+                    style: pageTitleStyle,
+                    textAlign: TextAlign.left,
+                  ),),),
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 45.0),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     security_paragraph_intro_string,
-                    style: pageTitleStyle,
+                    style: pageInfoStyle,
                     textAlign: TextAlign.left,
-                  ),),),],),),)),
+                  ),),),
+
+            ],),),)
+      ),
       // Record Entry page
       PageModel(widget: DecoratedBox(
         decoration: BoxDecoration(
@@ -105,11 +129,11 @@ late Material materialButton;
         child: SingleChildScrollView(
           controller: ScrollController(),
           child: Column(
-            children: [ Padding(padding: const EdgeInsets.symmetric(
+            children:  [ Padding(padding: EdgeInsets.symmetric(
               horizontal: 45.0, vertical: 90.0,),
-              child: Icon(Icons.edit, color: Colors.white,size: 60.0,),
+              child: Icon(Icons.edit, color: Colors.black,size: 60.0,),
             ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 45.0),
                 child: Align(
                   alignment: Alignment.centerLeft,
@@ -117,7 +141,8 @@ late Material materialButton;
                     records_intro_paragraph_string,
                     style: pageTitleStyle,
                     textAlign: TextAlign.left,
-                  ),),),],),),) ),
+                  ),),),],),),)
+      ),
       // Dashboard
       PageModel(widget: DecoratedBox(
         decoration: BoxDecoration(
@@ -126,10 +151,10 @@ late Material materialButton;
         child: SingleChildScrollView(
           controller: ScrollController(),
           child: Column(
-            children: [ Padding(padding: const EdgeInsets.symmetric(
+            children:  [ Padding(padding: EdgeInsets.symmetric(
               horizontal: 45.0, vertical: 90.0,),
-              child: Icon(Icons.dashboard,color: Colors.white,size: 60.0,),),
-              const Padding(
+              child: Icon(Icons.dashboard,color: Colors.black,size: 60.0,),),
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 45.0),
                 child: Align(
                   alignment: Alignment.centerLeft,
@@ -137,7 +162,8 @@ late Material materialButton;
                     dashboard_paragraph_intro_string,
                     style: pageTitleStyle,
                     textAlign: TextAlign.left,
-                  ),),),],),),)),
+                  ),),),],),),)
+      ),
       // Settings Page
       PageModel(widget: DecoratedBox(
         decoration: BoxDecoration(
@@ -146,10 +172,10 @@ late Material materialButton;
         child: SingleChildScrollView(
           controller: ScrollController(),
           child: Column(
-            children: [ Padding(padding: const EdgeInsets.symmetric(
+            children:  [ Padding(padding: EdgeInsets.symmetric(
               horizontal: 45.0, vertical: 90.0,),
-              child: Icon(Icons.settings,color: Colors.white,size: 60.0,),),
-              const Padding(
+              child: Icon(Icons.settings,color: Colors.black,size: 60.0,),),
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 45.0),
                 child: Align(
                   alignment: Alignment.centerLeft,
@@ -166,10 +192,10 @@ late Material materialButton;
         child: SingleChildScrollView(
           controller: ScrollController(),
           child: Column(
-            children: [ Padding(padding: EdgeInsets.symmetric(
+            children: [ const Padding(padding: EdgeInsets.symmetric(
               horizontal: 45.0, vertical: 90.0,),
-              child: Icon(Icons.settings,color: Colors.white,size: 60.0,),),
-              Padding(
+              child: Icon(Icons.settings,color: Colors.black,size: 60.0,),),
+               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 45.0),
                 child: Align(
                   alignment: Alignment.centerLeft,
@@ -181,8 +207,8 @@ late Material materialButton;
               Padding(
                 padding: const EdgeInsets.only(
                     left: 15.0, right: 15.0, top: 15, bottom: 0),child:TextField( decoration: const InputDecoration(
-                  border: OutlineInputBorder(),hintStyle: TextStyle(color: Colors.white),
-                  labelText: 'New Password for diary',
+                  border: OutlineInputBorder(),hintStyle: TextStyle(color: Colors.black),
+                  labelText: 'New Password for diary',labelStyle: TextStyle(color: Colors.black),
                   hintText: 'Enter a secure Password'),
                 onChanged: (text){
                   savedPasswordValue = text;
@@ -191,9 +217,9 @@ late Material materialButton;
               Padding(
                 padding: const EdgeInsets.only(
                     left: 15.0, right: 15.0, top: 15, bottom: 0),child:
-              TextField( decoration: InputDecoration(
-                  border: OutlineInputBorder(),helperStyle: TextStyle(color: Colors.white),
-                  labelText: 'Enter your name here',
+              TextField( decoration: const InputDecoration(
+                  border: OutlineInputBorder(),helperStyle: TextStyle(color: Colors.black),
+                  labelText: 'Enter your name here',labelStyle: TextStyle(color: Colors.black),
                   hintText: 'Enter your name here'),
 
                 onChanged: (text){
@@ -219,7 +245,7 @@ late Material materialButton;
                   prefs.setBool('firstVisit',  false);
                   Navigator.pushReplacementNamed(context, '/login');
                 }
-              }, child: Text('Save'))
+              }, child: Text('Save'),style:  ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.red)),)
             ],),),)),
     ],
 
@@ -253,7 +279,7 @@ late Material materialButton;
     indicator: Indicator(
     indicatorDesign: IndicatorDesign.line(
     lineDesign: LineDesign(
-    lineType: DesignType.line_uniform,
+    lineType: DesignType.polygon_circle,
     ),
     ),
     ),
