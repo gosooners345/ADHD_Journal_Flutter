@@ -83,8 +83,16 @@ Color background = Colors.white;
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    first_intro_paragraph_string,
+                    'Welcome to the ADHD Journal!',
                     style: pageTitleStyle,
+                    textAlign: TextAlign.left,
+                  ),),),Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    first_intro_paragraph_string,
+                    style: pageInfoStyle,
                     textAlign: TextAlign.left,
                   ),),),],),),),
       ),
@@ -138,10 +146,18 @@ Color background = Colors.white;
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    records_intro_paragraph_string,
+                    'Create Records',
                     style: pageTitleStyle,
                     textAlign: TextAlign.left,
-                  ),),),],),),)
+                  ),),),
+            Padding(padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 8.0),
+            child: Align(alignment: Alignment.centerLeft,
+            child: Text(records_intro_paragraph_string,style: pageInfoStyle,
+            textAlign: TextAlign.left,),
+
+            ),)
+
+            ],),),)
       ),
       // Dashboard
       PageModel(widget: DecoratedBox(
@@ -159,10 +175,17 @@ Color background = Colors.white;
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    dashboard_paragraph_intro_string,
+                    'Dashboard',
                     style: pageTitleStyle,
                     textAlign: TextAlign.left,
-                  ),),),],),),)
+                  ),),),
+            Padding(padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 8.0),
+            child: Align(alignment: Alignment.centerLeft,child: Text(dashboard_paragraph_intro_string,
+            style: pageInfoStyle,textAlign: TextAlign.left,),),
+            )
+
+
+            ],),),)
       ),
       // Settings Page
       PageModel(widget: DecoratedBox(
@@ -180,10 +203,17 @@ Color background = Colors.white;
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    settings_paragraph_intro_string,
+                    'Settings',
                     style: pageTitleStyle,
                     textAlign: TextAlign.left,
-                  ),),),],),),)),
+                  ),),),
+              Padding(padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 8.0),
+              child: Align(alignment: Alignment.centerLeft,child: Text(settings_paragraph_intro_string,
+              style: pageInfoStyle,textAlign: TextAlign.left,),),
+
+
+              )
+              ,],),),)),
       //Last page
       PageModel(widget: DecoratedBox(
         decoration: BoxDecoration(
@@ -279,7 +309,7 @@ Color background = Colors.white;
     indicator: Indicator(
     indicatorDesign: IndicatorDesign.line(
     lineDesign: LineDesign(
-    lineType: DesignType.polygon_circle,
+    lineType: DesignType.line_uniform,
     ),
     ),
     ),
