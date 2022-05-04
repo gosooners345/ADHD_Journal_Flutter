@@ -9,9 +9,9 @@ class Records{
   String symptoms;
    String tags;
  double rating;
-String success;
-String timeCreated;
-String timeUpdated;
+bool success;
+DateTime timeCreated;
+DateTime timeUpdated;
 
   Records({required this.id, required this.title,required this.content ,required this.emotions,
     required this.sources,
@@ -36,8 +36,8 @@ required this.success,
   tags = record['tags'],
   rating = record['rating'],
   success = record['success'],
-   timeCreated = record['timeCreated'],
-   timeUpdated = record['timeUpdated'];
+   timeCreated = record['time_created'],
+   timeUpdated = record['time_updated'];
 
 
 @override
@@ -49,8 +49,8 @@ required this.success,
 
   Map<String, Object>toMapForDB(){
   return {'id':id,'title':title,'content':content,'emotions':emotions, 'symptoms':symptoms,
-  'sources':sources,'tags':tags,'rating':rating,'success':success ,
-    'timeCreated':timeCreated,'timeUpdated':timeUpdated
+  'sources':sources,'tags':tags,'rating':rating,'success':success ? 1 : 0,
+    'time_created':timeCreated.millisecondsSinceEpoch,'time_updated':timeUpdated.millisecondsSinceEpoch
   };
 }
 

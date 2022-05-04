@@ -82,7 +82,6 @@ setState(() {
   void refreshPrefs() async{
     prefs.reload();
     passwordEnabled = prefs.getBool('passwordEnabled')?? true;
-    //getGreeting().whenComplete(() => (value){greeting = "Welcome "+value.toString()+"! Please sign in below to get started!" ;});
     greeting =sharedPrefs.getString("greeting")??'';
     loginGreeting="Welcome $greeting! Please sign in below to get started!";
     userPassword = prefs.getString('loginPassword');
@@ -106,6 +105,12 @@ setState(() {
               hintText: 'Enter secure password'),
           onChanged: (text) {
             loginPassword = text;
+            if (text.length == userPassword?.length){
+              Navigator.pushNamed(context, '/success').then((value) => {
+                refreshPrefs(),
+                resetLoginFieldState(),
+              });
+            }
           },
           enabled: true,
         );
@@ -159,8 +164,6 @@ setState(() {
             Container(
               height: 50,
               width: 250,
-              decoration: BoxDecoration(
-                  color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: FutureBuilder(future: getPassword(),
                   builder: (BuildContext context,
                       AsyncSnapshot<bool> snapshot,) {
@@ -192,8 +195,7 @@ setState(() {
                             });
                           }
                         },
-                        child: Text('Login', style: TextStyle(color: Colors
-                            .white, fontSize: 25),),);
+                        child: Text('Login', style: TextStyle(fontSize: 25),),);
                     }
                     else
                     if (snapshot.connectionState == ConnectionState.waiting) {

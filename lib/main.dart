@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
       debugShowMaterialGrid: false,
       title: 'ADHD Journal',
       theme: ThemeData(
-        primarySwatch: Colors.brown,
+      colorSchemeSeed: Colors.brown, useMaterial3: true
       ),
       initialRoute: '/',
       routes: {
@@ -117,8 +117,9 @@ void loadPrefs() async{
   /// This is for the bottom navigation bar, this isn't related to the records at all.
   void _onItemTapped(int index) {
     setState(() {
-     
-      _selectedIndex = index;
+     if(records.isNotEmpty) {
+       _selectedIndex = index;
+     }
     });
   }
 
@@ -134,8 +135,8 @@ void loadPrefs() async{
       }
       Navigator.push(context, MaterialPageRoute(builder: (_) =>
           ComposeRecordsWidget(
-              record: Records(id: id, title: '', content: '',emotions: '',sources: '',symptoms: '',tags: '',rating: 0.0,success: 'success/fail',timeCreated:
-DateFormat('MM/dd/yyyy hh:mm:ss:aa').format(DateTime.now().toLocal()) ,timeUpdated: DateFormat('MM/dd/yyyy hh:mm:ss:aa').format(DateTime.now().toLocal()))
+              record: Records(id: id, title: '', content: '',emotions: '',sources: '',symptoms: '',tags: '',rating: 0.0,success: false,timeCreated:
+DateTime.now() ,timeUpdated: DateTime.now())
               , id: 0,title: 'Compose New Entry')))
           .then((value) =>
           setState(() {}));

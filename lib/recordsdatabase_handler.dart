@@ -36,10 +36,13 @@ static Future<cipher.Database> db() async{
     password: dbPassword,
     onCreate: (database, version) {
       return database.execute(
-          'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT,symptoms TEXT,rating DOUBLE, tags TEXT,success TEXT, timeCreated TEXT, timeUpdated TEXT)');
+          'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT,symptoms TEXT,rating DOUBLE, tags TEXT,success INT, time_created INT, time_updated INT)');
+    },
+    onOpen: (database) {
+    database.execute("DROP TABLE IF EXISTS android_metadata; DROP TABLE IF EXISTS room_master_table;");
     },
 
-    version: 3,
+    version: 5,
   );
 }
 
@@ -72,11 +75,16 @@ Future<Database> get database async {
     password: prefs.getString('dbPassword') ?? '1234',
     onCreate: (database, version) {
       return database.execute(
-          'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT,symptoms TEXT,rating DOUBLE, tags TEXT,success TEXT,timeCreated TEXT, timeCreated TEXT)'
+          'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT,symptoms TEXT,rating DOUBLE, tags TEXT,success INT,time_updated INT, time_created INT)'
               );
+
+    },
+    onOpen: (database) {
+      database.execute("DROP TABLE IF EXISTS android_metadata; DROP TABLE IF EXISTS room_master_table;");
     },
 
-    version: 3,
+
+    version: 5,
   );
   return ourDB;
 }
@@ -88,8 +96,9 @@ static Future<List<Records>> records() async{
   return List.generate(maps.length, (index) {
     return Records(id :maps[index]['id'], title: maps[index]['title'], content: maps[index]['content'],emotions:maps[index]['emotions'],
         sources: maps[index]['sources'], rating: maps[index]['rating'],symptoms: maps[index]['symptoms'],
-      tags: maps[index]['tags'], success: maps[index]['success'],
-timeCreated:maps[index]['timeCreated'],timeUpdated: maps[index]['timeUpdated'],
+      tags: maps[index]['tags'], success: maps[index]['success'] == 0 ? false : true,
+timeCreated:DateTime.fromMillisecondsSinceEpoch( maps[index]['time_created']),
+      timeUpdated: DateTime.fromMillisecondsSinceEpoch( maps[index]['time_updated']),
     );
   }
   );

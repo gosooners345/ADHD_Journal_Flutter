@@ -66,7 +66,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
 
 //Saves the record in the database
   void saveRecord() {
-    super.widget.record.timeUpdated = DateFormat('MM/dd/yyyy hh:mm:ss:aa').format(DateTime.now().toLocal());
+    super.widget.record.timeUpdated = DateTime.now();
     if(super.widget.id==0)
       {
         RecordsDB.insertRecord(super.widget.record);
@@ -87,7 +87,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
 
     setState(() {
       //Success Switch
-      if (super.widget.record.success == 'success' || super.widget.record.success == 'Success') {
+      if (super.widget.record.success) {
         isChecked = true;
         successLabelText = 'Success';
         successStateWidget = Text(successLabelText);
@@ -142,7 +142,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
             //Title Field
             TextField( decoration:InputDecoration(
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(4),
-                    borderSide: BorderSide(color: Colors.red.withOpacity(1.0),width: 1)),
+                    borderSide: BorderSide(color: Colors.brown.withOpacity(1.0),width: 1)),
                 labelText: 'What do you want to call this?'),
               textCapitalization: TextCapitalization.sentences,
               controller: titleController, onChanged: (text) {
@@ -164,7 +164,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
             //Emotions Field
             TextField( decoration: InputDecoration(
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(4),
-                  borderSide: BorderSide(color: Colors.red.withOpacity(1.0),width: 1)),
+                  borderSide: BorderSide(color: Colors.brown.withOpacity(1.0),width: 1)),
               labelText: 'How do you feel today?',
             ),
               controller: emotionsController,
@@ -176,7 +176,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
           //Source Field
           TextField( decoration:  InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(4),
-            borderSide: BorderSide(color: Colors.red.withOpacity(1.0),width: 1)),
+            borderSide: BorderSide(color: Colors.brown.withOpacity(1.0),width: 1)),
             labelText: 'Do you have anything to add to this?',),
             textCapitalization: TextCapitalization.sentences,
             controller: sourceController, onChanged: (text) {
@@ -208,7 +208,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
             TextField(
               decoration: InputDecoration(
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(4),
-                    borderSide: BorderSide(color: Colors.red.withOpacity(1.0),width: 1)),
+                    borderSide: BorderSide(color: Colors.brown.withOpacity(1.0),width: 1)),
                 labelText: 'What does this fall under?',),
               controller:tagsController, onChanged: (text) {
               super.widget.record.tags= text;},),
@@ -251,7 +251,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
           ),
             space,
             SwitchListTile(value: isChecked, onChanged: (bool value){
-              super.widget.record.success = value ? 'Success':'Fail';
+              super.widget.record.success = value;
               isChecked = value;
               setState(() {
                 if(value){

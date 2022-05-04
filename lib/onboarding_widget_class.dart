@@ -1,7 +1,5 @@
 import 'package:onboarding/onboarding.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'login_screen_file.dart';
 import 'splash_screendart.dart';
 import 'project_strings_file.dart';
 
@@ -12,14 +10,14 @@ class OnBoardingWidget extends StatefulWidget{
   State<OnBoardingWidget>  createState() => _OnBoardingWidgetState();
 }
 class  _OnBoardingWidgetState extends State<OnBoardingWidget>{
-  var pageTitleStyle = TextStyle(
+  var pageTitleStyle = const TextStyle(
     fontSize: 23.0,
     wordSpacing: 1,
     letterSpacing: 1.2,
     fontWeight: FontWeight.bold,
     color: Colors.black,
   );
-  var pageInfoStyle = TextStyle(
+  var pageInfoStyle = const TextStyle(
     color: Colors.black,
     letterSpacing: 0.7,
     height: 1.5,
@@ -40,7 +38,6 @@ Color background = Colors.white;
   Material _skipButton({void Function(int)? setIndex}) {
     return Material(
       borderRadius: defaultSkipButtonBorderRadius,
-      color: defaultSkipButtonColor,
       child: InkWell(
         borderRadius: defaultSkipButtonBorderRadius,
         onTap: () {
@@ -68,8 +65,8 @@ Color background = Colors.white;
       //Introduction page
       PageModel(widget: DecoratedBox(
         decoration: BoxDecoration(
-          color: background,border: Border.all(
-          width: 0.0,color: background,),),
+          border: Border.all(
+          width: 0.0,),),
         child: SingleChildScrollView(
           controller: ScrollController(),
           child: Column(
@@ -99,17 +96,17 @@ Color background = Colors.white;
      //Security page
       PageModel(widget: DecoratedBox(
         decoration: BoxDecoration(
-          color: background,border: Border.all(
-          width: 0.0,color: background,),),
+          border: Border.all(
+          width: 0.0,),),
         child: SingleChildScrollView(
           controller: ScrollController(),
           child: Column(
-            children: [ Padding(padding: EdgeInsets.symmetric(
+            children: [ const Padding(padding: EdgeInsets.symmetric(
               horizontal: 45.0, vertical: 90.0,),
               child: Icon(Icons.security_sharp,color: Colors.black,size: 60.0,),
             ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 45.0),
+                padding: const EdgeInsets.symmetric(horizontal: 45.0),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
@@ -118,7 +115,7 @@ Color background = Colors.white;
                     textAlign: TextAlign.left,
                   ),),),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 45.0),
+                padding: const EdgeInsets.symmetric(horizontal: 45.0),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
@@ -132,21 +129,21 @@ Color background = Colors.white;
       // Record Entry page
       PageModel(widget: DecoratedBox(
         decoration: BoxDecoration(
-          color: background,border: Border.all(
-          width: 0.0,color: background,),),
+           border: Border.all(
+          width: 0.0, ),),
         child: SingleChildScrollView(
           controller: ScrollController(),
           child: Column(
-            children:  [ Padding(padding: EdgeInsets.symmetric(
+            children:  [ const Padding(padding: EdgeInsets.symmetric(
               horizontal: 45.0, vertical: 90.0,),
               child: Icon(Icons.edit, color: Colors.black,size: 60.0,),
             ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 45.0),
+                padding: const EdgeInsets.symmetric(horizontal: 45.0),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'Create Records',
+                    'Composing Entries',
                     style: pageTitleStyle,
                     textAlign: TextAlign.left,
                   ),),),
@@ -162,8 +159,8 @@ Color background = Colors.white;
       // Dashboard
       PageModel(widget: DecoratedBox(
         decoration: BoxDecoration(
-          color: background,border: Border.all(
-          width: 0.0,color: background,),),
+           border: Border.all(
+          width: 0.0, ),),
         child: SingleChildScrollView(
           controller: ScrollController(),
           child: Column(
@@ -190,8 +187,8 @@ Color background = Colors.white;
       // Settings Page
       PageModel(widget: DecoratedBox(
         decoration: BoxDecoration(
-          color: background,border: Border.all(
-          width: 0.0,color: background,),),
+           border: Border.all(
+          width: 0.0, ),),
         child: SingleChildScrollView(
           controller: ScrollController(),
           child: Column(
@@ -209,7 +206,8 @@ Color background = Colors.white;
                   ),),),
               Padding(padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 8.0),
               child: Align(alignment: Alignment.centerLeft,child: Text(settings_paragraph_intro_string,
-              style: pageInfoStyle,textAlign: TextAlign.left,),),
+              style: pageInfoStyle,textAlign: TextAlign.left
+                ,),),
 
 
               )
@@ -217,21 +215,30 @@ Color background = Colors.white;
       //Last page
       PageModel(widget: DecoratedBox(
         decoration: BoxDecoration(
-          color: background,border: Border.all(
-          width: 0.0,color: background,),),
+           border: Border.all(
+          width: 0.0, ),),
         child: SingleChildScrollView(
           controller: ScrollController(),
           child: Column(
             children: [ const Padding(padding: EdgeInsets.symmetric(
               horizontal: 45.0, vertical: 90.0,),
-              child: Icon(Icons.settings,color: Colors.black,size: 60.0,),),
+              child: Icon(Icons.done,color: Colors.black,size: 60.0,),),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'One more thing...',
+                    style: pageTitleStyle,
+                    textAlign: TextAlign.left,
+                  ),),),
                Padding(
-                padding: EdgeInsets.symmetric(horizontal: 45.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     sixth_paragraph_intro_string,
-                    style: pageTitleStyle,
+                    style: pageInfoStyle,
                     textAlign: TextAlign.left,
                   ),),),
               Padding(
@@ -275,7 +282,7 @@ Color background = Colors.white;
                   prefs.setBool('firstVisit',  false);
                   Navigator.pushReplacementNamed(context, '/login');
                 }
-              }, child: Text('Save'),style:  ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.red)),)
+              }, child: Text('Save'),)
             ],),),)),
     ],
 
@@ -290,14 +297,14 @@ Color background = Colors.white;
       footerBuilder: (context, dragDistance, pagesLength, setIndex) {
     return DecoratedBox(
     decoration: BoxDecoration(
-    color: background,
+     
     border: Border.all(
     width: 0.0,
-    color: background,
+     
     ),
     ),
     child: ColoredBox(
-    color: background,
+color: background,
     child: Padding(
     padding: const EdgeInsets.all(45.0),
     child: Row(

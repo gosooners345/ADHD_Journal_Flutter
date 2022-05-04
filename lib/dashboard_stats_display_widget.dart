@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'main.dart';
 import 'records_data_class_db.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -28,10 +29,9 @@ class _DashboardViewWidget extends State<DashboardViewWidget>{
   static List<RecordDataStats> _recordRatingsData() {
     List<RecordDataStats> ratingsData = [];
     for (Records record in records) {
-      ratingsData.add(RecordDataStats(record.timeCreated, record.rating));
+      ratingsData.add(RecordDataStats(DateFormat("MM/dd/yyyy hh:mm:ss aa").format(record.timeCreated), record.rating));
     }
     // The following is for later if needed
-    //DateFormat('MM/dd/yyyy hh:mm:ss:aa').parse(record.timeCreated)
     return ratingsData;
   }
   static List<RecordDataStats> _recordSuccessData(){
@@ -46,9 +46,6 @@ class _DashboardViewWidget extends State<DashboardViewWidget>{
         successData[1].value++;
       }
     }
-
-  // measurePercentages(successData[0].value, successData[1].value);
-
     return successData;
   }
 static List<RecordDataStatsInt> _recordEmotionData(){

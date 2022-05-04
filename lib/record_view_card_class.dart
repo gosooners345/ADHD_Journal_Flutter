@@ -22,7 +22,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget>{
       Column(
         children: <Widget>[
           // Title Field
-          Row(children: [Text(super.widget.record.title), Spacer(),
+          Row(children: [Text(super.widget.record.title), const Spacer(),
             Text('Rating: ' + super.widget.record.rating.toString()),],),
           // Content field
           Row(children: [ Expanded(child: Text(super.widget.record.content))]),
@@ -34,18 +34,17 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget>{
           ]),
           // Symptom field
           Row(children: [
-            Expanded(child: Text('Related ADHD Symptoms were: ' + super.widget.record.symptoms,maxLines: 2,style:
+            Expanded(child: Text('Related ADHD Symptoms are: ' + super.widget.record.symptoms,maxLines: 2,style:
               TextStyle(fontStyle: FontStyle.italic,overflow: TextOverflow.ellipsis),)),
           ]),
           // Success state
-          Row(children: [Text('This was a ' + super.widget.record.success.toLowerCase()+'.'),]),
+          Row(children: [Text('This was a ${(super.widget.record.success ? "success" : "failure")}'),]),
           // This is for timestamp collection
           Row(children: [Expanded(child:Text('Time created: ' +
-              super.widget.record.timeCreated,style: TextStyle(fontStyle: FontStyle.italic),))
+              DateFormat("MM/dd/yyyy hh:mm:ss aa").format(super.widget.record.timeCreated),style: TextStyle(fontStyle: FontStyle.italic),))
           ,space2,Expanded(child:Text('Time updated: '
-          + (super.widget.record.timeUpdated),style: TextStyle(fontStyle: FontStyle.italic),)),],),
-          /*Row(children: [
-          ],),*/
+          + DateFormat("MM/dd/yyyy hh:mm:ss aa").format(super.widget.record.timeUpdated),style: TextStyle(fontStyle: FontStyle.italic),)),],),
+
         ],
       );
   }
