@@ -65,14 +65,8 @@ class _SettingsPage extends State<SettingsPage>{
         lockIcon = Icon(Icons.lock_open);
         passwordLabelText = "Password Disabled";
         passwordLabelWidget = Text(passwordLabelText);
-
       }
-
     });
-
-   // loadPrefs();
-   //loadParameters();
-
   }
 
 
@@ -102,7 +96,7 @@ class _SettingsPage extends State<SettingsPage>{
         prefs.reload();
         Navigator.pop(context);
       },
-          icon: Icon(Icons.arrow_back)),
+          icon: const Icon(Icons.arrow_back)),
       ),
       extendBody: true,
       body: SingleChildScrollView(
@@ -173,7 +167,7 @@ class _SettingsPage extends State<SettingsPage>{
               ),
             ),
             spacer,
-            ElevatedButton(onPressed: () {
+           /* ElevatedButton(onPressed: () {
               setState(() {
                 prefs.setBool('passwordEnabled', isChecked);
                 saveSettings(passwordValue, 'loginPassword');
@@ -182,8 +176,7 @@ class _SettingsPage extends State<SettingsPage>{
            prefs.reload();
           Navigator.pop(context);
               });
-
-            }, child: const Text('Save Changes')),
+            }, child: const Text('Save Changes')),*/
 
             ElevatedButton(onPressed: (){
               // Demo mode

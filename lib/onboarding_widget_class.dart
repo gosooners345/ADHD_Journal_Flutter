@@ -38,6 +38,7 @@ Color background = Colors.white;
   Material _skipButton({void Function(int)? setIndex}) {
     return Material(
       borderRadius: defaultSkipButtonBorderRadius,
+      color: Colors.brown,
       child: InkWell(
         borderRadius: defaultSkipButtonBorderRadius,
         onTap: () {
@@ -130,7 +131,7 @@ Color background = Colors.white;
       PageModel(widget: DecoratedBox(
         decoration: BoxDecoration(
            border: Border.all(
-          width: 0.0, ),),
+          width: 0.0, )),
         child: SingleChildScrollView(
           controller: ScrollController(),
           child: Column(
@@ -274,15 +275,35 @@ Color background = Colors.white;
                   Navigator.pushReplacementNamed(context, '/login');
                 }
                 else{
-                  savedPasswordValue = '1234';
-                  prefs.setString('loginPassword', savedPasswordValue);
-                  prefs.setString('dbPassword', savedPasswordValue);
-                  prefs.setBool('passwordEnabled', true);
-                  prefs.setString('greeting', greetingValueSaved);
-                  prefs.setBool('firstVisit',  false);
-                  Navigator.pushReplacementNamed(context, '/login');
+                  try {
+                    showDialog(context: context, builder: (BuildContext context)=> AlertDialog(
+                      title: Text('Password Required!'),
+                      content: const Text('You need to enter a passowrd or else the default password will be set to 1234 to load the application. '
+                          'Your journal\'s security will be at risk! \r\n'
+                          'If you want to enter a password, hit cancel and type one in. You can change it later in settings if you\'d like'),
+                      actions: [
+                        TextButton(onPressed: (){
+                          Navigator.pop(context);
+                          savedPasswordValue = '1234';
+                    prefs.setString('loginPassword', savedPasswordValue);
+                    prefs.setString('dbPassword', savedPasswordValue);
+                    prefs.setBool('passwordEnabled', true);
+                    prefs.setString('greeting', greetingValueSaved);
+                    prefs.setBool('firstVisit',  false);
+                    Navigator.pushReplacementNamed(context, '/login');
+
+                        }, child: const Text('OK')),
+                        TextButton(onPressed: (){
+                          Navigator.pop(context);
+                          }, child: const Text('Cancel'))
+                      ],
+                    ));
+
+                  } catch (e, s) {
+                    print(s);
+                  }
                 }
-              }, child: Text('Save'),)
+              }, child: const Text('Save'),)
             ],),),)),
     ],
 
@@ -314,6 +335,8 @@ color: background,
     netDragPercent: dragDistance,
     pagesLength: pagesLength,
     indicator: Indicator(
+      activeIndicator: ActiveIndicator(color: Colors.brown),
+    closedIndicator: ClosedIndicator(color: Colors.white),
     indicatorDesign: IndicatorDesign.line(
     lineDesign: LineDesign(
     lineType: DesignType.line_uniform,
