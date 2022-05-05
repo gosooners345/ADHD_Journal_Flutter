@@ -22,15 +22,15 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget>{
       Column(
         children: <Widget>[
           // Title Field
-          Row(children: [Text(super.widget.record.title), const Spacer(),
+          Row(children: [Expanded(child:Text(super.widget.record.title,style: TextStyle(overflow: TextOverflow.ellipsis))), const Spacer(),
             Text('Rating: ' + super.widget.record.rating.toString()),],),
           // Content field
-          Row(children: [ Expanded(child: Text(super.widget.record.content))]),
+          Row(children: [ Expanded(child: Text(super.widget.record.content,maxLines: 2,style:TextStyle(overflow: TextOverflow.ellipsis)))]),
           //Feelings
-          Row(children: [ Text('I felt ' + super.widget.record.emotions)]),
+          Row(children: [ Expanded(child:Text('I felt ' + super.widget.record.emotions,style: TextStyle(overflow: TextOverflow.ellipsis),maxLines: 2,))]),
           //Sources Field
           Row(children: [
-            Expanded(child: Text('My thoughts were: ' + super.widget.record.sources)),
+            Expanded(child: Text('My thoughts were: ' + super.widget.record.sources,maxLines: 2,style: TextStyle(overflow: TextOverflow.ellipsis),)),
           ]),
           // Symptom field
           Row(children: [

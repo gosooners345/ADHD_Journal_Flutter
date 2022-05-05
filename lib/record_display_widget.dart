@@ -1,5 +1,6 @@
 
 import 'package:adhd_journal_flutter/dashboard_stats_display_widget.dart';
+import 'package:adhd_journal_flutter/record_list_class.dart';
 import 'package:adhd_journal_flutter/record_view_card_class.dart';
 import 'package:adhd_journal_flutter/recordsdatabase_handler.dart';
 import 'package:adhd_journal_flutter/settings.dart';
@@ -45,72 +46,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget>{
       setState(() {
         ///Load the DB into the app
         _recordList = RecordsDB.records();
-        /// This controls the ListView widget responsible for displaying user data on screen
-       /* testMe = FutureBuilder<List<Records>>(
-            future: _recordList,
-            builder: (BuildContext context,
-                AsyncSnapshot<List<Records>> snapshot,) {
-              /// If all goes well, data is displayed, if not, then the errors show up.
-              if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Error has occurred ${snapshot.error}'),
-                  );
-                }
-                else if (snapshot.hasData) {
-                  records = snapshot.data as List<Records>;
-                  return ListView.builder(itemBuilder: (context, index) {
-                    return GestureDetector(
-                      child: Card(
-                          child:
-                          ListTile(
-                            onTap: () {
-                              _editRecord(index);
-                            },
-                            title: RecordCardViewWidget(record: records[index],),
-                          )
-                      ),
-                      onHorizontalDragEnd: (_) {
-                        var deleted = false;
-                        //Add a dialog box method to allow for challenges to deleting entries
-                        setState(() {
-                          showDialog(context: context, barrierDismissible: false,
-                              builder: (BuildContext context){
-                            return AlertDialog(
-                              title: const Text('Delete Record?'),
-                              content: const Text('Are you sure you want to delete this record?'
-                                  'You can\'t undo this once you hit yes.',),
-                              actions: [
-                                TextButton(onPressed: (){
-                                  final deletedRec = records[index];
-                                  RecordsDB.deleteRecord(deletedRec.id);
 
-                                  deleted = true;
-                                  Navigator.pop(context);
-                               }, child: const Text('Yes')),
-                                TextButton(onPressed: () => Navigator.pop(context), child: const Text('No'))
-                              ],
-                            );
-                              });
-
-                        });
-                        if(deleted){
-                          records.removeAt(index);
-                        }
-                      },
-                    );
-                  },
-                    itemCount: records.length,
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                  );
-                }
-              }
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-        );*/
       }
       );
     } catch (e, s) {
@@ -152,7 +88,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget>{
   Widget build(BuildContext context) {
     return  Column(key: UniqueKey(),
       children: <Widget>[
-        SizedBox(
+        const SizedBox(
           height: 20),Padding(
           padding: const EdgeInsets.only(
               left: 15.0, right: 15.0, top: 15, bottom: 15.0),
@@ -174,6 +110,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget>{
                 }
                 else if (snapshot.hasData) {
                   records = snapshot.data as List<Records>;
+                  RecordList.loadLists();
                   return ListView.builder(itemBuilder: (context, index) {
                     return GestureDetector(
                       child: Card(

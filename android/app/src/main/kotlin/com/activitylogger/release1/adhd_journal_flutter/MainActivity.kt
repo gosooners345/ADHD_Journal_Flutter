@@ -11,20 +11,25 @@ import java.lang.Exception
 import net.sqlcipher.database.SQLiteDatabase
 import java.io.File
 import java.io.FileNotFoundException
-
-//import com.bloomberg.selekt.*
-//import com.bloomberg.selekt.android.ISQLiteOpenHelper
-//import com.bloomberg.selekt.android.SQLiteDatabase
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class MainActivity: FlutterActivity(){
     private val CHANNEL = "com.activitylogger.release1/ADHDJournal"
     private lateinit var sharePreferences : SharedPreferences
 
+
+
     override  fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine){
         super.configureFlutterEngine(flutterEngine)
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger,CHANNEL).setMethodCallHandler{
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger,CHANNEL).setMethodCallHandler {
 call, result ->
+            // This is where any list methods should be initialized.
+            var countsList = ArrayList<RecordDataStats>()
+
+            when (call.method){
+        "changeDBPasswords" ->{
             try{
                 sharePreferences =  getSharedPreferences(BuildConfig.APPLICATION_ID, MODE_PRIVATE)
             changeDBPasswords()
@@ -34,8 +39,15 @@ call, result ->
                 Log.i("EXCEPTION",ex.message.toString())
             }
         }
+        "getEmotionCounts" -> {
+    result.success(
+        getCounts(call.argument("emotionCounts")!!))}
 
-    }
+        }
+        }
+        }
+
+
 
   private  fun changeDBPasswords(){
 try {
@@ -150,6 +162,50 @@ catch (ex :Exception){
     }
 
 
+    private fun getCounts(test : List<String>) : List<RecordDataStats>{
+        val countsList = ArrayList<String>()
+        val recordCountsList = ArrayList<RecordDataStats>()
+        countsList.addAll(test)
+        val superList = countsList.groupingBy { it.trimStart().trimEnd().lowercase() }.eachCount()
+        //val keyList = superList.keys.toList()
+        //val valuesList = superList.values.toList()
+        for (i in 0..superList.size-1){
+          recordCountsList.add(RecordDataStats(superList.keys.elementAt(i),superList.values.elementAt(i).toDouble()))
+        }
+        Collections.sort(recordCountsList,RecordDataStats.compareCounts)
+    return recordCountsList.toList()
+
+
+
+    //eturn RecordDataStatsList.getCounts(countsList)
+
+
+    }
+    }
+
+
+
+
+
+
+class RecordDataStats() : Comparable<RecordDataStats> {
+    var key : String = "";
+    var value : Double = 0.0
+    constructor(keyString: String, valueString : Double?): this(){
+        this.key = keyString
+        this.value = valueString!!
+    }
+
+    override fun compareTo(other: RecordDataStats): Int {
+        return  this.value.compareTo(other.value)
+    }
+    companion object{
+        var compareCounts = java.util.Comparator<RecordDataStats>{r1,r2 ->
+            r1.compareTo(r2)
+        }
+    }
+
+
+
 }
 
-// Dumb extra stuff to make rekeying databases easier
