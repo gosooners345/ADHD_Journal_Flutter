@@ -32,18 +32,18 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
     avgRating = (totalRtg/records.length.toDouble());
     // For the success/fail section
     if(RecordList.successList[0].value > RecordList.successList[1].value){
-      successString = "Success";
+      successString = "success";
     }
     else{
-      successString = "Fail";
+      successString = "fail";
     }
 
     //For the symptom and emotion section
 
     summaryString = "You have ${records.length} entries in your journal.\r\n"
-        "Your average rating is $avgRating.\r\n"
+        "Your average rating is ${avgRating.roundToDouble()}.\r\n"
         "You're trending more  on $successString based on your Success/Fail ratings.\r\n"
-        "Your most recently occurring symptoms are: ${records.last.symptoms}.";
+        "Your most recently occurring symptoms are: ${records.first.symptoms}.";
 
     return  summaryString;
   }
@@ -60,10 +60,10 @@ Card(elevation: 2.0,child: SizedBox(child:SfCartesianChart(
   zoomPanBehavior: ZoomPanBehavior(enablePinching: true,enableDoubleTapZooming: false,
 enablePanning: true,zoomMode: ZoomMode.xy),borderWidth: 2.0,
   primaryXAxis: CategoryAxis(),primaryYAxis: NumericAxis(),
-series: <LineSeries<RecordDataStats,String>>[LineSeries(dataSource:RecordList.ratingsList ,
-    xValueMapper: (RecordDataStats recLbl,_)=>recLbl.key,
+series: <LineSeries<RecordRatingStats,String>>[LineSeries(dataSource:RecordList.ratingsList ,width: 1.0,
+    xValueMapper: (RecordRatingStats recLbl,_)=>DateFormat("MM/dd/yyyy hh:mm:ss aa").format(recLbl.date),
     color: Colors.brown,
-    yValueMapper: (RecordDataStats recLbl, _)=> recLbl.value,
+    yValueMapper: (RecordRatingStats recLbl, _)=> recLbl.value,
 dataLabelSettings: const DataLabelSettings(isVisible: true),
 xAxisName: 'Entry Timestamps',yAxisName: 'Ratings',),],
   title: ChartTitle(text: 'Ratings data from journal entries'),

@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_final_fields
 
 import 'package:adhd_journal_flutter/dashboard_stats_display_widget.dart';
+import 'package:adhd_journal_flutter/record_list_class.dart';
 import 'package:adhd_journal_flutter/record_view_card_class.dart';
 import 'package:adhd_journal_flutter/recordsdatabase_handler.dart';
 import 'package:adhd_journal_flutter/settings.dart';
@@ -111,6 +112,7 @@ void loadPrefs() async{
   /// This loads the db list into the application for displaying.
   void getList() async {
     _recordList = RecordsDB.records();
+    records = await _recordList;
   }
 
 
@@ -119,9 +121,24 @@ void loadPrefs() async{
     setState(() {
      if(records.isNotEmpty) {
        _selectedIndex = index;
+       RecordList.loadLists();
      }
     });
   }
+
+  void _deleteRecord(int i){
+    var deleteRecord = records[i];
+    RecordsDB.deleteRecord(deleteRecord.id);
+    records.remove(deleteRecord);
+    getList();
+
+    setState((){
+
+
+    });
+
+  }
+
 
   /// Allows users to create entries for the db and journal. Once submitted, the screen will update on demand.
   /// Checked and passed : true

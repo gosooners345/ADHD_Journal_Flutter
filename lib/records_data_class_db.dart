@@ -1,6 +1,6 @@
 
 
-class Records{
+class Records implements Comparable{
    int id;
    String title;
    String content;
@@ -57,6 +57,20 @@ required this.success,
 static Comparable comparableIDs(int a,int b){
   return a.compareTo(b);
 }
+
+  @override
+  int compareTo(other) {
+return id.compareTo(other.id);
+  }
+
+  int compareTimesUpdated(DateTime other){
+  return timeUpdated.compareTo(other);
+  }
+
+  int compareRatings(double other){
+  return rating.compareTo(other);
+  }
+
 
 
 }

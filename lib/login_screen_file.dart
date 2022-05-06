@@ -106,10 +106,25 @@ setState(() {
           onChanged: (text) {
             loginPassword = text;
             if (text.length == userPassword?.length){
+              if(text == userPassword!){
               Navigator.pushNamed(context, '/success').then((value) => {
                 refreshPrefs(),
                 resetLoginFieldState(),
               });
+              }
+              else{
+                showDialog(context: context, builder: (BuildContext context){ return AlertDialog(
+                  title: Text("Invalid password",style: TextStyle(fontWeight: FontWeight.bold),),
+                  content: Text('You have entered the incorrect password. Please try again.'),
+                  actions: [
+                    TextButton(onPressed: (){
+                      Navigator.pop(context);
+                    }, child: Text("Ok"))
+                  ],
+                );
+                }
+                );
+              }
             }
           },
           enabled: true,

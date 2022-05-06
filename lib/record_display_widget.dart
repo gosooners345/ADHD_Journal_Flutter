@@ -1,9 +1,13 @@
 
+import 'dart:async';
+import 'dart:ffi';
+
 import 'package:adhd_journal_flutter/dashboard_stats_display_widget.dart';
 import 'package:adhd_journal_flutter/record_list_class.dart';
 import 'package:adhd_journal_flutter/record_view_card_class.dart';
 import 'package:adhd_journal_flutter/recordsdatabase_handler.dart';
 import 'package:adhd_journal_flutter/settings.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart';
 import 'main.dart';
@@ -23,17 +27,16 @@ class RecordDisplayWidget extends StatefulWidget {
 
   @override
   State<RecordDisplayWidget > createState() => RecordDisplayWidgetState();
-
-
-
-}
+  }
 
 class RecordDisplayWidgetState extends State<RecordDisplayWidget>{
-  late FutureBuilder testMe;
+  late ValueListenableBuilder testMe;
   late Text titleHdr;
+ RecordsNotifier recNotifier = RecordsNotifier(records);
   Future<List<Records>> _recordList = RecordsDB.records();
   var _selectedIndex = 0;
   String header = "";
+late ValueListenableBuilder tryMe;
 
   static const TextStyle optionStyle =
   TextStyle(fontSize: 15, fontWeight: FontWeight.bold);
@@ -43,16 +46,63 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget>{
     super.initState();
     try {
       loadPrefs();
-      setState(() {
+      getList();
         ///Load the DB into the app
-        _recordList = RecordsDB.records();
+
+        setState(() {
+loadList();
+testMe =  ValueListenableBuilder(valueListenable: recNotifier.valueNotifier, builder:
+    (BuildContext context,value,child){
+
+  return ListView.builder(itemBuilder: (context, index) {
+    return GestureDetector(
+      child: Card(
+          child: ListTile(    onTap: () {
+            _editRecord(index);
+          },
+            title: RecordCardViewWidget(record: records[index],),
+          )
+      ),
+      onHorizontalDragStart: (_) {
+        //Add a dialog box method to allow for challenges to deleting entries
+        setState(() {
+          final deletedRec = records[index];
+          RecordsDB.deleteRecord(deletedRec.id);
+          records.remove(deletedRec);
+          // loadList();
+        });
+      },
+    );
+  },
+    itemCount: records.length,
+    scrollDirection: Axis.vertical,
+    shrinkWrap: true,
+  );
+
+},);
 
       }
-      );
+);
+      (recordWaitingPeriod() );
+
+
     } catch (e, s) {
       print(s);
     }
   }
+
+  recordWaitingPeriod() async{
+  var duration = const Duration(seconds: 1);
+
+return Timer(duration,testME);
+  }
+
+void loadList() async{
+  records = await _recordList;
+    records.sort((a,b)=> a.compareTimesUpdated(b.timeUpdated));
+    records = records.reversed.toList();
+    RecordList.loadLists();
+}
 
   void loadPrefs() async{
     prefs = await SharedPreferences.getInstance();
@@ -63,7 +113,11 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget>{
   void getList() async {
     _recordList = RecordsDB.records();
   }
-
+void testME(){
+    setState((){
+      testMe.createState();
+    });
+}
 
  
 
@@ -76,7 +130,10 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget>{
           ComposeRecordsWidget(
             record: loadRecord, id: 1,title: 'Edit Entry',)))
           .then((loadRecord) =>
-          setState(() {}));
+          setState(() {
+            //loadList();
+           // RecordList.loadLists();
+          }));
     });
   }
 
@@ -97,56 +154,53 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget>{
             style: TextStyle(fontSize: 18.0),textAlign: TextAlign.center,),),],
           ),
         ),
-        Expanded(child: FutureBuilder<List<Records>>(
-            future: _recordList,
-            builder: (BuildContext context,
-                AsyncSnapshot<List<Records>> snapshot,) {
-              /// If all goes well, data is displayed, if not, then the errors show up.
-              if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Error has occurred ${snapshot.error}'),
-                  );
-                }
-                else if (snapshot.hasData) {
-                  records = snapshot.data as List<Records>;
-                  RecordList.loadLists();
-                  return ListView.builder(itemBuilder: (context, index) {
-                    return GestureDetector(
-                      child: Card(
-                          child:
-                          ListTile(
-                            onTap: () {
-                              _editRecord(index);
-                            },
-                            title: RecordCardViewWidget(record: records[index],),
-                          )
-                      ),
-                      onHorizontalDragEnd: (_) {
-                        var deleted = false;
-                        //Add a dialog box method to allow for challenges to deleting entries
-                        setState(() {
-                            final deletedRec = records[index];
-                            RecordsDB.deleteRecord(deletedRec.id);
-                            records.removeAt(index);
-                        });
+        Expanded(child:ValueListenableBuilder(valueListenable: recNotifier.valueNotifier, builder:
+            (BuildContext context,value,child){
 
-                      },
-                    );
+          return ListView.builder(itemBuilder: (context, index) {
+            return GestureDetector(
+              child: Card(
+                  child: ListTile(    onTap: () {
+                    _editRecord(index);
                   },
-                    itemCount: records.length,
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                  );
-                }
-              }
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-        )),
+                    title: RecordCardViewWidget(record: records[index],),
+                  )
+              ),
+              onHorizontalDragStart: (_) {
+                //Add a dialog box method to allow for challenges to deleting entries
+                setState(() {
+                  final deletedRec = records[index];
+                  RecordsDB.deleteRecord(deletedRec.id);
+                  records.remove(deletedRec);
+                  // loadList();
+                });
+              },
+            );
+          },
+            itemCount: records.length,
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+          );
+
+        },)
+
+
+        ),
       ],
     );
    
   }
+}
+class RecordsNotifier extends ValueNotifier<List<Records>>{
+  RecordsNotifier(List<Records> recordList) : super(recordList);
+  ValueNotifier valueNotifier = ValueNotifier(records.length);
+
+  void updateListCount(int length){
+//RecordList.loadLists();
+    valueNotifier.notifyListeners();
+  }
+
+
+
+
 }

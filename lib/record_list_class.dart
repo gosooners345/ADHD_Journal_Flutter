@@ -14,7 +14,7 @@ class RecordList {
       MethodChannel('com.activitylogger.release1/ADHDJournal');
   static List<RecordDataStats> emotionsList = [];
   static List<RecordDataStats> successList = [];
-  static List<RecordDataStats> ratingsList = [];
+  static List<RecordRatingStats> ratingsList = [];
   static List<RecordDataStats> symptomList = [];
 
   //List<Records> recordList = records;
@@ -94,13 +94,29 @@ class RecordList {
   }
 
 //Ratings List Method
-  static Future<List<RecordDataStats>> _getRatingsList() async {
-    List<RecordDataStats> ratingsData = List.empty(growable: true);
+  static Future<List<RecordRatingStats>> _getRatingsList() async {
+    List<RecordRatingStats> ratingsData = List.empty(growable: true);
     for (Records record in records) {
-      ratingsData.add(RecordDataStats(
-          DateFormat("MM/dd/yyyy hh:mm:ss aa").format(record.timeCreated),
-          record.rating));
+      ratingsData.add(RecordRatingStats(record.timeCreated, record.rating));
     }
+    ratingsData.sort((a,b)=>a.compareTo(b) );
     return ratingsData;
   }
+}
+
+class RecordRatingStats implements Comparable{
+  DateTime date = DateTime.now();
+   double value= 0.0;
+  
+  RecordRatingStats(this.date, this.value);
+  Map<String, Object> toMap() {
+    return {"date": date, "value": value};
+  }
+  @override
+  int compareTo(other) {
+   return date.compareTo(other.date);
+  }
+  
+  
+  
 }

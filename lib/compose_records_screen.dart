@@ -71,9 +71,14 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
       {
         RecordsDB.insertRecord(super.widget.record);
         records.add(super.widget.record);
+        //records.sort((a,b)=> a.compareTimesUpdated(b.timeUpdated));
+
       }
     else {
       RecordsDB.updateRecords(super.widget.record);
+      records.remove(super.widget.record);
+      records.add(super.widget.record);
+      records.sort((a,b)=> a.compareTimesUpdated(b.timeUpdated));
     }
     Navigator.pop(context,super.widget.record);
   }
@@ -281,3 +286,5 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
 
 
 }
+
+
