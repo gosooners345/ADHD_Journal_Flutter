@@ -26,6 +26,7 @@ startTimer();
   }
   void loadPreferences() async{
     prefs = await SharedPreferences.getInstance();
+    encryptedSharedPrefs = EncryptedSharedPreferences();
   }
   
   
