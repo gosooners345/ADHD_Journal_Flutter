@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'main.dart';
 import 'project_colors.dart';
 import 'project_strings_file.dart';
 import 'recordsdatabase_handler.dart';
@@ -25,6 +26,7 @@ const LoginScreen({Key? key,}) : super(key: key);
   State<LoginScreen> createState() => _LoginScreenState();
 
 }
+late String dbPassword;
 late String userPassword;
 ///Handles the states of the application.
 class _LoginScreenState extends State<LoginScreen> {
@@ -49,6 +51,9 @@ bool passwordEnabled = true;
     });
 
   }
+  void loadDB() async{
+    records = await RecordsDB.records();
+  }
 
   void loadStateStuff() async {
     prefs = await SharedPreferences.getInstance();
@@ -58,11 +63,18 @@ bool passwordEnabled = true;
         " Please sign in below to get started!";
     userPassword = '';
     userPassword = await encryptedSharedPrefs.getString('loginPassword') ?? '1234';
-    passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
-    if (userPassword == '') {
-      userPassword = '1234';
-      encryptedSharedPrefs.setString('loginPassword', userPassword!);
+    dbPassword = await encryptedSharedPrefs.getString('dbPassword');
+
+    // This works on android, we need to see if it will work on iOS
+
+
+    if(userPassword != dbPassword){
+      encryptedSharedPrefs.setString('dbPassword', userPassword);
     }
+
+    passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
+// This code seem
+
 setState(() {
   resetLoginFieldState();
 });
@@ -88,7 +100,6 @@ setState(() {
     greeting =prefs.getString("greeting")??'';
     loginGreeting="Welcome $greeting! Please sign in below to get started!";
 
-
   }
 
   void resetLoginFieldState() {
@@ -110,7 +121,9 @@ setState(() {
             loginPassword = text;
             if (text.length == userPassword?.length){
               if(text == userPassword!){
+                loadDB();
               Navigator.pushNamed(context, '/success').then((value) => {
+
                 refreshPrefs(),
                 resetLoginFieldState(),
               });
@@ -198,8 +211,10 @@ setState(() {
                           if (loginPassword == userPassword && passwordEnabled) {
                             stuff.clear();
                             loginPassword = '';
+                            loadDB();
                             Navigator.pushNamed(context, '/success').then((value) => {
                               refreshPrefs(),
+
                               resetLoginFieldState(),
                             });
                           }
@@ -207,7 +222,9 @@ setState(() {
                           {
                             loginPassword='';
                             stuff.clear();
+                            loadDB();
                             Navigator.pushNamed(context, '/success').then((value) => {
+
                              refreshPrefs(),
                               resetLoginFieldState()
                             });
@@ -221,6 +238,7 @@ setState(() {
                       return ElevatedButton(
                         onPressed: () {
                           if (loginPassword == userPassword) {
+                            loadDB();
                             Navigator.pushNamed(context, '/success').then((value) => {refreshPrefs(),
                           resetLoginFieldState()
                             });

@@ -98,7 +98,7 @@ return Timer(duration,testME);
   }
 
 void loadList() async{
-  records = await _recordList;
+  //records = await _recordList;
     records.sort((a,b)=> a.compareTimesUpdated(b.timeUpdated));
     records = records.reversed.toList();
     RecordList.loadLists();
@@ -131,8 +131,7 @@ void testME(){
             record: loadRecord, id: 1,title: 'Edit Entry',)))
           .then((loadRecord) =>
           setState(() {
-            //loadList();
-           // RecordList.loadLists();
+
           }));
     });
   }
@@ -172,7 +171,7 @@ void testME(){
                   final deletedRec = records[index];
                   RecordsDB.deleteRecord(deletedRec.id);
                   records.remove(deletedRec);
-                  // loadList();
+
                 });
               },
             );
@@ -196,7 +195,7 @@ class RecordsNotifier extends ValueNotifier<List<Records>>{
   ValueNotifier valueNotifier = ValueNotifier(records.length);
 
   void updateListCount(int length){
-//RecordList.loadLists();
+
     valueNotifier.notifyListeners();
   }
 
