@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:adhd_journal_flutter/onboarding_widget_class.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,7 +29,7 @@ class _SettingsPage extends State<SettingsPage>{
   //Parameter setting stuff
   bool isChecked=false;
   //Preference Values
-  String passwordValue = '';
+  String passwordValue = userPassword;
   String greetingValue = '';
   Text passwordLabelWidget = Text('');
   bool passwordEnabled = false;
@@ -50,7 +51,7 @@ class _SettingsPage extends State<SettingsPage>{
     super.initState();
 // Parameter Value setting
     greetingValue = prefs.getString('greeting') ?? '';
-    passwordValue = prefs.getString('loginPassword') ?? '';
+
     isChecked = prefs.getBool('passwordEnabled')?? true;
 
     setState(() {
@@ -70,15 +71,17 @@ class _SettingsPage extends State<SettingsPage>{
   }
 
 
+
   ///Save string values into the preferences
   void saveSettings(String value, String key) async{
-    prefs.setString(key, value);
+    encryptedSharedPrefs.setString(key, value);
   }
 
   void saveSettings2(bool value, String key) async{
     prefs.setBool(key, value);
     prefs.commit();
   }
+
 
   /// The display for the screen
   @override
@@ -89,11 +92,12 @@ class _SettingsPage extends State<SettingsPage>{
       leading: IconButton(onPressed: (){
         prefs.setBool('passwordEnabled', isChecked);
         saveSettings(passwordValue, 'loginPassword');
-        saveSettings(greetingValue, 'greeting');
+        prefs.setString('greeting', greetingValue);
         setState(() {
           greeting = greetingValue;
         });
         prefs.reload();
+userPassword = passwordValue;
         Navigator.pop(context);
       },
           icon: const Icon(Icons.arrow_back)),
@@ -167,16 +171,6 @@ class _SettingsPage extends State<SettingsPage>{
               ),
             ),
             spacer,
-           /* ElevatedButton(onPressed: () {
-              setState(() {
-                prefs.setBool('passwordEnabled', isChecked);
-                saveSettings(passwordValue, 'loginPassword');
-                saveSettings(greetingValue, 'greeting');
-                greeting = greetingValue;
-           prefs.reload();
-          Navigator.pop(context);
-              });
-            }, child: const Text('Save Changes')),*/
 
             ElevatedButton(onPressed: (){
               // Demo mode

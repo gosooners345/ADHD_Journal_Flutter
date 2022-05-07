@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:adhd_journal_flutter/onboarding_widget_class.dart';
 import 'package:flutter/material.dart';
+import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget{
@@ -20,6 +21,7 @@ class _SplashScreenState extends State<SplashScreen>{
   void initState(){
     super.initState();
     loadPreferences();
+
 startTimer();
   }
   void loadPreferences() async{
@@ -64,3 +66,4 @@ Navigator.pushReplacementNamed(context, '/login');
 
 }
 late SharedPreferences prefs;
+late EncryptedSharedPreferences encryptedSharedPrefs;

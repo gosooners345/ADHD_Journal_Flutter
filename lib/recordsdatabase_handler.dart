@@ -21,15 +21,16 @@ static const platform = MethodChannel('com.activitylogger.release1/ADHDJournal')
 
 
 static Future<cipher.Database> db() async{
-  final sharedPrefs = await SharedPreferences.getInstance();
-  String? dbPassword = sharedPrefs.getString('dbPassword');
+  //final sharedPrefs = await SharedPreferences.getInstance();
+  String dbPassword =await  encryptedSharedPrefs.getString('dbPassword');
   if( dbPassword == '') {
     dbPassword = '1234';
-    sharedPrefs.setString('dbPassword', dbPassword);
+    encryptedSharedPrefs.setString('dbPassword', dbPassword);
   }
-  String? newPassword = sharedPrefs.getString('loginPassword');
+  String? newPassword = await encryptedSharedPrefs.getString('loginPassword');
   if(newPassword != dbPassword) {
-    _changeDBPasswords();
+
+    _changeDBPasswords(dbPassword!,newPassword!);
   }
 
   return cipher.openDatabase(join(await getDatabasesPath(), 'activitylogger_db.db'),
@@ -45,16 +46,26 @@ static Future<cipher.Database> db() async{
     version: 5,
   );
 }
-
-  void start() async{
+void go() async{
   WidgetsFlutterBinding.ensureInitialized();
+}
+
+  static void start() async{
+  _changeDBPasswords(await encryptedSharedPrefs.getString("dbPassword"), await encryptedSharedPrefs.getString('loginPassword'));
+
+ // WidgetsFlutterBinding.ensureInitialized();
 
   }
 
 
-static Future<void> _changeDBPasswords()async {
+static Future<void> _changeDBPasswords(String oldPassword, String newPassword)async {
   try{
-    await platform.invokeMethod('changeDBPasswords');
+
+
+    await platform.invokeMethod('changeDBPasswords',{'oldDBPassword': oldPassword,'newDBPassword': newPassword });
+    encryptedSharedPrefs.setString("dbPassword", newPassword);
+    encryptedSharedPrefs.reload();
+
 
   }on Exception catch(ex){
       print(ex);
@@ -72,7 +83,7 @@ Future<Database> get database async {
 }
  Future<Database> initializeDB() async{
   var ourDB = await cipher.openDatabase(join(await getDatabasesPath(), 'activitylogger_db.db'),
-    password: prefs.getString('dbPassword') ?? '1234',
+    password: await encryptedSharedPrefs.getString('dbPassword'),
     onCreate: (database, version) {
       return database.execute(
           'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT,symptoms TEXT,rating DOUBLE, tags TEXT,success INT,time_updated INT, time_created INT)'

@@ -17,43 +17,43 @@ import kotlin.collections.ArrayList
 
 class MainActivity: FlutterActivity(){
     private val CHANNEL = "com.activitylogger.release1/ADHDJournal"
-    private lateinit var sharePreferences : SharedPreferences
+    //private lateinit var sharePreferences : SharedPreferences
 
 
 
-    override  fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine){
+    override  fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger,CHANNEL).setMethodCallHandler {
-call, result ->
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            CHANNEL
+        ).setMethodCallHandler { call, result ->
             // This is where any list methods should be initialized.
-            var countsList = ArrayList<RecordDataStats>()
 
-            when (call.method){
-        "changeDBPasswords" ->{
-            try{
-                sharePreferences =  getSharedPreferences(BuildConfig.APPLICATION_ID, MODE_PRIVATE)
-            changeDBPasswords()
+
+            when (call.method) {
+                "changeDBPasswords" -> {
+                    try {
+                        // sharePreferences =  getSharedPreferences(BuildConfig.APPLICATION_ID, MODE_PRIVATE)
+                        changeDBPasswords(
+                            call.argument<String>("oldDBPassword").toString(),
+                            call.argument<String>("newDBPassword").toString()
+                        )
+                    } catch (ex: Exception) {
+                        print(ex)
+                        Log.i("EXCEPTION", ex.message.toString())
+                    }
+                }
             }
-            catch (ex : Exception){
-                print(ex)
-                Log.i("EXCEPTION",ex.message.toString())
-            }
         }
-        "getEmotionCounts" -> {
-    result.success(
-        getCounts(call.argument("emotionCounts")!!))}
-
-        }
-        }
-        }
+    }
 
 
 
-  private  fun changeDBPasswords(){
+  private  fun changeDBPasswords(oldDBPassword : String, newDBPassword : String){
 try {
    SQLiteDatabase.loadLibs(context)
-    val oldDBPassword = sharePreferences.getString("Flutter.dbPassword", "").toString()
-    val newDBPassword = sharePreferences.getString("Flutter.loginPassword", "").toString()
+    //val oldDBPassword = sharePreferences.getString("Flutter.dbPassword", "").toString()
+    //val newDBPassword = sharePreferences.getString("Flutter.loginPassword", "").toString()
     val dbName = "activitylogger_db.db"
     val dbPath = context.getDatabasePath(dbName)
     val oldDBPasscode = SQLiteDatabase.getBytes(oldDBPassword.toCharArray())
@@ -161,51 +161,5 @@ catch (ex :Exception){
     }
     }
 
-
-    private fun getCounts(test : List<String>) : List<RecordDataStats>{
-        val countsList = ArrayList<String>()
-        val recordCountsList = ArrayList<RecordDataStats>()
-        countsList.addAll(test)
-        val superList = countsList.groupingBy { it.trimStart().trimEnd().lowercase() }.eachCount()
-        //val keyList = superList.keys.toList()
-        //val valuesList = superList.values.toList()
-        for (i in 0..superList.size-1){
-          recordCountsList.add(RecordDataStats(superList.keys.elementAt(i),superList.values.elementAt(i).toDouble()))
-        }
-        Collections.sort(recordCountsList,RecordDataStats.compareCounts)
-    return recordCountsList.toList()
-
-
-
-    //eturn RecordDataStatsList.getCounts(countsList)
-
-
     }
-    }
-
-
-
-
-
-
-class RecordDataStats() : Comparable<RecordDataStats> {
-    var key : String = "";
-    var value : Double = 0.0
-    constructor(keyString: String, valueString : Double?): this(){
-        this.key = keyString
-        this.value = valueString!!
-    }
-
-    override fun compareTo(other: RecordDataStats): Int {
-        return  this.value.compareTo(other.value)
-    }
-    companion object{
-        var compareCounts = java.util.Comparator<RecordDataStats>{r1,r2 ->
-            r1.compareTo(r2)
-        }
-    }
-
-
-
-}
 

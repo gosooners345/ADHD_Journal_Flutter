@@ -1,3 +1,4 @@
+import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:onboarding/onboarding.dart';
 import 'package:flutter/material.dart';
 import 'splash_screendart.dart';
@@ -30,7 +31,7 @@ Color background = Colors.white;
   @override
   void initState() {
     super.initState();
-
+    encryptedSharedPrefs=EncryptedSharedPreferences();
     index = 0;
   }
 
@@ -267,8 +268,8 @@ Color background = Colors.white;
               ),),
               ElevatedButton(onPressed: (){
                 if(savedPasswordValue !=''){
-                  prefs.setString('loginPassword', savedPasswordValue);
-                  prefs.setString('dbPassword', savedPasswordValue);
+                  encryptedSharedPrefs.setString('loginPassword', savedPasswordValue);
+                  encryptedSharedPrefs.setString('dbPassword', savedPasswordValue);
                   prefs.setBool('passwordEnabled', true);
                   prefs.setString('greeting', greetingValueSaved);
                   prefs.setBool('firstVisit',  false);
@@ -285,11 +286,11 @@ Color background = Colors.white;
                         TextButton(onPressed: (){
                           Navigator.pop(context);
                           savedPasswordValue = '1234';
-                    prefs.setString('loginPassword', savedPasswordValue);
-                    prefs.setString('dbPassword', savedPasswordValue);
-                    prefs.setBool('passwordEnabled', true);
-                    prefs.setString('greeting', greetingValueSaved);
-                    prefs.setBool('firstVisit',  false);
+                          encryptedSharedPrefs.prefs?.setString('loginPassword', savedPasswordValue);
+                          encryptedSharedPrefs.prefs?.setString('dbPassword', savedPasswordValue);
+                          encryptedSharedPrefs.prefs?.setBool('passwordEnabled', true);
+                          encryptedSharedPrefs.prefs?.setString('greeting', greetingValueSaved);
+                          encryptedSharedPrefs.prefs?.setBool('firstVisit',  false);
                     Navigator.pushReplacementNamed(context, '/login');
 
                         }, child: const Text('OK')),

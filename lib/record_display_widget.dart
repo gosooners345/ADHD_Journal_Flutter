@@ -69,7 +69,7 @@ testMe =  ValueListenableBuilder(valueListenable: recNotifier.valueNotifier, bui
           final deletedRec = records[index];
           RecordsDB.deleteRecord(deletedRec.id);
           records.remove(deletedRec);
-          // loadList();
+
         });
       },
     );

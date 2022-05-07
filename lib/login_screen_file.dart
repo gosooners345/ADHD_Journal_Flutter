@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
@@ -24,11 +25,11 @@ const LoginScreen({Key? key,}) : super(key: key);
   State<LoginScreen> createState() => _LoginScreenState();
 
 }
-
+late String userPassword;
 ///Handles the states of the application.
 class _LoginScreenState extends State<LoginScreen> {
 
-  late String? userPassword;
+
   String loginPassword = '';
   String loginGreeting = '';
 bool passwordEnabled = true;
@@ -39,6 +40,7 @@ bool passwordEnabled = true;
 
   @override void initState() {
     super.initState();
+    encryptedSharedPrefs=EncryptedSharedPreferences();
     loadStateStuff();
     setState(() {
       stuff = TextEditingController();
@@ -51,15 +53,15 @@ bool passwordEnabled = true;
   void loadStateStuff() async {
     prefs = await SharedPreferences.getInstance();
     sharedPrefs = prefs;
-    greeting =sharedPrefs.getString("greeting")??'';
+    greeting =prefs.getString("greeting")??'';
     loginGreeting = "Welcome $greeting !"
         " Please sign in below to get started!";
     userPassword = '';
-    userPassword = sharedPrefs.getString('loginPassword') ?? '1234';
-    passwordEnabled = sharedPrefs.getBool('passwordEnabled') ?? true;
+    userPassword = await encryptedSharedPrefs.getString('loginPassword') ?? '1234';
+    passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
     if (userPassword == '') {
       userPassword = '1234';
-      sharedPrefs.setString('loginPassword', userPassword!);
+      encryptedSharedPrefs.setString('loginPassword', userPassword!);
     }
 setState(() {
   resetLoginFieldState();
@@ -67,24 +69,25 @@ setState(() {
   }
 
   Future<String> getGreeting() async {
-    await Future.delayed(Duration(seconds: 0));
+    await Future.delayed(Duration(seconds: 2));
     String opener = 'Welcome ';
     String closer = '! Sign in with your password below.';
-    greeting = sharedPrefs.getString('greeting') ?? '';
+    greeting = prefs.getString('greeting') ?? '';
     return opener + greeting + closer;
   }
 
   Future<bool> getPassword() async {
     await Future.delayed(Duration(seconds: 0));
-    return sharedPrefs.getBool('passwordEnabled') ?? true;
+    return prefs.getBool('passwordEnabled') ?? true;
   }
 
   void refreshPrefs() async{
     prefs.reload();
     passwordEnabled = prefs.getBool('passwordEnabled')?? true;
-    greeting =sharedPrefs.getString("greeting")??'';
+   // userPassword =  encryptedSharedPrefs.getString('loginPassword').toString() ;
+    greeting =prefs.getString("greeting")??'';
     loginGreeting="Welcome $greeting! Please sign in below to get started!";
-    userPassword = prefs.getString('loginPassword');
+
 
   }
 

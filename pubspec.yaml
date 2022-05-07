@@ -37,6 +37,7 @@ dependencies:
   material: ^1.0.0+2
   sqflite_sqlcipher: ^2.1.0
   shared_preferences:
+  encrypted_shared_preferences:
   intl:
   path:
   charts_flutter: ^0.12.0

@@ -192,9 +192,12 @@ DateTime.now() ,timeUpdated: DateTime.now())
             Navigator.push(context,MaterialPageRoute(builder: (_)=>
             SettingsPage())).then((value) =>
              {
+               prefs.reload(),
+               encryptedSharedPrefs.reload(),
+               RecordsDB.start(),
                RecordsDB.db(),
                _recordList= RecordsDB.records(),
-               prefs.reload()
+
              });},),],),
       body: Center(child: screens().elementAt(_selectedIndex)),
       floatingActionButton: FloatingActionButton.extended(

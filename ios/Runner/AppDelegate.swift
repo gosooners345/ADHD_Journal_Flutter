@@ -24,6 +24,8 @@ let dbHandler = FlutterMethodChannel(name: "com.activitylogger.release1/ADHDJour
 binaryMessenger: controller.binaryMessenger)
 dbHandler.setMethodCallHandler({
 (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
+    
+    
 guard call.method == "changeDBPasswords" else
 {
 result(FlutterMethodNotImplemented)
@@ -37,11 +39,13 @@ return
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
-private func changeDBPasswords(){
-    let oldDBPassword = UserDefaults.standard.object(forKey:"Flutter.dbPassword")
-    let newDBPassword = UserDefaults.standard.object(forKey:"Flutter.loginPassword")
+    private func changeDBPasswords(_ call: FlutterMethodCall){
+        if let args = call.arguments as? Dictionary<String,Any>,
+           let oldDBPassword = args["oldDBPassword"] as? String,
+           let newDBPassword = args["newDBPassword"] as? String{
+ 
 let dbName = "activitylogger_db.db"
-var path = NSSearchPathForDirectoriesInDomains(.documentDirectory,.userDomainMask,true).first!
+let path = NSSearchPathForDirectoriesInDomains(.documentDirectory,.userDomainMask,true).first!
 do{
 let dbPath = try!  Connection("\(path)/\(dbName)")
     let dbPasswordString : String = "\(String(describing: oldDBPassword))"
@@ -52,7 +56,7 @@ let dbPath = try!  Connection("\(path)/\(dbName)")
 catch {
 print(error)
 }
-
+        }
 
 }
 
