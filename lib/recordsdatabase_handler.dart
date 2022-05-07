@@ -9,6 +9,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'login_screen_file.dart';
 import 'splash_screendart.dart';
 
 
@@ -21,16 +22,10 @@ static const platform = MethodChannel('com.activitylogger.release1/ADHDJournal')
 
 
 static Future<cipher.Database> db() async{
-  //final sharedPrefs = await SharedPreferences.getInstance();
-  String dbPassword =await  encryptedSharedPrefs.getString('dbPassword');
-  if( dbPassword == '') {
-    dbPassword = '1234';
-    encryptedSharedPrefs.setString('dbPassword', dbPassword);
-  }
-  String? newPassword = await encryptedSharedPrefs.getString('loginPassword');
-  if(newPassword != dbPassword) {
 
-    _changeDBPasswords(dbPassword!,newPassword!);
+
+  if(userPassword != dbPassword) {
+    _changeDBPasswords(dbPassword,userPassword);
   }
 
   return cipher.openDatabase(join(await getDatabasesPath(), 'activitylogger_db.db'),
@@ -63,8 +58,8 @@ static Future<void> _changeDBPasswords(String oldPassword, String newPassword)as
 
 
     await platform.invokeMethod('changeDBPasswords',{'oldDBPassword': oldPassword,'newDBPassword': newPassword });
-    encryptedSharedPrefs.setString("dbPassword", newPassword);
-    encryptedSharedPrefs.reload();
+   // encryptedSharedPrefs.setString("dbPassword", newPassword);
+    //encryptedSharedPrefs.reload();
 
 
   }on Exception catch(ex){

@@ -62,12 +62,11 @@ bool passwordEnabled = true;
     loginGreeting = "Welcome $greeting !"
         " Please sign in below to get started!";
     userPassword = '';
-    userPassword = await encryptedSharedPrefs.getString('loginPassword') ?? '1234';
+    userPassword = await encryptedSharedPrefs.getString('loginPassword');
     dbPassword = await encryptedSharedPrefs.getString('dbPassword');
 
     // This works on android, we need to see if it will work on iOS
-
-
+    //Results were dicey
     if(userPassword != dbPassword){
       encryptedSharedPrefs.setString('dbPassword', userPassword);
     }
@@ -96,7 +95,6 @@ setState(() {
   void refreshPrefs() async{
     prefs.reload();
     passwordEnabled = prefs.getBool('passwordEnabled')?? true;
-   // userPassword =  encryptedSharedPrefs.getString('loginPassword').toString() ;
     greeting =prefs.getString("greeting")??'';
     loginGreeting="Welcome $greeting! Please sign in below to get started!";
 
