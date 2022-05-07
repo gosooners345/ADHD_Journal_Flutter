@@ -34,9 +34,10 @@ class MainActivity: FlutterActivity(){
                 "changeDBPasswords" -> {
                     try {
                         // sharePreferences =  getSharedPreferences(BuildConfig.APPLICATION_ID, MODE_PRIVATE)
+var arg1 = call.argument("oldDBPassword") as String?
+var arg2 = call.argument("newDBPassword") as String?
                         changeDBPasswords(
-                            call.argument<String>("oldDBPassword").toString(),
-                            call.argument<String>("newDBPassword").toString()
+                           arg1!!,arg2!!
                         )
                     } catch (ex: Exception) {
                         print(ex)
