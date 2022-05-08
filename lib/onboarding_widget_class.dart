@@ -266,10 +266,10 @@ Color background = Colors.white;
                 },
 
               ),),
-              ElevatedButton(onPressed: (){
+              ElevatedButton(onPressed: () async{
                 if(savedPasswordValue !=''){
-                  encryptedSharedPrefs.setString('loginPassword', savedPasswordValue);
-                  encryptedSharedPrefs.setString('dbPassword', savedPasswordValue);
+                 await encryptedSharedPrefs.setString('loginPassword', savedPasswordValue);
+                  await encryptedSharedPrefs.setString('dbPassword', savedPasswordValue);
                   prefs.setBool('passwordEnabled', true);
                   prefs.setString('greeting', greetingValueSaved);
                   prefs.setBool('firstVisit',  false);
@@ -283,14 +283,14 @@ Color background = Colors.white;
                           'Your journal\'s security will be at risk! \r\n'
                           'If you want to enter a password, hit cancel and type one in. You can change it later in settings if you\'d like'),
                       actions: [
-                        TextButton(onPressed: (){
+                        TextButton(onPressed: () async{
                           Navigator.pop(context);
                           savedPasswordValue = '1234';
-                          encryptedSharedPrefs.prefs?.setString('loginPassword', savedPasswordValue);
-                          encryptedSharedPrefs.prefs?.setString('dbPassword', savedPasswordValue);
-                          encryptedSharedPrefs.prefs?.setBool('passwordEnabled', true);
-                          encryptedSharedPrefs.prefs?.setString('greeting', greetingValueSaved);
-                          encryptedSharedPrefs.prefs?.setBool('firstVisit',  false);
+                          await encryptedSharedPrefs.setString('loginPassword', savedPasswordValue);
+                         await encryptedSharedPrefs.setString('dbPassword', savedPasswordValue);
+                          prefs.setBool('passwordEnabled', true);
+                          prefs.setString('greeting', greetingValueSaved);
+                          prefs.setBool('firstVisit',  false);
                     Navigator.pushReplacementNamed(context, '/login');
 
                         }, child: const Text('OK')),

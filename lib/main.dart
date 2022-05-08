@@ -80,7 +80,6 @@ late ListView recordViews;
 class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
   late FutureBuilder testMe;
   late Text titleHdr;
- // Future<List<Records>> _recordList = RecordsDB.records();
   var _selectedIndex = 0;
   String header = "";
 
@@ -91,7 +90,6 @@ class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
       loadPrefs();
       setState(() {
         ///Load the DB into the app
-        //_recordList = RecordsDB.records();
       }
       );
     } catch (e, s) {
@@ -177,15 +175,26 @@ DateTime.now() ,timeUpdated: DateTime.now())
         actions: <Widget>[
           IconButton(icon: Icon(Icons.settings),onPressed: (){
             Navigator.push(context,MaterialPageRoute(builder: (_)=>
-            SettingsPage())).then((value) async =>
+            // This will test whether we need to even replace the DB File on the iOS device or not. We will test the db later when we change keys.
+            // when this happens we will close the app and open it with the new key.
+            SettingsPage())).then((value)  =>
              {
-recdatabase.close(),
+if(userPassword!=dbPassword){
+               if(Platform.isAndroid){
+                 recdatabase.close(),
+               },
+
                recordsDataBase.changePasswords(),
-              recordsDataBase.getDBLoaded(),
 
+              if(Platform.isAndroid){
+               recordsDataBase.getDBLoaded(true),
+              },},
 
-
-             });},),],),
+             });
+            },
+          ),
+        ],
+      ),
       body: Center(child: screens().elementAt(_selectedIndex)),
       floatingActionButton: FloatingActionButton.extended(
         label: Text('Record'), icon: Icon(Icons.edit),

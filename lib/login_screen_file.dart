@@ -59,6 +59,9 @@ bool passwordEnabled = true;
     try{
       recordsDataBase = RecordsDB();
       recdatabase = await recordsDataBase.database;
+      if(recdatabase.isOpen){
+        print("DB open");
+      }
     recordHolder = await recordsDataBase.getRecords();
     }
     on Exception catch (ex)
@@ -76,14 +79,6 @@ bool passwordEnabled = true;
     userPassword = '';
     userPassword = await encryptedSharedPrefs.getString('loginPassword');
     dbPassword = await encryptedSharedPrefs.getString('dbPassword');
-
-    // This works on android, we need to see if it will work on iOS
-    //Results were dicey
-   /* if(Platform.isAndroid){*/
-    if(userPassword != dbPassword) {
-      encryptedSharedPrefs.setString('dbPassword', userPassword);
-    }//}}
-
     passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
 // This code seem
 
@@ -133,7 +128,7 @@ setState(() {
             if (text.length == userPassword.length){
               if(text == userPassword){
                 loadDB();
-                recordsDataBase.getDBLoaded();
+                recordsDataBase.getDBLoaded(false);
               Navigator.pushNamed(context, '/success').then((value) => {
 
                 refreshPrefs(),

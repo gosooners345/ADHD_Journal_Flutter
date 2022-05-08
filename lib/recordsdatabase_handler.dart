@@ -51,8 +51,8 @@ void go() async{
   WidgetsFlutterBinding.ensureInitialized();
 }
 
+// Call the change passwords method so it can run  on device.
 void changePasswords()async{
-
   _changeDBPassword(dbPassword,userPassword );
 }
 void startRecords() async {
@@ -64,14 +64,9 @@ void startRecords() async {
 
 Future<void> _changeDBPassword(String oldPassword, String newPassword)async {
   try{
-
-
     await platform.invokeMethod('changeDBPasswords',{'oldDBPassword': oldPassword,'newDBPassword': newPassword });
-    encryptedSharedPrefs.setString('dbPassword', userPassword);
-
-
-
-
+   await encryptedSharedPrefs.setString('dbPassword',newPassword);
+   dbPassword = newPassword;
   }on Exception catch(ex){
     print(ex);
   }
@@ -85,15 +80,18 @@ Future<void> insertRecords(Records record) async {
 
 
 Future<Database> get database async {
-  Databases = await initializeDB();
+  Databases = await initializeDBRDB();
   return Databases;
 }
- Future<Database> initializeDB() async{
-
-   if(userPassword != dbPassword) {
-     _changeDBPassword(dbPassword,userPassword);
+ Future<Database> initializeDB(bool isCalledFromSettings) async {
+   if (userPassword != dbPassword) {
      dbPassword = userPassword;
+     if (await encryptedSharedPrefs.getString('dbPassword') != dbPassword) {
+       await encryptedSharedPrefs.setString('dbPassword', dbPassword);
+     }
    }
+
+
 
   var ourDB = await cipher.openDatabase(join(await getDatabasesPath(), 'activitylogger_db.db'),
     password: dbPassword,
@@ -106,13 +104,34 @@ Future<Database> get database async {
     onOpen: (database) {
       database.execute("DROP TABLE IF EXISTS android_metadata; DROP TABLE IF EXISTS room_master_table;");
     },
-
-
     version: 5,
   );
   return ourDB;
 }
+  Future<Database> initializeDBRDB() async{
 
+    //to prevent the app from trying to doub
+    /*if(!isCalledFromSettings){
+      if(userPassword != dbPassword) {
+        _changeDBPassword(dbPassword,userPassword);
+        dbPassword = userPassword;
+      }}*/
+
+    var ourDB = await cipher.openDatabase(join(await getDatabasesPath(), 'activitylogger_db.db'),
+      password: dbPassword,
+      onCreate: (database, version) {
+        return database.execute(
+            'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT,symptoms TEXT,rating DOUBLE, tags TEXT,success INT,time_updated INT, time_created INT)'
+        );
+
+      },
+      onOpen: (database) {
+        database.execute("DROP TABLE IF EXISTS android_metadata; DROP TABLE IF EXISTS room_master_table;");
+      },
+      version: 5,
+    );
+    return ourDB;
+  }
 Future<List<Records>> getRecords() async{
   final database = await RecordsDB().database;
   final List<Map<String, dynamic>> maps = await database.query('records');
@@ -132,26 +151,11 @@ Future<List<Records>> getRecords() async{
           maps[index]['time_updated'])
     );});}
 
-void getDBLoaded() async{
-  recdatabase = await this.initializeDB();
+void getDBLoaded(bool settingsCalled) async{
+  recdatabase = await initializeDB(settingsCalled);
 }
 
-/*
-static Future<List<Records>> records() async{
-  final db = await RecordsDB.db();
 
-  final List<Map<String, dynamic>> maps = await db.query('records');
-  return List.generate(maps.length, (index) {
-    return Records(id :maps[index]['id'], title: maps[index]['title'], content: maps[index]['content'],emotions:maps[index]['emotions'],
-        sources: maps[index]['sources'], rating: maps[index]['rating'],symptoms: maps[index]['symptoms'],
-      tags: maps[index]['tags'], success: maps[index]['success'] == 0 ? false : true,
-timeCreated:DateTime.fromMillisecondsSinceEpoch( maps[index]['time_created']),
-      timeUpdated: DateTime.fromMillisecondsSinceEpoch( maps[index]['time_updated']),
-    );
-  }
-  );
-}
-*/
 
 /*static Future<void> updateRecords(Records record) async{
   final db = await RecordsDB.db();
