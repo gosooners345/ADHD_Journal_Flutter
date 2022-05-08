@@ -59,14 +59,7 @@ void startRecords() async {
   recordHolder = await getRecords();
 }
 
-/*  static void start() async{
 
-  _changeDBPasswords(dbPassword,userPassword);
-  recordHolder = await records();
-
- // WidgetsFlutterBinding.ensureInitialized();
-
-  }*/
 
 
 Future<void> _changeDBPassword(String oldPassword, String newPassword)async {
@@ -84,24 +77,6 @@ Future<void> _changeDBPassword(String oldPassword, String newPassword)async {
   }
 }
 
-/*static Future<void> _changeDBPasswords(String oldPassword, String newPassword)async {
-  try{
-
-
-    await platform.invokeMethod('changeDBPasswords',{'oldDBPassword': oldPassword,'newDBPassword': newPassword });
-   // encryptedSharedPrefs.setString("dbPassword", newPassword);
-    //encryptedSharedPrefs.reload();
-
-
-  }on Exception catch(ex){
-      print(ex);
-  }
-}*/
-
-/*static Future<void> insertRecord(Records record) async {
-  final db = await RecordsDB.db();
-   await db.insert('records', record.toMapForDB(),conflictAlgorithm: ConflictAlgorithm.replace);
-}*/
 
 Future<void> insertRecords(Records record) async {
   final db = await RecordsDB().database;
