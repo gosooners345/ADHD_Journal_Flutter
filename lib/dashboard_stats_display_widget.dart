@@ -19,33 +19,33 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
 
 //Method for collecting counts of Words in a list
 
-   String summaryGen(){
-    String summaryString ='';
-    String successString ='';
+  String summaryGen() {
+    String summaryString = '';
+    String successString = '';
     double avgRating = 0.0;
     // For the ratings
     List<double> sum = RecordList.ratingsList.map((e) => e.value).toList();
     double totalRtg = 0.0;
-    for(double rating in sum){
-      totalRtg +=rating;
+    for (double rating in sum) {
+      totalRtg += rating;
     }
-    avgRating = (totalRtg/recordHolder.length.toDouble());
+    avgRating = (totalRtg / recordHolder.length.toDouble());
     // For the success/fail section
-    if(RecordList.successList[0].value > RecordList.successList[1].value){
+    if (RecordList.successList[0].value > RecordList.successList[1].value) {
       successString = "success";
-    }
-    else{
+    } else {
       successString = "fail";
     }
 
     //For the symptom and emotion section
 
-    summaryString = "You have ${recordHolder.length} entries in your journal.\r\n"
+    summaryString =
+        "You have ${recordHolder.length} entries in your journal.\r\n"
         "Your average rating is ${avgRating.roundToDouble()}.\r\n"
         "You're trending more  on $successString based on your Success/Fail ratings.\r\n"
         "Your most recently occurring symptoms are: ${recordHolder.first.symptoms}.";
 
-    return  summaryString;
+    return summaryString;
   }
 
   @override
@@ -53,21 +53,44 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
     return ListView(
       padding: const EdgeInsets.all(8.0),
       children: [
-        Card(child:SizedBox(
-     child: Text('Here\'s a summary of your statistics:\r\n ${summaryGen()}',style: TextStyle(fontSize:16.0,fontStyle: FontStyle.italic)),),),
+        Card(
+          child: SizedBox(
+            child: Text(
+                'Here\'s a summary of your statistics:\r\n ${summaryGen()}',
+                style: TextStyle(fontSize: 16.0, fontStyle: FontStyle.italic)),
+          ),
+        ),
         //Ratings Chart
-Card(elevation: 2.0,child: SizedBox(child:SfCartesianChart(
-  zoomPanBehavior: ZoomPanBehavior(enablePinching: true,enableDoubleTapZooming: false,
-enablePanning: true,zoomMode: ZoomMode.xy),borderWidth: 2.0,
-  primaryXAxis: CategoryAxis(),primaryYAxis: NumericAxis(),
-series: <LineSeries<RecordRatingStats,String>>[LineSeries(dataSource:RecordList.ratingsList ,width: 1.0,
-    xValueMapper: (RecordRatingStats recLbl,_)=>DateFormat("MM/dd/yyyy hh:mm:ss aa").format(recLbl.date),
-    color: Colors.brown,
-    yValueMapper: (RecordRatingStats recLbl, _)=> recLbl.value,
-dataLabelSettings: const DataLabelSettings(isVisible: true),
-xAxisName: 'Entry Timestamps',yAxisName: 'Ratings',),],
-  title: ChartTitle(text: 'Ratings data from journal entries'),
-) ,height: 300,),),
+        Card(
+          elevation: 2.0,
+          child: SizedBox(
+            child: SfCartesianChart(
+              zoomPanBehavior: ZoomPanBehavior(
+                  enablePinching: true,
+                  enableDoubleTapZooming: false,
+                  enablePanning: true,
+                  zoomMode: ZoomMode.xy),
+              borderWidth: 2.0,
+              primaryXAxis: CategoryAxis(),
+              primaryYAxis: NumericAxis(),
+              series: <LineSeries<RecordRatingStats, String>>[
+                LineSeries(
+                  dataSource: RecordList.ratingsList,
+                  width: 1.0,
+                  xValueMapper: (RecordRatingStats recLbl, _) =>
+                      DateFormat("MM/dd/yyyy hh:mm:ss aa").format(recLbl.date),
+                  color: Colors.brown,
+                  yValueMapper: (RecordRatingStats recLbl, _) => recLbl.value,
+                  dataLabelSettings: const DataLabelSettings(isVisible: true),
+                  xAxisName: 'Entry Timestamps',
+                  yAxisName: 'Ratings',
+                ),
+              ],
+              title: ChartTitle(text: 'Ratings data from journal entries'),
+            ),
+            height: 300,
+          ),
+        ),
         // Success/Fail Chart
         Card(
           elevation: 2.0,
@@ -125,22 +148,36 @@ xAxisName: 'Entry Timestamps',yAxisName: 'Ratings',),],
           ),
         ),
         //Symptoms Chart
-          Card(elevation:2.0,child: SizedBox(child: SfCartesianChart(
-     zoomPanBehavior: ZoomPanBehavior(enablePinching: true,enableDoubleTapZooming: false,
-         enablePanning: true,zoomMode: ZoomMode.xy),borderWidth: 2.0,
-     primaryXAxis: CategoryAxis(),
-     primaryYAxis: NumericAxis(),
-    series:<BarSeries<RecordDataStats,String>>[
-    BarSeries(dataSource:RecordList.symptomList,
-    xValueMapper: (RecordDataStats rec,_) => rec.key,
-    yValueMapper: (RecordDataStats rec,_) => rec.value,
-      name: 'Symptom Data from Journal Entries',
-    color: Colors.brown,
-    xAxisName: 'Symptoms',
-    yAxisName: 'Counts',spacing: 1.5,dataLabelSettings: const DataLabelSettings(isVisible: true)
-    ),],
-    title: ChartTitle(text: 'Symptom Data from Journal Entries'),),
-   height: 300,),),
+        Card(
+          elevation: 2.0,
+          child: SizedBox(
+            child: SfCartesianChart(
+              zoomPanBehavior: ZoomPanBehavior(
+                  enablePinching: true,
+                  enableDoubleTapZooming: false,
+                  enablePanning: true,
+                  zoomMode: ZoomMode.xy),
+              borderWidth: 2.0,
+              primaryXAxis: CategoryAxis(),
+              primaryYAxis: NumericAxis(),
+              series: <BarSeries<RecordDataStats, String>>[
+                BarSeries(
+                    dataSource: RecordList.symptomList,
+                    xValueMapper: (RecordDataStats rec, _) => rec.key,
+                    yValueMapper: (RecordDataStats rec, _) => rec.value,
+                    name: 'Symptom Data from Journal Entries',
+                    color: Colors.brown,
+                    xAxisName: 'Symptoms',
+                    yAxisName: 'Counts',
+                    spacing: 1.5,
+                    dataLabelSettings:
+                        const DataLabelSettings(isVisible: true)),
+              ],
+              title: ChartTitle(text: 'Symptom Data from Journal Entries'),
+            ),
+            height: 300,
+          ),
+        ),
       ],
     );
   }

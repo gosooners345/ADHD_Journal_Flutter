@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:ffi';
 
@@ -21,25 +20,24 @@ import 'records_data_class_db.dart';
 import 'login_screen_file.dart';
 import 'compose_records_screen.dart';
 
-
 class RecordDisplayWidget extends StatefulWidget {
   const RecordDisplayWidget({Key? key}) : super(key: key);
 
   @override
-  State<RecordDisplayWidget > createState() => RecordDisplayWidgetState();
-  }
+  State<RecordDisplayWidget> createState() => RecordDisplayWidgetState();
+}
 
-class RecordDisplayWidgetState extends State<RecordDisplayWidget>{
+class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
   late ValueListenableBuilder testMe;
   late Text titleHdr;
- RecordsNotifier recNotifier = RecordsNotifier(recordHolder);
+  RecordsNotifier recNotifier = RecordsNotifier(recordHolder);
 
   var _selectedIndex = 0;
   String header = "";
-late ValueListenableBuilder tryMe;
+  late ValueListenableBuilder tryMe;
 
   static const TextStyle optionStyle =
-  TextStyle(fontSize: 15, fontWeight: FontWeight.bold);
+      TextStyle(fontSize: 15, fontWeight: FontWeight.bold);
 
   @override
   void initState() {
@@ -47,64 +45,63 @@ late ValueListenableBuilder tryMe;
     try {
       loadPrefs();
       getList();
-        ///Load the DB into the app
 
-        setState(() {
-loadList();
-testMe =  ValueListenableBuilder(valueListenable: recNotifier.valueNotifier, builder:
-    (BuildContext context,value,child){
+      ///Load the DB into the app
 
-  return ListView.builder(itemBuilder: (context, index) {
-    return GestureDetector(
-      child: Card(
-          child: ListTile(    onTap: () {
-            _editRecord(index);
+      setState(() {
+        loadList();
+        testMe = ValueListenableBuilder(
+          valueListenable: recNotifier.valueNotifier,
+          builder: (BuildContext context, value, child) {
+            return ListView.builder(
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  child: Card(
+                      child: ListTile(
+                    onTap: () {
+                      _editRecord(index);
+                    },
+                    title: RecordCardViewWidget(
+                      record: recordHolder[index],
+                    ),
+                  )),
+                  onHorizontalDragStart: (_) {
+                    //Add a dialog box method to allow for challenges to deleting entries
+                    setState(() {
+                      final deletedRec = recordHolder[index];
+                      recordsDataBase.deleteRecord(deletedRec.id);
+                      recordHolder.remove(deletedRec);
+                    });
+                  },
+                );
+              },
+              itemCount: recordHolder.length,
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+            );
           },
-            title: RecordCardViewWidget(record: recordHolder[index],),
-          )
-      ),
-      onHorizontalDragStart: (_) {
-        //Add a dialog box method to allow for challenges to deleting entries
-        setState(() {
-          final deletedRec = recordHolder[index];
-          recordsDataBase.deleteRecord(deletedRec.id);
-          recordHolder.remove(deletedRec);
-
-        });
-      },
-    );
-  },
-    itemCount: recordHolder.length,
-    scrollDirection: Axis.vertical,
-    shrinkWrap: true,
-  );
-
-},);
-
-      }
-);
-      (recordWaitingPeriod() );
-
-
+        );
+      });
+      (recordWaitingPeriod());
     } catch (e, s) {
       print(s);
     }
   }
 
-  recordWaitingPeriod() async{
-  var duration = const Duration(seconds: 1);
+  recordWaitingPeriod() async {
+    var duration = const Duration(seconds: 1);
 
-return Timer(duration,testME);
+    return Timer(duration, testME);
   }
 
-void loadList() async{
-  //records= await _recordList;
-    recordHolder.sort((a,b)=> a.compareTimesUpdated(b.timeUpdated));
+  void loadList() async {
+    //records= await _recordList;
+    recordHolder.sort((a, b) => a.compareTimesUpdated(b.timeUpdated));
     recordHolder = recordHolder.reversed.toList();
     RecordList.loadLists();
-}
+  }
 
-  void loadPrefs() async{
+  void loadPrefs() async {
     prefs = await SharedPreferences.getInstance();
     greeting = prefs.getString('greeting') ?? '';
   }
@@ -113,89 +110,92 @@ void loadList() async{
   void getList() async {
 //    _recordList = recordsDataBase.getRecords();
   }
-void testME(){
-    setState((){
+  void testME() {
+    setState(() {
       testMe.createState();
     });
-}
-
- 
+  }
 
   /// This method allows users to access an existing record to edit. The future implementations will prevent timestamps from being edited
   /// Checked and Passed : true
   void _editRecord(int index) {
     setState(() {
       final Records loadRecord = recordHolder[index];
-      Navigator.push(context, MaterialPageRoute(builder: (_) =>
-          ComposeRecordsWidget(
-            record: loadRecord, id: 1,title: 'Edit Entry',)));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (_) => ComposeRecordsWidget(
+                    record: loadRecord,
+                    id: 1,
+                    title: 'Edit Entry',
+                  )));
     });
   }
-
-
-
 
   /// This compiles the screen display for the application.
   @override
   Widget build(BuildContext context) {
-    return  Column(key: UniqueKey(),
+    return Column(
+      key: UniqueKey(),
       children: <Widget>[
-        const SizedBox(
-          height: 20),Padding(
+        const SizedBox(height: 20),
+        Padding(
           padding: const EdgeInsets.only(
               left: 15.0, right: 15.0, top: 15, bottom: 15.0),
-          child:Row(children:[Expanded(child: Text(
-            'Welcome back $greeting! What would you like to record today?',
-            style: TextStyle(fontSize: 18.0),textAlign: TextAlign.center,),),],
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Welcome back $greeting! What would you like to record today?',
+                  style: TextStyle(fontSize: 18.0),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
           ),
         ),
-        Expanded(child:ValueListenableBuilder(valueListenable: recNotifier.valueNotifier, builder:
-            (BuildContext context,value,child){
-
-          return ListView.builder(itemBuilder: (context, index) {
-            return GestureDetector(
-              child: Card(
-                  child: ListTile(    onTap: () {
-                    _editRecord(index);
+        Expanded(
+            child: ValueListenableBuilder(
+          valueListenable: recNotifier.valueNotifier,
+          builder: (BuildContext context, value, child) {
+            return ListView.builder(
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  child: Card(
+                      child: ListTile(
+                    onTap: () {
+                      _editRecord(index);
+                    },
+                    title: RecordCardViewWidget(
+                      record: recordHolder[index],
+                    ),
+                  )),
+                  onHorizontalDragStart: (_) {
+                    //Add a dialog box method to allow for challenges to deleting entries
+                    setState(() {
+                      final deletedRec = recordHolder[index];
+                      recordsDataBase.deleteRecord(deletedRec.id);
+                      recordHolder.remove(deletedRec);
+                    });
                   },
-                    title: RecordCardViewWidget(record: recordHolder[index],),
-                  )
-              ),
-              onHorizontalDragStart: (_) {
-                //Add a dialog box method to allow for challenges to deleting entries
-                setState(() {
-                  final deletedRec = recordHolder[index];
-                  recordsDataBase.deleteRecord(deletedRec.id);
-                  recordHolder.remove(deletedRec);
-
-                });
+                );
               },
+              itemCount: recordHolder.length,
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
             );
           },
-            itemCount: recordHolder.length,
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-          );
-
-        },)
-
-
-        ),
+        )),
       ],
     );
-   
   }
 }
-class RecordsNotifier extends ValueNotifier<List<Records>>{
+
+class RecordsNotifier extends ValueNotifier<List<Records>> {
   RecordsNotifier(List<Records> recordList) : super(recordList);
   ValueNotifier valueNotifier = ValueNotifier(recordHolder.length);
 
-  void updateListCount(int length){
-
+  void updateListCount(int length) {
     valueNotifier.notifyListeners();
   }
-
-
-
-
 }

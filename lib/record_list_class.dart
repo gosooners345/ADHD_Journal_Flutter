@@ -99,24 +99,22 @@ class RecordList {
     for (Records record in recordHolder) {
       ratingsData.add(RecordRatingStats(record.timeCreated, record.rating));
     }
-    ratingsData.sort((a,b)=>a.compareTo(b) );
+    ratingsData.sort((a, b) => a.compareTo(b));
     return ratingsData;
   }
 }
 
-class RecordRatingStats implements Comparable{
+class RecordRatingStats implements Comparable {
   DateTime date = DateTime.now();
-   double value= 0.0;
-  
+  double value = 0.0;
+
   RecordRatingStats(this.date, this.value);
   Map<String, Object> toMap() {
     return {"date": date, "value": value};
   }
+
   @override
   int compareTo(other) {
-   return date.compareTo(other.date);
+    return date.compareTo(other.date);
   }
-  
-  
-  
 }
