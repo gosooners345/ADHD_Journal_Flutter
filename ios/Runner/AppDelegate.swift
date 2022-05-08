@@ -54,8 +54,9 @@ let dbPath = try!  Connection("\(path)/\(dbName)")
     let newDBPassString : String = "\(String(describing: newDBPassword))"
           try dbPath.key( "\(dbPasswordString)")
     try dbPath.rekey("\(newDBPassString)")
+    try dbPath.key("\(newDBPassString)")
 
-    // decryptOldDBPassword(oldPassword: dbPasswordString,dbPath:path+"/\(dbName)")
+  //   decryptOldDBPassword(oldPassword: dbPasswordString,dbPath:path+"/\(dbName)")
    //encryptNewDBPassword(newPassword: newDBPassString,dbPath:path+"/\(dbName)")
     
     //EncryptNewDB
@@ -67,37 +68,50 @@ print(error)
         }
 
 
-
-    func decryptOldDBPassword(oldPassword : String,dbPath: String){
-        var  attachKey = "ATTACH DATABASE ? AS records  KEY ''"
-        var newFile = FileManager.init()
-  //      newFile.createFile(atPath: dbPath+"path", contents: nil)
-        do{
-        var db = try! Connection(dbPath)
-try db.key(oldPassword)
-    
-   try     db.rekey("")
-            
-        }
-        catch{
-        print(error)
-            print("Decryption Failed")
-        }
-        }
-    
-        func encryptNewDBPassword(newPassword : String,dbPath: String){
-            do{
-            var db = try! Connection(dbPath)
-                try db.key("")
-                try db.rekey(newPassword)
-            }
-            catch{
-                print(error)
-                
-            }
-            }
-            }
+//
+//    func decryptOldDBPassword(oldPassword : String,dbPath: String){
+//        let attachKey = "ATTACH DATABASE ? AS records  KEY ''"
+//let  exportToDecrypteDBCommand = "SELECT sqlcipher_export('records')"
+//        let detachCommand = "DETACH DATABASE records"
+//
+//        do{
+//            var db = try! Connection(dbPath)
+//            try db.key(key: oldPassword)
+//
+//            var newDBFile = FileManager.createFile(atPath: dbPath+"-temp.db", contents: "")
+//            var version = db.userVersion
+//            try db.close()
+//            var newDB = try! Connection(dbPath+"-temp.db")
+//            var newDBStatement = newDB.prepare(attachKey)
+//            newDBStatement.run(1,dbPath)
+//            newDB.run(exportToDecrypteDBCommand)
+//            newDB.run(detachCommand)
+//            newDB.userVersion = version
+//            newDB.close()
+//            newDB.
+//
+//        }
+//        catch{
+//        print(error)
+//            print("Decryption Failed")
+//        }
+//        }
+//
+//        func encryptNewDBPassword(newPassword : String,dbPath: String){
+//            do{
+//            var db = try! Connection(dbPath)
+//                try db.key("")
+//                try db.rekey(newPassword)
+//            }
+//            catch{
+//                print(error)
+//
+//            }
+//            }
+//            }
     }
+    
+}
 
     
 

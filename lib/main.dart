@@ -173,25 +173,25 @@ DateTime.now() ,timeUpdated: DateTime.now())
         },
           icon: Icon(Icons.arrow_back)),
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.settings),onPressed: (){
-            Navigator.push(context,MaterialPageRoute(builder: (_)=>
+          IconButton(icon: Icon(Icons.settings),onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (_) =>
             // This will test whether we need to even replace the DB File on the iOS device or not. We will test the db later when we change keys.
             // when this happens we will close the app and open it with the new key.
-            SettingsPage())).then((value)  =>
-             {
-if(userPassword!=dbPassword){
-               if(Platform.isAndroid){
-                 recdatabase.close(),
-               },
+            //Test Results in: iOS works without the close and reopening.
+            SettingsPage())).then((value) =>
+            {
+              if(userPassword != dbPassword){
+                if(Platform.isAndroid){
+                  recdatabase.close(),
+                },
 
-               recordsDataBase.changePasswords(),
-
-              if(Platform.isAndroid){
-               recordsDataBase.getDBLoaded(true),
-              },},
-
-             });
-            },
+                recordsDataBase.changePasswords(),
+                if(Platform.isAndroid){
+                  recordsDataBase.getDBLoaded(true),
+                },
+              },
+            });
+          },
           ),
         ],
       ),
