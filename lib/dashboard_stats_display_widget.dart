@@ -29,7 +29,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
     for(double rating in sum){
       totalRtg +=rating;
     }
-    avgRating = (totalRtg/records.length.toDouble());
+    avgRating = (totalRtg/recordHolder.length.toDouble());
     // For the success/fail section
     if(RecordList.successList[0].value > RecordList.successList[1].value){
       successString = "success";
@@ -40,10 +40,10 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
 
     //For the symptom and emotion section
 
-    summaryString = "You have ${records.length} entries in your journal.\r\n"
+    summaryString = "You have ${recordHolder.length} entries in your journal.\r\n"
         "Your average rating is ${avgRating.roundToDouble()}.\r\n"
         "You're trending more  on $successString based on your Success/Fail ratings.\r\n"
-        "Your most recently occurring symptoms are: ${records.first.symptoms}.";
+        "Your most recently occurring symptoms are: ${recordHolder.first.symptoms}.";
 
     return  summaryString;
   }
@@ -83,7 +83,7 @@ xAxisName: 'Entry Timestamps',yAxisName: 'Ratings',),],
                   xValueMapper: (RecordDataStats recs, _) => recs.key,
                   yValueMapper: (RecordDataStats recs, _) => recs.value,
                   dataLabelMapper: (RecordDataStats recs, _) =>
-                      "${recs.key}: ${(recs.value / records.length.toDouble()) * 100.0} % ",
+                      "${recs.key}: ${(recs.value / recordHolder.length.toDouble()) * 100.0} % ",
                   dataLabelSettings: const DataLabelSettings(isVisible: true),
                 ),
               ],

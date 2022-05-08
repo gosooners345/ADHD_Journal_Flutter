@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_final_fields
 
+import 'dart:io';
+
 import 'package:adhd_journal_flutter/dashboard_stats_display_widget.dart';
 import 'package:adhd_journal_flutter/record_list_class.dart';
 import 'package:adhd_journal_flutter/record_view_card_class.dart';
@@ -19,7 +21,7 @@ import 'records_data_class_db.dart';
 import 'login_screen_file.dart';
 import 'compose_records_screen.dart';
 
-List<Records> records = [];
+List<Records> recordHolder = [];
 int id =0;
 StartStuff stuff = StartStuff();
 void main() {
@@ -78,7 +80,7 @@ late ListView recordViews;
 class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
   late FutureBuilder testMe;
   late Text titleHdr;
-  Future<List<Records>> _recordList = RecordsDB.records();
+ // Future<List<Records>> _recordList = RecordsDB.records();
   var _selectedIndex = 0;
   String header = "";
 
@@ -89,7 +91,7 @@ class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
       loadPrefs();
       setState(() {
         ///Load the DB into the app
-        _recordList = RecordsDB.records();
+        //_recordList = RecordsDB.records();
       }
       );
     } catch (e, s) {
@@ -110,34 +112,19 @@ void loadPrefs() async{
 }
 
   /// This loads the db list into the application for displaying.
-  void getList() async {
-    _recordList = RecordsDB.records();
-    records = await _recordList;
-  }
+
 
 
   /// This is for the bottom navigation bar, this isn't related to the records at all.
   void _onItemTapped(int index) {
     setState(() {
-     if(records.isNotEmpty) {
+     if(recordHolder.isNotEmpty) {
        _selectedIndex = index;
        RecordList.loadLists();
      }
     });
   }
 
-  void _deleteRecord(int i){
-    var deleteRecord = records[i];
-    RecordsDB.deleteRecord(deleteRecord.id);
-    records.remove(deleteRecord);
-    getList();
-
-    setState((){
-
-
-    });
-
-  }
 
 
   /// Allows users to create entries for the db and journal. Once submitted, the screen will update on demand.
@@ -145,10 +132,10 @@ void loadPrefs() async{
   void _createRecord() {
     setState(() {
       titleHdr = Text('Record Created');
-      if(records.isEmpty) {
+      if(recordHolder.isEmpty) {
         id =1;
       } else {
-        id = records[records.length - 1].id + 1;
+        id = recordHolder[recordHolder.length - 1].id + 1;
       }
       Navigator.push(context, MaterialPageRoute(builder: (_) =>
           ComposeRecordsWidget(
@@ -190,13 +177,13 @@ DateTime.now() ,timeUpdated: DateTime.now())
         actions: <Widget>[
           IconButton(icon: Icon(Icons.settings),onPressed: (){
             Navigator.push(context,MaterialPageRoute(builder: (_)=>
-            SettingsPage())).then((value) =>
+            SettingsPage())).then((value) async =>
              {
-               //prefs.reload(),
-               //encryptedSharedPrefs.reload(),
-               //RecordsDB.start(),
-              // RecordsDB.db(),
-               _recordList= RecordsDB.records(),
+recdatabase.close(),
+               recordsDataBase.changePasswords(),
+              recordsDataBase.getDBLoaded(),
+
+
 
              });},),],),
       body: Center(child: screens().elementAt(_selectedIndex)),

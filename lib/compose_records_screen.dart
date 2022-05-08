@@ -1,4 +1,6 @@
 
+import 'package:adhd_journal_flutter/login_screen_file.dart';
+
 import 'main.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -69,16 +71,16 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
     super.widget.record.timeUpdated = DateTime.now();
     if(super.widget.id==0)
       {
-        RecordsDB.insertRecord(super.widget.record);
-        records.add(super.widget.record);
-        //records.sort((a,b)=> a.compareTimesUpdated(b.timeUpdated));
+      recordsDataBase.insertRecords(super.widget.record);
+        recordHolder.add(super.widget.record);
+        recordHolder.sort((a,b)=> a.compareTimesUpdated(b.timeUpdated));
 
       }
     else {
-      RecordsDB.updateRecords(super.widget.record);
-      records.remove(super.widget.record);
-      records.add(super.widget.record);
-      records.sort((a,b)=> a.compareTimesUpdated(b.timeUpdated));
+      recordsDataBase.updateRecord(super.widget.record);
+      recordHolder.remove(super.widget.record);
+      recordHolder.add(super.widget.record);
+      recordHolder.sort((a,b)=> a.compareTimesUpdated(b.timeUpdated));
     }
     Navigator.pop(context,super.widget.record);
   }

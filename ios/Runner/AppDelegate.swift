@@ -39,6 +39,7 @@ return
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
+
     private func changeDBPasswords(_ call: FlutterMethodCall){
         if let args = call.arguments as? Dictionary<String,Any>,
            let oldDBPassword = args["oldDBPassword"] as? String,
@@ -49,18 +50,56 @@ let path = NSSearchPathForDirectoriesInDomains(.documentDirectory,.userDomainMas
 do{
 let dbPath = try!  Connection("\(path)/\(dbName)")
     let dbPasswordString : String = "\(String(describing: oldDBPassword))"
+   print("Keying Db with new key")
     let newDBPassString : String = "\(String(describing: newDBPassword))"
-    try dbPath.key( "\(dbPasswordString)")
+          try dbPath.key( "\(dbPasswordString)")
     try dbPath.rekey("\(newDBPassString)")
+
+    // decryptOldDBPassword(oldPassword: dbPasswordString,dbPath:path+"/\(dbName)")
+   //encryptNewDBPassword(newPassword: newDBPassString,dbPath:path+"/\(dbName)")
+    
+    //EncryptNewDB
+    
 }
 catch {
 print(error)
 }
         }
 
-}
 
 
+    func decryptOldDBPassword(oldPassword : String,dbPath: String){
+        var  attachKey = "ATTACH DATABASE ? AS records  KEY ''"
+        var newFile = FileManager.init()
+  //      newFile.createFile(atPath: dbPath+"path", contents: nil)
+        do{
+        var db = try! Connection(dbPath)
+try db.key(oldPassword)
+    
+   try     db.rekey("")
+            
+        }
+        catch{
+        print(error)
+            print("Decryption Failed")
+        }
+        }
+    
+        func encryptNewDBPassword(newPassword : String,dbPath: String){
+            do{
+            var db = try! Connection(dbPath)
+                try db.key("")
+                try db.rekey(newPassword)
+            }
+            catch{
+                print(error)
+                
+            }
+            }
+            }
+    }
 
+    
 
-}
+    
+

@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'main.dart';
 import 'project_colors.dart';
+import 'dart:io';
 import 'project_strings_file.dart';
 import 'recordsdatabase_handler.dart';
 import 'main.dart';
@@ -16,7 +18,7 @@ import 'splash_screendart.dart';
 
 String greeting = '';
 TextField loginField = TextField();
-
+late Database recdatabase;
 
 /// Required to open the application , simple login form to start
 class LoginScreen extends StatefulWidget{
@@ -26,6 +28,8 @@ const LoginScreen({Key? key,}) : super(key: key);
   State<LoginScreen> createState() => _LoginScreenState();
 
 }
+
+late RecordsDB recordsDataBase;
 late String dbPassword;
 late String userPassword;
 ///Handles the states of the application.
@@ -51,8 +55,16 @@ bool passwordEnabled = true;
     });
 
   }
-  void loadDB() async{
-    records = await RecordsDB.records();
+ void loadDB() async{
+    try{
+      recordsDataBase = RecordsDB();
+      recdatabase = await recordsDataBase.database;
+    recordHolder = await recordsDataBase.getRecords();
+    }
+    on Exception catch (ex)
+    {
+      print(ex);
+    }
   }
 
   void loadStateStuff() async {
@@ -67,9 +79,10 @@ bool passwordEnabled = true;
 
     // This works on android, we need to see if it will work on iOS
     //Results were dicey
-    if(userPassword != dbPassword){
+   /* if(Platform.isAndroid){*/
+    if(userPassword != dbPassword) {
       encryptedSharedPrefs.setString('dbPassword', userPassword);
-    }
+    }//}}
 
     passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
 // This code seem
@@ -117,9 +130,10 @@ setState(() {
               hintText: 'Enter secure password'),
           onChanged: (text) {
             loginPassword = text;
-            if (text.length == userPassword?.length){
-              if(text == userPassword!){
+            if (text.length == userPassword.length){
+              if(text == userPassword){
                 loadDB();
+                recordsDataBase.getDBLoaded();
               Navigator.pushNamed(context, '/success').then((value) => {
 
                 refreshPrefs(),

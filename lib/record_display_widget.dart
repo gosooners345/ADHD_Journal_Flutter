@@ -32,8 +32,8 @@ class RecordDisplayWidget extends StatefulWidget {
 class RecordDisplayWidgetState extends State<RecordDisplayWidget>{
   late ValueListenableBuilder testMe;
   late Text titleHdr;
- RecordsNotifier recNotifier = RecordsNotifier(records);
-  Future<List<Records>> _recordList = RecordsDB.records();
+ RecordsNotifier recNotifier = RecordsNotifier(recordHolder);
+
   var _selectedIndex = 0;
   String header = "";
 late ValueListenableBuilder tryMe;
@@ -60,21 +60,21 @@ testMe =  ValueListenableBuilder(valueListenable: recNotifier.valueNotifier, bui
           child: ListTile(    onTap: () {
             _editRecord(index);
           },
-            title: RecordCardViewWidget(record: records[index],),
+            title: RecordCardViewWidget(record: recordHolder[index],),
           )
       ),
       onHorizontalDragStart: (_) {
         //Add a dialog box method to allow for challenges to deleting entries
         setState(() {
-          final deletedRec = records[index];
-          RecordsDB.deleteRecord(deletedRec.id);
-          records.remove(deletedRec);
+          final deletedRec = recordHolder[index];
+          recordsDataBase.deleteRecord(deletedRec.id);
+          recordHolder.remove(deletedRec);
 
         });
       },
     );
   },
-    itemCount: records.length,
+    itemCount: recordHolder.length,
     scrollDirection: Axis.vertical,
     shrinkWrap: true,
   );
@@ -98,9 +98,9 @@ return Timer(duration,testME);
   }
 
 void loadList() async{
-  //records = await _recordList;
-    records.sort((a,b)=> a.compareTimesUpdated(b.timeUpdated));
-    records = records.reversed.toList();
+  //records= await _recordList;
+    recordHolder.sort((a,b)=> a.compareTimesUpdated(b.timeUpdated));
+    recordHolder = recordHolder.reversed.toList();
     RecordList.loadLists();
 }
 
@@ -111,7 +111,7 @@ void loadList() async{
 
   /// This loads the db list into the application for displaying.
   void getList() async {
-    _recordList = RecordsDB.records();
+//    _recordList = recordsDataBase.getRecords();
   }
 void testME(){
     setState((){
@@ -125,14 +125,10 @@ void testME(){
   /// Checked and Passed : true
   void _editRecord(int index) {
     setState(() {
-      final Records loadRecord = records[index];
+      final Records loadRecord = recordHolder[index];
       Navigator.push(context, MaterialPageRoute(builder: (_) =>
           ComposeRecordsWidget(
-            record: loadRecord, id: 1,title: 'Edit Entry',)))
-          .then((loadRecord) =>
-          setState(() {
-
-          }));
+            record: loadRecord, id: 1,title: 'Edit Entry',)));
     });
   }
 
@@ -162,21 +158,21 @@ void testME(){
                   child: ListTile(    onTap: () {
                     _editRecord(index);
                   },
-                    title: RecordCardViewWidget(record: records[index],),
+                    title: RecordCardViewWidget(record: recordHolder[index],),
                   )
               ),
               onHorizontalDragStart: (_) {
                 //Add a dialog box method to allow for challenges to deleting entries
                 setState(() {
-                  final deletedRec = records[index];
-                  RecordsDB.deleteRecord(deletedRec.id);
-                  records.remove(deletedRec);
+                  final deletedRec = recordHolder[index];
+                  recordsDataBase.deleteRecord(deletedRec.id);
+                  recordHolder.remove(deletedRec);
 
                 });
               },
             );
           },
-            itemCount: records.length,
+            itemCount: recordHolder.length,
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
           );
@@ -192,7 +188,7 @@ void testME(){
 }
 class RecordsNotifier extends ValueNotifier<List<Records>>{
   RecordsNotifier(List<Records> recordList) : super(recordList);
-  ValueNotifier valueNotifier = ValueNotifier(records.length);
+  ValueNotifier valueNotifier = ValueNotifier(recordHolder.length);
 
   void updateListCount(int length){
 
