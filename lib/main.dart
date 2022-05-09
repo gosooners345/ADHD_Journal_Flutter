@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       debugShowMaterialGrid: false,
       title: 'ADHD Journal',
-      theme: ThemeData.light(),//(colorSchemeSeed: Color(0xffDE031B),colorScheme: ColorScheme(), useMaterial3: true),
+      theme: ThemeData(colorSchemeSeed: Color(0xffDE031B), useMaterial3: true),
       darkTheme: ThemeData.dark(),
       initialRoute: '/',
       routes: {
