@@ -209,7 +209,7 @@ if(!callingCard){
         ),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.horizontal(left: Radius.circular(10.0),right: Radius.circular(10.0)),
         ),
       ),
       );
@@ -219,7 +219,6 @@ if(!callingCard){
     }
     } on Exception catch(ex)
     {
-
       showDialog(
           context: context,
           builder: (BuildContext context) {
