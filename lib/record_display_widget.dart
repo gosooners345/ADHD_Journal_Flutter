@@ -28,74 +28,30 @@ class RecordDisplayWidget extends StatefulWidget {
 }
 
 class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
-  late ValueListenableBuilder testMe;
+
   late Text titleHdr;
   RecordsNotifier recNotifier = RecordsNotifier(recordHolder);
-
-  var _selectedIndex = 0;
   String header = "";
-  late ValueListenableBuilder tryMe;
 
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 15, fontWeight: FontWeight.bold);
 
   @override
   void initState() {
     super.initState();
     try {
       loadPrefs();
-      getList();
-
       ///Load the DB into the app
-
       setState(() {
         loadList();
-        testMe = ValueListenableBuilder(
-          valueListenable: recNotifier.valueNotifier,
-          builder: (BuildContext context, value, child) {
-            return ListView.builder(
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  child: Card(
-                      child: ListTile(
-                    onTap: () {
-                      _editRecord(index);
-                    },
-                    title: RecordCardViewWidget(
-                      record: recordHolder[index],
-                    ),
-                  )),
-                  onHorizontalDragStart: (_) {
-                    //Add a dialog box method to allow for challenges to deleting entries
-                    setState(() {
-                      final deletedRec = recordHolder[index];
-                      recordsDataBase.deleteRecord(deletedRec.id);
-                      recordHolder.remove(deletedRec);
-                    });
-                  },
-                );
-              },
-              itemCount: recordHolder.length,
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-            );
-          },
-        );
       });
-      (recordWaitingPeriod());
+
     } catch (e, s) {
       print(s);
     }
   }
 
-  recordWaitingPeriod() async {
-    var duration = const Duration(seconds: 1);
-
-    return Timer(duration, testME);
-  }
 
   void loadList() async {
-    //records= await _recordList;
+
     recordHolder.sort((a, b) => a.compareTimesUpdated(b.timeUpdated));
     recordHolder = recordHolder.reversed.toList();
     RecordList.loadLists();
@@ -107,14 +63,8 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
   }
 
   /// This loads the db list into the application for displaying.
-  void getList() async {
-//    _recordList = recordsDataBase.getRecords();
-  }
-  void testME() {
-    setState(() {
-      testMe.createState();
-    });
-  }
+
+
 
   /// This method allows users to access an existing record to edit. The future implementations will prevent timestamps from being edited
   /// Checked and Passed : true

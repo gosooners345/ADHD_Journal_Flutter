@@ -5,4 +5,11 @@ class Styles{
 
 }
 
-class DarkSharedPrefs{}
+class AppColors{
+
+  static Color mainAppColor = Color(0xffDE031B);
+  static Color darkModeMain = Color(0xffDE031B);
+
+
+
+}

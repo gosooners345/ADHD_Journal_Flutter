@@ -18,6 +18,8 @@ class SettingsPage extends StatefulWidget {
   State<SettingsPage> createState() => _SettingsPage();
 }
 
+/// To Do list: Add more stuff like customization of list display, theme choices, etc.
+
 class _SettingsPage extends State<SettingsPage> {
   static const platform =
       MethodChannel('com.activitylogger.release1/ADHDJournal');

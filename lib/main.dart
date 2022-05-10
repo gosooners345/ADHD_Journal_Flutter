@@ -47,6 +47,7 @@ class MyApp extends StatelessWidget {
       title: 'ADHD Journal',
       theme: ThemeData(colorSchemeSeed: Color(0xffDE031B), useMaterial3: true),
       darkTheme: ThemeData.dark(),
+      themeMode: ThemeMode.system,
       initialRoute: '/',
       routes: {
         '/': (context) => SplashScreen(),
@@ -177,6 +178,10 @@ class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
         title: Text(widget.title),
         leading: IconButton(
             onPressed: () {
+              if(recdatabase.isOpen)
+              {recdatabase.batch().commit();
+
+              recdatabase.close();}
               Navigator.pop(context);
             },
             icon: Icon(Icons.arrow_back)),
@@ -188,23 +193,18 @@ class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
                   context,
                   MaterialPageRoute(
                       builder: (_) =>
-                          // This will test whether we need to even replace the DB File on the iOS device or not. We will test the db later when we change keys.
-                          // when this happens we will close the app and open it with the new key.
-                          //Test Results in: iOS works without the close and reopening.
+                         /// Change password upon exit if the password has changed.
+                      /// Tested and Passed: 05/09/2022
                           SettingsPage())).then((value) => {
-                    if (userPassword != dbPassword)
-                      {
-                        if (Platform.isAndroid)
-                          {
-                            recdatabase.close(),
-                          },
-                        recordsDataBase.changePasswords(),
-                        if (Platform.isAndroid)
-                          {
-                            recordsDataBase.getDBLoaded(true),
-                          },
-                      },
-                  });
+              if (userPassword != dbPassword)
+               {
+               if(Platform.isAndroid){
+                 recdatabase.close(),
+                  },
+                  recordsDataBase.changePasswords(),
+                if(Platform.isAndroid)
+                     recordsDataBase.getDBLoaded(true),
+                },});
             },
           ),
         ],

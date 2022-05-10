@@ -17,7 +17,6 @@ class RecordList {
   static List<RecordRatingStats> ratingsList = [];
   static List<RecordDataStats> symptomList = [];
 
-  //List<Records> recordList = records;
 
   static void loadLists() async {
     emotionsList = await _getEmotionCounts();

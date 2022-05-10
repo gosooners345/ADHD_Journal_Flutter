@@ -56,25 +56,27 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
     } else {
       ratingInfo = 'Rating :';
       ratingSliderWidget = Text(ratingInfo);
-      //Success Switch
+
       successLabelText = 'Success/Fail';
       successStateWidget = Text(successLabelText);
     }
   }
 
 //Saves the record in the database
-  void saveRecord() {
+  void saveRecord() async {
     super.widget.record.timeUpdated = DateTime.now();
     if (super.widget.id == 0) {
-      recordsDataBase.insertRecords(super.widget.record);
+       recordsDataBase.insertRecords(super.widget.record);
       recordHolder.add(super.widget.record);
       recordHolder.sort((a, b) => a.compareTimesUpdated(b.timeUpdated));
     } else {
-      recordsDataBase.updateRecord(super.widget.record);
+   recordsDataBase.updateRecord(super.widget.record);
       recordHolder.remove(super.widget.record);
       recordHolder.add(super.widget.record);
       recordHolder.sort((a, b) => a.compareTimesUpdated(b.timeUpdated));
     }
+
+    recdatabase.batch().commit();
     Navigator.pop(context, super.widget.record);
   }
 

@@ -1,3 +1,4 @@
+import 'package:adhd_journal_flutter/project_colors.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:onboarding/onboarding.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,9 @@ class OnBoardingWidget extends StatefulWidget {
   @override
   State<OnBoardingWidget> createState() => _OnBoardingWidgetState();
 }
+// Variables to store inside the DB
+String savedPasswordValue = '';
+String greetingValueSaved = '';
 
 class _OnBoardingWidgetState extends State<OnBoardingWidget> {
   var pageTitleStyle = const TextStyle(
@@ -39,7 +43,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
   Material _skipButton({void Function(int)? setIndex}) {
     return Material(
       borderRadius: defaultSkipButtonBorderRadius,
-      color: Colors.brown,
+      color: AppColors.mainAppColor,
       child: InkWell(
         borderRadius: defaultSkipButtonBorderRadius,
         onTap: () {
@@ -468,7 +472,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                       netDragPercent: dragDistance,
                       pagesLength: pagesLength,
                       indicator: Indicator(
-                        activeIndicator: ActiveIndicator(color: Colors.brown),
+                        activeIndicator: ActiveIndicator(color: AppColors.mainAppColor),
                         closedIndicator: ClosedIndicator(color: Colors.white),
                         indicatorDesign: IndicatorDesign.line(
                           lineDesign: LineDesign(
@@ -491,5 +495,4 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
   }
 }
 
-String savedPasswordValue = '';
-String greetingValueSaved = '';
+

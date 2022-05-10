@@ -3,15 +3,10 @@
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'main.dart';
-import 'project_colors.dart';
-import 'dart:io';
-import 'project_strings_file.dart';
 import 'recordsdatabase_handler.dart';
-import 'main.dart';
 import 'splash_screendart.dart';
 
 String greeting = '';

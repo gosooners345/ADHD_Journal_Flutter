@@ -1,8 +1,8 @@
 import 'package:adhd_journal_flutter/record_list_class.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:adhd_journal_flutter/project_colors.dart';
 import 'main.dart';
-import 'records_data_class_db.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class DashboardViewWidget extends StatefulWidget {
@@ -23,6 +23,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
     String summaryString = '';
     String successString = '';
     double avgRating = 0.0;
+
     // For the ratings
     List<double> sum = RecordList.ratingsList.map((e) => e.value).toList();
     double totalRtg = 0.0;
@@ -55,10 +56,11 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
       children: [
         Card(
           child: SizedBox(
-            child: Text(
+            child: Padding
+              (padding:const EdgeInsets.all(5.0),child:Text(
                 'Here\'s a summary of your statistics:\r\n ${summaryGen()}',
                 style: TextStyle(fontSize: 16.0, fontStyle: FontStyle.italic)),
-          ),
+          ),              ),
         ),
         //Ratings Chart
         Card(
@@ -79,7 +81,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                   width: 1.0,
                   xValueMapper: (RecordRatingStats recLbl, _) =>
                       DateFormat("MM/dd/yyyy hh:mm:ss aa").format(recLbl.date),
-                  color: Colors.brown,
+                  color: AppColors.mainAppColor,
                   yValueMapper: (RecordRatingStats recLbl, _) => recLbl.value,
                   dataLabelSettings: const DataLabelSettings(isVisible: true),
                   xAxisName: 'Entry Timestamps',
@@ -133,7 +135,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                   xValueMapper: (RecordDataStats rec, _) => rec.key,
                   yValueMapper: (RecordDataStats rec, _) => rec.value,
                   name: 'Emotion Data from Journal Entries',
-                  color: Colors.brown,
+
                   xAxisName: 'Emotions',
                   spacing: 1.5,
                   dataLabelSettings: const DataLabelSettings(
@@ -166,7 +168,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                     xValueMapper: (RecordDataStats rec, _) => rec.key,
                     yValueMapper: (RecordDataStats rec, _) => rec.value,
                     name: 'Symptom Data from Journal Entries',
-                    color: Colors.brown,
+                    color: AppColors.mainAppColor,
                     xAxisName: 'Symptoms',
                     yAxisName: 'Counts',
                     spacing: 1.5,

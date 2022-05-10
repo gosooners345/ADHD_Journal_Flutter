@@ -19,239 +19,62 @@ class RecordsDB {
   static const platform =
       MethodChannel('com.activitylogger.release1/ADHDJournal');
 
-/*static Future<cipher.Database> db() async{
-//dbPassword="1234";
-  if(userPassword != dbPassword) {
-    _changeDBPasswords(dbPassword,userPassword);
 
-  }
-try{
-  return cipher.openDatabase(join(await getDatabasesPath(), 'activitylogger_db.db'),
-    password: dbPassword,
-    onCreate: (database, version) {
-      return database.execute(
-          'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT,symptoms TEXT,rating DOUBLE, tags TEXT,success INT, time_created INT, time_updated INT)');
-    },
-    onOpen: (database) {
-    database.execute("DROP TABLE IF EXISTS android_metadata; DROP TABLE IF EXISTS room_master_table;");
-    },
-
-    version: 5,
-  );}
-  on Exception catch(ex){
-    print(ex);
-    throw Exception(ex);
-  }
-}*/
   void go() async {
     WidgetsFlutterBinding.ensureInitialized();
   }
 
-// Call the change passwords method so it can run  on device.
+
+/// Unsure why this method needed to be called. Look into deleting later.
+  ///
   void changePasswords() async {
     _changeDBPassword(dbPassword, userPassword);
   }
-
+/// similar reason.
   void startRecords() async {
     recordHolder = await getRecords();
   }
 
+
+
+
+
+/// Change user password when called
+  /// Tested and Passed: 05/09/2022
+
   Future<void> _changeDBPassword(String oldPassword, String newPassword) async {
     try {
-      // if(Platform.isAndroid){
       await platform.invokeMethod('changeDBPasswords',
           {'oldDBPassword': oldPassword, 'newDBPassword': newPassword});
     }
-    //  else{
-    //    decryptDBS(context, File(join(await getDatabasesPath(), 'activitylogger_db.db')),oldPassword);
-    //    encryptDBS(context, File(join(await getDatabasesPath(), 'activitylogger_db.db')),newPassword);
-    //     dbPassword = userPassword;
-    //     await encryptedSharedPrefs.setString('dbPassword', newPassword);
-    //print('Password is ${await encryptedSharedPrefs.getString('dbPassword')}');
 
-    //   }
-    // if(Platform.isAndroid)
-    // { await encryptedSharedPrefs.setString('dbPassword',newPassword);
-    // dbPassword = newPassword;
-    //  }
-    //  print(await encryptedSharedPrefs.getString('dbPassword'));
     on Exception catch (ex) {
       print(ex);
     }
   }
-
-  Future<void> insertRecords(Records record) async {
+/// Insert Records into the database
+  /// Tested and Passed: 05/09/2022
+  Future<int> insertRecords(Records record) async {
     final db = await RecordsDB().database;
-    await db.insert('records', record.toMapForDB(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
+     return await db.insert('records', record.toMapForDB(),
+        conflictAlgorithm: ConflictAlgorithm.ignore);
   }
 
   Future<Database> get database async {
-    Databases = await initializeDBRDB();
+    Databases = await initializeDB(false);
     return Databases;
   }
-
-  void decryptDBS(Context context, File originalDB, String password) async {
-    String attachStatement = "ATTACH DATABASE ? AS records KEY ''";
-    String exportToDecryptedDBCommand = "SELECT sqlcipher_export('records')";
-    String detachStatement = "DETACH DATABASE records";
-    try {
-      if (await originalDB.exists()) {
-        print('testing decryption');
-
-        var newFile =
-            File(join(await getDatabasesPath(), 'activitylogger_db-temp.db'));
-        var encryptedDB = await cipher.openDatabase(
-          join(await getDatabasesPath(), 'activitylogger_db.db'),
-          password: dbPassword,
-          onCreate: (database, version) {
-            return database.execute(
-                'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT,symptoms TEXT,rating DOUBLE, tags TEXT,success INT,time_updated INT, time_created INT)');
-          },
-          onOpen: (database) {
-            database.execute(
-                "DROP TABLE IF EXISTS android_metadata; DROP TABLE IF EXISTS room_master_table;");
-          },
-          version: 5,
-        );
-        var version = await encryptedDB.getVersion();
-        encryptedDB.execute(attachStatement);
-        await encryptedDB.execute(attachStatement,
-            List.generate(1, (index) => (newFile.absolute.path)));
-        encryptedDB.execute(exportToDecryptedDBCommand);
-        encryptedDB.execute(detachStatement);
-        var decryptedDB = await cipher.openDatabase(
-          newFile.path,
-          password: '',
-          onCreate: (database, version) {
-            return database.execute(
-                'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT,symptoms TEXT,rating DOUBLE, tags TEXT,success INT,time_updated INT, time_created INT)');
-          },
-          onOpen: (database) {
-            database.execute(
-                "DROP TABLE IF EXISTS android_metadata; DROP TABLE IF EXISTS room_master_table;");
-          },
-          version: 5,
-        );
-        decryptedDB.close();
-        originalDB.deleteSync();
-        newFile.renameSync(originalDB.path);
-        try {
-          var testOpen = await cipher.openDatabase(
-            newFile.path,
-            password: '',
-            onCreate: (database, version) {
-              return database.execute(
-                  'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT,symptoms TEXT,rating DOUBLE, tags TEXT,success INT,time_updated INT, time_created INT)');
-            },
-            onOpen: (database) {
-              database.execute(
-                  "DROP TABLE IF EXISTS android_metadata; DROP TABLE IF EXISTS room_master_table;");
-            },
-            version: 5,
-          );
-          print(testOpen.isOpen);
-          if (testOpen.isOpen) {
-            testOpen.close();
-          }
-        } on Exception catch (ex) {
-          print(ex);
-        }
-      } else {
-        throw Exception("File not found");
-      }
-    } on Exception catch (ex) {
-      print(ex);
-      print("Decryption Failed");
-      print("File doesn't exist");
-    }
-  }
-
-  void encryptDBS(Context context, File originalDB, String password) async {
-    String attachStatement = "ATTACH DATABASE ? AS records KEY ''";
-    String exportToDecryptedDBCommand =
-        "SELECT sqlcipher_export('main','records')";
-    String detachStatement = "DETACH DATABASE records";
-    try {
-      if (await originalDB.exists()) {
-        print('Testing encryption');
-        var newFile =
-            File(join(await getDatabasesPath(), 'activitylogger_db-temp.db'));
-        var decryptedDB = await cipher.openDatabase(
-          join(await getDatabasesPath(), 'activitylogger_db.db'),
-          password: "",
-          onCreate: (database, version) {
-            return database.execute(
-                'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT,symptoms TEXT,rating DOUBLE, tags TEXT,success INT,time_updated INT, time_created INT)');
-          },
-          onOpen: (database) {
-            database.execute(
-                "DROP TABLE IF EXISTS android_metadata; DROP TABLE IF EXISTS room_master_table;");
-          },
-          version: 5,
-        );
-        var version = await decryptedDB.getVersion();
-        await decryptedDB.execute(attachStatement);
-        await decryptedDB.execute(attachStatement,
-            List.generate(1, (index) => (newFile.absolute.path)));
-        decryptedDB.execute(exportToDecryptedDBCommand);
-        decryptedDB.execute(detachStatement);
-        var encryptedDB = await cipher.openDatabase(
-          newFile.path,
-          password: password,
-          onCreate: (database, version) {
-            return database.execute(
-                'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT,symptoms TEXT,rating DOUBLE, tags TEXT,success INT,time_updated INT, time_created INT)');
-          },
-          onOpen: (database) {
-            database.execute(
-                "DROP TABLE IF EXISTS android_metadata; DROP TABLE IF EXISTS room_master_table;");
-          },
-          version: 5,
-        );
-        encryptedDB.close();
-        originalDB.deleteSync();
-        newFile.renameSync(originalDB.path);
-        try {
-          var testOpen = await cipher.openDatabase(
-            newFile.path,
-            password: password,
-            onCreate: (database, version) {
-              return database.execute(
-                  'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT,symptoms TEXT,rating DOUBLE, tags TEXT,success INT,time_updated INT, time_created INT)');
-            },
-            onOpen: (database) {
-              database.execute(
-                  "DROP TABLE IF EXISTS android_metadata; DROP TABLE IF EXISTS room_master_table;");
-            },
-            version: 5,
-          );
-          print(testOpen.isOpen);
-          if (testOpen.isOpen) {
-            testOpen.close();
-          }
-        } on Exception catch (ex) {
-          print(ex);
-        }
-      } else {
-        throw Exception("File not found");
-      }
-    } on Exception catch (ex) {
-      print(ex);
-      print("Decryption Failed");
-      print("File doesn't exist");
-    }
-  }
-
+/// Load the Database into the application
+  /// Edit : 5/10/2022 - removed an unnecessary variable from the code to make it concise
+   /// Tested and Passed: 05/09/2022
   Future<Database> initializeDB(bool isCalledFromSettings) async {
-    if (userPassword != dbPassword) {
+  /// To be safe, I set the password here in case
+    if (isCalledFromSettings) {
       dbPassword = userPassword;
-      if (await encryptedSharedPrefs.getString('dbPassword') != dbPassword) {
-        await encryptedSharedPrefs.setString('dbPassword', dbPassword);
-      }
+      await encryptedSharedPrefs.setString('dbPassword', dbPassword);
     }
 
-    var ourDB = await cipher.openDatabase(
+    return  await cipher.openDatabase(
       join(await getDatabasesPath(), 'activitylogger_db.db'),
       password: dbPassword,
       onCreate: (database, version) {
@@ -262,34 +85,13 @@ try{
         database.execute(
             "DROP TABLE IF EXISTS android_metadata; DROP TABLE IF EXISTS room_master_table;");
       },
+      singleInstance: false,
       version: 5,
     );
-    return ourDB;
+
   }
 
-  Future<Database> initializeDBRDB() async {
-    //to prevent the app from trying to doub
-    /*if(Platform.isIOS){
-      if(userPassword != dbPassword) {
-        _changeDBPassword(dbPassword,userPassword);
-        dbPassword = userPassword;
-      }}*/
-    var dbp = '1234';
-    var ourDB = await cipher.openDatabase(
-      join(await getDatabasesPath(), 'activitylogger_db.db'),
-      password: dbp,
-      onCreate: (database, version) {
-        return database.execute(
-            'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT,symptoms TEXT,rating DOUBLE, tags TEXT,success INT,time_updated INT, time_created INT)');
-      },
-      onOpen: (database) {
-        database.execute(
-            "DROP TABLE IF EXISTS android_metadata; DROP TABLE IF EXISTS room_master_table;");
-      },
-      version: 5,
-    );
-    return ourDB;
-  }
+/// Load the results from the initialize DB method into a list for the records to load
 
   Future<List<Records>> getRecords() async {
     final database = await RecordsDB().database;
@@ -311,22 +113,23 @@ try{
               DateTime.fromMillisecondsSinceEpoch(maps[index]['time_updated']));
     });
   }
-
+/// This was to avoid having to use await in the settings part of the main dart class file
   void getDBLoaded(bool settingsCalled) async {
-    if (settingsCalled)
       recdatabase = await initializeDB(settingsCalled);
-    else
-      recdatabase = await initializeDBRDB();
   }
-
-  Future<void> updateRecord(Records record) async {
+/// Update an existing record
+   /// Tested and Passed: 05/09/2022
+  Future<int> updateRecord(Records record) async {
     final db = await RecordsDB().database;
-    await db.update('records', record.toMapForDB(),
+    return await db.update('records', record.toMapForDB(),
         where: 'id =?', whereArgs: [record.id]);
   }
-
+/// Deletes an existing record
+  /// Tested and Passed: 05/09/2022
   Future<void> deleteRecord(int id) async {
     final db = await RecordsDB().database;
     await db.delete('records', where: 'id =?', whereArgs: [id]);
   }
+
+
 }
