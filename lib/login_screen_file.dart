@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:adhd_journal_flutter/onboarding_widget_class.dart';
+import 'package:adhd_journal_flutter/record_list_class.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -40,11 +42,10 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    encryptedSharedPrefs = EncryptedSharedPreferences();
+
     loadStateStuff();
     setState(() {
       stuff = TextEditingController();
-
       resetLoginFieldState();
     });
   }
@@ -57,6 +58,9 @@ class _LoginScreenState extends State<LoginScreen> {
         print("DB open");
       }
       recordHolder = await recordsDataBase.getRecords();
+      recordHolder.sort((a, b) => a.compareTimesUpdated(b.timeUpdated));
+      recordHolder = recordHolder.reversed.toList();
+      RecordList.loadLists();
     } on Exception catch (ex) {
       print(ex);
     }
@@ -125,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
             if (text.length == userPassword.length) {
               if (text == userPassword) {
                 loadDB();
-                recordsDataBase.getDBLoaded(false);
+                callingCard = true;
                 Navigator.pushNamed(context, '/success').then((value) => {
                       refreshPrefs(),
                       resetLoginFieldState(),
@@ -222,6 +226,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             loadDB();
                             Navigator.pushNamed(context, '/success')
                                 .then((value) => {
+                                  stuff.clear(),
                                       refreshPrefs(),
                                       resetLoginFieldState(),
                                     });
@@ -247,7 +252,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             loadDB();
                             Navigator.pushNamed(context, '/success').then(
                                 (value) =>
-                                    {refreshPrefs(), resetLoginFieldState()});
+                                    {refreshPrefs(),
+                                      resetLoginFieldState()});
                             stuff.clear();
                           }
                         },

@@ -1,41 +1,21 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:adhd_journal_flutter/login_screen_file.dart';
-import 'package:adhd_journal_flutter/main.dart';
 import 'package:adhd_journal_flutter/records_data_class_db.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
-import 'package:sqflite_sqlcipher/sqflite.dart' as cipher;
 import 'login_screen_file.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'splash_screendart.dart';
 
 class RecordsDB {
-  static late cipher.Database Databases;
+  static late Database Databases;
   static const platform =
       MethodChannel('com.activitylogger.release1/ADHDJournal');
 
-
-  void go() async {
-    WidgetsFlutterBinding.ensureInitialized();
-  }
-
-
-/// Unsure why this method needed to be called. Look into deleting later.
-  ///
   void changePasswords() async {
     _changeDBPassword(dbPassword, userPassword);
   }
-/// similar reason.
-  void startRecords() async {
-    recordHolder = await getRecords();
-  }
-
-
 
 
 
@@ -46,10 +26,16 @@ class RecordsDB {
     try {
       await platform.invokeMethod('changeDBPasswords',
           {'oldDBPassword': oldPassword, 'newDBPassword': newPassword});
+      dbPassword=newPassword;
+      await encryptedSharedPrefs.setString('dbPassword', newPassword);
     }
 
     on Exception catch (ex) {
-      print(ex);
+      if(kDebugMode){
+        print(ex);
+      }
+
+
     }
   }
 /// Insert Records into the database
@@ -61,20 +47,15 @@ class RecordsDB {
   }
 
   Future<Database> get database async {
-    Databases = await initializeDB(false);
+    Databases = await initializeDB();
     return Databases;
   }
 /// Load the Database into the application
   /// Edit : 5/10/2022 - removed an unnecessary variable from the code to make it concise
    /// Tested and Passed: 05/09/2022
-  Future<Database> initializeDB(bool isCalledFromSettings) async {
-  /// To be safe, I set the password here in case
-    if (isCalledFromSettings) {
-      dbPassword = userPassword;
-      await encryptedSharedPrefs.setString('dbPassword', dbPassword);
-    }
-
-    return  await cipher.openDatabase(
+  Future<Database> initializeDB() async {
+// Open the database with the given variables loaded and stored.
+    return  await openDatabase(
       join(await getDatabasesPath(), 'activitylogger_db.db'),
       password: dbPassword,
       onCreate: (database, version) {
@@ -91,7 +72,7 @@ class RecordsDB {
 
   }
 
-/// Load the results from the initialize DB method into a list for the records to load
+/// Returns a list of records for the application
 
   Future<List<Records>> getRecords() async {
     final database = await RecordsDB().database;
@@ -114,8 +95,8 @@ class RecordsDB {
     });
   }
 /// This was to avoid having to use await in the settings part of the main dart class file
-  void getDBLoaded(bool settingsCalled) async {
-      recdatabase = await initializeDB(settingsCalled);
+  void getDBLoaded() async {
+      recdatabase = await initializeDB();
   }
 /// Update an existing record
    /// Tested and Passed: 05/09/2022

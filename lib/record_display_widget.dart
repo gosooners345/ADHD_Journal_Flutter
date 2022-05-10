@@ -32,35 +32,62 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
   late Text titleHdr;
   RecordsNotifier recNotifier = RecordsNotifier(recordHolder);
   String header = "";
-
+late ValueListenableBuilder recordListHolderWidget;
 
   @override
   void initState() {
     super.initState();
     try {
-      loadPrefs();
-      ///Load the DB into the app
-      setState(() {
-        loadList();
-      });
+      greeting = prefs.getString('greeting') ?? '';
+      setState((){
+        recordListHolderWidget =ValueListenableBuilder(valueListenable: recNotifier.valueNotifier, builder:
+      (BuildContext context,value,child)
+      {
 
+      return ListView.builder(itemBuilder: (context, index) {
+      return GestureDetector(
+      child: Card(
+      child: ListTile(    onTap: () {
+      _editRecord(index);
+      },
+      title: RecordCardViewWidget(record: recordHolder[index],),
+      )
+      ),
+      onHorizontalDragStart: (_) {
+      //Add a dialog box method to allow for challenges to deleting entries
+      setState(() {
+      final deletedRec = recordHolder[index];
+      recordsDataBase.deleteRecord(deletedRec.id);
+      recordHolder.remove(deletedRec);
+
+      });
+      },
+      );
+      },
+      itemCount: recordHolder.length,
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      );
+
+      },);
+      });
+      startTimer();
     } catch (e, s) {
       print(s);
     }
   }
 
+  startTimer() async{
+    var duration = const Duration(seconds: 3);
+    return Timer(duration,executeClick);
+  }
+  void executeClick() async {
+setState((){
+recordListHolderWidget.createState();});
 
-  void loadList() async {
-
-    recordHolder.sort((a, b) => a.compareTimesUpdated(b.timeUpdated));
-    recordHolder = recordHolder.reversed.toList();
-    RecordList.loadLists();
   }
 
-  void loadPrefs() async {
-    prefs = await SharedPreferences.getInstance();
-    greeting = prefs.getString('greeting') ?? '';
-  }
+
 
   /// This loads the db list into the application for displaying.
 
@@ -105,37 +132,8 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
           ),
         ),
         Expanded(
-            child: ValueListenableBuilder(
-          valueListenable: recNotifier.valueNotifier,
-          builder: (BuildContext context, value, child) {
-            return ListView.builder(
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  child: Card(
-                      child: ListTile(
-                    onTap: () {
-                      _editRecord(index);
-                    },
-                    title: RecordCardViewWidget(
-                      record: recordHolder[index],
-                    ),
-                  )),
-                  onHorizontalDragStart: (_) {
-                    //Add a dialog box method to allow for challenges to deleting entries
-                    setState(() {
-                      final deletedRec = recordHolder[index];
-                      recordsDataBase.deleteRecord(deletedRec.id);
-                      recordHolder.remove(deletedRec);
-                    });
-                  },
-                );
-              },
-              itemCount: recordHolder.length,
-              scrollDirection: Axis.vertical,
-              shrinkWrap: true,
-            );
-          },
-        )),
+            child:
+            recordListHolderWidget),
       ],
     );
   }

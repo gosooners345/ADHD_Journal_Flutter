@@ -1,4 +1,6 @@
-var symptomList = [
+// ignore_for_file: constant_identifier_names
+
+final symptomList = [
   'Impulsiveness',
   'Impatience',
   'Hyperactivity',
@@ -12,7 +14,7 @@ var symptomList = [
   'Positive Environment/Grace',
   'Momentum driven',
   'Sensory Overload',
-  'A win today',
+  'A small/big win today',
   'Unable to focus',
   'Struggling to focus',
   'Hyperfocus',
@@ -29,6 +31,7 @@ var symptomList = [
   'Depression',
   'Anxiety'
 ];
+const String password_Required_Message_String = "Please enter a password below to continue.";
 const String first_intro_paragraph_string =
     'Welcome to the ADHD Journal! This journal serves you like a personal diary would. It intends to help people with ADHD track their symptoms better, track emotional state,'
     'and more. This app hopefully will make ADHD treatment better as more people use it.';

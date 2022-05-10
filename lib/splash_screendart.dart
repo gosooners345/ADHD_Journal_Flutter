@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     loadPreferences();
 
-    startTimer();
+   startTimer();
   }
 
   void loadPreferences() async {
@@ -31,12 +31,12 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   startTimer() async {
-    var duration = const Duration(seconds: 3);
+    var duration = const Duration(milliseconds: 1000);
     return Timer(duration, route);
   }
 
   //First time users go to the onboarding section to get a tutorial, returning users don't
-  route() {
+ void route() {
     var firstVisit = prefs.getBool('firstVisit') ?? true;
     if (firstVisit) {
       Navigator.pushReplacementNamed(context, '/onboarding');
@@ -52,13 +52,11 @@ class _SplashScreenState extends State<SplashScreen> {
           const SizedBox(
             height: 35,
           ),
-          Container(
-            child: Image.asset('images/app_icon_demo.png'),
-          ),
+          Image.asset('images/app_icon_demo.png'),
           const Padding(
-            padding: EdgeInsets.only(top: 20.0),
+            padding: EdgeInsets.all( 20.0),
             child: Text(
-                'Welcome to ADHD Journal! Loading up your journal  now...'),
+                'Welcome to ADHD Journal! Loading up your journal now...'),
           ),
         ],
       ),

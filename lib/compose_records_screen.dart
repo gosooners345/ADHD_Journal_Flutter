@@ -1,4 +1,7 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:adhd_journal_flutter/login_screen_file.dart';
+import 'package:adhd_journal_flutter/project_colors.dart';
 
 import 'main.dart';
 import 'package:flutter/material.dart';
@@ -158,7 +161,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4),
                     borderSide: BorderSide(
-                        color: Colors.brown.withOpacity(1.0), width: 1)),
+                        color: AppColors.mainAppColor.withOpacity(1.0), width: 1)),
                 labelText: 'What\'s on your mind? ',
               ),
               textCapitalization: TextCapitalization.sentences,

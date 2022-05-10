@@ -104,12 +104,13 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                 PieSeries<RecordDataStats, String>(
                   explode: true,
                   explodeIndex: 0,
+
                   dataSource: RecordList.successList,
                   xValueMapper: (RecordDataStats recs, _) => recs.key,
                   yValueMapper: (RecordDataStats recs, _) => recs.value,
                   dataLabelMapper: (RecordDataStats recs, _) =>
                       "${recs.key}: ${(recs.value / recordHolder.length.toDouble()) * 100.0} % ",
-                  dataLabelSettings: const DataLabelSettings(isVisible: true),
+                  dataLabelSettings: const DataLabelSettings(isVisible: true,),
                 ),
               ],
             ),
@@ -135,6 +136,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                   xValueMapper: (RecordDataStats rec, _) => rec.key,
                   yValueMapper: (RecordDataStats rec, _) => rec.value,
                   name: 'Emotion Data from Journal Entries',
+                  color: AppColors.mainAppColor,
 
                   xAxisName: 'Emotions',
                   spacing: 1.5,

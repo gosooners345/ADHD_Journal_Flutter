@@ -1,3 +1,4 @@
+import 'package:adhd_journal_flutter/login_screen_file.dart';
 import 'package:adhd_journal_flutter/project_colors.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:onboarding/onboarding.dart';
@@ -13,8 +14,11 @@ class OnBoardingWidget extends StatefulWidget {
 // Variables to store inside the DB
 String savedPasswordValue = '';
 String greetingValueSaved = '';
+bool callingCard = false;
 
 class _OnBoardingWidgetState extends State<OnBoardingWidget> {
+  bool isSaved = false;
+
   var pageTitleStyle = const TextStyle(
     fontSize: 23.0,
     wordSpacing: 1,
@@ -200,7 +204,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                   ),
                   Padding(
                     padding:
-                        EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                        const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
@@ -226,7 +230,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
               controller: ScrollController(),
               child: Column(
                 children: [
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: 45.0,
                       vertical: 90.0,
@@ -238,7 +242,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 45.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 45.0),
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
@@ -276,7 +280,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
               controller: ScrollController(),
               child: Column(
                 children: [
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: 45.0,
                       vertical: 90.0,
@@ -390,6 +394,14 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                       },
                     ),
                   ),
+                  Padding(padding: const EdgeInsets.all(15.0),
+                  child:CheckboxListTile(title: const Text("Password enabled?"),
+    value: isSaved,
+    onChanged: (bool? changed) {
+    setState(() {
+    isSaved = changed!;
+
+    });}),),
                   ElevatedButton(
                     onPressed: () async {
                       if (savedPasswordValue != '') {
@@ -397,45 +409,27 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                             'loginPassword', savedPasswordValue);
                         await encryptedSharedPrefs.setString(
                             'dbPassword', savedPasswordValue);
-                        prefs.setBool('passwordEnabled', true);
+                        prefs.setBool('passwordEnabled', isSaved);
                         prefs.setString('greeting', greetingValueSaved);
                         prefs.setBool('firstVisit', false);
-                        Navigator.pushReplacementNamed(context, '/login');
+                        dbPassword = savedPasswordValue;
+                        userPassword = savedPasswordValue;
+
+                        Navigator.pushReplacementNamed(context, '/success');
                       } else {
                         try {
                           showDialog(
                               context: context,
                               builder: (BuildContext context) => AlertDialog(
-                                    title: Text('Password Required!'),
+                                    title: const Text('Password Required!'),
                                     content: const Text(
-                                        'You need to enter a passowrd or else the default password will be set to 1234 to load the application. '
-                                        'Your journal\'s security will be at risk! \r\n'
-                                        'If you want to enter a password, hit cancel and type one in. You can change it later in settings if you\'d like'),
+                                       password_Required_Message_String),
                                     actions: [
                                       TextButton(
                                           onPressed: () async {
                                             Navigator.pop(context);
-                                            savedPasswordValue = '1234';
-                                            await encryptedSharedPrefs
-                                                .setString('loginPassword',
-                                                    savedPasswordValue);
-                                            await encryptedSharedPrefs
-                                                .setString('dbPassword',
-                                                    savedPasswordValue);
-                                            prefs.setBool(
-                                                'passwordEnabled', true);
-                                            prefs.setString(
-                                                'greeting', greetingValueSaved);
-                                            prefs.setBool('firstVisit', false);
-                                            Navigator.pushReplacementNamed(
-                                                context, '/login');
                                           },
                                           child: const Text('OK')),
-                                      TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text('Cancel'))
                                     ],
                                   ));
                         } catch (e, s) {
@@ -473,7 +467,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                       pagesLength: pagesLength,
                       indicator: Indicator(
                         activeIndicator: ActiveIndicator(color: AppColors.mainAppColor),
-                        closedIndicator: ClosedIndicator(color: Colors.white),
+                        closedIndicator: const ClosedIndicator(color: Colors.white),
                         indicatorDesign: IndicatorDesign.line(
                           lineDesign: LineDesign(
                             lineType: DesignType.line_uniform,

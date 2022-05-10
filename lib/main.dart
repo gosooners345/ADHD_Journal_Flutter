@@ -1,9 +1,11 @@
 // ignore_for_file: prefer_const_constructors, prefer_final_fields
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:adhd_journal_flutter/dashboard_stats_display_widget.dart';
 import 'package:adhd_journal_flutter/record_list_class.dart';
+import 'package:adhd_journal_flutter/recordsdatabase_handler.dart';
 import 'package:adhd_journal_flutter/settings.dart';
 import 'package:adhd_journal_flutter/splash_screendart.dart';
 import 'onboarding_widget_class.dart';
@@ -17,21 +19,11 @@ import 'compose_records_screen.dart';
 
 List<Records> recordHolder = [];
 int id = 0;
-StartStuff stuff = StartStuff();
 void main() {
-  stuff = StartStuff();
   runApp(MyApp());
   WidgetsFlutterBinding.ensureInitialized();
 }
 
-String startRoute = '';
-
-class StartStuff {
-  // static late SharedPreferences _prefs;
-  void start() async {
-    prefs = await SharedPreferences.getInstance();
-  }
-}
 
 class MyApp extends StatelessWidget {
   const MyApp({
@@ -45,7 +37,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       debugShowMaterialGrid: false,
       title: 'ADHD Journal',
-      theme: ThemeData(colorSchemeSeed: Color(0xffDE031B), useMaterial3: true),
+      theme: ThemeData(colorSchemeSeed: AppColors.mainAppColor, useMaterial3: true),
       darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.system,
       initialRoute: '/',
@@ -67,6 +59,7 @@ class ADHDJournalApp extends StatefulWidget {
   const ADHDJournalApp({
     Key? key,
     required this.title,
+
   }) : super(key: key);
 
   final String title;
@@ -78,7 +71,7 @@ class ADHDJournalApp extends StatefulWidget {
 late ListView recordViews;
 
 class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
-  late FutureBuilder testMe;
+
   late Text titleHdr;
   var _selectedIndex = 0;
   String header = "";
@@ -87,25 +80,56 @@ class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
   void initState() {
     super.initState();
     try {
-      loadPrefs();
-      setState(() {
-        ///Load the DB into the app
-      });
+if(!callingCard){
+      loadDB();
+}
     } catch (e, s) {
-      print(s);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content:  Text(s.toString()),
+        duration: const Duration(milliseconds: 1500),
+        width: 280.0,
+        // Width of the SnackBar.
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8.0,
+        ),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(4.0),
+        ),
+      ),
+      );
     }
   }
 
+
+
+
+
+
+
+
+  void loadDB() async {
+    try {
+      recordsDataBase = RecordsDB();
+      recdatabase = await recordsDataBase.initializeDB();
+      if (recdatabase.isOpen) {
+        print("DB open");
+      }
+      recordHolder = await recordsDataBase.getRecords();
+      recordHolder.sort((a, b) => a.compareTimesUpdated(b.timeUpdated));
+      recordHolder = recordHolder.reversed.toList();
+      RecordList.loadLists();
+    } on Exception catch (ex) {
+      print(ex);
+    }
+  }
   List<Widget> screens() {
     return [RecordDisplayWidget(), DashboardViewWidget()];
   }
 
-  void loadPrefs() async {
-    prefs = await SharedPreferences.getInstance();
-    greeting = prefs.getString('greeting') ?? '';
-  }
 
-  /// This loads the db list into the application for displaying.
+
+  
 
   /// This is for the bottom navigation bar, this isn't related to the records at all.
   void _onItemTapped(int index) {
@@ -121,7 +145,7 @@ class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
   /// Checked and passed : true
   void _createRecord() {
     setState(() {
-      titleHdr = Text('Record Created');
+
       if (recordHolder.isEmpty) {
         id = 1;
       } else {
@@ -167,7 +191,73 @@ class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
       items: navBar,
       onTap: _onItemTapped,
       currentIndex: _selectedIndex,
+
     );
+  }
+
+  void verifyPasswordChanged(){
+    try{
+      int results = getPasswordChangeResults();
+    if(results==0) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const Text('Password Change Successful!'),
+        duration: const Duration(milliseconds: 1500),
+        width: 280.0,
+        // Width of the SnackBar.
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8.0,
+        ),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+      ),
+      );
+    }
+    else{
+    throw Exception("Password Change Failed");
+    }
+    } on Exception catch(ex)
+    {
+
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text(
+                ex.toString(),
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              content: Text(
+                  'Your password change failed.'),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text("Ok"))
+              ],
+            );
+          });
+    }
+
+  }
+
+  int getPasswordChangeResults(){
+      try{
+          if(Platform.isAndroid){
+            recdatabase.close();
+    }
+    recordsDataBase.changePasswords();
+    if(Platform.isAndroid){
+    recordsDataBase.getDBLoaded();
+    }
+        return 0;
+      }
+      on Exception catch (ex){
+        return 1;
+      }
+
   }
 
   /// This compiles the screen display for the application.
@@ -178,11 +268,16 @@ class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
         title: Text(widget.title),
         leading: IconButton(
             onPressed: () {
-              if(recdatabase.isOpen)
-              {recdatabase.batch().commit();
-
-              recdatabase.close();}
-              Navigator.pop(context);
+              if(recdatabase.isOpen){
+                recdatabase.batch().commit();
+              recdatabase.close();
+              }
+              if(callingCard){
+                Navigator.pop(context);
+              }
+              else{
+                  Navigator.pushReplacementNamed(context,'/login');
+                }
             },
             icon: Icon(Icons.arrow_back)),
         actions: <Widget>[
@@ -196,15 +291,11 @@ class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
                          /// Change password upon exit if the password has changed.
                       /// Tested and Passed: 05/09/2022
                           SettingsPage())).then((value) => {
-              if (userPassword != dbPassword)
-               {
-               if(Platform.isAndroid){
-                 recdatabase.close(),
-                  },
-                  recordsDataBase.changePasswords(),
-                if(Platform.isAndroid)
-                     recordsDataBase.getDBLoaded(true),
-                },});
+    if (userPassword != dbPassword)
+    {
+      verifyPasswordChanged(),
+    },
+              });
             },
           ),
         ],
