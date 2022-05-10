@@ -1,14 +1,8 @@
-import 'dart:ffi';
 
-import 'package:adhd_journal_flutter/onboarding_widget_class.dart';
-import 'package:flutter/cupertino.dart';
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'main.dart';
 import 'splash_screendart.dart';
-import 'login_screen_file.dart';
-import 'recordsdatabase_handler.dart';
 import 'login_screen_file.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -21,8 +15,6 @@ class SettingsPage extends StatefulWidget {
 /// To Do list: Add more stuff like customization of list display, theme choices, etc.
 
 class _SettingsPage extends State<SettingsPage> {
-  static const platform =
-      MethodChannel('com.activitylogger.release1/ADHDJournal');
 
   //Parameter setting stuff
   bool isChecked = false;
@@ -34,7 +26,6 @@ class _SettingsPage extends State<SettingsPage> {
   late SwitchListTile passwordEnabledTile;
   //Visual changes based on parameter values
   String passwordLabelText = 'Password Enabled';
-  // ignore: prefer_const_constructors
   late Icon lockIcon;
   // Convenience Widget for spacing and alignment
   SizedBox spacer = const SizedBox(height: 16, width: 8);
@@ -72,7 +63,6 @@ class _SettingsPage extends State<SettingsPage> {
 
   void saveSettings2(bool value, String key) async {
     prefs.setBool(key, value);
-    prefs.commit();
   }
 
   /// The display for the screen
@@ -170,7 +160,7 @@ class _SettingsPage extends State<SettingsPage> {
                   // Demo mode
                   Navigator.pushNamed(context, '/onboarding');
                 },
-                child: Text('Demo ME!'))
+                child: const Text('Demo ME!'))
           ],
         ),
       ),
