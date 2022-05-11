@@ -20,8 +20,11 @@ import 'compose_records_screen.dart';
 List<Records> recordHolder = [];
 int id = 0;
 void main() {
-  runApp(MyApp());
+
+
+ runApp(MyApp());
   WidgetsFlutterBinding.ensureInitialized();
+
 }
 
 
@@ -80,12 +83,11 @@ class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
   void initState() {
     super.initState();
     try {
-if(!callingCard){
-      loadDB();
-}
+        loadDB();
+
     } catch (e, s) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content:  Text(s.toString()),
+        content: Text(s.toString()),
         duration: const Duration(milliseconds: 1500),
         width: 280.0,
         // Width of the SnackBar.
@@ -102,34 +104,29 @@ if(!callingCard){
   }
 
 
-
-
-
-
-
-
   void loadDB() async {
     try {
-      recordsDataBase = RecordsDB();
-      recdatabase = await recordsDataBase.initializeDB();
+      recdatabase = await RecordsDB.initializeDB();
       if (recdatabase.isOpen) {
         print("DB open");
       }
-      recordHolder = await recordsDataBase.getRecords();
-      recordHolder.sort((a, b) => a.compareTimesUpdated(b.timeUpdated));
-      recordHolder = recordHolder.reversed.toList();
+      recordHolder = await RecordsDB.getRecords();
+      setState((){
+        recordHolder.sort((a,b)=> a.compareTo(b));
+      });
+
+
+
       RecordList.loadLists();
     } on Exception catch (ex) {
       print(ex);
     }
   }
+
   List<Widget> screens() {
-    return [RecordDisplayWidget(), DashboardViewWidget()];
+    return [RecordDisplayWidget(),DashboardViewWidget()];
   }
 
-
-
-  
 
   /// This is for the bottom navigation bar, this isn't related to the records at all.
   void _onItemTapped(int index) {
@@ -145,16 +142,16 @@ if(!callingCard){
   /// Checked and passed : true
   void _createRecord() {
     setState(() {
-
       if (recordHolder.isEmpty) {
         id = 1;
       } else {
-        id = recordHolder[recordHolder.length - 1].id + 1;
+        id = recordHolder.length+1;
       }
       Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => ComposeRecordsWidget(
+          context,
+          MaterialPageRoute(
+              builder: (_) =>
+                  ComposeRecordsWidget(
                       record: Records(
                           id: id,
                           title: '',
@@ -169,7 +166,12 @@ if(!callingCard){
                           timeUpdated: DateTime.now()),
                       id: 0,
                       title: 'Compose New Entry')))
-          .then((value) => setState(() {}));
+          .then((value) => {
+quickTimer()
+//      setState((){recordListHolderWidget.createState();})
+
+
+      });
     });
   }
 
@@ -178,9 +180,18 @@ if(!callingCard){
 
 // This is where the Buttons associated with the bottom navigation bar will be located.
   var dashboardButtonItem =
-      BottomNavigationBarItem(label: 'Dashboard', icon: Icon(Icons.dashboard));
+  BottomNavigationBarItem(label: 'Dashboard', icon: Icon(Icons.dashboard));
   var homeButtonItem =
-      BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home');
+  BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home');
+
+  quickTimer() async{
+    return Timer(Duration(milliseconds: 50),executeRefresh);
+  }
+  void executeRefresh() async{
+    setState((){
+      recordListHolderWidget.createState();
+    });
+  }
 
   BottomNavigationBar bottomBar() {
     List<BottomNavigationBarItem> navBar = [
@@ -195,30 +206,30 @@ if(!callingCard){
     );
   }
 
-  void verifyPasswordChanged(){
-    try{
+  void verifyPasswordChanged() {
+    try {
       int results = getPasswordChangeResults();
-    if(results==0) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: const Text('Password Change Successful!'),
-        duration: const Duration(milliseconds: 1500),
-        width: 280.0,
-        // Width of the SnackBar.
-        padding: const EdgeInsets.symmetric(
-          horizontal: 8.0,
+      if (results == 0) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content:  Image.asset('images/app_icon_demo.png'),
+          duration: const Duration(milliseconds: 1500),
+          width: 280.0,
+          // Width of the SnackBar.
+          padding: const EdgeInsets.symmetric(
+            horizontal: 8.0,
+          ),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.horizontal(
+                left: Radius.circular(10.0), right: Radius.circular(10.0)),
+          ),
         ),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.horizontal(left: Radius.circular(10.0),right: Radius.circular(10.0)),
-        ),
-      ),
-      );
-    }
-    else{
-    throw Exception("Password Change Failed");
-    }
-    } on Exception catch(ex)
-    {
+        );
+      }
+      else {
+        throw Exception("Password Change Failed");
+      }
+    } on Exception catch (ex) {
       showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -227,8 +238,7 @@ if(!callingCard){
                 ex.toString(),
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              content: Text(
-                  'Your password change failed.'),
+              content: Text('Your password change failed.'),
               actions: [
                 TextButton(
                     onPressed: () {
@@ -239,24 +249,16 @@ if(!callingCard){
             );
           });
     }
-
   }
 
-  int getPasswordChangeResults(){
-      try{
-          if(Platform.isAndroid){
-            recdatabase.close();
+  int getPasswordChangeResults() {
+    try {
+      RecordsDB.changePasswords();
+      return 0;
     }
-    recordsDataBase.changePasswords();
-    if(Platform.isAndroid){
-    recordsDataBase.getDBLoaded();
+    on Exception catch (ex) {
+      return 1;
     }
-        return 0;
-      }
-      on Exception catch (ex){
-        return 1;
-      }
-
   }
 
   /// This compiles the screen display for the application.
@@ -267,16 +269,15 @@ if(!callingCard){
         title: Text(widget.title),
         leading: IconButton(
             onPressed: () {
-              if(recdatabase.isOpen){
-                recdatabase.batch().commit();
-              recdatabase.close();
+              if (recdatabase.isOpen) {
+                recdatabase.close();
               }
-              if(callingCard){
+              if (callingCard) {
                 Navigator.pop(context);
               }
-              else{
-                  Navigator.pushReplacementNamed(context,'/login');
-                }
+              else {
+                Navigator.pushReplacementNamed(context, '/login');
+              }
             },
             icon: Icon(Icons.arrow_back)),
         actions: <Widget>[
@@ -287,13 +288,13 @@ if(!callingCard){
                   context,
                   MaterialPageRoute(
                       builder: (_) =>
-                         /// Change password upon exit if the password has changed.
+
+                      /// Change password upon exit if the password has changed.
                       /// Tested and Passed: 05/09/2022
-                          SettingsPage())).then((value) => {
-    if (userPassword != dbPassword)
-    {
-      verifyPasswordChanged(),
-    },
+                      SettingsPage())).then((value) =>{
+                if (userPassword != dbPassword){
+                    verifyPasswordChanged(),
+                  },
               });
             },
           ),

@@ -95,7 +95,9 @@ class RecordList {
 //Ratings List Method
   static Future<List<RecordRatingStats>> _getRatingsList() async {
     List<RecordRatingStats> ratingsData = List.empty(growable: true);
-    for (Records record in recordHolder) {
+    var testList = recordHolder;
+    testList.sort((a,b) => a.timeCreated.compareTo(b.timeCreated));
+    for (Records record in testList) {
       ratingsData.add(RecordRatingStats(record.timeCreated, record.rating));
     }
     ratingsData.sort((a, b) => a.compareTo(b));

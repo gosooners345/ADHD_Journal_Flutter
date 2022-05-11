@@ -414,7 +414,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                         prefs.setBool('firstVisit', false);
                         dbPassword = savedPasswordValue;
                         userPassword = savedPasswordValue;
-
+callingCard = true;
                         Navigator.pushReplacementNamed(context, '/success');
                       } else {
                         try {

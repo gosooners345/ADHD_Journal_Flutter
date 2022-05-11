@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'package:adhd_journal_flutter/login_screen_file.dart';
+import 'package:adhd_journal_flutter/main.dart';
 import 'package:adhd_journal_flutter/records_data_class_db.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'login_screen_file.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'splash_screendart.dart';
 
@@ -12,17 +14,14 @@ class RecordsDB {
   static late Database Databases;
   static const platform =
       MethodChannel('com.activitylogger.release1/ADHDJournal');
-
-  void changePasswords() async {
+/// Remains here because it can be called from other methods
+ static  void changePasswords() async {
     _changeDBPassword(dbPassword, userPassword);
   }
 
-
-
 /// Change user password when called
   /// Tested and Passed: 05/09/2022
-
-  Future<void> _changeDBPassword(String oldPassword, String newPassword) async {
+  static Future<void> _changeDBPassword(String oldPassword, String newPassword) async {
     try {
       await platform.invokeMethod('changeDBPasswords',
           {'oldDBPassword': oldPassword, 'newDBPassword': newPassword});
@@ -39,22 +38,21 @@ class RecordsDB {
     }
   }
 /// Insert Records into the database
-  /// Tested and Passed: 05/09/2022
-  Future<int> insertRecords(Records record) async {
-    final db = await RecordsDB().database;
-     return await db.insert('records', record.toMapForDB(),
+  /// Tested and Passed: 05/10/2022
+ static void insertRecords(Records record) async {
+    final db = await RecordsDB.database;
+    await db.insert('records', record.toMapForDB(),
         conflictAlgorithm: ConflictAlgorithm.ignore);
   }
 
-  Future<Database> get database async {
+  static Future<Database> get database async {
     Databases = await initializeDB();
     return Databases;
   }
 /// Load the Database into the application
   /// Edit : 5/10/2022 - removed an unnecessary variable from the code to make it concise
    /// Tested and Passed: 05/09/2022
-  Future<Database> initializeDB() async {
-// Open the database with the given variables loaded and stored.
+ static  Future<Database> initializeDB() async {
     return  await openDatabase(
       join(await getDatabasesPath(), 'activitylogger_db.db'),
       password: dbPassword,
@@ -72,10 +70,10 @@ class RecordsDB {
 
   }
 
-/// Returns a list of records for the application
-
-  Future<List<Records>> getRecords() async {
-    final database = await RecordsDB().database;
+/// Load the results from the initialize DB method into a list for the records to load
+///Tested and passed 05/09/2022
+  static Future<List<Records>> getRecords() async {
+    final database = await RecordsDB.database;
     final List<Map<String, dynamic>> maps = await database.query('records');
     return List.generate(maps.length, (index) {
       return Records(
@@ -92,23 +90,21 @@ class RecordsDB {
               DateTime.fromMillisecondsSinceEpoch(maps[index]['time_created']),
           timeUpdated:
               DateTime.fromMillisecondsSinceEpoch(maps[index]['time_updated']));
-    });
+    },growable: true);
   }
 /// This was to avoid having to use await in the settings part of the main dart class file
-  void getDBLoaded() async {
-      recdatabase = await initializeDB();
-  }
+
 /// Update an existing record
    /// Tested and Passed: 05/09/2022
-  Future<int> updateRecord(Records record) async {
-    final db = await RecordsDB().database;
-    return await db.update('records', record.toMapForDB(),
+ static void updateRecord(Records record) async {
+    final db = await RecordsDB.database;
+    await db.update('records', record.toMapForDB(),
         where: 'id =?', whereArgs: [record.id]);
   }
 /// Deletes an existing record
   /// Tested and Passed: 05/09/2022
-  Future<void> deleteRecord(int id) async {
-    final db = await RecordsDB().database;
+  static void deleteRecord(int id) async {
+    final db = await RecordsDB.database;
     await db.delete('records', where: 'id =?', whereArgs: [id]);
   }
 

@@ -50,21 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void loadDB() async {
-    try {
-      recordsDataBase = RecordsDB();
-      recdatabase = await recordsDataBase.database;
-      if (recdatabase.isOpen) {
-        print("DB open");
-      }
-      recordHolder = await recordsDataBase.getRecords();
-      recordHolder.sort((a, b) => a.compareTimesUpdated(b.timeUpdated));
-      recordHolder = recordHolder.reversed.toList();
-      RecordList.loadLists();
-    } on Exception catch (ex) {
-      print(ex);
-    }
-  }
+
 
   void loadStateStuff() async {
     prefs = await SharedPreferences.getInstance();
@@ -128,10 +114,8 @@ class _LoginScreenState extends State<LoginScreen> {
             loginPassword = text;
             if (text.length == userPassword.length) {
               if (text == userPassword) {
-                loadDB();
-                callingCard = true;
                 Navigator.pushNamed(context, '/success').then((value) => {
-                      refreshPrefs(),
+recordHolder.clear(),
                       resetLoginFieldState(),
                     });
               } else {
@@ -202,7 +186,7 @@ class _LoginScreenState extends State<LoginScreen> {
 //child: loginField
                   ),
             ),
-            Container(
+            SizedBox(
               height: 50,
               width: 250,
               child: FutureBuilder(
@@ -223,20 +207,21 @@ class _LoginScreenState extends State<LoginScreen> {
                               passwordEnabled) {
                             stuff.clear();
                             loginPassword = '';
-                            loadDB();
                             Navigator.pushNamed(context, '/success')
                                 .then((value) => {
                                   stuff.clear(),
+                              recordHolder.clear(),
                                       refreshPrefs(),
                                       resetLoginFieldState(),
                                     });
                           } else if (!passwordEnabled) {
                             loginPassword = '';
                             stuff.clear();
-                            loadDB();
                             Navigator.pushNamed(context, '/success').then(
                                 (value) =>
-                                    {refreshPrefs(), resetLoginFieldState()});
+                                    {
+                                      recordHolder.clear(),
+                                      refreshPrefs(), resetLoginFieldState()});
                           }
                         },
                         child: Text(
@@ -249,10 +234,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       return ElevatedButton(
                         onPressed: () {
                           if (loginPassword == userPassword) {
-                            loadDB();
                             Navigator.pushNamed(context, '/success').then(
                                 (value) =>
-                                    {refreshPrefs(),
+                                    {
+                                      recordHolder.clear(),
+                                      refreshPrefs(),
                                       resetLoginFieldState()});
                             stuff.clear();
                           }

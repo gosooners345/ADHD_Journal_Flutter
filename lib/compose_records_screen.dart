@@ -1,7 +1,6 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:adhd_journal_flutter/login_screen_file.dart';
-import 'package:adhd_journal_flutter/project_colors.dart';
+import 'package:adhd_journal_flutter/record_display_widget.dart';
+import 'package:sqflite_sqlcipher/sqflite.dart';
 
 import 'main.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +58,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
     } else {
       ratingInfo = 'Rating :';
       ratingSliderWidget = Text(ratingInfo);
-
+      //Success Switch
       successLabelText = 'Success/Fail';
       successStateWidget = Text(successLabelText);
     }
@@ -69,17 +68,17 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
   void saveRecord() async {
     super.widget.record.timeUpdated = DateTime.now();
     if (super.widget.id == 0) {
-       recordsDataBase.insertRecords(super.widget.record);
-      recordHolder.add(super.widget.record);
-      recordHolder.sort((a, b) => a.compareTimesUpdated(b.timeUpdated));
-    } else {
-   recordsDataBase.updateRecord(super.widget.record);
-      recordHolder.remove(super.widget.record);
-      recordHolder.add(super.widget.record);
-      recordHolder.sort((a, b) => a.compareTimesUpdated(b.timeUpdated));
+    RecordsDB.insertRecords(super.widget.record);
+recordHolder.add(super.widget.record);
+    }
+    else {
+      RecordsDB.updateRecord(super.widget.record);
+      recordHolder = (await RecordsDB.getRecords()).reversed.toList();
+
     }
 
-    recdatabase.batch().commit();
+
+    recordHolder.sort((a,b) => a.compareTo(b));
     Navigator.pop(context, super.widget.record);
   }
 
@@ -161,7 +160,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4),
                     borderSide: BorderSide(
-                        color: AppColors.mainAppColor.withOpacity(1.0), width: 1)),
+                        color: Colors.brown.withOpacity(1.0), width: 1)),
                 labelText: 'What\'s on your mind? ',
               ),
               textCapitalization: TextCapitalization.sentences,

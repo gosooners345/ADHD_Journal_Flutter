@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 class Records implements Comparable {
   int id;
   String title;
@@ -63,16 +65,30 @@ class Records implements Comparable {
   static Comparable comparableIDs(int a, int b) {
     return a.compareTo(b);
   }
+  static Comparable compareTimes(Records a, Records b){
+    return a.compareTimesUpdated(b.timeUpdated);
+  }
 
   @override
   int compareTo(other) {
-    return id.compareTo(other.id);
+    return compareTimesUpdated(other.timeUpdated);
   }
 
   int compareTimesUpdated(DateTime other) {
-    return timeUpdated.compareTo(other);
+  if(timeUpdated.isBefore(other)){
+    return 1;
+  }
+  else if(timeUpdated.isAfter(other)){
+    return -1;
+  }
+  else {
+    return 0;
+  }
   }
 
+  int compareTimesCreated(DateTime other){
+    return timeCreated.compareTo(other);
+  }
   int compareRatings(double other) {
     return rating.compareTo(other);
   }
