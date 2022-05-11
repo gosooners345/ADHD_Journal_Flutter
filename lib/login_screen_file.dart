@@ -202,7 +202,7 @@ recordHolder.clear(),
                       return ElevatedButton(
                         onPressed: () {
                           refreshPrefs();
-
+callingCard=true;
                           if (loginPassword == userPassword &&
                               passwordEnabled) {
                             stuff.clear();
@@ -233,6 +233,7 @@ recordHolder.clear(),
                         ConnectionState.waiting) {
                       return ElevatedButton(
                         onPressed: () {
+                          callingCard= true;
                           if (loginPassword == userPassword) {
                             Navigator.pushNamed(context, '/success').then(
                                 (value) =>

@@ -112,10 +112,8 @@ class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
       }
       recordHolder = await RecordsDB.getRecords();
       setState((){
-        recordHolder.sort((a,b)=> a.compareTo(b));
+     recordHolder.sort((a,b)=> a.compareTo(b));
       });
-
-
 
       RecordList.loadLists();
     } on Exception catch (ex) {
@@ -185,11 +183,12 @@ quickTimer()
   BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home');
 
   quickTimer() async{
-    return Timer(Duration(milliseconds: 50),executeRefresh);
+    return Timer(Duration(milliseconds:1),executeRefresh);
   }
   void executeRefresh() async{
     setState((){
-      recordListHolderWidget.createState();
+      recordHolder.sort((a,b)=> a.compareTo(b));
+
     });
   }
 
@@ -276,7 +275,7 @@ quickTimer()
                 Navigator.pop(context);
               }
               else {
-                Navigator.pushReplacementNamed(context, '/login');
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const LoginScreen()));
               }
             },
             icon: Icon(Icons.arrow_back)),

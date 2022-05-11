@@ -65,20 +65,20 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
   }
 
 //Saves the record in the database
-  void saveRecord() async {
-    super.widget.record.timeUpdated = DateTime.now();
+  void saveRecord(Records record) async {
+     record.timeUpdated = DateTime.now();
     if (super.widget.id == 0) {
-    RecordsDB.insertRecords(super.widget.record);
-recordHolder.add(super.widget.record);
+    RecordsDB.insertRecords(record);
+recordHolder.add(record);
     }
     else {
-      RecordsDB.updateRecord(super.widget.record);
-      recordHolder = (await RecordsDB.getRecords()).reversed.toList();
-
+      RecordsDB.updateRecord(record);
+recordHolder.remove(record);
+recordHolder.add(record);
     }
 
+recordHolder.sort((a,b)=>a.compareTo(b));
 
-    recordHolder.sort((a,b) => a.compareTo(b));
     Navigator.pop(context, super.widget.record);
   }
 
@@ -299,7 +299,7 @@ recordHolder.add(super.widget.record);
             space,
             ElevatedButton(
               onPressed: () {
-                saveRecord();
+                saveRecord(super.widget.record);
               },
               child: const Text('Submit'),
             ),

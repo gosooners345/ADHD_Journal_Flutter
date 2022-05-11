@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:adhd_journal_flutter/login_screen_file.dart';
 import 'package:adhd_journal_flutter/main.dart';
 import 'package:adhd_journal_flutter/records_data_class_db.dart';
@@ -75,7 +76,7 @@ class RecordsDB {
   static Future<List<Records>> getRecords() async {
     final database = await RecordsDB.database;
     final List<Map<String, dynamic>> maps = await database.query('records');
-    return List.generate(maps.length, (index) {
+    return  List.generate(maps.length, (index) {
       return Records(
           id: maps[index]['id'],
           title: maps[index]['title'],
@@ -91,7 +92,13 @@ class RecordsDB {
           timeUpdated:
               DateTime.fromMillisecondsSinceEpoch(maps[index]['time_updated']));
     },growable: true);
-  }
+
+
+ }
+
+
+
+
 /// This was to avoid having to use await in the settings part of the main dart class file
 
 /// Update an existing record
@@ -100,6 +107,7 @@ class RecordsDB {
     final db = await RecordsDB.database;
     await db.update('records', record.toMapForDB(),
         where: 'id =?', whereArgs: [record.id]);
+
   }
 /// Deletes an existing record
   /// Tested and Passed: 05/09/2022

@@ -26,7 +26,6 @@ class RecordDisplayWidget extends StatefulWidget {
   @override
   State<RecordDisplayWidget> createState() => RecordDisplayWidgetState();
 }
-//late ValueListenableBuilder recordListHolderWidget;
 late ValueListenableBuilder recordListHolderWidget;
 
 class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
@@ -39,9 +38,11 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
   void initState() {
     super.initState();
     try {
-      recordHolder.sort((a,b)=>a.compareTo(b));
+      setState((){
+     recordHolder.sort((a,b)=>a.compareTo(b));
+      });
       greeting = prefs.getString('greeting') ?? '';
-      recordListHolderWidget =ValueListenableBuilder(valueListenable: recNotifier.valueNotifier, builder:
+     /* recordListHolderWidget =ValueListenableBuilder(valueListenable: recNotifier.valueNotifier, builder:
       (BuildContext context,value,child)
       {
       return ListView.builder(itemBuilder: (context, index) {
@@ -70,59 +71,28 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
 
       );
 
-      },);
-      setState((){
-        /*recordListHolderWidget =ValueListenableBuilder(valueListenable: recNotifier.valueNotifier, builder:
-            (BuildContext context,value,child)
-        {
-          return ListView.builder(itemBuilder: (context, index) {
-            return GestureDetector(
-              child: Card(
-                  child: ListTile(    onTap: () {
-                    _editRecord(index);
-                  },
-                    title: RecordCardViewWidget(record: recordHolder[index],),
-                  )
-              ),
-              onHorizontalDragStart: (_) {
-                //Add a dialog box method to allow for challenges to deleting entries
-                setState(() {
-                  final deletedRec = recordHolder[index];
-                  RecordsDB.deleteRecord(deletedRec.id);
-                  recordHolder.remove(deletedRec);
-                  recordHolder.sort((a,b)=>a.compareTo(b));
-                });
-              },
-            );
-          },
-            itemCount: recordHolder.length,
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
+      },);*/
 
-          );
+     startTimer();
+  quickTimer();
 
-        },);*/
-
-      });
-      startTimer();
-quickTimer();
     } catch (e, s) {
       print(s);
     }
   }
 
   startTimer() async{
-    var duration = const Duration(seconds: 3);
+    var duration = const Duration(milliseconds: 2000);
 
     return Timer(duration,executeClick);
   }
   void executeClick() async {
-recordHolder.sort((a,b)=>a.compareTo(b));
-setState((){
-recordListHolderWidget.createState();});
+    setState(() {
+      recordHolder.sort((a, b) => a.compareTo(b));
+    });
   }
 quickTimer() async {
-  var duration = const Duration(milliseconds: 50);
+  var duration = const Duration(milliseconds: 1);
   return Timer(duration,executeClick);
 }
 
@@ -142,7 +112,8 @@ quickTimer() async {
                     id: 1,
                     title: 'Edit Entry',
                   ))).then((value) => {
-      quickTimer()}
+      quickTimer()
+                  }
       );});
     }
 
