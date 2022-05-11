@@ -36,9 +36,18 @@ class MainActivity: FlutterActivity(){
                         // sharePreferences =  getSharedPreferences(BuildConfig.APPLICATION_ID, MODE_PRIVATE)
 var arg1 = call.argument("oldDBPassword") as String?
 var arg2 = call.argument("newDBPassword") as String?
-                        changeDBPasswords(
-                           arg1!!,arg2!!
-                        )
+
+var oldDBPassword = SQLiteDatabase.getBytes(arg1?.toCharArray())
+                        var newDBPassCode = SQLiteDatabase.getBytes(arg2?.toCharArray())
+                        val dbName = "activitylogger_db.db"
+                        val dbPath = context.getDatabasePath(dbName)
+                        var db = SQLiteDatabase.openDatabase(
+                            dbPath.absolutePath,oldDBPassword,null,SQLiteDatabase.OPEN_READWRITE,null,null)
+                       db.rawExecSQL("PRAGMA rekey = $newDBPassCode")
+
+
+
+
                     } catch (ex: Exception) {
                         print(ex)
                         Log.i("EXCEPTION", ex.message.toString())

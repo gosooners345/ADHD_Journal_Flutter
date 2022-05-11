@@ -122,7 +122,7 @@ class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
   }
 
   List<Widget> screens() {
-    return [RecordDisplayWidget(),DashboardViewWidget()];
+    return const [RecordDisplayWidget(),DashboardViewWidget()];
   }
 
 
@@ -177,9 +177,9 @@ quickTimer()
   /// Checked and Passed : true
 
 // This is where the Buttons associated with the bottom navigation bar will be located.
-  var dashboardButtonItem =
+  final dashboardButtonItem =
   BottomNavigationBarItem(label: 'Dashboard', icon: Icon(Icons.dashboard));
-  var homeButtonItem =
+  final homeButtonItem =
   BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home');
 
   quickTimer() async{
