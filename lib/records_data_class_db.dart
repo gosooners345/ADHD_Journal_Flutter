@@ -62,9 +62,10 @@ class Records implements Comparable {
     };
   }
 
-  static Comparable comparableIDs(int a, int b) {
+  int comparableIDs(int a, int b) {
     return a.compareTo(b);
   }
+
   static Comparable compareTimes(Records a, Records b){
     return a.compareTimesUpdated(b.timeUpdated);
   }
@@ -72,6 +73,13 @@ class Records implements Comparable {
   @override
   int compareTo(other) {
     return compareTimesUpdated(other.timeUpdated);
+  }
+  int compareTitles(String title){
+    return title.toUpperCase().compareTo(title.toUpperCase());
+  }
+
+  int compareTags(String tags){
+    return tags.toUpperCase().compareTo(tags.toUpperCase());
   }
 
   int compareTimesUpdated(DateTime other) {

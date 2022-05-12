@@ -26,7 +26,7 @@ class RecordDisplayWidget extends StatefulWidget {
   @override
   State<RecordDisplayWidget> createState() => RecordDisplayWidgetState();
 }
-late ValueListenableBuilder recordListHolderWidget;
+
 
 class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
 
@@ -42,47 +42,16 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
      recordHolder.sort((a,b)=>a.compareTo(b));
       });
       greeting = prefs.getString('greeting') ?? '';
-     /* recordListHolderWidget =ValueListenableBuilder(valueListenable: recNotifier.valueNotifier, builder:
-      (BuildContext context,value,child)
-      {
-      return ListView.builder(itemBuilder: (context, index) {
-      return GestureDetector(
-      child: Card(
-      child: ListTile(    onTap: () {
-      _editRecord(index);
-      },
-      title: RecordCardViewWidget(record: recordHolder[index],),
-      )
-      ),
-      onHorizontalDragStart: (_) {
-      //Add a dialog box method to allow for challenges to deleting entries
-      setState(() {
-      final deletedRec = recordHolder[index];
-      RecordsDB.deleteRecord(deletedRec.id);
-      recordHolder.remove(deletedRec);
-      recordHolder.sort((a,b)=>a.compareTo(b));
-      });
-      },
-      );
-      },
-      itemCount: recordHolder.length,
-      scrollDirection: Axis.vertical,
-      shrinkWrap: true,
-
-      );
-
-      },);*/
-
      startTimer();
   quickTimer();
-
+print('everything is sorted now');
     } catch (e, s) {
       print(s);
     }
   }
 
   startTimer() async{
-    var duration = const Duration(milliseconds: 2000);
+    var duration = const Duration(seconds: 3);
 
     return Timer(duration,executeClick);
   }
@@ -93,10 +62,13 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
   }
 quickTimer() async {
   var duration = const Duration(milliseconds: 1);
-  return Timer(duration,executeClick);
+   return Timer(duration,executeClick);
 }
 
 
+void sortCreated() async{
+
+}
 
   /// This method allows users to access an existing record to edit. The future implementations will prevent timestamps from being edited
   /// Checked and Passed : true

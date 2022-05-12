@@ -23,7 +23,7 @@ void main() {
 
 
  runApp(MyApp());
-  WidgetsFlutterBinding.ensureInitialized();
+
 
 }
 
@@ -74,7 +74,7 @@ class ADHDJournalApp extends StatefulWidget {
 late ListView recordViews;
 
 class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
-
+ Choice _selectedChoice = sortOptions[0];
   late Text titleHdr;
   var _selectedIndex = 0;
   String header = "";
@@ -182,6 +182,24 @@ quickTimer()
   final homeButtonItem =
   BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home');
 
+
+  void sortCreated() async{
+
+  }
+  sortTimer(String callbackName) async{
+    Function callback;
+    switch(callbackName){
+      case 'Recent': callback = executeRefresh;break;
+      case 'Created' : break;
+
+    }
+
+    var duration = const Duration(milliseconds: 100);
+  //  return Timer(duration,callback);
+
+  }
+
+
   quickTimer() async{
     return Timer(Duration(milliseconds:1),executeRefresh);
   }
@@ -250,6 +268,39 @@ quickTimer()
     }
   }
 
+  void sortOption(Choice option){
+
+    setState((){
+      _selectedChoice = option;
+    });
+
+    switch (option.title){
+      case 'Alphabetical' : {
+        setState((){
+          recordHolder.sort((a,b)=>a.compareTitles(b.title));
+
+        });
+        break;
+      }
+      case  'Rating':{
+        setState((){
+          recordHolder.sort((a,b) => a.compareRatings(b.rating));
+        });
+        break;
+      }
+      case 'Time Created': {
+        setState((){
+          recordHolder.sort((a,b) => a.compareTimesCreated(b.timeCreated));
+        });
+        break;
+      }
+      case 'Most Recent': {setState((){
+        recordHolder.sort((a,b)=>a.compareTo(b)); });
+      break;}
+    }
+  }
+
+
   int getPasswordChangeResults() {
     try {
       RecordsDB.changePasswords();
@@ -280,6 +331,12 @@ quickTimer()
             },
             icon: Icon(Icons.arrow_back)),
         actions: <Widget>[
+          PopupMenuButton<Choice>(itemBuilder: (BuildContext context){
+            return sortOptions.map((Choice choice){
+              return PopupMenuItem<Choice>(child: Text(choice.title),
+              value: choice,);
+            }).toList();
+          },),
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: () {
@@ -313,3 +370,18 @@ quickTimer()
     );
   }
 }
+
+
+class Choice {
+  const Choice({required this.title, required this.icon});
+
+  final String title;
+  final IconData icon;
+}
+
+const List<Choice> sortOptions = <Choice>[
+  Choice(title: 'Most Recent',icon: Icons.history),
+   Choice(title: 'Alphabetical', icon: Icons.sort_by_alpha),
+   Choice(title: 'Time Created',icon:  Icons.history),
+   Choice(title: 'Rating',icon: Icons.stars)
+];
