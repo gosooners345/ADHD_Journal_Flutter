@@ -68,7 +68,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
   void saveRecord(Records record) async {
      record.timeUpdated = DateTime.now();
     if (super.widget.id == 0) {
-    RecordsDB.insertRecords(record);
+     RecordsDB.insertRecords(record);
 recordHolder.add(record);
     }
     else {

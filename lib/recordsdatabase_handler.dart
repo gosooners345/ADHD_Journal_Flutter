@@ -76,7 +76,7 @@ class RecordsDB {
   static Future<List<Records>> getRecords() async {
     final database = await RecordsDB.database;
     final List<Map<String, dynamic>> maps = await database.query('records');
-    return  List.generate(maps.length, (index) {
+     var list = List.generate(maps.length, (index) {
       return Records(
           id: maps[index]['id'],
           title: maps[index]['title'],
@@ -92,9 +92,9 @@ class RecordsDB {
           timeUpdated:
               DateTime.fromMillisecondsSinceEpoch(maps[index]['time_updated']));
     },growable: true);
-
-
- }
+list.sort((a,b)=>a.compareTo(b));
+    return list;
+  }
 
 
 

@@ -44,6 +44,7 @@ dependencies:
   syncfusion_flutter_charts: ^20.1.51
   onboarding: ^3.1.0
   sleek_circular_slider: ^2.0.1
+  rxdart: ^0.27.3
 dev_dependencies:
   flutter_test:
     sdk: flutter

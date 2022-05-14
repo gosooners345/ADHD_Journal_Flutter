@@ -74,7 +74,7 @@ class ADHDJournalApp extends StatefulWidget {
 late ListView recordViews;
 
 class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
- Choice _selectedChoice = sortOptions[0];
+// Choice _selectedChoice = sortOptions[0];
   late Text titleHdr;
   var _selectedIndex = 0;
   String header = "";
@@ -166,7 +166,6 @@ class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
                       title: 'Compose New Entry')))
           .then((value) => {
 quickTimer()
-//      setState((){recordListHolderWidget.createState();})
 
 
       });
@@ -183,21 +182,37 @@ quickTimer()
   BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home');
 
 
-  void sortCreated() async{
-
+/*  void sortCreated() async{
+setState((){
+  recordHolder.sort((a,b)=>a.timeCreated.compareTo(b.timeCreated));
+});
   }
+  void sortA_Z() async{
+    setState((){
+      recordHolder.sort((a,b)=>a.title.compareTo(b.title));
+    }); 
+  }
+  void sort_rating() async{
+    setState((){
+      recordHolder.sort((a,b)=>a.rating.compareTo(b.rating));
+    });
+  }
+  
   sortTimer(String callbackName) async{
-    Function callback;
+    var callback;
     switch(callbackName){
-      case 'Recent': callback = executeRefresh;break;
-      case 'Created' : break;
+      case 'Recent': callback   = executeRefresh;break;
+      case 'Created' : callback = sortCreated; break;
+      case 'Rating' : callback = sort_rating; break;
+      case 'Alphabetical' : callback = sortA_Z; break;
 
     }
+   
 
     var duration = const Duration(milliseconds: 100);
-  //  return Timer(duration,callback);
+      return Timer(duration,callback);
 
-  }
+  }*/
 
 
   quickTimer() async{
@@ -268,7 +283,7 @@ quickTimer()
     }
   }
 
-  void sortOption(Choice option){
+/*  void sortOption(Choice option){
 
     setState((){
       _selectedChoice = option;
@@ -298,7 +313,7 @@ quickTimer()
         recordHolder.sort((a,b)=>a.compareTo(b)); });
       break;}
     }
-  }
+  }*/
 
 
   int getPasswordChangeResults() {
@@ -331,12 +346,12 @@ quickTimer()
             },
             icon: Icon(Icons.arrow_back)),
         actions: <Widget>[
-          PopupMenuButton<Choice>(itemBuilder: (BuildContext context){
+        /*  PopupMenuButton<Choice>(itemBuilder: (BuildContext context){
             return sortOptions.map((Choice choice){
               return PopupMenuItem<Choice>(child: Text(choice.title),
               value: choice,);
             }).toList();
-          },),
+          },),*/
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: () {
