@@ -1,19 +1,16 @@
 // ignore_for_file: prefer_const_constructors, prefer_final_fields
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:adhd_journal_flutter/dashboard_stats_display_widget.dart';
 import 'package:adhd_journal_flutter/record_list_class.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
 import 'package:adhd_journal_flutter/settings.dart';
 import 'package:adhd_journal_flutter/splash_screendart.dart';
+import 'package:flutter/foundation.dart';
 import 'onboarding_widget_class.dart';
 import 'record_display_widget.dart';
 import 'package:flutter/material.dart';
-import 'dart:math';
-
-import 'package:shared_preferences/shared_preferences.dart';
 import 'project_colors.dart';
 import 'records_data_class_db.dart';
 import 'login_screen_file.dart';
@@ -32,7 +29,7 @@ void main() {
 
 late RecordsBloc recordsBloc;
 
-
+int listSize=0;
 
 class MyApp extends StatelessWidget {
   const MyApp({
@@ -47,8 +44,8 @@ class MyApp extends StatelessWidget {
       debugShowMaterialGrid: false,
       title: 'ADHD Journal',
       theme: ThemeData(colorSchemeSeed: AppColors.mainAppColor, useMaterial3: true),
-      darkTheme: ThemeData.dark(),
-      themeMode: ThemeMode.system,
+      darkTheme: ThemeData(colorSchemeSeed: AppColors.mainAppColor, useMaterial3: true),
+      themeMode: ThemeMode.light,
       initialRoute: '/',
       routes: {
         '/': (context) => SplashScreen(),
@@ -113,15 +110,19 @@ var listCount =0;
 
   void loadDB() async {
     try {
-      recordHolder = recordsBloc.recordHolder;
     setState((){
-      recordHolder = recordsBloc.recordHolder;
       RecordList.loadLists();
+    //  listSize = recordsBloc.recordHolder.length+1;
 
     });
-      print('Executed');
+      if (kDebugMode) {
+        print(recordsBloc.recordHolder.length);
+        print('Executed');
+      }
     } on Exception catch (ex) {
-      print(ex);
+      if (kDebugMode) {
+        print(ex);
+      }
     }
   }
 
@@ -133,11 +134,11 @@ var listCount =0;
   /// This is for the bottom navigation bar, this isn't related to the records at all.
   void _onItemTapped(int index) {
     setState(() {
-      if (recordHolder.isNotEmpty) {
+      if (recordsBloc.recordHolder.isNotEmpty) {
         _selectedIndex = index;
         if(_selectedIndex == 0){
           title = 'Home';
-          loadDB();
+          //loadDB();
         }
         else{
           title = 'Dashboard';
@@ -153,16 +154,18 @@ var listCount =0;
 
   /// Allows users to create entries for the db and journal. Once submitted, the screen will update on demand.
   /// Checked and passed : true
-  void _createRecord() {
-    setState(() {
+  void _createRecord() async {
+try{
+    listSize++;
 
+   // setState(() {
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (_) =>
                   ComposeRecordsWidget(
                       record: Records(
-                          id: recordHolder.length,
+                          id: listSize,
                           title: '',
                           content: '',
                           emotions: '',
@@ -176,10 +179,16 @@ var listCount =0;
                       id: 0,
                       title: 'Compose New Entry')))
           .then((value) => {
+
 executeRefresh(),
-loadDB()
       });
-    });
+    //});
+  }
+  on Exception catch(ex){
+  if (kDebugMode) {
+    print(ex);
+  }
+  }
   }
 
   /// This method allows users to access an existing record to edit. The future implementations will prevent timestamps from being edited
@@ -201,7 +210,9 @@ loadDB()
 setState((){
     RecordList.loadLists();}
 );
-    print('Executed');
+    if (kDebugMode) {
+      print('Executed');
+    }
   }
 
   BottomNavigationBar bottomBar() {
@@ -300,7 +311,7 @@ setState((){
       recordsBloc.changeDBPasswords();
       return 0;
     }
-    on Exception catch (ex) {
+    on Exception {
       return 1;
     }
   }

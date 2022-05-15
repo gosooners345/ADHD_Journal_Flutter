@@ -1,19 +1,15 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:adhd_journal_flutter/onboarding_widget_class.dart';
-import 'package:adhd_journal_flutter/record_list_class.dart';
-import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'main.dart';
 
 import 'splash_screendart.dart';
 
 String greeting = '';
 TextField loginField = TextField();
-late Database recdatabase;
+
 
 /// Required to open the application , simple login form to start
 class LoginScreen extends StatefulWidget {

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:adhd_journal_flutter/onboarding_widget_class.dart';
 import 'package:flutter/material.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:shared_preferences/shared_preferences.dart';

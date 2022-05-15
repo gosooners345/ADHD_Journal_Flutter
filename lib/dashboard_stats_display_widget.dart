@@ -30,7 +30,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
     for (double rating in sum) {
       totalRtg += rating;
     }
-    avgRating = (totalRtg / recordHolder.length.toDouble());
+    avgRating = (totalRtg / recordsBloc.recordHolder.length.toDouble());
     // For the success/fail section
     if (RecordList.successList[0].value > RecordList.successList[1].value) {
       successString = "success";
@@ -59,7 +59,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
             child: Padding
               (padding:const EdgeInsets.all(5.0),child:Text(
                 'Here\'s a summary of your statistics:\r\n ${summaryGen()}',
-                style: TextStyle(fontSize: 16.0, fontStyle: FontStyle.italic)),
+                style: const TextStyle(fontSize: 16.0, fontStyle: FontStyle.italic)),
           ),              ),
         ),
         //Ratings Chart

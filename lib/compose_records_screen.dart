@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:adhd_journal_flutter/project_colors.dart';
+import 'package:flutter/foundation.dart';
 
 import 'main.dart';
 import 'package:flutter/material.dart';
@@ -90,11 +91,13 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
     else {
       updateTimer();
     }
-     recordHolder= recordsBloc.recordHolder;
-    print(recordHolder.length);
+    // recordHolder= recordsBloc.recordHolder;
+   // print(recordHolder.length);
+if (kDebugMode) {
+  print(listSize);
 
 
-    Navigator.pop(context, super.widget.record);
+}Navigator.pop(context, super.widget.record);
   }
 
   //Loads an already existing record in the database

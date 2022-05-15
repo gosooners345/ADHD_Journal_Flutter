@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
 
 import 'package:adhd_journal_flutter/record_list_class.dart';
 import 'package:adhd_journal_flutter/record_view_card_class.dart';
@@ -8,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'main.dart';
 import 'package:flutter/material.dart';
 import 'project_colors.dart';
-import 'project_strings_file.dart';
 import 'splash_screendart.dart';
 import 'records_data_class_db.dart';
 import 'login_screen_file.dart';
@@ -28,12 +26,15 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
     super.initState();
     try {
       recordsBloc = RecordsBloc();
-      recordHolder = recordsBloc.recordHolder;
     startTimer();
       greeting = prefs.getString('greeting') ?? '';
-      print('everything is sorted now');
+      if (kDebugMode) {
+        print('everything is sorted now');
+      }
     } catch (e, s) {
-      print(s);
+      if (kDebugMode) {
+        print(s);
+      }
     }
   }
 
@@ -46,25 +47,30 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
   void executeClick() async {
 
 setState((){
-    recordHolder = recordsBloc.recordHolder;
+   // recordHolder = recordsBloc.recordHolder;
     RecordList.loadLists();});
-    print('Executed');
+    if (kDebugMode) {
+      print('Executed');
+    }
   }
 
 
 /// Stream widget testing here
   Widget getRecordsDisplay(){
     return StreamBuilder(stream: recordsBloc.recordStuffs,
-      builder: (BuildContext context, AsyncSnapshot<List<Records>> snaphot){
-      return getRecordCards(snaphot);
+      builder: (BuildContext context, AsyncSnapshot<List<Records>> snapshot){
+      return getRecordCards(snapshot);
     },);
   }
   Widget getRecordCards(AsyncSnapshot<List<Records>> snapshot){
     if(snapshot.hasData){
-      print(snapshot.connectionState);
+      if (kDebugMode) {
+        print(snapshot.connectionState);
+      }
     return snapshot.data!.isNotEmpty ?
     ListView.builder(itemBuilder: (context, index) {
       Records record = snapshot.data![index];
+      listSize = snapshot.data!.first.id+1;
       Widget dismissableCard =
       Dismissible(
         background: Card(shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
@@ -90,6 +96,7 @@ setState((){
           )
       ),onDismissed: (direction){
           recordsBloc.deleteRecordByID(record.id);
+          listSize--;
       },
         direction: DismissDirection.horizontal,
 
@@ -103,18 +110,22 @@ setState((){
     ): const Center( child: Text('Add a new record by hitting the Record button below!'),);
   }
     else if(snapshot.hasError){
-      print(snapshot.error);
+      if (kDebugMode) {
+        print(snapshot.error);
+      }
       return Text(snapshot.stackTrace.toString());
     }
     else{
-      print(snapshot.connectionState);
+      if (kDebugMode) {
+        print(snapshot.connectionState);
+      }
       return Center(
-        child: Container(child: Center(
+        child: Center(
           child: Column(children: const <Widget>[
             CircularProgressIndicator(),
             Text('Loading your records'),
           ],),
-        ),),
+        ),
       );
     }
   }
@@ -153,7 +164,7 @@ setState((){
               Expanded(
                 child: Text(
                   'Welcome back $greeting! What would you like to record today?',
-                  style: TextStyle(fontSize: 18.0),
+                  style: const TextStyle(fontSize: 18.0),
                   textAlign: TextAlign.center,
                 ),),],),),
         Expanded(

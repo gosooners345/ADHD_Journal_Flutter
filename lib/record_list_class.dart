@@ -30,7 +30,7 @@ class RecordList {
     List<RecordDataStats> successData = [];
     successData.add(RecordDataStats('Success', 0.0));
     successData.add(RecordDataStats('Fail', 0.0));
-    for (Records record in recordHolder) {
+    for (Records record in recordsBloc.recordHolder) {
       if (record.success) {
         successData[0].value++;
       } else if (!record.success) {
@@ -46,7 +46,7 @@ class RecordList {
     List<RecordDataStats> emotionList = List.empty(growable: true);
 
     var countMap = Map();
-    for (Records record in recordHolder) {
+    for (Records record in recordsBloc.recordHolder) {
       emotionCounts.addAll(record.emotions.split(','));
     }
     // This will iterate through the list to get the quantity of each specific element in the emotion list.
@@ -73,7 +73,7 @@ class RecordList {
     List<String> symptomCounts = List.empty(growable: true);
     List<RecordDataStats> symptomList = List.empty(growable: true);
     var countMap = Map();
-    recordHolder.forEach((element) {
+    recordsBloc.recordHolder.forEach((element) {
       symptomCounts.addAll(element.symptoms.split(','));
     });
     symptomCounts.forEach((element) {
@@ -95,7 +95,7 @@ class RecordList {
 //Ratings List Method
   static Future<List<RecordRatingStats>> _getRatingsList() async {
     List<RecordRatingStats> ratingsData = List.empty(growable: true);
-    var testList = recordHolder;
+    var testList = recordsBloc.recordHolder;
     testList.sort((a,b) => a.timeCreated.compareTo(b.timeCreated));
     for (Records record in testList) {
       ratingsData.add(RecordRatingStats(record.timeCreated, record.rating));
