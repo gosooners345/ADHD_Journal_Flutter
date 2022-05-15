@@ -55,6 +55,8 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
       padding: const EdgeInsets.all(8.0),
       children: [
         Card(
+    shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
+          elevation: 2.0,
           child: SizedBox(
             child: Padding
               (padding:const EdgeInsets.all(5.0),child:Text(
@@ -92,9 +94,10 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
             ),
             height: 300,
           ),
+            shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
         ),
         // Success/Fail Chart
-        Card(
+        Card(shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
           elevation: 2.0,
           child: SizedBox(
             child: SfCircularChart(
@@ -118,7 +121,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
           ),
         ),
 //Emotions Chart
-        Card(
+        Card(shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
           elevation: 2.0,
           child: SizedBox(
             child: SfCartesianChart(
@@ -153,6 +156,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
         ),
         //Symptoms Chart
         Card(
+          shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
           elevation: 2.0,
           child: SizedBox(
             child: SfCartesianChart(

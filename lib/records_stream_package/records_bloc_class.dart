@@ -10,6 +10,8 @@ class RecordsBloc{
 
   //Master stream controller, hopefully performant
   final _recordsController = StreamController<List<Records>>.broadcast();
+  final _searchedRecordsController = StreamController<List<Records>>.broadcast();
+  get searchedRecords => _searchedRecordsController.stream;
     List<Records> recordHolder=[];
   get  recordStuffs => _recordsController.stream;
 
@@ -17,10 +19,21 @@ class RecordsBloc{
     getRecords();
   }
 
+  RecordsBloc.searchedList(String query){
+    getSearchedRecords(query);
+  }
+
+  getSearchedRecords(String query) async{
+    _recordsController.sink.add(await _recordsRepo.getSearchedRecords(query));
+
+  }
+
+
   getRecords() async{
     _recordsController.sink.add(await _recordsRepo.getRecords());
     recordHolder = await _recordsRepo.getRecords();
     maxID=getMaxID();
+
     if ( kDebugMode) {
       print(maxID);
     }

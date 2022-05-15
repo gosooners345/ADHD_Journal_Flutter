@@ -65,7 +65,10 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
       body: ListView.separated(
         itemCount: symptomList.length,
         separatorBuilder: (BuildContext context, int index) => Divider(color: AppColors.mainAppColor,),
-        itemBuilder: (BuildContext context, int index) => Card(child:CheckboxListTile(activeColor: AppColors.mainAppColor,
+        itemBuilder: (BuildContext context, int index) => Card(
+            shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
+          elevation: 2.0,
+          child:CheckboxListTile(activeColor: AppColors.mainAppColor,
             value: symptomListSelection[index].isChecked,
             onChanged: (bool? changed) {
               setState(() {

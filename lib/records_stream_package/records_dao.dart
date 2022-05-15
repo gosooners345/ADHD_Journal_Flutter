@@ -17,6 +17,39 @@ class RecordsDao{
    // return result;
   }
 
+  Future<List<Records>> getSearchedRecords({required String query}) async{
+      List<String> columns = ['tags','title','content','emotions','sources'];
+      final database = await recordsDB.database;
+      List<Map<String,dynamic>> maps;
+
+        if(query.isNotEmpty) {
+          maps = await database.query('records',columns: columns,where: 'description LIKE ?',whereArgs: ['$query']);}
+        else{
+          maps = await database.query('records');
+        }
+
+      var list = List.generate(maps.length, (index) {
+        return Records(
+            id: maps[index]['id'],
+            title: maps[index]['title'],
+            content: maps[index]['content'],
+            emotions: maps[index]['emotions'],
+            sources: maps[index]['sources'],
+            rating: maps[index]['rating'],
+            symptoms: maps[index]['symptoms'],
+            tags: maps[index]['tags'],
+            success: maps[index]['success'] == 0 ? false : true,
+            timeCreated:
+            DateTime.fromMillisecondsSinceEpoch(maps[index]['time_created']),
+            timeUpdated:
+            DateTime.fromMillisecondsSinceEpoch(maps[index]['time_updated']));
+      },growable: true);
+      list.sort((a,b)=>a.compareTo(b));
+      return list;
+
+  }
+
+
   //Get all records
 Future<List<Records>> getRecords() async {
   final database = await recordsDB.database;

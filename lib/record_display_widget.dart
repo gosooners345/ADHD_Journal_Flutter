@@ -45,10 +45,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
     return Timer(duration,executeClick);
   }
   void executeClick() async {
-
-setState((){
-   // recordHolder = recordsBloc.recordHolder;
-    RecordList.loadLists();});
+    RecordList.loadLists();
     if (kDebugMode) {
       print('Executed');
     }
@@ -71,11 +68,10 @@ setState((){
     return snapshot.data!.isNotEmpty ?
     ListView.builder(itemBuilder: (context, index) {
       Records record = snapshot.data![index];
-      //getMaxID(snapshot.data!);
-     // listSize = snapshot.data!.first.id+1;
+    recordListSort(snapshot.data!, ADHDJournalAppHPState.selectedChoice);
       Widget dismissableCard =
       Dismissible(
-        background: Card(shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
+        background: Card(shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),elevation: 2.0,
           child:const Padding(
             padding: EdgeInsets.only(left: 10),
             child: Align(
@@ -138,7 +134,31 @@ setState((){
     recordsBloc.dispose();
 }
 
+/// Sorts the list based on what the user prefers to see.
+void recordListSort(List<Records> list, Choice choice){
+  switch (choice.title){
+    case 'Alphabetical' : {
+        list.sort((a,b)=>a.compareTitles(b.title));
+      break;
+    }
+    case  'Rating':{
 
+        list.sort((a,b) => a.compareRatings(b.rating));
+
+      break;
+    }
+    case 'Time Created': {
+
+        list.sort((a,b) => a.compareTimesCreated(b.timeCreated));
+
+      break;
+    }
+    case 'Most Recent': {
+
+      list.sort((a,b)=>a.compareTo(b));
+    break;}
+  }
+}
 
   /// This method allows users to access an existing record to edit. The future implementations will prevent timestamps from being edited
   /// Checked and Passed : true

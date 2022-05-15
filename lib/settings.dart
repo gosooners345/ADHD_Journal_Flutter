@@ -155,12 +155,12 @@ class _SettingsPage extends State<SettingsPage> {
               ),
             ),
             spacer,
-            ElevatedButton(
+           /* ElevatedButton(
                 onPressed: () {
                   // Demo mode
                   Navigator.pushNamed(context, '/onboarding');
                 },
-                child: const Text('Demo ME!'))
+                child: const Text('Demo ME!'))*/
           ],
         ),
       ),

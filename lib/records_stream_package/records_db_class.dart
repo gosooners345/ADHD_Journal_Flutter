@@ -21,13 +21,8 @@ class RecordsDB {
   }
   static final RecordsDB recordDB = RecordsDB();
 
-  late Database _database ;
   Future<Database> get database async{
-
-
-    return await openOrCreateDatabase();
-
-
+        return await openOrCreateDatabase();
   }
 
   openOrCreateDatabase() async{

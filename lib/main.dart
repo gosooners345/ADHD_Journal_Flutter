@@ -44,8 +44,8 @@ class MyApp extends StatelessWidget {
       debugShowMaterialGrid: false,
       title: 'ADHD Journal',
       theme: ThemeData(colorSchemeSeed: AppColors.mainAppColor, useMaterial3: true),
-      darkTheme: ThemeData(colorSchemeSeed: AppColors.mainAppColor, useMaterial3: true),
-      themeMode: ThemeMode.light,
+      darkTheme: ThemeData.dark(),
+      themeMode: ThemeMode.system,
       initialRoute: '/',
       routes: {
         '/': (context) => SplashScreen(),
@@ -70,13 +70,13 @@ class ADHDJournalApp extends StatefulWidget {
 
 
   @override
-  State<ADHDJournalApp> createState() => _ADHDJournalAppHPState();
+  State<ADHDJournalApp> createState() => ADHDJournalAppHPState();
 }
 
 late ListView recordViews;
 
-class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
-// Choice _selectedChoice = sortOptions[0];
+class ADHDJournalAppHPState extends State<ADHDJournalApp> {
+static Choice selectedChoice = sortOptions[0];
   String title ='';
   var _selectedIndex = 0;
   String header = "";
@@ -87,9 +87,8 @@ var listCount =0;
     title = 'Home';
     try {
       recordsBloc = RecordsBloc();
-       loadDB();
 
-    } catch (e, s) {
+    } on Exception catch (e, s) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(s.toString()),
         duration: const Duration(milliseconds: 1500),
@@ -107,25 +106,6 @@ var listCount =0;
     }
   }
 
-
-  void loadDB() async {
-    try {
-    setState((){
-      RecordList.loadLists();
-    //  listSize = recordsBloc.recordHolder.length+1;
-
-    });
-      if (kDebugMode) {
-        print(recordsBloc.recordHolder.length);
-        print('Executed');
-      }
-    } on Exception catch (ex) {
-      if (kDebugMode) {
-        print(ex);
-      }
-    }
-  }
-
   List<Widget> screens() {
     return const [RecordDisplayWidget(),DashboardViewWidget()];
   }
@@ -138,13 +118,11 @@ var listCount =0;
         _selectedIndex = index;
         if(_selectedIndex == 0){
           title = 'Home';
-          //loadDB();
         }
         else{
           title = 'Dashboard';
           RecordList.loadLists();
         }
-       quickTimer();
       }
       else{
         _selectedIndex = 0;
@@ -156,9 +134,6 @@ var listCount =0;
   /// Checked and passed : true
   void _createRecord() async {
 try{
-    /*listSize++;*/
-
-   // setState(() {
       Navigator.push(
           context,
           MaterialPageRoute(
@@ -182,7 +157,6 @@ try{
 
 executeRefresh(),
       });
-    //});
   }
   on Exception catch(ex){
   if (kDebugMode) {
@@ -207,9 +181,7 @@ executeRefresh(),
     return Timer(Duration(milliseconds:1),executeRefresh);
   }
   void executeRefresh() async{
-setState((){
-    RecordList.loadLists();}
-);
+    RecordList.loadLists();
     if (kDebugMode) {
       print('Executed');
     }
@@ -233,7 +205,7 @@ setState((){
       int results = getPasswordChangeResults();
       if (results == 0) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content:  Image.asset('images/app_icon_demo.png'),
+          content:  Text('Password changed successfully!'),
           duration: const Duration(milliseconds: 1500),
           width: 280.0,
           // Width of the SnackBar.
@@ -273,37 +245,14 @@ setState((){
     }
   }
 
-/*  void sortOption(Choice option){
+  void sortOption(Choice option){
 
     setState((){
-      _selectedChoice = option;
+      selectedChoice = option;
     });
 
-    switch (option.title){
-      case 'Alphabetical' : {
-        setState((){
-          recordHolder.sort((a,b)=>a.compareTitles(b.title));
 
-        });
-        break;
-      }
-      case  'Rating':{
-        setState((){
-          recordHolder.sort((a,b) => a.compareRatings(b.rating));
-        });
-        break;
-      }
-      case 'Time Created': {
-        setState((){
-          recordHolder.sort((a,b) => a.compareTimesCreated(b.timeCreated));
-        });
-        break;
-      }
-      case 'Most Recent': {setState((){
-        recordHolder.sort((a,b)=>a.compareTo(b)); });
-      break;}
-    }
-  }*/
+  }
 
 
   int getPasswordChangeResults() {
@@ -329,18 +278,19 @@ setState((){
                 Navigator.pop(context);
               }
               else {
-
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const LoginScreen()));
               }
             },
             icon: Icon(Icons.arrow_back)),
         actions: <Widget>[
-        /*  PopupMenuButton<Choice>(itemBuilder: (BuildContext context){
+        PopupMenuButton<Choice>(itemBuilder: (BuildContext context){
             return sortOptions.map((Choice choice){
               return PopupMenuItem<Choice>(child: Text(choice.title),
-              value: choice,);
+              value: choice,onTap: (){
+                sortOption(choice);
+                },);
             }).toList();
-          },),*/
+          },),
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: () {
