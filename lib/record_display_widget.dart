@@ -57,6 +57,7 @@ setState((){
 
 /// Stream widget testing here
   Widget getRecordsDisplay(){
+
     return StreamBuilder(stream: recordsBloc.recordStuffs,
       builder: (BuildContext context, AsyncSnapshot<List<Records>> snapshot){
       return getRecordCards(snapshot);
@@ -70,7 +71,8 @@ setState((){
     return snapshot.data!.isNotEmpty ?
     ListView.builder(itemBuilder: (context, index) {
       Records record = snapshot.data![index];
-      listSize = snapshot.data!.first.id+1;
+      //getMaxID(snapshot.data!);
+     // listSize = snapshot.data!.first.id+1;
       Widget dismissableCard =
       Dismissible(
         background: Card(shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
@@ -96,7 +98,7 @@ setState((){
           )
       ),onDismissed: (direction){
           recordsBloc.deleteRecordByID(record.id);
-          listSize--;
+
       },
         direction: DismissDirection.horizontal,
 
@@ -135,6 +137,8 @@ setState((){
     super.dispose();
     recordsBloc.dispose();
 }
+
+
 
   /// This method allows users to access an existing record to edit. The future implementations will prevent timestamps from being edited
   /// Checked and Passed : true

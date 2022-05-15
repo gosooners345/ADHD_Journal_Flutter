@@ -156,7 +156,7 @@ var listCount =0;
   /// Checked and passed : true
   void _createRecord() async {
 try{
-    listSize++;
+    /*listSize++;*/
 
    // setState(() {
       Navigator.push(
@@ -165,7 +165,7 @@ try{
               builder: (_) =>
                   ComposeRecordsWidget(
                       record: Records(
-                          id: listSize,
+                          id: recordsBloc.maxID,
                           title: '',
                           content: '',
                           emotions: '',
@@ -366,7 +366,11 @@ setState((){
         icon: Icon(Icons.edit),
         onPressed: () {
           setState(() {
-            _createRecord();
+           try{
+            _createRecord();}
+               on Exception catch(ex){
+             print(ex);
+               }
           });
         },
       ),

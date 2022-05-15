@@ -1,15 +1,17 @@
 import 'package:adhd_journal_flutter/records_data_class_db.dart';
+import 'package:flutter/foundation.dart';
 import 'records_repository.dart';
 
 import 'dart:async';
 
 class RecordsBloc{
   final _recordsRepo = RecordsRepository();
+  int maxID =0;
 
   //Master stream controller, hopefully performant
   final _recordsController = StreamController<List<Records>>.broadcast();
     List<Records> recordHolder=[];
-  get recordStuffs => _recordsController.stream;
+  get  recordStuffs => _recordsController.stream;
 
   RecordsBloc() {
     getRecords();
@@ -18,6 +20,10 @@ class RecordsBloc{
   getRecords() async{
     _recordsController.sink.add(await _recordsRepo.getRecords());
     recordHolder = await _recordsRepo.getRecords();
+    maxID=getMaxID();
+    if ( kDebugMode) {
+      print(maxID);
+    }
   }
   addRecord(Records record) async{
     await _recordsRepo.insertRecord(record);
@@ -38,6 +44,13 @@ class RecordsBloc{
    _recordsController.close();
  }
 
+ int getMaxID(){
+    var id =0;
+    recordHolder.sort((a,b)=>a.comparableIDs(a.id, b.id));
+    id =recordHolder.last.id+1;
+    recordHolder.sort((a,b) => a.compareTimesCreated(b.timeCreated));
+    return id;
+ }
 
 
 }
