@@ -41,10 +41,10 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
     //For the symptom and emotion section
 
     summaryString =
-        "You have ${recordHolder.length} entries in your journal.\r\n"
+        "You have ${recordsBloc.recordHolder.length} entries in your journal.\r\n"
         "Your average rating is ${avgRating.roundToDouble()}.\r\n"
         "You're trending more  on $successString based on your Success/Fail ratings.\r\n"
-        "Your most recently occurring symptoms are: ${recordHolder.first.symptoms}.";
+        "Your most recently occurring symptoms are: ${recordsBloc.recordHolder.first.symptoms}.";
 
     return summaryString;
   }
@@ -109,7 +109,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                   xValueMapper: (RecordDataStats recs, _) => recs.key,
                   yValueMapper: (RecordDataStats recs, _) => recs.value,
                   dataLabelMapper: (RecordDataStats recs, _) =>
-                      "${recs.key}: ${(recs.value / recordHolder.length.toDouble()) * 100.0} % ",
+                      "${recs.key}: ${(recs.value / recordsBloc.recordHolder.length.toDouble()) * 100.0} % ",
                   dataLabelSettings: const DataLabelSettings(isVisible: true,),
                 ),
               ],

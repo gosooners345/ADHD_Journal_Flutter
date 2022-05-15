@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
         '/savePassword': (context) => LoginScreen(),
         '/login': (context) => LoginScreen(),
         '/success': (context) => ADHDJournalApp(
-              title: 'ADHD Journal',
+
             ),
         '/fail': (context) => LoginScreen(),
       },
@@ -67,11 +67,10 @@ class MyApp extends StatelessWidget {
 class ADHDJournalApp extends StatefulWidget {
   const ADHDJournalApp({
     Key? key,
-    required this.title,
 
   }) : super(key: key);
 
-  final String title;
+
 
   @override
   State<ADHDJournalApp> createState() => _ADHDJournalAppHPState();
@@ -81,13 +80,14 @@ late ListView recordViews;
 
 class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
 // Choice _selectedChoice = sortOptions[0];
-  late Text titleHdr;
+  String title ='';
   var _selectedIndex = 0;
   String header = "";
 var listCount =0;
   @override
   void initState() {
     super.initState();
+    title = 'Home';
     try {
       recordsBloc = RecordsBloc();
        loadDB();
@@ -136,9 +136,11 @@ var listCount =0;
       if (recordHolder.isNotEmpty) {
         _selectedIndex = index;
         if(_selectedIndex == 0){
+          title = 'Home';
           loadDB();
         }
         else{
+          title = 'Dashboard';
           RecordList.loadLists();
         }
        quickTimer();
@@ -308,7 +310,7 @@ setState((){
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(title),
         leading: IconButton(
             onPressed: () {
               recordsBloc.dispose();
@@ -316,7 +318,7 @@ setState((){
                 Navigator.pop(context);
               }
               else {
-              //  recordsBloc.dispose();
+
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const LoginScreen()));
               }
             },
