@@ -1,3 +1,4 @@
+import 'package:adhd_journal_flutter/project_colors.dart';
 import 'package:flutter/material.dart';
 
 import 'project_strings_file.dart';
@@ -36,13 +37,17 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
     //clear the string so it can be updated with new symptoms.
     super.widget.symptoms = '';
     String unfilteredString = '';
-    for (String element in symptomsChecked) {
+    if(symptomsChecked.isNotEmpty){
+      for (String element in symptomsChecked) {
       unfilteredString += element + ',';
     }
     var indexComma = unfilteredString.lastIndexOf(',');
     var filteredString =
         unfilteredString.replaceRange(indexComma, indexComma + 1, '');
-    super.widget.symptoms = filteredString;
+    super.widget.symptoms = filteredString;}
+    else{
+      super.widget.symptoms='';
+    }
   }
 
   @override
@@ -50,11 +55,17 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('ADHD Symptom Selection'),
+       leading:  IconButton(
+           onPressed: () {
+             addItemsToSymptomList();
+             Navigator.pop(context,super.widget.symptoms);
+           },
+           icon: Icon(Icons.arrow_back)),
       ),
       body: ListView.separated(
         itemCount: symptomList.length,
-        separatorBuilder: (BuildContext context, int index) => Divider(),
-        itemBuilder: (BuildContext context, int index) => CheckboxListTile(
+        separatorBuilder: (BuildContext context, int index) => Divider(color: AppColors.mainAppColor,),
+        itemBuilder: (BuildContext context, int index) => Card(child:CheckboxListTile(activeColor: AppColors.mainAppColor,
             value: symptomListSelection[index].isChecked,
             onChanged: (bool? changed) {
               setState(() {
@@ -66,7 +77,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
                 }
               });
             },
-            title: Text(symptomListSelection[index].symptom)),
+            title: Text(symptomListSelection[index].symptom)),)
       ),
       floatingActionButton: FloatingActionButton.extended(
         label: const Text('Save'),

@@ -1,13 +1,12 @@
-import 'package:adhd_journal_flutter/login_screen_file.dart';
-import 'package:adhd_journal_flutter/record_display_widget.dart';
-import 'package:sqflite_sqlcipher/sqflite.dart';
+import 'dart:async';
+
+import 'package:adhd_journal_flutter/project_colors.dart';
 
 import 'main.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'symptom_selector_screen.dart';
 import 'records_data_class_db.dart';
-import 'recordsdatabase_handler.dart';
+
 
 class ComposeRecordsWidget extends StatefulWidget {
   const ComposeRecordsWidget(
@@ -64,20 +63,36 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
     }
   }
 
+
+  void addRecord() async{
+    recordsBloc.addRecord(super.widget.record);
+  }
+  void updateRecord() async{
+    recordsBloc.updateRecord(super.widget.record);
+  }
+
+  quickTimer() async {
+    var duration = const Duration(milliseconds: 2);
+    return Timer(duration,addRecord);
+  }
+  updateTimer() async{
+    return Timer(const Duration(milliseconds: 2),updateRecord);
+  }
+
+
+
 //Saves the record in the database
   void saveRecord(Records record) async {
      record.timeUpdated = DateTime.now();
     if (super.widget.id == 0) {
-     RecordsDB.insertRecords(record);
-recordHolder.add(record);
-    }
+  quickTimer();
+     }
     else {
-      RecordsDB.updateRecord(record);
-recordHolder.remove(record);
-recordHolder.add(record);
+      updateTimer();
     }
+     recordHolder= recordsBloc.recordHolder;
+    print(recordHolder.length);
 
-recordHolder.sort((a,b)=>a.compareTo(b));
 
     Navigator.pop(context, super.widget.record);
   }
@@ -234,7 +249,8 @@ recordHolder.sort((a,b)=>a.compareTo(b));
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4),
                     borderSide: BorderSide(
-                        color: Colors.brown.withOpacity(1.0), width: 1)),
+                        color: AppColors.mainAppColor.withOpacity(1.0), width: 1)
+                ),
                 labelText: 'What does this fall under?',
               ),
               controller: tagsController,
@@ -294,7 +310,7 @@ recordHolder.sort((a,b)=>a.compareTo(b));
                   }
                 });
               },
-              title: successStateWidget,
+              title: successStateWidget,activeColor: AppColors.mainAppColor,
             ),
             space,
             ElevatedButton(

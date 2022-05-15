@@ -5,12 +5,14 @@ import 'dart:io';
 
 import 'package:adhd_journal_flutter/dashboard_stats_display_widget.dart';
 import 'package:adhd_journal_flutter/record_list_class.dart';
-import 'package:adhd_journal_flutter/recordsdatabase_handler.dart';
+import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
 import 'package:adhd_journal_flutter/settings.dart';
 import 'package:adhd_journal_flutter/splash_screendart.dart';
 import 'onboarding_widget_class.dart';
 import 'record_display_widget.dart';
 import 'package:flutter/material.dart';
+import 'dart:math';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'project_colors.dart';
 import 'records_data_class_db.dart';
@@ -26,6 +28,10 @@ void main() {
 
 
 }
+
+
+late RecordsBloc recordsBloc;
+
 
 
 class MyApp extends StatelessWidget {
@@ -78,12 +84,13 @@ class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
   late Text titleHdr;
   var _selectedIndex = 0;
   String header = "";
-
+var listCount =0;
   @override
   void initState() {
     super.initState();
     try {
-        loadDB();
+      recordsBloc = RecordsBloc();
+       loadDB();
 
     } catch (e, s) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -106,16 +113,13 @@ class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
 
   void loadDB() async {
     try {
-      recdatabase = await RecordsDB.initializeDB();
-      if (recdatabase.isOpen) {
-        print("DB open");
-      }
-      recordHolder = await RecordsDB.getRecords();
-      setState((){
-     recordHolder.sort((a,b)=> a.compareTo(b));
-      });
-
+      recordHolder = recordsBloc.recordHolder;
+    setState((){
+      recordHolder = recordsBloc.recordHolder;
       RecordList.loadLists();
+
+    });
+      print('Executed');
     } on Exception catch (ex) {
       print(ex);
     }
@@ -131,7 +135,16 @@ class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
     setState(() {
       if (recordHolder.isNotEmpty) {
         _selectedIndex = index;
-        RecordList.loadLists();
+        if(_selectedIndex == 0){
+          loadDB();
+        }
+        else{
+          RecordList.loadLists();
+        }
+       quickTimer();
+      }
+      else{
+        _selectedIndex = 0;
       }
     });
   }
@@ -140,18 +153,14 @@ class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
   /// Checked and passed : true
   void _createRecord() {
     setState(() {
-      if (recordHolder.isEmpty) {
-        id = 1;
-      } else {
-        id = recordHolder.length+1;
-      }
+
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (_) =>
                   ComposeRecordsWidget(
                       record: Records(
-                          id: id,
+                          id: recordHolder.length,
                           title: '',
                           content: '',
                           emotions: '',
@@ -165,9 +174,8 @@ class _ADHDJournalAppHPState extends State<ADHDJournalApp> {
                       id: 0,
                       title: 'Compose New Entry')))
           .then((value) => {
-quickTimer()
-
-
+executeRefresh(),
+loadDB()
       });
     });
   }
@@ -182,47 +190,16 @@ quickTimer()
   BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home');
 
 
-/*  void sortCreated() async{
-setState((){
-  recordHolder.sort((a,b)=>a.timeCreated.compareTo(b.timeCreated));
-});
-  }
-  void sortA_Z() async{
-    setState((){
-      recordHolder.sort((a,b)=>a.title.compareTo(b.title));
-    }); 
-  }
-  void sort_rating() async{
-    setState((){
-      recordHolder.sort((a,b)=>a.rating.compareTo(b.rating));
-    });
-  }
-  
-  sortTimer(String callbackName) async{
-    var callback;
-    switch(callbackName){
-      case 'Recent': callback   = executeRefresh;break;
-      case 'Created' : callback = sortCreated; break;
-      case 'Rating' : callback = sort_rating; break;
-      case 'Alphabetical' : callback = sortA_Z; break;
-
-    }
-   
-
-    var duration = const Duration(milliseconds: 100);
-      return Timer(duration,callback);
-
-  }*/
 
 
   quickTimer() async{
     return Timer(Duration(milliseconds:1),executeRefresh);
   }
   void executeRefresh() async{
-    setState((){
-      recordHolder.sort((a,b)=> a.compareTo(b));
-
-    });
+setState((){
+    RecordList.loadLists();}
+);
+    print('Executed');
   }
 
   BottomNavigationBar bottomBar() {
@@ -318,7 +295,7 @@ setState((){
 
   int getPasswordChangeResults() {
     try {
-      RecordsDB.changePasswords();
+      recordsBloc.changeDBPasswords();
       return 0;
     }
     on Exception catch (ex) {
@@ -334,13 +311,12 @@ setState((){
         title: Text(widget.title),
         leading: IconButton(
             onPressed: () {
-              if (recdatabase.isOpen) {
-                recdatabase.close();
-              }
+              recordsBloc.dispose();
               if (callingCard) {
                 Navigator.pop(context);
               }
               else {
+              //  recordsBloc.dispose();
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const LoginScreen()));
               }
             },

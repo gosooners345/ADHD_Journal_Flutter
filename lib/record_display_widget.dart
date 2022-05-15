@@ -1,21 +1,15 @@
 import 'dart:async';
 import 'dart:ffi';
 
-import 'package:adhd_journal_flutter/dashboard_stats_display_widget.dart';
 import 'package:adhd_journal_flutter/record_list_class.dart';
 import 'package:adhd_journal_flutter/record_view_card_class.dart';
-import 'package:adhd_journal_flutter/recordsdatabase_handler.dart';
-import 'package:adhd_journal_flutter/settings.dart';
+import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/gestures.dart';
 import 'main.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'project_colors.dart';
 import 'project_strings_file.dart';
 import 'splash_screendart.dart';
-import 'package:intl/intl.dart';
 import 'records_data_class_db.dart';
 import 'login_screen_file.dart';
 import 'compose_records_screen.dart';
@@ -29,67 +23,123 @@ class RecordDisplayWidget extends StatefulWidget {
 
 
 class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
-
-  late Text titleHdr;
-  RecordsNotifier recNotifier = RecordsNotifier(recordHolder);
-  String header = "";
-
-  @override
+    @override
   void initState() {
     super.initState();
     try {
-      setState((){
-     recordHolder.sort((a,b)=>a.compareTo(b));
-      });
+      recordsBloc = RecordsBloc();
+      recordHolder = recordsBloc.recordHolder;
+    startTimer();
       greeting = prefs.getString('greeting') ?? '';
-     startTimer();
-  quickTimer();
-print('everything is sorted now');
+      print('everything is sorted now');
     } catch (e, s) {
       print(s);
     }
   }
 
+
   startTimer() async{
-    var duration = const Duration(seconds: 3);
+    var duration = const Duration(seconds: 2);
 
     return Timer(duration,executeClick);
   }
   void executeClick() async {
-    setState(() {
-      recordHolder.sort((a, b) => a.compareTo(b));
-    });
+
+setState((){
+    recordHolder = recordsBloc.recordHolder;
+    RecordList.loadLists();});
+    print('Executed');
   }
-quickTimer() async {
-  var duration = const Duration(milliseconds: 1);
-   return Timer(duration,executeClick);
-}
 
 
-void sortCreated() async{
+/// Stream widget testing here
+  Widget getRecordsDisplay(){
+    return StreamBuilder(stream: recordsBloc.recordStuffs,
+      builder: (BuildContext context, AsyncSnapshot<List<Records>> snaphot){
+      return getRecordCards(snaphot);
+    },);
+  }
+  Widget getRecordCards(AsyncSnapshot<List<Records>> snapshot){
+    if(snapshot.hasData){
+      print(snapshot.connectionState);
+    return snapshot.data!.isNotEmpty ?
+    ListView.builder(itemBuilder: (context, index) {
+      Records record = snapshot.data![index];
+      Widget dismissableCard =
+      Dismissible(
+        background: Card(shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
+          child:const Padding(
+            padding: EdgeInsets.only(left: 10),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Deleting",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+          color: AppColors.mainAppColor,
+        ),
+        key:  ObjectKey(record),
+        child:Card(
+          shape: RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
+          child: ListTile( onTap: () {
+            _editRecord(record);
+          },
+            title: RecordCardViewWidget(record: record,),
+          )
+      ),onDismissed: (direction){
+          recordsBloc.deleteRecordByID(record.id);
+      },
+        direction: DismissDirection.horizontal,
 
+      );
+    return dismissableCard;
+      },
+      itemCount: snapshot.data?.length,
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+
+    ): const Center( child: Text('Add a new record by hitting the Record button below!'),);
+  }
+    else if(snapshot.hasError){
+      print(snapshot.error);
+      return Text(snapshot.stackTrace.toString());
+    }
+    else{
+      print(snapshot.connectionState);
+      return Center(
+        child: Container(child: Center(
+          child: Column(children: const <Widget>[
+            CircularProgressIndicator(),
+            Text('Loading your records'),
+          ],),
+        ),),
+      );
+    }
+  }
+
+@override
+  dispose(){
+    super.dispose();
+    recordsBloc.dispose();
 }
 
   /// This method allows users to access an existing record to edit. The future implementations will prevent timestamps from being edited
   /// Checked and Passed : true
-  void _editRecord(int index) {
+  void _editRecord(Records record) {
     setState(() {
-      final Records loadRecord = recordHolder[index];
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (_) =>
                   ComposeRecordsWidget(
-                    record: loadRecord,
+                    record: record,
                     id: 1,
                     title: 'Edit Entry',
-                  ))).then((value) => {
-      quickTimer()
-                  }
-      );});
+                  ))      );});
     }
 
-  /// This compiles the screen display for the application.
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -107,50 +157,9 @@ void sortCreated() async{
                   textAlign: TextAlign.center,
                 ),),],),),
         Expanded(
-            child:ValueListenableBuilder(valueListenable: recNotifier.valueNotifier, builder:
-    (BuildContext context,value,child)
-    {return  ListView.builder(itemBuilder: (context, index) {
-    return GestureDetector(
-    child: Card(
-    child: ListTile( onTap: () {
-    _editRecord(index);
-    },
-    title: RecordCardViewWidget(record: recordHolder[index],),
-    )
-    ),
-    onHorizontalDragStart: (_) {
-    //Add a dialog box method to allow for challenges to deleting entries
-    setState(() {
-    final deletedRec = recordHolder[index];
-    RecordsDB.deleteRecord(deletedRec.id);
-    recordHolder.remove(deletedRec);
-    recordHolder.sort((a,b)=>a.compareTo(b));
-    });
-    },
-    );
-    },
-    itemCount: recordHolder.length,
-    scrollDirection: Axis.vertical,
-    shrinkWrap: true,
-
-    );
-    },
-    ),
-
-            )
-
-
-            //recordListHolderWidget),
+            child:getRecordsDisplay()
+                            )
       ],
     );
-  }
-}
-
-class RecordsNotifier extends ValueNotifier<List<Records>> {
-  RecordsNotifier(List<Records> recordList) : super(recordList);
-  ValueNotifier valueNotifier = ValueNotifier(recordHolder);
-
-  void updateListCount(int length) {
-    valueNotifier.notifyListeners();
   }
 }

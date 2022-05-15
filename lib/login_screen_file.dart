@@ -8,7 +8,7 @@ import 'package:flutter/painting.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'main.dart';
-import 'recordsdatabase_handler.dart';
+
 import 'splash_screendart.dart';
 
 String greeting = '';
@@ -25,7 +25,7 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-late RecordsDB recordsDataBase;
+
 late String dbPassword;
 late String userPassword;
 
@@ -207,6 +207,7 @@ callingCard=true;
                               passwordEnabled) {
                             stuff.clear();
                             loginPassword = '';
+
                             Navigator.pushNamed(context, '/success')
                                 .then((value) => {
                                   stuff.clear(),
