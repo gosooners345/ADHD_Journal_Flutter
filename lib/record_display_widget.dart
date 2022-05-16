@@ -19,12 +19,14 @@ class RecordDisplayWidget extends StatefulWidget {
   State<RecordDisplayWidget> createState() => RecordDisplayWidgetState();
 }
 
+late TextEditingController searchController;
 
 class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
     @override
   void initState() {
     super.initState();
     try {
+      searchController = TextEditingController();
       recordsBloc = RecordsBloc();
     startTimer();
       greeting = prefs.getString('greeting') ?? '';
@@ -46,9 +48,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
   }
   void executeClick() async {
     RecordList.loadLists();
-    if (kDebugMode) {
-      print('Executed');
-    }
+
   }
 
 
@@ -62,13 +62,12 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
   }
   Widget getRecordCards(AsyncSnapshot<List<Records>> snapshot){
     if(snapshot.hasData){
-      if (kDebugMode) {
-        print(snapshot.connectionState);
-      }
+
     return snapshot.data!.isNotEmpty ?
     ListView.builder(itemBuilder: (context, index) {
       Records record = snapshot.data![index];
-    recordListSort(snapshot.data!, ADHDJournalAppHPState.selectedChoice);
+
+
       Widget dismissableCard =
       Dismissible(
         background: Card(shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),elevation: 2.0,
@@ -93,7 +92,30 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
             title: RecordCardViewWidget(record: record,),
           )
       ),onDismissed: (direction){
-          recordsBloc.deleteRecordByID(record.id);
+
+        showDialog(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: const Text('Delete Record?'),
+              content: const Text('Are you sure you want to delete this record?'
+                  ),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      recordsBloc.deleteRecordByID(record.id);
+                      print('Deleted Record');
+                    },
+                    child: const Text('Yes')),
+        TextButton( child:Text('No'),
+          onPressed:(){
+          recordsBloc.getRecords();
+          Navigator.pop(context);
+          }
+                )
+              ],
+            ));
+
 
       },
         direction: DismissDirection.horizontal,
@@ -135,30 +157,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
 }
 
 /// Sorts the list based on what the user prefers to see.
-void recordListSort(List<Records> list, Choice choice){
-  switch (choice.title){
-    case 'Alphabetical' : {
-        list.sort((a,b)=>a.compareTitles(b.title));
-      break;
-    }
-    case  'Rating':{
 
-        list.sort((a,b) => a.compareRatings(b.rating));
-
-      break;
-    }
-    case 'Time Created': {
-
-        list.sort((a,b) => a.compareTimesCreated(b.timeCreated));
-
-      break;
-    }
-    case 'Most Recent': {
-
-      list.sort((a,b)=>a.compareTo(b));
-    break;}
-  }
-}
 
   /// This method allows users to access an existing record to edit. The future implementations will prevent timestamps from being edited
   /// Checked and Passed : true

@@ -110,6 +110,126 @@ var listCount =0;
     return const [RecordDisplayWidget(),DashboardViewWidget()];
   }
 
+  List<AppBar> appBars() {
+    return [
+      AppBar( title: Text("Home"),
+        leading: IconButton(
+            onPressed: () {
+              recordsBloc.dispose();
+              if (callingCard) {
+                Navigator.pop(context);
+              }
+              else {
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const LoginScreen()));
+              }
+            },
+            icon: Icon(Icons.arrow_back)),
+        actions: <Widget>[
+          IconButton(onPressed:(){
+            recordsBloc.getRecords();
+          }, icon: Icon(Icons.history)),
+          IconButton(
+          icon: Icon(Icons.search),onPressed:(){
+          showDialog(
+              context: context,
+              builder: (BuildContext context) => AlertDialog(
+                title: const Text('Record search'),
+                content: Padding(padding:EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0), child:
+                  TextField(controller: searchController, decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Enter Search Query here',
+                      hintText: 'Enter anything you\'re looking for here'),
+                ),),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        if(searchController.text.isNotEmpty) {
+                          recordsBloc.getSearchedRecords(searchController.text);
+
+                        } else {
+                          recordsBloc.getRecords();
+                        }
+                        Navigator.pop(context);
+
+                      },
+                      child: const Text('Yes')),
+                  TextButton( child:Text('No'),
+                      onPressed:(){
+                    recordsBloc.getRecords();
+                        Navigator.pop(context);
+                      }
+                  )
+                ],
+              ));
+    },
+    ),
+          PopupMenuButton<Choice>(itemBuilder: (BuildContext context){
+            return sortOptions.map((Choice choice){
+              return PopupMenuItem<Choice>(child: Row(children:[Icon(choice.icon),Spacer(flex: 2,),Text(choice.title),]),
+                value: choice,onTap: (){
+                  sortOption(choice);
+                },);
+            }).toList();
+          },),
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) =>
+
+                      /// Change password upon exit if the password has changed.
+                      /// Tested and Passed: 05/09/2022
+                      SettingsPage())).then((value) =>{
+                if (userPassword != dbPassword){
+                  verifyPasswordChanged(),
+                },
+              });
+            },
+          ),
+        ],
+      )
+
+      ,
+      AppBar(
+        title: Text("Stats"),
+        leading: IconButton(
+            onPressed: () {
+              recordsBloc.dispose();
+              if (callingCard) {
+                Navigator.pop(context);
+              }
+              else {
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const LoginScreen()));
+              }
+            },
+            icon: Icon(Icons.arrow_back)),
+        actions: <Widget>[
+
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) =>
+
+                      /// Change password upon exit if the password has changed.
+                      /// Tested and Passed: 05/09/2022
+                      SettingsPage())).then((value) =>{
+                if (userPassword != dbPassword){
+                  verifyPasswordChanged(),
+                },
+              });
+            },
+          ),
+        ],
+      )
+    ];
+
+
+  }
 
   /// This is for the bottom navigation bar, this isn't related to the records at all.
   void _onItemTapped(int index) {
@@ -249,6 +369,7 @@ executeRefresh(),
 
     setState((){
       selectedChoice = option;
+      recordsBloc.getSortedRecords(option.title);
     });
 
 
@@ -269,47 +390,7 @@ executeRefresh(),
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        leading: IconButton(
-            onPressed: () {
-              recordsBloc.dispose();
-              if (callingCard) {
-                Navigator.pop(context);
-              }
-              else {
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const LoginScreen()));
-              }
-            },
-            icon: Icon(Icons.arrow_back)),
-        actions: <Widget>[
-        PopupMenuButton<Choice>(itemBuilder: (BuildContext context){
-            return sortOptions.map((Choice choice){
-              return PopupMenuItem<Choice>(child: Text(choice.title),
-              value: choice,onTap: (){
-                sortOption(choice);
-                },);
-            }).toList();
-          },),
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) =>
-
-                      /// Change password upon exit if the password has changed.
-                      /// Tested and Passed: 05/09/2022
-                      SettingsPage())).then((value) =>{
-                if (userPassword != dbPassword){
-                    verifyPasswordChanged(),
-                  },
-              });
-            },
-          ),
-        ],
-      ),
+      appBar: appBars()[_selectedIndex],
       body: Center(child: screens().elementAt(_selectedIndex)),
       floatingActionButton: FloatingActionButton.extended(
         label: Text('Record'),

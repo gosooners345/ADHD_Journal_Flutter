@@ -6,7 +6,7 @@ class RecordsRepository{
   final recordsDao = RecordsDao();
 
   Future<List<Records>> getRecords() => recordsDao.getRecords();
-
+Future<List<Records>> getRecordsSortedByType(String type) => recordsDao.getRecordsSortedByType(type);
   Future<List<Records>> getSearchedRecords(String query) => recordsDao.getSearchedRecords(query: query);
   Future insertRecord(Records record) => recordsDao.createRecords(record);
   Future updateRecord(Records record) => recordsDao.updateRecords(record);
