@@ -173,13 +173,13 @@ recordHolder.clear(),
             Padding(
               padding: const EdgeInsets.only(
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
-              //padding: EdgeInsets.symmetric(horizontal: 15),
+
               child: loginField,
             ),
             Padding(
               padding: const EdgeInsets.only(top: 60.0),
               child: Center(
-//child: loginField
+
                   ),
             ),
             SizedBox(

@@ -125,21 +125,88 @@ var listCount =0;
             },
             icon: Icon(Icons.arrow_back)),
         actions: <Widget>[
-          IconButton(onPressed:(){
+
+          PopupMenuButton(itemBuilder: (BuildContext context ){
+            return <PopupMenuItem>[
+              PopupMenuItem(child: Row(children: [Icon(Icons.search),Text('Search Records')],),
+              onTap: (){
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      title: const Text('Search Records'),
+                      content: Padding(padding:EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0), child:
+                      TextField(controller: searchController, decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Search here',
+                          hintText: 'Enter your search topic here.'),
+                        onSubmitted: (query){
+                          recordsBloc.getRecords();
+                          if(query.isNotEmpty){
+                            recordsBloc.getSearchedRecords(query);
+                          }
+                          else{
+                            recordsBloc.getRecords();
+                          }
+                          Navigator.pop(context);
+                        },
+                        expands: false,
+                      ),),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              if(searchController.text.isNotEmpty) {
+                                recordsBloc.getSearchedRecords(searchController.text);
+
+                              } else {
+                                recordsBloc.getRecords();
+                              }
+                              Navigator.pop(context);
+
+                            },
+                            child: const Text('Search')),
+                        TextButton( child:Text('No'),
+                            onPressed:(){
+                              recordsBloc.getRecords();
+                              Navigator.pop(context);
+                            }
+                        )
+                      ],
+                    ));
+              },),
+              PopupMenuItem(child: Row(children: [Icon(Icons.restart_alt),SizedBox(width: 10,),Text('Clear Searches')],),
+              onTap:(){
+                recordsBloc.getRecords();
+              },),
+            ];
+          },icon: Icon(Icons.filter_list),),
+
+        /*  IconButton(onPressed:(){
             recordsBloc.getRecords();
-          }, icon: Icon(Icons.history)),
+          }, icon: Icon(Icons.restart_alt),
+          tooltip: 'Clear search',),
           IconButton(
-          icon: Icon(Icons.search),onPressed:(){
+          icon: Icon(Icons.filter_list),onPressed:(){
           showDialog(
               context: context,
               builder: (BuildContext context) => AlertDialog(
-                title: const Text('Record search'),
+                title: const Text('Search Records'),
                 content: Padding(padding:EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0), child:
                   TextField(controller: searchController, decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'Enter Search Query here',
-                      hintText: 'Enter anything you\'re looking for here'),
-                ),),
+                      labelText: 'Search here',
+                      hintText: 'Enter your search topic here.'),
+                onSubmitted: (query){
+                    recordsBloc.getRecords();
+                    if(query.isNotEmpty){
+                      recordsBloc.getSearchedRecords(query);
+                    }
+                    else{
+                      recordsBloc.getRecords();
+                    }
+                    Navigator.pop(context);
+                },
+                 expands: false,
+                  ),),
                 actions: [
                   TextButton(
                       onPressed: () {
@@ -152,7 +219,7 @@ var listCount =0;
                         Navigator.pop(context);
 
                       },
-                      child: const Text('Yes')),
+                      child: const Text('Search')),
                   TextButton( child:Text('No'),
                       onPressed:(){
                     recordsBloc.getRecords();
@@ -161,9 +228,10 @@ var listCount =0;
                   )
                 ],
               ));
-    },
-    ),
-          PopupMenuButton<Choice>(itemBuilder: (BuildContext context){
+    },*/
+          PopupMenuButton<Choice>(
+            icon: Icon(Icons.sort),
+            itemBuilder: (BuildContext context){
             return sortOptions.map((Choice choice){
               return PopupMenuItem<Choice>(child: Row(children:[Icon(choice.icon),Spacer(flex: 2,),Text(choice.title),]),
                 value: choice,onTap: (){

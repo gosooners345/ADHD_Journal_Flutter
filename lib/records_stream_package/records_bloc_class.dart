@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:adhd_journal_flutter/records_data_class_db.dart';
 import 'package:flutter/foundation.dart';
 import 'records_repository.dart';
@@ -33,7 +35,10 @@ class RecordsBloc{
   getRecords() async{
     _recordsController.sink.add(await _recordsRepo.getRecords());
     recordHolder = await _recordsRepo.getRecords();
+    if(recordHolder.length>0)
     maxID=getMaxID();
+    else
+      maxID=0;
 
     if ( kDebugMode) {
       print(maxID);

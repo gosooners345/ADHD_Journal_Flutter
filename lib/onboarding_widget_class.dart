@@ -169,55 +169,55 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
               ),
             ),
           )),
-          // Record Entry page
+          //Home Page
           PageModel(
               widget: DecoratedBox(
-            decoration: BoxDecoration(
-                border: Border.all(
-              width: 0.0,
-            )),
-            child: SingleChildScrollView(
-              controller: ScrollController(),
-              child: Column(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 45.0,
-                      vertical: 90.0,
-                    ),
-                    child: Icon(
-                      Icons.edit,
-                      color: Colors.black,
-                      size: 60.0,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 45.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Composing Entries',
-                        style: pageTitleStyle,
-                        textAlign: TextAlign.left,
+                decoration: BoxDecoration(
+                    border: Border.all(
+                      width: 0.0,
+                    )),
+                child: SingleChildScrollView(
+                  controller: ScrollController(),
+                  child: Column(
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 45.0,
+                          vertical: 90.0,
+                        ),
+                        child: Icon(
+                          Icons.home,
+                          color: Colors.black,
+                          size: 60.0,
+                        ),
                       ),
-                    ),
-                  ),
-                  Padding(
-                    padding:
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Home Page',
+                            style: pageTitleStyle,
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding:
                         const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        records_intro_paragraph_string,
-                        style: pageInfoStyle,
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          )),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            home_page_intro_paragraph_string,
+                            style: pageInfoStyle,
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              )),
           // Dashboard
           PageModel(
               widget: DecoratedBox(
@@ -268,6 +268,55 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
               ),
             ),
           )),
+          // Record Entry page
+          PageModel(
+              widget: DecoratedBox(
+                decoration: BoxDecoration(
+                    border: Border.all(
+                      width: 0.0,
+                    )),
+                child: SingleChildScrollView(
+                  controller: ScrollController(),
+                  child: Column(
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 45.0,
+                          vertical: 90.0,
+                        ),
+                        child: Icon(
+                          Icons.edit,
+                          color: Colors.black,
+                          size: 60.0,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Composing Entries',
+                            style: pageTitleStyle,
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding:
+                        const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            records_intro_paragraph_string,
+                            style: pageInfoStyle,
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              )),
           // Settings Page
           PageModel(
               widget: DecoratedBox(
@@ -414,7 +463,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                         prefs.setBool('firstVisit', false);
                         dbPassword = savedPasswordValue;
                         userPassword = savedPasswordValue;
-callingCard = true;
+callingCard = false;
                         Navigator.pushReplacementNamed(context, '/success');
                       } else {
                         try {

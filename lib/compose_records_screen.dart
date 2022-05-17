@@ -1,8 +1,6 @@
 import 'dart:async';
-
 import 'package:adhd_journal_flutter/project_colors.dart';
 import 'package:flutter/foundation.dart';
-
 import 'main.dart';
 import 'package:flutter/material.dart';
 import 'symptom_selector_screen.dart';
@@ -163,7 +161,7 @@ if (kDebugMode) {
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(4),
                       borderSide: BorderSide(
-                          color: Colors.brown.withOpacity(1.0), width: 1)),
+                          color: AppColors.mainAppColor.withOpacity(1.0), width: 1)),
                   labelText: 'What do you want to call this?'),
               textCapitalization: TextCapitalization.sentences,
               controller: titleController,
@@ -178,9 +176,10 @@ if (kDebugMode) {
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4),
                     borderSide: BorderSide(
-                        color: Colors.brown.withOpacity(1.0), width: 1)),
+                        color: AppColors.mainAppColor.withOpacity(1.0), width: 1)),
                 labelText: 'What\'s on your mind? ',
               ),
+              expands: true,
               textCapitalization: TextCapitalization.sentences,
               controller: contentController,
               onChanged: (text) {
@@ -194,13 +193,14 @@ if (kDebugMode) {
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4),
                     borderSide: BorderSide(
-                        color: Colors.brown.withOpacity(1.0), width: 1)),
+                        color: AppColors.mainAppColor.withOpacity(1.0), width: 1)),
                 labelText: 'How do you feel today?',
               ),
               controller: emotionsController,
               onChanged: (text) {
                 super.widget.record.emotions = text;
               },
+              expands: true,
             ),
             space,
             //Source Field
@@ -209,14 +209,16 @@ if (kDebugMode) {
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4),
                     borderSide: BorderSide(
-                        color: Colors.brown.withOpacity(1.0), width: 1)),
+                        color: AppColors.mainAppColor.withOpacity(1.0), width: 1)),
                 labelText: 'Do you have anything to add to this?',
+                hintText: 'Add your thoughts or what you think could\'ve triggered this here'
               ),
               textCapitalization: TextCapitalization.sentences,
               controller: sourceController,
               onChanged: (text) {
                 super.widget.record.sources = text;
               },
+              expands: true,
             ),
             space,
             //Symptom Field,
@@ -252,9 +254,11 @@ if (kDebugMode) {
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4),
                     borderSide: BorderSide(
+
                         color: AppColors.mainAppColor.withOpacity(1.0), width: 1)
                 ),
-                labelText: 'What does this fall under?',
+                hintText: 'Add event tags here.',
+                labelText: 'What categories does this fall under?',
               ),
               controller: tagsController,
               onChanged: (text) {
