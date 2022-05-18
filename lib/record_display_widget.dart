@@ -104,7 +104,20 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
                     onPressed: () {
                       Navigator.pop(context);
                       recordsBloc.deleteRecordByID(record.id);
-                      print('Deleted Record');
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text('Record Deleted'),
+                        duration: const Duration(milliseconds: 1500),
+                        width: 280.0,
+                        // Width of the SnackBar.
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0,
+                        ),
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4.0),
+                        ),
+                      ),);
+                      //print('Deleted Record');
                     },
                     child: const Text('Yes')),
         TextButton( child:Text('No'),
@@ -171,7 +184,19 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
                     record: record,
                     id: 1,
                     title: 'Edit Entry',
-                  ))      );});
+                  ))      ).then((value) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Record saved'),
+        duration: const Duration(milliseconds: 1500),
+        width: 280.0,
+        // Width of the SnackBar.
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8.0,
+        ),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(4.0),
+        ),
+      ),));});
     }
 
   @override

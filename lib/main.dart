@@ -126,119 +126,61 @@ var listCount =0;
             icon: Icon(Icons.arrow_back)),
         actions: <Widget>[
 
+          IconButton(
+          icon: Icon(Icons.search),onPressed:(){
+    showDialog(
+    context: context,
+    builder: (BuildContext context) => AlertDialog(
+    title: const Text('Search Records'),
+    content: Padding(padding:EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0), child:
+    TextField(controller: searchController, decoration: InputDecoration(
+    border: OutlineInputBorder(),
+    labelText: 'Search here',
+    hintText: 'Enter your search topic here.'),
+    expands: false,
+    ),),
+    actions: [
+    TextButton(
+    onPressed: () {
+    if(searchController.text.isNotEmpty) {
+    recordsBloc.getSearchedRecords(searchController.text);
+
+    } else {
+    recordsBloc.getRecords();
+    }
+    Navigator.pop(context);
+
+    },
+    child: const Text('Search')),
+   ],),);},),
           PopupMenuButton(itemBuilder: (BuildContext context ){
-            return <PopupMenuItem>[
-              PopupMenuItem(child: Row(children: [Icon(Icons.search),Text('Search Records')],),
-              onTap: (){
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) => AlertDialog(
-                      title: const Text('Search Records'),
-                      content: Padding(padding:EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0), child:
-                      TextField(controller: searchController, decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Search here',
-                          hintText: 'Enter your search topic here.'),
-                        onSubmitted: (query){
-                          recordsBloc.getRecords();
-                          if(query.isNotEmpty){
-                            recordsBloc.getSearchedRecords(query);
-                          }
-                          else{
-                            recordsBloc.getRecords();
-                          }
-                          Navigator.pop(context);
-                        },
-                        expands: false,
-                      ),),
-                      actions: [
-                        TextButton(
-                            onPressed: () {
-                              if(searchController.text.isNotEmpty) {
-                                recordsBloc.getSearchedRecords(searchController.text);
+            //var list = <PopupMenuEntry<Object>>[];
+return <PopupMenuItem>[
 
-                              } else {
-                                recordsBloc.getRecords();
-                              }
-                              Navigator.pop(context);
-
-                            },
-                            child: const Text('Search')),
-                        TextButton( child:Text('No'),
-                            onPressed:(){
-                              recordsBloc.getRecords();
-                              Navigator.pop(context);
-                            }
-                        )
-                      ],
-                    ));
-              },),
-              PopupMenuItem(child: Row(children: [Icon(Icons.restart_alt),SizedBox(width: 10,),Text('Clear Searches')],),
+            (PopupMenuItem(child: Row(children: [Icon(Icons.restart_alt),SizedBox(width: 10,),Text('Reset')],),
               onTap:(){
                 recordsBloc.getRecords();
-              },),
+              },)),
+             PopupMenuItem(child: Text("Sort by"),enabled: false,),
+              (PopupMenuItem(child: Row(children: [Icon(Icons.history),SizedBox(width: 10,),Text('Most Recent')],),
+                onTap:(){
+                  recordsBloc.getSortedRecords("Most Recent");
+                },)),
+              PopupMenuItem(child: Row(children: [Icon(Icons.sort_by_alpha),SizedBox(width: 10,),Text('Alphabetical')],),
+              onTap:(){
+                  recordsBloc.getSortedRecords("Alphabetical");
+                }),
+              (PopupMenuItem(child: Row(children: [Icon(Icons.history),SizedBox(width: 10,),Text('Time Created')],),
+                onTap:(){
+                  recordsBloc.getSortedRecords("Time Created");
+                },)),
+              (PopupMenuItem(child: Row(children: [Icon(Icons.stars),SizedBox(width: 10,),Text('Rating')],),
+                onTap:(){
+                  recordsBloc.getSortedRecords("Rating");
+                },)),
+
             ];
           },icon: Icon(Icons.filter_list),),
-
-        /*  IconButton(onPressed:(){
-            recordsBloc.getRecords();
-          }, icon: Icon(Icons.restart_alt),
-          tooltip: 'Clear search',),
-          IconButton(
-          icon: Icon(Icons.filter_list),onPressed:(){
-          showDialog(
-              context: context,
-              builder: (BuildContext context) => AlertDialog(
-                title: const Text('Search Records'),
-                content: Padding(padding:EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0), child:
-                  TextField(controller: searchController, decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Search here',
-                      hintText: 'Enter your search topic here.'),
-                onSubmitted: (query){
-                    recordsBloc.getRecords();
-                    if(query.isNotEmpty){
-                      recordsBloc.getSearchedRecords(query);
-                    }
-                    else{
-                      recordsBloc.getRecords();
-                    }
-                    Navigator.pop(context);
-                },
-                 expands: false,
-                  ),),
-                actions: [
-                  TextButton(
-                      onPressed: () {
-                        if(searchController.text.isNotEmpty) {
-                          recordsBloc.getSearchedRecords(searchController.text);
-
-                        } else {
-                          recordsBloc.getRecords();
-                        }
-                        Navigator.pop(context);
-
-                      },
-                      child: const Text('Search')),
-                  TextButton( child:Text('No'),
-                      onPressed:(){
-                    recordsBloc.getRecords();
-                        Navigator.pop(context);
-                      }
-                  )
-                ],
-              ));
-    },*/
-          PopupMenuButton<Choice>(
-            icon: Icon(Icons.sort),
-            itemBuilder: (BuildContext context){
-            return sortOptions.map((Choice choice){
-              return PopupMenuItem<Choice>(child: Row(children:[Icon(choice.icon),Spacer(flex: 2,),Text(choice.title),]),
-                value: choice,onTap: (){
-                  sortOption(choice);
-                },);
-            }).toList();
-          },),
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: () {
@@ -256,10 +198,7 @@ var listCount =0;
               });
             },
           ),
-        ],
-      )
-
-      ,
+],    ),
       AppBar(
         title: Text("Stats"),
         leading: IconButton(
@@ -342,8 +281,21 @@ try{
                       id: 0,
                       title: 'Compose New Entry')))
           .then((value) => {
-
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Record saved'),
+      duration: const Duration(milliseconds: 1500),
+      width: 280.0,
+      // Width of the SnackBar.
+      padding: const EdgeInsets.symmetric(
+      horizontal: 8.0,
+      ),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(4.0),
+      ),
+      ),),
 executeRefresh(),
+
       });
   }
   on Exception catch(ex){

@@ -1,6 +1,10 @@
 
-// ignore_for_file: prefer_const_constructors
 
+
+
+import 'package:adhd_journal_flutter/project_colors.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter/material.dart';
 import 'splash_screendart.dart';
 import 'login_screen_file.dart';
@@ -15,6 +19,11 @@ class SettingsPage extends StatefulWidget {
 /// To Do list: Add more stuff like customization of list display, theme choices, etc.
 
 class _SettingsPage extends State<SettingsPage> {
+
+
+  //Native code handling methods
+  static const platform =
+  MethodChannel('com.activitylogger.release1/ADHDJournal');
 
   //Parameter setting stuff
   bool isChecked = false;
@@ -45,11 +54,11 @@ class _SettingsPage extends State<SettingsPage> {
       greetingController = TextEditingController(text: greetingValue);
       passwordController = TextEditingController(text: passwordValue);
       if (isChecked) {
-        lockIcon = Icon(Icons.lock);
+        lockIcon = const Icon(Icons.lock);
         passwordLabelText = "Password Enabled";
         passwordLabelWidget = Text(passwordLabelText);
       } else {
-        lockIcon = Icon(Icons.lock_open);
+        lockIcon = const Icon(Icons.lock_open);
         passwordLabelText = "Password Disabled";
         passwordLabelWidget = Text(passwordLabelText);
       }
@@ -87,9 +96,8 @@ class _SettingsPage extends State<SettingsPage> {
             icon: const Icon(Icons.arrow_back)),
       ),
       extendBody: true,
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
+      body: ListView(
+        children:  <Widget>[
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8.0),
               child: Center(
@@ -155,19 +163,44 @@ class _SettingsPage extends State<SettingsPage> {
               ),
             ),
             spacer,
-           /* ElevatedButton(
-                onPressed: () {
-                  // Demo mode
-                  Navigator.pushNamed(context, '/onboarding');
-                },
-                child: const Text('Demo ME!'))*/
+Divider(height: 2.0,thickness: 2.0,color: AppColors.mainAppColor,),
+         Padding(padding: const EdgeInsets.symmetric(vertical: 16,horizontal: 8),child:GestureDetector(child: Row(children: [Icon(Icons.email_outlined,color: AppColors.mainAppColor,),SizedBox(width: 10,)
+           ,const Expanded(child:Text("Email the developer with your ideas and any bugs you find in the application!",softWrap: true,),flex: 1,)],),
+            onTap: (){
+           try{
+           emailDev();}
+               on Exception catch(ex){
+                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                   content: Text(ex.toString()),
+                   duration: const Duration(milliseconds: 1500),
+                   width: 280.0,
+                   // Width of the SnackBar.
+                   padding: const EdgeInsets.symmetric(
+                     horizontal: 8.0,
+                   ),
+                   behavior: SnackBarBehavior.floating,
+                   shape: RoundedRectangleBorder(
+                     borderRadius: BorderRadius.circular(4.0),
+                   ),
+                 ),
+                 );
+               }
+          },
+          ),),
           ],
         ),
-      ),
-    );
+      );
+
   }
 }
+void emailDev() async{
 
+  final Email email = Email(subject: "Bugs and Feature Request for ADHD Journal",
+      body: '',
+      recipients: ['boomersooner12345@gmail.com'],
+      isHTML: false);
+  await FlutterEmailSender.send(email);
+}
 ///This is for check box related stuff
 Color getColor(Set<MaterialState> states) {
   const Set<MaterialState> interactiveStates = <MaterialState>{

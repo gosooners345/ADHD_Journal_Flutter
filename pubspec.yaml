@@ -46,6 +46,7 @@ dependencies:
   sleek_circular_slider: ^2.0.1
   rxdart: ^0.27.3
   flutter_launcher_icons: ^0.9.2
+  flutter_email_sender: ^5.1.0
 
 flutter_icons:
   image_path_android: "images/appicon_appstore.png"
@@ -53,7 +54,7 @@ flutter_icons:
   android: true
   ios: true
 dev_dependencies:
-  flutter_launcher_icons: ^0.9.2
+
   flutter_test:
     sdk: flutter
 dependency_overrides:

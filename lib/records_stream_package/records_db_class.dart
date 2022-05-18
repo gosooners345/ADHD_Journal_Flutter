@@ -1,13 +1,9 @@
 import 'dart:async';
 
 import 'package:adhd_journal_flutter/login_screen_file.dart';
-import 'package:adhd_journal_flutter/main.dart';
-import 'package:adhd_journal_flutter/records_data_class_db.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
-import 'package:adhd_journal_flutter/login_screen_file.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:adhd_journal_flutter/splash_screendart.dart';
 

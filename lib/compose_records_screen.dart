@@ -179,7 +179,7 @@ if (kDebugMode) {
                         color: AppColors.mainAppColor.withOpacity(1.0), width: 1)),
                 labelText: 'What\'s on your mind? ',
               ),
-              expands: true,
+             minLines: 1,
               textCapitalization: TextCapitalization.sentences,
               controller: contentController,
               onChanged: (text) {
@@ -200,7 +200,7 @@ if (kDebugMode) {
               onChanged: (text) {
                 super.widget.record.emotions = text;
               },
-              expands: true,
+              minLines : 1,
             ),
             space,
             //Source Field
@@ -218,7 +218,7 @@ if (kDebugMode) {
               onChanged: (text) {
                 super.widget.record.sources = text;
               },
-              expands: true,
+              minLines : 1,
             ),
             space,
             //Symptom Field,
