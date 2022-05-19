@@ -89,8 +89,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
     else {
       updateTimer();
     }
-    // recordHolder= recordsBloc.recordHolder;
-   // print(recordHolder.length);
+
 if (kDebugMode) {
   print(listSize);
 

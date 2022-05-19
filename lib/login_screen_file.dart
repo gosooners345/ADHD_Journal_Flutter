@@ -164,7 +164,7 @@ recordHolder.clear(),
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      //backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text("ADHD Journal"),
       ),

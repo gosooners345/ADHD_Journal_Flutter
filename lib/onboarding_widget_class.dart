@@ -24,17 +24,17 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     wordSpacing: 1,
     letterSpacing: 1.2,
     fontWeight: FontWeight.bold,
-    color: Colors.black,
+    //color: Colors.black,
   );
   var pageInfoStyle = const TextStyle(
-    color: Colors.black,
+  //  color: Colors.black,
     letterSpacing: 0.7,
     height: 1.5,
   );
 
   late Material materialButton;
   late int index;
-  Color background = Colors.white;
+ // Color background = Colors.white;
 
   @override
   void initState() {
@@ -139,7 +139,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     ),
                     child: Icon(
                       Icons.security_sharp,
-                      color: Colors.black,
+                     // color: Colors.black,
                       size: 60.0,
                     ),
                   ),
@@ -237,7 +237,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     ),
                     child: Icon(
                       Icons.dashboard,
-                      color: Colors.black,
+                    //  color: Colors.black,
                       size: 60.0,
                     ),
                   ),
@@ -336,7 +336,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     ),
                     child: Icon(
                       Icons.settings,
-                      color: Colors.black,
+                     // color: Colors.black,
                       size: 60.0,
                     ),
                   ),
@@ -386,7 +386,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     ),
                     child: Icon(
                       Icons.done,
-                      color: Colors.black,
+                  //    color: Colors.black,
                       size: 60.0,
                     ),
                   ),

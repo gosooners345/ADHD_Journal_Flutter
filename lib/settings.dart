@@ -83,7 +83,7 @@ class _SettingsPage extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+     // backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Settings'),
         leading: IconButton(
