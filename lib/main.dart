@@ -8,6 +8,7 @@ import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.d
 import 'package:adhd_journal_flutter/settings.dart';
 import 'package:adhd_journal_flutter/splash_screendart.dart';
 import 'package:flutter/foundation.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'onboarding_widget_class.dart';
 import 'record_display_widget.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ void main() {
 
 }
 
-
+late PackageInfo packInfo;
 late RecordsBloc recordsBloc;
 
 int listSize=0;
@@ -76,6 +77,7 @@ class ADHDJournalApp extends StatefulWidget {
 late ListView recordViews;
 
 class ADHDJournalAppHPState extends State<ADHDJournalApp> {
+
 static Choice selectedChoice = sortOptions[0];
   String title ='';
   var _selectedIndex = 0;
@@ -87,6 +89,10 @@ var listCount =0;
     title = 'Home';
     try {
       recordsBloc = RecordsBloc();
+
+
+      buildNumber = packInfo.version;
+      print(buildNumber);
 
     } on Exception catch (e, s) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -105,6 +111,9 @@ var listCount =0;
       );
     }
   }
+
+
+
 
   List<Widget> screens() {
     return const [RecordDisplayWidget(),DashboardViewWidget()];
@@ -192,6 +201,7 @@ return <PopupMenuItem>[
                       /// Change password upon exit if the password has changed.
                       /// Tested and Passed: 05/09/2022
                       SettingsPage())).then((value) =>{
+
                 if (userPassword != dbPassword){
                   verifyPasswordChanged(),
                 },
@@ -225,6 +235,9 @@ return <PopupMenuItem>[
                       /// Change password upon exit if the password has changed.
                       /// Tested and Passed: 05/09/2022
                       SettingsPage())).then((value) =>{
+                        setState((){
+                          greeting = prefs.getString('greeting')!;
+                        }),
                 if (userPassword != dbPassword){
                   verifyPasswordChanged(),
                 },
@@ -256,6 +269,8 @@ return <PopupMenuItem>[
       }
     });
   }
+
+  ///Updates greeting and password  that isn't tied to DB Password
 
   /// Allows users to create entries for the db and journal. Once submitted, the screen will update on demand.
   /// Checked and passed : true

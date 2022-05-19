@@ -2,6 +2,8 @@
 
 
 
+import 'dart:io';
+
 import 'package:adhd_journal_flutter/project_colors.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
@@ -17,7 +19,7 @@ class SettingsPage extends StatefulWidget {
 }
 
 /// To Do list: Add more stuff like customization of list display, theme choices, etc.
-
+String buildNumber = '';
 class _SettingsPage extends State<SettingsPage> {
 
 
@@ -29,6 +31,7 @@ class _SettingsPage extends State<SettingsPage> {
   bool isChecked = false;
   //Preference Values
   String passwordValue = userPassword;
+
   String greetingValue = '';
   Text passwordLabelWidget = Text('');
   bool passwordEnabled = false;
@@ -45,15 +48,17 @@ class _SettingsPage extends State<SettingsPage> {
   @override
   void initState() {
     super.initState();
+
+
 // Parameter Value setting
     greetingValue = prefs.getString('greeting') ?? '';
 
-    isChecked = prefs.getBool('passwordEnabled') ?? true;
+
 
     setState(() {
       greetingController = TextEditingController(text: greetingValue);
       passwordController = TextEditingController(text: passwordValue);
-      if (isChecked) {
+      if (isPasswordChecked) {
         lockIcon = const Icon(Icons.lock);
         passwordLabelText = "Password Enabled";
         passwordLabelWidget = Text(passwordLabelText);
@@ -83,13 +88,13 @@ class _SettingsPage extends State<SettingsPage> {
         title: const Text('Settings'),
         leading: IconButton(
             onPressed: () {
-              prefs.setBool('passwordEnabled', isChecked);
+              prefs.setBool('passwordEnabled', isPasswordChecked);
               saveSettings(passwordValue, 'loginPassword');
               prefs.setString('greeting', greetingValue);
               setState(() {
                 greeting = greetingValue;
               });
-              prefs.reload();
+             // prefs.reload();
               userPassword = passwordValue;
               Navigator.pop(context);
             },
@@ -100,12 +105,13 @@ class _SettingsPage extends State<SettingsPage> {
         children:  <Widget>[
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8.0),
-              child: Center(
-                child: Text('Password Settings'),
+
+                child: Text('Password Settings',textScaleFactor: 1.35,textAlign: TextAlign.center,),
               ),
-            ),
+
             spacer,
-            Padding(
+          Divider(height: 1.0,thickness: 0.5,color: AppColors.mainAppColor,),
+          Padding(
               padding: const EdgeInsets.only(
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
               child: TextField(
@@ -119,12 +125,12 @@ class _SettingsPage extends State<SettingsPage> {
                   passwordValue = text;
                 },
               ),
-            ),
-            spacer,
-            SwitchListTile(
-              value: isChecked,
+            ),spacer,
+          Divider(height: 1.0,thickness: 0.5,color: AppColors.mainAppColor,),
+          SwitchListTile(
+              value: isPasswordChecked,
               onChanged: (bool value) {
-                isChecked = value;
+                isPasswordChecked = value;
                 passwordEnabled = value;
                 setState(() {
                   if (value) {
@@ -142,12 +148,13 @@ class _SettingsPage extends State<SettingsPage> {
               title: passwordLabelWidget,
               secondary: lockIcon,
             ),
-            spacer,
+            spacer,Divider(height: 2.0,thickness: 2.0,color: AppColors.mainAppColor,),
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8.0),
-              child: Text('Customization Settings'),
-            ),
-            Padding(
+              child: Text('Customization Settings',textScaleFactor: 1.35,textAlign: TextAlign.center),
+            ),          Divider(height: 1.0,thickness: 0.5,color: AppColors.mainAppColor,),
+
+          Padding(
               padding: const EdgeInsets.only(
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
               child: TextField(
@@ -164,8 +171,17 @@ class _SettingsPage extends State<SettingsPage> {
             ),
             spacer,
 Divider(height: 2.0,thickness: 2.0,color: AppColors.mainAppColor,),
-         Padding(padding: const EdgeInsets.symmetric(vertical: 16,horizontal: 8),child:GestureDetector(child: Row(children: [Icon(Icons.email_outlined,color: AppColors.mainAppColor,),SizedBox(width: 10,)
-           ,const Expanded(child:Text("Email the developer with your ideas and any bugs you find in the application!",softWrap: true,),flex: 1,)],),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8.0),
+            child: Text('About info',textScaleFactor: 1.35,textAlign: TextAlign.center),
+          ),          Divider(height: 1.0,thickness: 0.5,color: AppColors.mainAppColor,),
+        Padding(padding: EdgeInsets.all(15.0),child: Text('You\'re running version $buildNumber',textAlign: TextAlign.left,textScaleFactor: 1.25,),),
+
+          Divider(height: 1.0,thickness: 0.5,color: AppColors.mainAppColor,),
+
+          Padding(padding: const EdgeInsets.symmetric(vertical: 16,horizontal: 8),child:GestureDetector(child: Row(children: [Icon(Icons.email_outlined,color: AppColors.mainAppColor,),VerticalDivider(width: 10.0,
+    color: AppColors.mainAppColor,thickness: 5,)
+           ,const Expanded(child:Text("Email the developer with your ideas and any bugs you find in the application!",softWrap: true,textScaleFactor: 1.15,),flex: 1,)],),
             onTap: (){
            try{
            emailDev();}
@@ -185,31 +201,24 @@ Divider(height: 2.0,thickness: 2.0,color: AppColors.mainAppColor,),
                  ),
                  );
                }
-          },
-          ),),
+          },),
+    ),
           ],
         ),
       );
 
+
   }
-}
+
+
+
+
 void emailDev() async{
 
-  final Email email = Email(subject: "Bugs and Feature Request for ADHD Journal",
+  final Email email = Email(subject: "Bugs and Feature Request for ADHD Journal version $buildNumber",
       body: '',
       recipients: ['boomersooner12345@gmail.com'],
       isHTML: false);
   await FlutterEmailSender.send(email);
 }
-///This is for check box related stuff
-Color getColor(Set<MaterialState> states) {
-  const Set<MaterialState> interactiveStates = <MaterialState>{
-    MaterialState.pressed,
-    MaterialState.hovered,
-    MaterialState.focused,
-  };
-  if (states.any(interactiveStates.contains)) {
-    return Colors.blue;
-  }
-  return Colors.red;
 }

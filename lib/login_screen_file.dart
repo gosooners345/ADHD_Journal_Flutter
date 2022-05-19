@@ -7,11 +7,12 @@ import 'main.dart';
 
 import 'splash_screendart.dart';
 
-String greeting = '';
-TextField loginField = TextField();
+
 
 
 /// Required to open the application , simple login form to start
+
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({
     Key? key,
@@ -24,7 +25,9 @@ class LoginScreen extends StatefulWidget {
 
 late String dbPassword;
 late String userPassword;
-
+bool isPasswordChecked = false;
+String greeting = '';
+TextField loginField = TextField();
 ///Handles the states of the application.
 class _LoginScreenState extends State<LoginScreen> {
   String loginPassword = '';
@@ -40,6 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
 
     loadStateStuff();
+
     setState(() {
       stuff = TextEditingController();
       resetLoginFieldState();
@@ -58,6 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
     userPassword = await encryptedSharedPrefs.getString('loginPassword');
     dbPassword = await encryptedSharedPrefs.getString('dbPassword');
     passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
+    isPasswordChecked = passwordEnabled;
 // This code seem
 
     setState(() {

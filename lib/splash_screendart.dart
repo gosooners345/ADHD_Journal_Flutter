@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'main.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -34,8 +37,15 @@ class _SplashScreenState extends State<SplashScreen> {
     return Timer(duration, route);
   }
 
+
+  void getPackageInfo() async{
+    packInfo = await PackageInfo.fromPlatform();
+  }
   //First time users go to the onboarding section to get a tutorial, returning users don't
  void route() {
+
+    getPackageInfo();
+
     var firstVisit = prefs.getBool('firstVisit') ?? true;
     if (firstVisit) {
       Navigator.pushReplacementNamed(context, '/onboarding');

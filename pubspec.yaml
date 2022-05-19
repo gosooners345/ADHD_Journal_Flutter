@@ -47,7 +47,7 @@ dependencies:
   rxdart: ^0.27.3
   flutter_launcher_icons: ^0.9.2
   flutter_email_sender: ^5.1.0
-
+  package_info_plus:
 flutter_icons:
   image_path_android: "images/appicon_appstore.png"
   image_path_ios: "images/appicon_appstore.png"

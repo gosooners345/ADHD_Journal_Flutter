@@ -4,6 +4,7 @@ import 'package:adhd_journal_flutter/record_list_class.dart';
 import 'package:adhd_journal_flutter/record_view_card_class.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
 import 'package:flutter/foundation.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'main.dart';
 import 'package:flutter/material.dart';
 import 'project_colors.dart';
@@ -197,7 +198,11 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
           borderRadius: BorderRadius.circular(4.0),
         ),
       ),));});
+
     }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -207,14 +212,12 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
         Padding(
           padding: const EdgeInsets.only(
               left: 15.0, right: 15.0, top: 15, bottom: 15.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Welcome back $greeting! What would you like to record today?',
-                  style: const TextStyle(fontSize: 18.0),
-                  textAlign: TextAlign.center,
-                ),),],),),
+          child: Row(children: [Expanded( child:Text('Welcome back $greeting! What would you like to record today?',
+    style: const TextStyle(fontSize: 18.0),
+    textAlign: TextAlign.center,),),],),),
+
+
+
         Expanded(
             child:getRecordsDisplay()
                             )
