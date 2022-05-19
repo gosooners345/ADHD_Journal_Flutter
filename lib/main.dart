@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_final_fields
 
 import 'dart:async';
-
 import 'package:adhd_journal_flutter/dashboard_stats_display_widget.dart';
 import 'package:adhd_journal_flutter/record_list_class.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
@@ -44,8 +43,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       debugShowMaterialGrid: false,
       title: 'ADHD Journal',
-      theme: ThemeData(colorSchemeSeed: AppColors.mainAppColor, useMaterial3: true,brightness: Brightness.light,),
-      darkTheme: ThemeData(colorSchemeSeed: AppColors.mainAppColor, useMaterial3: true,brightness: Brightness.dark,),
+      theme: ThemeData(colorSchemeSeed: AppColors.mainAppColor, useMaterial3: true,brightness: Brightness.light),
+      darkTheme: ThemeData(colorSchemeSeed: AppColors.mainAppColor, useMaterial3: true,brightness: Brightness.dark),
       themeMode: ThemeMode.system,
       initialRoute: '/',
       routes: {
