@@ -52,8 +52,8 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
         borderRadius: defaultSkipButtonBorderRadius,
         onTap: () {
           if (setIndex != null) {
-            index = 5;
-            setIndex(5);
+            index = 6;
+            setIndex(6);
           }
         },
         child: const Padding(
@@ -187,7 +187,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                         ),
                         child: Icon(
                           Icons.home,
-                          color: Colors.black,
+                         // color: Colors.black,
                           size: 60.0,
                         ),
                       ),
@@ -286,7 +286,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                         ),
                         child: Icon(
                           Icons.edit,
-                          color: Colors.black,
+                       //   color: Colors.black,
                           size: 60.0,
                         ),
                       ),
@@ -419,9 +419,9 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     child: TextField(
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
-                          hintStyle: TextStyle(color: Colors.black),
+                   //       hintStyle: TextStyle(color: Colors.black),
                           labelText: 'New Password for diary',
-                          labelStyle: TextStyle(color: Colors.black),
+                     //     labelStyle: TextStyle(color: Colors.black),
                           hintText: 'Enter a secure Password'),
                       onChanged: (text) {
                         savedPasswordValue = text;
@@ -434,9 +434,9 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     child: TextField(
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
-                          helperStyle: TextStyle(color: Colors.black),
+                       //   helperStyle: TextStyle(color: Colors.black),
                           labelText: 'Enter your name here',
-                          labelStyle: TextStyle(color: Colors.black),
+                       //   labelStyle: TextStyle(color: Colors.black),
                           hintText: 'Enter your name here'),
                       onChanged: (text) {
                         greetingValueSaved = text;
@@ -451,7 +451,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     isSaved = changed!;
 
     });}),),
-                  ElevatedButton(
+                  TextButton(
                     onPressed: () async {
                       if (savedPasswordValue != '') {
                         await encryptedSharedPrefs.setString(
