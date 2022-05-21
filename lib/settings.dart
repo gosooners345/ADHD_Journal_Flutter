@@ -83,7 +83,7 @@ class _SettingsPage extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     // backgroundColor: Colors.white,
+
       appBar: AppBar(
         title: const Text('Settings'),
         leading: IconButton(
@@ -129,6 +129,7 @@ class _SettingsPage extends State<SettingsPage> {
           Divider(height: 1.0,thickness: 0.5,color: AppColors.mainAppColor,),
           SwitchListTile(
               value: isPasswordChecked,
+
               onChanged: (bool value) {
                 isPasswordChecked = value;
                 passwordEnabled = value;

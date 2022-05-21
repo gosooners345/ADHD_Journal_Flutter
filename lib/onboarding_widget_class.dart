@@ -325,9 +325,8 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                 width: 0.0,
               ),
             ),
-            child: SingleChildScrollView(
-              controller: ScrollController(),
-              child: Column(
+            child: ListView(
+
                 children: [
                   const Padding(
                     padding: EdgeInsets.symmetric(
@@ -336,7 +335,6 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     ),
                     child: Icon(
                       Icons.settings,
-                     // color: Colors.black,
                       size: 60.0,
                     ),
                   ),
@@ -354,19 +352,16 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                   Padding(
                     padding:
                         EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Align(
+    child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
                         settings_paragraph_intro_string,
                         style: pageInfoStyle,
                         textAlign: TextAlign.left,
                       ),
-                    ),
-                  ),
+                    ),),
                 ],
-              ),
-            ),
-          )),
+    ),),),
           //Last page
           PageModel(
               widget: DecoratedBox(
@@ -375,9 +370,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                 width: 0.0,
               ),
             ),
-            child: SingleChildScrollView(
-              controller: ScrollController(),
-              child: Column(
+            child: ListView(
                 children: [
                   const Padding(
                     padding: EdgeInsets.symmetric(
@@ -386,7 +379,6 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     ),
                     child: Icon(
                       Icons.done,
-                  //    color: Colors.black,
                       size: 60.0,
                     ),
                   ),
@@ -419,9 +411,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     child: TextField(
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
-                   //       hintStyle: TextStyle(color: Colors.black),
                           labelText: 'New Password for diary',
-                     //     labelStyle: TextStyle(color: Colors.black),
                           hintText: 'Enter a secure Password'),
                       onChanged: (text) {
                         savedPasswordValue = text;
@@ -434,9 +424,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     child: TextField(
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
-                       //   helperStyle: TextStyle(color: Colors.black),
-                          labelText: 'Enter your name here',
-                       //   labelStyle: TextStyle(color: Colors.black),
+                         labelText: 'Enter your name here',
                           hintText: 'Enter your name here'),
                       onChanged: (text) {
                         greetingValueSaved = text;
@@ -445,13 +433,14 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                   ),
                   Padding(padding: const EdgeInsets.all(15.0),
                   child:CheckboxListTile(title: const Text("Password enabled?"),
+    activeColor: AppColors.mainAppColor,
     value: isSaved,
     onChanged: (bool? changed) {
     setState(() {
     isSaved = changed!;
 
     });}),),
-                  TextButton(
+                  ElevatedButton(style: ButtonStyle(backgroundColor: MaterialStateProperty.all(AppColors.mainAppColor),),
                     onPressed: () async {
                       if (savedPasswordValue != '') {
                         await encryptedSharedPrefs.setString(
@@ -491,7 +480,7 @@ callingCard = false;
                 ],
               ),
             ),
-          )),
+          )
         ],
         onPageChange: (int pageIndex) {
           index = pageIndex;
@@ -524,9 +513,6 @@ callingCard = false;
                         ),
                       ),
                     ),
-                    index == pagesLength - 1
-                        ? _skipButton(setIndex: setIndex)
-                        : _skipButton(setIndex: setIndex),
                   ],
                 ),
               ),

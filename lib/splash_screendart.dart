@@ -41,7 +41,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void getPackageInfo() async{
     packInfo = await PackageInfo.fromPlatform();
   }
-  //First time users go to the onboarding section to get a tutorial, returning users don't
+
  void route() {
 
     getPackageInfo();
