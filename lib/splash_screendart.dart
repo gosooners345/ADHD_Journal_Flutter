@@ -75,3 +75,4 @@ class _SplashScreenState extends State<SplashScreen> {
 
 late SharedPreferences prefs;
 late EncryptedSharedPreferences encryptedSharedPrefs;
+late ThemeMode deviceTheme;
