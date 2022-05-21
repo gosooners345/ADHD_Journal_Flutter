@@ -164,6 +164,7 @@ if (kDebugMode) {
                   labelText: 'What do you want to call this?'),
               textCapitalization: TextCapitalization.sentences,
               controller: titleController,
+
               onChanged: (text) {
                 super.widget.record.title = text;
               },
@@ -178,7 +179,9 @@ if (kDebugMode) {
                         color: AppColors.mainAppColor.withOpacity(1.0), width: 1)),
                 labelText: 'What\'s on your mind? ',
               ),
-             minLines: 1,
+              keyboardType: TextInputType.multiline,
+              minLines: 1,
+              maxLines: null,
               textCapitalization: TextCapitalization.sentences,
               controller: contentController,
               onChanged: (text) {
@@ -199,7 +202,7 @@ if (kDebugMode) {
               onChanged: (text) {
                 super.widget.record.emotions = text;
               },
-              minLines : 1,
+
             ),
             space,
             //Source Field
@@ -212,12 +215,15 @@ if (kDebugMode) {
                 labelText: 'Do you have anything to add to this?',
                 hintText: 'Add your thoughts or what you think could\'ve triggered this here'
               ),
+              keyboardType: TextInputType.multiline,
+              minLines: 1,
+              maxLines: null,
               textCapitalization: TextCapitalization.sentences,
               controller: sourceController,
               onChanged: (text) {
                 super.widget.record.sources = text;
               },
-              minLines : 1,
+
             ),
             space,
             //Symptom Field,
