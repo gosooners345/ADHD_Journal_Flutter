@@ -5,6 +5,10 @@ import 'package:adhd_journal_flutter/dashboard_stats_display_widget.dart';
 import 'package:adhd_journal_flutter/record_list_class.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
 import 'package:adhd_journal_flutter/settings.dart';
+import 'package:adhd_journal_flutter/settings_tutorials/compose_tutorial.dart';
+import 'package:adhd_journal_flutter/settings_tutorials/dashboard_help.dart';
+import 'package:adhd_journal_flutter/settings_tutorials/sort_and_filter_help.dart';
+import 'package:adhd_journal_flutter/settings_tutorials/tutorial_help_guide.dart';
 import 'package:adhd_journal_flutter/splash_screendart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -52,10 +56,12 @@ class MyApp extends StatelessWidget {
         '/onboarding': (context) => OnBoardingWidget(),
         '/savePassword': (context) => LoginScreen(),
         '/login': (context) => LoginScreen(),
-        '/success': (context) => ADHDJournalApp(
-
-            ),
+        '/success': (context) => ADHDJournalApp(),
         '/fail': (context) => LoginScreen(),
+        '/composehelp': (context) => ComposeHelpWidget(),
+        '/tutorials':(context) => TutorialHelpScreen(),
+        '/dashboardhelp': (context) => DashboardHelp(),
+        '/searchhelp' : (context) => SortHelp(),
       },
     );
   }

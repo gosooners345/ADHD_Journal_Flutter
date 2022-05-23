@@ -147,6 +147,7 @@ if (kDebugMode) {
     return Scaffold(
       appBar: AppBar(
         title: Text(super.widget.title),
+        actions: [IconButton(onPressed: (){Navigator.pushNamed(context, '/composehelp');}, icon: Icon(Icons.help))],
       ),
       key: _formKey,
       body: Center(

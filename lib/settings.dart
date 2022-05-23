@@ -5,6 +5,7 @@
 import 'dart:io';
 
 import 'package:adhd_journal_flutter/project_colors.dart';
+import 'package:launch_review/launch_review.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter/material.dart';
@@ -59,11 +60,11 @@ class _SettingsPage extends State<SettingsPage> {
       greetingController = TextEditingController(text: greetingValue);
       passwordController = TextEditingController(text: passwordValue);
       if (isPasswordChecked) {
-        lockIcon = const Icon(Icons.lock);
+        lockIcon = Icon(Icons.lock,color: AppColors.mainAppColor,);
         passwordLabelText = "Password Enabled";
         passwordLabelWidget = Text(passwordLabelText);
       } else {
-        lockIcon = const Icon(Icons.lock_open);
+        lockIcon = Icon(Icons.lock_open,color: AppColors.mainAppColor,);
         passwordLabelText = "Password Disabled";
         passwordLabelWidget = Text(passwordLabelText);
       }
@@ -86,6 +87,7 @@ class _SettingsPage extends State<SettingsPage> {
 
       appBar: AppBar(
         title: const Text('Settings'),
+
         leading: IconButton(
             onPressed: () {
               prefs.setBool('passwordEnabled', isPasswordChecked);
@@ -94,7 +96,7 @@ class _SettingsPage extends State<SettingsPage> {
               setState(() {
                 greeting = greetingValue;
               });
-             // prefs.reload();
+
               userPassword = passwordValue;
               Navigator.pop(context);
             },
@@ -103,29 +105,48 @@ class _SettingsPage extends State<SettingsPage> {
       extendBody: true,
       body: ListView(
         children:  <Widget>[
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8.0),
+          ListTile(iconColor: AppColors.mainAppColor,leading: Icon(Icons.display_settings),
+          title: Text('Customization Settings',textScaleFactor: 1.15,),),
+             Divider(height: 1.0,thickness: 0.5,color: AppColors.mainAppColor,),
+          spacer,
+          ListTile(
+            title: TextField(
+              obscureText: false,
+              controller: greetingController,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Greeting',
+                  hintText: 'Enter your name here'),
+              onChanged: (text) {
+                greetingValue = text;
+              },
+            ),
+          ),
 
-                child: Text('Password Settings',textScaleFactor: 1.35,textAlign: TextAlign.center,),
-              ),
+          spacer,
+          Divider(height: 2.0,thickness: 2.0,color: AppColors.mainAppColor,),
 
-            spacer,
-          Divider(height: 1.0,thickness: 0.5,color: AppColors.mainAppColor,),
-          Padding(
-              padding: const EdgeInsets.only(
-                  left: 15.0, right: 15.0, top: 15, bottom: 0),
-              child: TextField(
-                obscureText: false,
-                controller: passwordController,
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Password',
-                    hintText: 'Enter a secure password'),
-                onChanged: (text) {
-                  passwordValue = text;
-                },
-              ),
-            ),spacer,
+          ListTile(iconColor: AppColors.mainAppColor,leading: Icon(Icons.security),
+            title: Text('Security Settings',textScaleFactor: 1.15,),
+        ),
+
+          Divider(height: 1.0,thickness: .5,color: AppColors.mainAppColor,),
+          spacer,
+          ListTile(
+            title:  TextField(
+              obscureText: false,
+              controller: passwordController,
+              decoration: const InputDecoration(
+
+                  border: OutlineInputBorder(),
+                  labelText: 'Password',
+                  hintText: 'Enter a secure password'),
+              onChanged: (text) {
+                passwordValue = text;
+              },
+            ),
+          ),
+          spacer,
           Divider(height: 1.0,thickness: 0.5,color: AppColors.mainAppColor,),
           SwitchListTile(
               value: isPasswordChecked,
@@ -135,11 +156,11 @@ class _SettingsPage extends State<SettingsPage> {
                 passwordEnabled = value;
                 setState(() {
                   if (value) {
-                    lockIcon = Icon(Icons.lock);
+                    lockIcon = Icon(Icons.lock,color: AppColors.mainAppColor,);
                     passwordLabelText = "Password Enabled";
                     prefs.setBool('passwordEnabled', value);
                   } else if (!value) {
-                    lockIcon = Icon(Icons.lock_open);
+                    lockIcon = Icon(Icons.lock_open,color: AppColors.mainAppColor,);
                     passwordLabelText = "Password Disabled";
                     prefs.setBool('passwordEnabled', value);
                   }
@@ -150,66 +171,72 @@ class _SettingsPage extends State<SettingsPage> {
               secondary: lockIcon,
             ),
             spacer,Divider(height: 2.0,thickness: 2.0,color: AppColors.mainAppColor,),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8.0),
-              child: Text('Customization Settings',textScaleFactor: 1.35,textAlign: TextAlign.center),
-            ),          Divider(height: 1.0,thickness: 0.5,color: AppColors.mainAppColor,),
+ListTile(iconColor: AppColors.mainAppColor,leading: Icon(Icons.info_outline),
+title: Text('Application info',textScaleFactor: 1.15,),)
+        ,          Divider(height: 1.0,thickness: 0.5,color: AppColors.mainAppColor,),
 
-          Padding(
-              padding: const EdgeInsets.only(
-                  left: 15.0, right: 15.0, top: 15, bottom: 0),
-              child: TextField(
-                obscureText: false,
-                controller: greetingController,
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Custom Greeting',
-                    hintText: 'Enter your name here'),
-                onChanged: (text) {
-                  greetingValue = text;
-                },
-              ),
-            ),
-            spacer,
-Divider(height: 2.0,thickness: 2.0,color: AppColors.mainAppColor,),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8.0),
-            child: Text('About info',textScaleFactor: 1.35,textAlign: TextAlign.center),
-          ),          Divider(height: 1.0,thickness: 0.5,color: AppColors.mainAppColor,),
-        Padding(padding: EdgeInsets.all(15.0),child: Text('You\'re running version $buildNumber',textAlign: TextAlign.left,textScaleFactor: 1.25,),),
-
+        ListTile(iconColor: AppColors.mainAppColor,leading: Icon(Icons.info_outline),title: Text('You\'re running version $buildNumber',textAlign: TextAlign.left,),),
           Divider(height: 1.0,thickness: 0.5,color: AppColors.mainAppColor,),
+ListTile( leading: Icon(Icons.email_outlined),
 
-          Padding(padding: const EdgeInsets.symmetric(vertical: 16,horizontal: 8),child:GestureDetector(child: Row(children: [Icon(Icons.email_outlined,color: AppColors.mainAppColor,),VerticalDivider(width: 10.0,
-    color: AppColors.mainAppColor,thickness: 5,)
-           ,const Expanded(child:Text("Email the developer with your ideas and any bugs you find in the application!",softWrap: true,textScaleFactor: 1.15,),flex: 1,)],),
-            onTap: (){
-           try{
-           emailDev();}
-               on Exception catch(ex){
-                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                   content: Text(ex.toString()),
-                   duration: const Duration(milliseconds: 1500),
-                   width: 280.0,
-                   // Width of the SnackBar.
-                   padding: const EdgeInsets.symmetric(
-                     horizontal: 8.0,
-                   ),
-                   behavior: SnackBarBehavior.floating,
-                   shape: RoundedRectangleBorder(
-                     borderRadius: BorderRadius.circular(4.0),
-                   ),
-                 ),
-                 );
-               }
-          },),
+  onTap: (){
+  try{
+    emailDev();}
+  on Exception catch(ex){
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(ex.toString()),
+      duration: const Duration(milliseconds: 1500),
+      width: 280.0,
+      // Width of the SnackBar.
+      padding: const EdgeInsets.symmetric(
+        horizontal: 8.0,
+      ),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4.0),
+      ),
     ),
+    );
+  }
+},
+  iconColor: AppColors.mainAppColor,
+  title:Text('Contact Me'),
+  subtitle:Row(children:[ Expanded(child:Text("Tell me about your experience using this app or request new features here!",softWrap: true,/*textScaleFactor: 1.15,*/),flex: 1,),],
+  ),
+
+),
+          Divider(height: 1.0,thickness: 0.5,color: AppColors.mainAppColor,),
+ListTile(
+  onTap: (){
+if(Platform.isIOS)
+  {
+    LaunchReview.launch();
+  }
+else{
+  LaunchReview.launch(androidAppId: 'com.activitylogger.release1');
+}
+  },
+  title: Text('Rate my app'),
+  iconColor: AppColors.mainAppColor,
+  leading: Icon(Icons.star),
+),
+          Divider(height: 1.0,thickness: 0.5,color: AppColors.mainAppColor,),
+          ListTile(
+            iconColor: AppColors.mainAppColor,
+            leading: Icon(Icons.help),
+            title: Text("How to use app?"),
+            subtitle: Text("Click here to get further guidance on how to use features in the app"),
+            onTap: (){
+Navigator.pushNamed(context,'/tutorials');
+            },
+          )
           ],
         ),
       );
 
 
   }
+
 
 
 

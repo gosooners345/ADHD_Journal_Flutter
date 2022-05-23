@@ -41,7 +41,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
     }
   }
 
-
+// For updating the list when its opening. this
   startTimer() async{
     var duration = const Duration(seconds: 2);
 
@@ -90,7 +90,9 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
           child: ListTile( onTap: () {
             _editRecord(record);
           },
+            
             title: RecordCardViewWidget(record: record,),
+            contentPadding: EdgeInsets.all(12),
           )
       ),onDismissed: (direction){
 
