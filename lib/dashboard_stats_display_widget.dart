@@ -2,6 +2,7 @@ import 'package:adhd_journal_flutter/record_list_class.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:adhd_journal_flutter/project_colors.dart';
+import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'main.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -68,12 +69,13 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
         Card(
           elevation: 2.0,
           child: SizedBox(
-            child: Padding(padding: EdgeInsets.all(5.0), child: SfCartesianChart(
+            child: Padding(padding: EdgeInsets.all(16.0), child: SfCartesianChart(
               zoomPanBehavior: ZoomPanBehavior(
                   enablePinching: true,
                   enableDoubleTapZooming: false,
                   enablePanning: true,
                   zoomMode: ZoomMode.xy),
+              trackballBehavior:TrackballBehavior(activationMode: ActivationMode.doubleTap), //SparkChartTrackball(activationMode: SparkChartActivationMode.doubleTap),
               borderWidth: 2.0,
               primaryXAxis: CategoryAxis(),
               primaryYAxis: NumericAxis(),
@@ -99,10 +101,11 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
         // Success/Fail Chart
         Card(shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
           elevation: 2.0,
-          child: SizedBox(
-            child: Padding(padding: EdgeInsets.all(5.0), child: SfCircularChart(
+          //child: SizedBox(
+            child: Padding(padding: EdgeInsets.all(16.0), child: SfCircularChart(
               title: ChartTitle(text: 'Success/Fail Data from Journal Entries'),
               legend: Legend(isVisible: true),
+
               series: <PieSeries<RecordDataStats, String>>[
                 PieSeries<RecordDataStats, String>(
                   explode: true,
@@ -116,20 +119,23 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                   dataLabelSettings: const DataLabelSettings(isVisible: true,),
                 ),
               ],
-            ),),
-            height: 300,
-          ),
+            ),
+            ),
+           // height: 300,
+         // ),
         ),
 //Emotions Chart
         Card(shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
           elevation: 2.0,
-          child: SizedBox(
-            child: Padding(padding: EdgeInsets.all(5.0), child: SfCartesianChart(
+          //child: SizedBox(
+            child:
+            Padding(padding: EdgeInsets.all(16.0), child: SfCartesianChart(
               zoomPanBehavior: ZoomPanBehavior(
                   enablePinching: true,
                   enableDoubleTapZooming: false,
                   enablePanning: true,
                   zoomMode: ZoomMode.xy),
+              trackballBehavior:TrackballBehavior(activationMode: ActivationMode.doubleTap), //SparkChartTrackball(activationMode: SparkChartActivationMode.doubleTap),
               borderWidth: 2.0,
               primaryXAxis: CategoryAxis(),
               primaryYAxis: NumericAxis(),
@@ -150,16 +156,18 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                 ),
               ],
               title: ChartTitle(text: 'Emotion Data from Journal Entries'),
-            ),),
-            height: 300,
+            ),
+    //),
+     //       height: 300,
           ),
         ),
         //Symptoms Chart
         Card(
           shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
           elevation: 2.0,
-          child: SizedBox(
-            child:  Padding(padding: EdgeInsets.all(5.0), child:SfCartesianChart(
+          //child: //SizedBox(
+            child:  Padding(padding: EdgeInsets.all(16.0), child:SfCartesianChart(
+              trackballBehavior:TrackballBehavior(activationMode: ActivationMode.doubleTap), //SparkChartTrackball(activationMode: SparkChartActivationMode.doubleTap),
               zoomPanBehavior: ZoomPanBehavior(
                   enablePinching: true,
                   enableDoubleTapZooming: false,
@@ -182,8 +190,8 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                         const DataLabelSettings(isVisible: true)),
               ],
               title: ChartTitle(text: 'Symptom Data from Journal Entries'),
-            ),),
-            height: 300,
+            ),//),
+            //height: 300,
           ),
         ),
       ],
