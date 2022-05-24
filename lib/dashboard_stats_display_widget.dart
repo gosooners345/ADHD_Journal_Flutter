@@ -108,6 +108,7 @@ ZoomPanBehavior zoomPanBehavior = ZoomPanBehavior(
                 ),
               ],
               title: ChartTitle(text: 'Ratings data from journal entries'),
+              margin: EdgeInsets.all(8.0),
             ),
 
           ),

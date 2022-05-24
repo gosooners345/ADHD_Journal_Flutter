@@ -26,8 +26,6 @@ class DashboardHelp extends StatelessWidget{
     Divider(height: 1.0,thickness: 0.5,color: AppColors.mainAppColor,),
         const ListTile(title: Text('How to zoom in on each card'),subtitle: Text(
             'Each card has the ability to zoom and pan by simply double tapping on the graph where you\'re wanting to zoom in on. Double tapping the graph deactivates it for scrolling.\r\n'
-              // ' The ratings card gives you the ability to pinch to zoom in on more data if you have a ton of entries.\r\n'
-               // 'The rest of them simply just zoom in on the area you select. \r\n'
                 'Each card has a reset button to reset the zoom back to normal so you can continue scrolling.'
         ),)  ,
       ],
