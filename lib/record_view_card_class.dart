@@ -20,13 +20,14 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
   Widget build(BuildContext context) {
     return
       Theme(data: Theme.of(context).copyWith(dividerColor: Colors.transparent), child:
-     // Padding(padding: EdgeInsets.symmetric(horizontal: 8,vertical: 2.0),child:
+
     Column(
       children: <Widget>[
         // Title Field
 
 ExpansionTile(tilePadding: EdgeInsets.only(left:0, right: 0,top: 2,bottom: 0)
       ,expandedAlignment: Alignment.topLeft,
+  
   title:Column(children:[
   Row(
     children: [
@@ -46,14 +47,6 @@ ExpansionTile(tilePadding: EdgeInsets.only(left:0, right: 0,top: 2,bottom: 0)
     ]),],),
   // Content field
   children: [
-/*    Divider(height: 1,color: AppColors.mainAppColor,),
-    SizedBox(height: 2,),
-    Row(children: [
-    Expanded(
-    child: Text(super.widget.record.content,
-    maxLines: 3,
-    style: TextStyle(overflow: TextOverflow.ellipsis)))
-    ]),*/
 
     Divider(height: 1,color: AppColors.mainAppColor,),
     SizedBox(height: 2,),

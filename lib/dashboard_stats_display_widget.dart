@@ -68,7 +68,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
         Card(
           elevation: 2.0,
           child: SizedBox(
-            child: SfCartesianChart(
+            child: Padding(padding: EdgeInsets.all(5.0), child: SfCartesianChart(
               zoomPanBehavior: ZoomPanBehavior(
                   enablePinching: true,
                   enableDoubleTapZooming: false,
@@ -91,7 +91,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                 ),
               ],
               title: ChartTitle(text: 'Ratings data from journal entries'),
-            ),
+            ),),
             height: 300,
           ),
             shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
@@ -100,7 +100,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
         Card(shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
           elevation: 2.0,
           child: SizedBox(
-            child: SfCircularChart(
+            child: Padding(padding: EdgeInsets.all(5.0), child: SfCircularChart(
               title: ChartTitle(text: 'Success/Fail Data from Journal Entries'),
               legend: Legend(isVisible: true),
               series: <PieSeries<RecordDataStats, String>>[
@@ -116,7 +116,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                   dataLabelSettings: const DataLabelSettings(isVisible: true,),
                 ),
               ],
-            ),
+            ),),
             height: 300,
           ),
         ),
@@ -124,7 +124,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
         Card(shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
           elevation: 2.0,
           child: SizedBox(
-            child: SfCartesianChart(
+            child: Padding(padding: EdgeInsets.all(5.0), child: SfCartesianChart(
               zoomPanBehavior: ZoomPanBehavior(
                   enablePinching: true,
                   enableDoubleTapZooming: false,
@@ -150,7 +150,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                 ),
               ],
               title: ChartTitle(text: 'Emotion Data from Journal Entries'),
-            ),
+            ),),
             height: 300,
           ),
         ),
@@ -159,7 +159,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
           shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
           elevation: 2.0,
           child: SizedBox(
-            child: SfCartesianChart(
+            child:  Padding(padding: EdgeInsets.all(5.0), child:SfCartesianChart(
               zoomPanBehavior: ZoomPanBehavior(
                   enablePinching: true,
                   enableDoubleTapZooming: false,
@@ -182,7 +182,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                         const DataLabelSettings(isVisible: true)),
               ],
               title: ChartTitle(text: 'Symptom Data from Journal Entries'),
-            ),
+            ),),
             height: 300,
           ),
         ),
