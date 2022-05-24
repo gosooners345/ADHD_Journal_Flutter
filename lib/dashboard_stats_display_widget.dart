@@ -1,3 +1,7 @@
+
+
+
+
 import 'package:adhd_journal_flutter/record_list_class.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -19,6 +23,21 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
   }
 
 //Method for collecting counts of Words in a list
+ZoomPanBehavior zoomPanBehavior = ZoomPanBehavior(
+    enableDoubleTapZooming: true,
+    enablePanning: true,
+    zoomMode: ZoomMode.xy
+);
+  ZoomPanBehavior zoomPanBehavior2 = ZoomPanBehavior(
+      enableDoubleTapZooming: true,
+      enablePanning: true,
+      zoomMode: ZoomMode.xy
+  );
+  ZoomPanBehavior zoomPanBehavior1 = ZoomPanBehavior(
+      enableDoubleTapZooming: true,
+      enablePanning: true,
+      zoomMode: ZoomMode.xy
+  );
 
   String summaryGen() {
     String summaryString = '';
@@ -68,13 +87,9 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
         //Ratings Chart
         Card(
           elevation: 2.0,
-          child: SizedBox(
-            child: Padding(padding: EdgeInsets.all(16.0), child: SfCartesianChart(
-              zoomPanBehavior: ZoomPanBehavior(
-                  enablePinching: true,
-                  enableDoubleTapZooming: false,
-                  enablePanning: true,
-                  zoomMode: ZoomMode.xy),
+            child:Column(children:[
+            Padding(padding: EdgeInsets.all(16.0), child: SfCartesianChart(
+              zoomPanBehavior: zoomPanBehavior,
               trackballBehavior:TrackballBehavior(activationMode: ActivationMode.doubleTap), //SparkChartTrackball(activationMode: SparkChartActivationMode.doubleTap),
               borderWidth: 2.0,
               primaryXAxis: CategoryAxis(),
@@ -93,15 +108,17 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                 ),
               ],
               title: ChartTitle(text: 'Ratings data from journal entries'),
-            ),),
-            height: 300,
+            ),
+
           ),
+             Row(mainAxisAlignment: MainAxisAlignment.end,children: [ Text('Reset Zoom'),IconButton(icon: Icon(Icons.refresh),onPressed:()=> zoomPanBehavior.reset(),)],),
+            ],),
             shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
         ),
         // Success/Fail Chart
         Card(shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
           elevation: 2.0,
-          //child: SizedBox(
+
             child: Padding(padding: EdgeInsets.all(16.0), child: SfCircularChart(
               title: ChartTitle(text: 'Success/Fail Data from Journal Entries'),
               legend: Legend(isVisible: true),
@@ -121,21 +138,14 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
               ],
             ),
             ),
-           // height: 300,
-         // ),
         ),
 //Emotions Chart
         Card(shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
           elevation: 2.0,
-          //child: SizedBox(
-            child:
+            child:Column(children: [
             Padding(padding: EdgeInsets.all(16.0), child: SfCartesianChart(
-              zoomPanBehavior: ZoomPanBehavior(
-                  enablePinching: true,
-                  enableDoubleTapZooming: false,
-                  enablePanning: true,
-                  zoomMode: ZoomMode.xy),
-              trackballBehavior:TrackballBehavior(activationMode: ActivationMode.doubleTap), //SparkChartTrackball(activationMode: SparkChartActivationMode.doubleTap),
+              zoomPanBehavior:zoomPanBehavior1,
+              trackballBehavior:TrackballBehavior(activationMode: ActivationMode.doubleTap),
               borderWidth: 2.0,
               primaryXAxis: CategoryAxis(),
               primaryYAxis: NumericAxis(),
@@ -146,7 +156,6 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                   yValueMapper: (RecordDataStats rec, _) => rec.value,
                   name: 'Emotion Data from Journal Entries',
                   color: AppColors.mainAppColor,
-
                   xAxisName: 'Emotions',
                   spacing: 1.5,
                   dataLabelSettings: const DataLabelSettings(
@@ -157,22 +166,19 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
               ],
               title: ChartTitle(text: 'Emotion Data from Journal Entries'),
             ),
-    //),
-     //       height: 300,
           ),
+              Row(children: [Text('Reset Zoom'),IconButton(onPressed: ()=>zoomPanBehavior1.reset(), icon: Icon(Icons.refresh)),],mainAxisAlignment: MainAxisAlignment.end,),
+            ],)
         ),
         //Symptoms Chart
         Card(
           shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
           elevation: 2.0,
           //child: //SizedBox(
-            child:  Padding(padding: EdgeInsets.all(16.0), child:SfCartesianChart(
+            child:Column(children: [
+            Padding(padding: EdgeInsets.all(16.0), child:SfCartesianChart(
               trackballBehavior:TrackballBehavior(activationMode: ActivationMode.doubleTap), //SparkChartTrackball(activationMode: SparkChartActivationMode.doubleTap),
-              zoomPanBehavior: ZoomPanBehavior(
-                  enablePinching: true,
-                  enableDoubleTapZooming: false,
-                  enablePanning: true,
-                  zoomMode: ZoomMode.xy),
+              zoomPanBehavior: zoomPanBehavior2,
               borderWidth: 2.0,
               primaryXAxis: CategoryAxis(),
               primaryYAxis: NumericAxis(),
@@ -190,10 +196,12 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                         const DataLabelSettings(isVisible: true)),
               ],
               title: ChartTitle(text: 'Symptom Data from Journal Entries'),
-            ),//),
-            //height: 300,
+            ),
           ),
-        ),
+             Row(mainAxisAlignment:MainAxisAlignment.end,children: [ Text('Reset Zoom'),IconButton(icon: Icon(Icons.refresh),onPressed:() =>zoomPanBehavior2.reset()),],),
+
+            ],
+            ),),
       ],
     );
   }

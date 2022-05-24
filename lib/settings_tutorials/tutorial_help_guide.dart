@@ -17,7 +17,7 @@ class TutorialHelpScreen extends StatelessWidget{
    },
  ),
    Divider(height: 1.0,thickness: 0.5,color: AppColors.mainAppColor,),
-   SizedBox(height: 8.0,),
+
 ListTile(title: Text('How to use the dashboard feature'), onTap: (){
   Navigator.pushNamed(context, '/dashboardhelp');
 },),
