@@ -26,17 +26,19 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
 ZoomPanBehavior zoomPanBehavior = ZoomPanBehavior(
     enableDoubleTapZooming: true,
     enablePanning: true,
-    zoomMode: ZoomMode.xy
+
+    zoomMode: ZoomMode.x
 );
   ZoomPanBehavior zoomPanBehavior2 = ZoomPanBehavior(
       enableDoubleTapZooming: true,
       enablePanning: true,
-      zoomMode: ZoomMode.xy
+      zoomMode: ZoomMode.x
   );
   ZoomPanBehavior zoomPanBehavior1 = ZoomPanBehavior(
       enableDoubleTapZooming: true,
       enablePanning: true,
-      zoomMode: ZoomMode.xy
+
+      zoomMode: ZoomMode.x
   );
 
   String summaryGen() {

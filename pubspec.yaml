@@ -42,7 +42,7 @@ dependencies:
   launch_review:
   path:
   charts_flutter: ^0.12.0
-  syncfusion_flutter_charts: ^20.1.51
+  syncfusion_flutter_charts: ^20.1.57
   onboarding: ^3.1.0
   sleek_circular_slider: ^2.0.1
   rxdart: ^0.27.3
