@@ -92,9 +92,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
     title = 'Home';
     try {
       recordsBloc = RecordsBloc();
-
       buildNumber = packInfo.version;
-      //print(buildNumber);
     } on Exception catch (e, s) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -173,7 +171,6 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
           ),
           PopupMenuButton(
             itemBuilder: (BuildContext context) {
-              //var list = <PopupMenuEntry<Object>>[];
               return <PopupMenuItem>[
                 (PopupMenuItem(
                   child: Row(

@@ -1,3 +1,7 @@
+
+
+
+
 import 'package:adhd_journal_flutter/record_list_class.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -18,12 +22,23 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
   }
 
 //Method for collecting counts of Words in a list
-  ZoomPanBehavior zoomPanBehavior = ZoomPanBehavior(
-      enableDoubleTapZooming: true, enablePanning: true, zoomMode: ZoomMode.x);
+ZoomPanBehavior zoomPanBehavior = ZoomPanBehavior(
+    enableDoubleTapZooming: true,
+    enablePanning: true,
+
+    zoomMode: ZoomMode.x
+);
   ZoomPanBehavior zoomPanBehavior2 = ZoomPanBehavior(
-      enableDoubleTapZooming: true, enablePanning: true, zoomMode: ZoomMode.x);
+      enableDoubleTapZooming: true,
+      enablePanning: true,
+      zoomMode: ZoomMode.x
+  );
   ZoomPanBehavior zoomPanBehavior1 = ZoomPanBehavior(
-      enableDoubleTapZooming: true, enablePanning: true, zoomMode: ZoomMode.x);
+      enableDoubleTapZooming: true,
+      enablePanning: true,
+
+      zoomMode: ZoomMode.x
+  );
 
   String summaryGen() {
     String summaryString = '';
@@ -61,193 +76,134 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
       padding: const EdgeInsets.all(8.0),
       children: [
         Card(
-          shape: RoundedRectangleBorder(
-              side: BorderSide(color: AppColors.mainAppColor, width: 1.0),
-              borderRadius: BorderRadius.circular(10)),
+    shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
           elevation: 2.0,
           child: SizedBox(
-            child: Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: Text(
-                  'Here\'s a summary of your statistics:\r\n ${summaryGen()}',
-                  style: const TextStyle(
-                      fontSize: 16.0, fontStyle: FontStyle.italic)),
-            ),
-          ),
+            child: Padding
+              (padding:const EdgeInsets.all(5.0),child:Text(
+                'Here\'s a summary of your statistics:\r\n ${summaryGen()}',
+                style: const TextStyle(fontSize: 16.0, fontStyle: FontStyle.italic)),
+          ),              ),
         ),
         //Ratings Chart
         Card(
           elevation: 2.0,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: SfCartesianChart(
-                  zoomPanBehavior: zoomPanBehavior,
-                  trackballBehavior: TrackballBehavior(
-                      activationMode: ActivationMode
-                          .doubleTap),
-                  borderWidth: 2.0,
-                  primaryXAxis: CategoryAxis(),
-                  primaryYAxis: NumericAxis(),
-                  series: <LineSeries<RecordRatingStats, String>>[
-                    LineSeries(
-                      dataSource: RecordList.ratingsList,
-                      width: 1.0,
-                      xValueMapper: (RecordRatingStats recLbl, _) =>
-                          DateFormat("MM/dd/yyyy hh:mm:ss aa")
-                              .format(recLbl.date),
-                      color: AppColors.mainAppColor,
-                      yValueMapper: (RecordRatingStats recLbl, _) =>
-                          recLbl.value,
-                      dataLabelSettings:
-                          const DataLabelSettings(isVisible: true),
-                      xAxisName: 'Entry Timestamps',
-                      yAxisName: 'Ratings',
-                    ),
-                  ],
-                  title: ChartTitle(text: 'Ratings data from journal entries'),
-                  margin: const EdgeInsets.all(8.0),
+            child:Column(children:[
+            Padding(padding: const EdgeInsets.all(16.0), child: SfCartesianChart(
+              zoomPanBehavior: zoomPanBehavior,
+              trackballBehavior:TrackballBehavior(activationMode: ActivationMode.doubleTap), //SparkChartTrackball(activationMode: SparkChartActivationMode.doubleTap),
+              borderWidth: 2.0,
+              primaryXAxis: CategoryAxis(),
+              primaryYAxis: NumericAxis(),
+              series: <LineSeries<RecordRatingStats, String>>[
+                LineSeries(
+                  dataSource: RecordList.ratingsList,
+                  width: 1.0,
+                  xValueMapper: (RecordRatingStats recLbl, _) =>
+                      DateFormat("MM/dd/yyyy hh:mm:ss aa").format(recLbl.date),
+                  color: AppColors.mainAppColor,
+                  yValueMapper: (RecordRatingStats recLbl, _) => recLbl.value,
+                  dataLabelSettings: const DataLabelSettings(isVisible: true),
+                  xAxisName: 'Entry Timestamps',
+                  yAxisName: 'Ratings',
                 ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  const Text('Reset Zoom'),
-                  IconButton(
-                    icon: const Icon(Icons.refresh),
-                    onPressed: () => zoomPanBehavior.reset(),
-                  )
-                ],
-              ),
-            ],
+              ],
+              title: ChartTitle(text: 'Ratings data from journal entries'),
+              margin: EdgeInsets.all(8.0),
+            ),
+
           ),
-          shape: RoundedRectangleBorder(
-              side: BorderSide(color: AppColors.mainAppColor, width: 1.0),
-              borderRadius: BorderRadius.circular(10)),
+             Row(mainAxisAlignment: MainAxisAlignment.end,children: [ Text('Reset Zoom'),IconButton(icon: Icon(Icons.refresh),onPressed:()=> zoomPanBehavior.reset(),)],),
+            ],),
+            shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
         ),
         // Success/Fail Chart
-        Card(
-          shape: RoundedRectangleBorder(
-              side: BorderSide(color: AppColors.mainAppColor, width: 1.0),
-              borderRadius: BorderRadius.circular(10)),
+        Card(shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
           elevation: 2.0,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SfCircularChart(
+
+            child: Padding(padding: EdgeInsets.all(16.0), child: SfCircularChart(
               title: ChartTitle(text: 'Success/Fail Data from Journal Entries'),
               legend: Legend(isVisible: true),
+
               series: <PieSeries<RecordDataStats, String>>[
                 PieSeries<RecordDataStats, String>(
                   explode: true,
                   explodeIndex: 0,
+
                   dataSource: RecordList.successList,
                   xValueMapper: (RecordDataStats recs, _) => recs.key,
                   yValueMapper: (RecordDataStats recs, _) => recs.value,
                   dataLabelMapper: (RecordDataStats recs, _) =>
                       "${recs.key}: ${(recs.value / recordsBloc.recordHolder.length.toDouble()) * 100.0} % ",
-                  dataLabelSettings: const DataLabelSettings(
-                    isVisible: true,
-                  ),
+                  dataLabelSettings: const DataLabelSettings(isVisible: true,),
                 ),
               ],
             ),
-          ),
+            ),
         ),
 //Emotions Chart
-        Card(
-            shape: RoundedRectangleBorder(
-                side: BorderSide(color: AppColors.mainAppColor, width: 1.0),
-                borderRadius: BorderRadius.circular(10)),
-            elevation: 2.0,
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: SfCartesianChart(
-                    zoomPanBehavior: zoomPanBehavior1,
-                    trackballBehavior: TrackballBehavior(
-                        activationMode: ActivationMode.doubleTap),
-                    borderWidth: 2.0,
-                    primaryXAxis: CategoryAxis(),
-                    primaryYAxis: NumericAxis(),
-                    series: <BarSeries<RecordDataStats, String>>[
-                      BarSeries(
-                        dataSource: RecordList.emotionsList,
-                        xValueMapper: (RecordDataStats rec, _) => rec.key,
-                        yValueMapper: (RecordDataStats rec, _) => rec.value,
-                        name: 'Emotion Data from Journal Entries',
-                        color: AppColors.mainAppColor,
-                        xAxisName: 'Emotions',
-                        spacing: 1.5,
-                        dataLabelSettings: const DataLabelSettings(
-                          isVisible: true,
-                        ),
-                        yAxisName: 'Counts',
-                      ),
-                    ],
-                    title:
-                        ChartTitle(text: 'Emotion Data from Journal Entries'),
+        Card(shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
+          elevation: 2.0,
+            child:Column(children: [
+            Padding(padding: EdgeInsets.all(16.0), child: SfCartesianChart(
+              zoomPanBehavior:zoomPanBehavior1,
+              trackballBehavior:TrackballBehavior(activationMode: ActivationMode.doubleTap),
+              borderWidth: 2.0,
+              primaryXAxis: CategoryAxis(),
+              primaryYAxis: NumericAxis(),
+              series: <BarSeries<RecordDataStats, String>>[
+                BarSeries(
+                  dataSource: RecordList.emotionsList,
+                  xValueMapper: (RecordDataStats rec, _) => rec.key,
+                  yValueMapper: (RecordDataStats rec, _) => rec.value,
+                  name: 'Emotion Data from Journal Entries',
+                  color: AppColors.mainAppColor,
+                  xAxisName: 'Emotions',
+                  spacing: 1.5,
+                  dataLabelSettings: const DataLabelSettings(
+                    isVisible: true,
                   ),
-                ),
-                Row(
-                  children: [
-                    const Text('Reset Zoom'),
-                    IconButton(
-                        onPressed: () => zoomPanBehavior1.reset(),
-                        icon: const Icon(Icons.refresh)),
-                  ],
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  yAxisName: 'Counts',
                 ),
               ],
-            )),
+              title: ChartTitle(text: 'Emotion Data from Journal Entries'),
+            ),
+          ),
+              Row(children: [Text('Reset Zoom'),IconButton(onPressed: ()=>zoomPanBehavior1.reset(), icon: Icon(Icons.refresh)),],mainAxisAlignment: MainAxisAlignment.end,),
+            ],)
+        ),
         //Symptoms Chart
         Card(
-          shape: RoundedRectangleBorder(
-              side: BorderSide(color: AppColors.mainAppColor, width: 1.0),
-              borderRadius: BorderRadius.circular(10)),
+          shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
           elevation: 2.0,
           //child: //SizedBox(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: SfCartesianChart(
-                  trackballBehavior: TrackballBehavior(
-                      activationMode: ActivationMode
-                          .doubleTap),
-                  zoomPanBehavior: zoomPanBehavior2,
-                  borderWidth: 2.0,
-                  primaryXAxis: CategoryAxis(),
-                  primaryYAxis: NumericAxis(),
-                  series: <BarSeries<RecordDataStats, String>>[
-                    BarSeries(
-                        dataSource: RecordList.symptomList,
-                        xValueMapper: (RecordDataStats rec, _) => rec.key,
-                        yValueMapper: (RecordDataStats rec, _) => rec.value,
-                        name: 'Symptom Data from Journal Entries',
-                        color: AppColors.mainAppColor,
-                        xAxisName: 'Symptoms',
-                        yAxisName: 'Counts',
-                        spacing: 1.5,
-                        dataLabelSettings:
-                            const DataLabelSettings(isVisible: true)),
-                  ],
-                  title: ChartTitle(text: 'Symptom Data from Journal Entries'),
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  const Text('Reset Zoom'),
-                  IconButton(
-                      icon: const Icon(Icons.refresh),
-                      onPressed: () => zoomPanBehavior2.reset()),
-                ],
-              ),
-            ],
+            child:Column(children: [
+            Padding(padding: EdgeInsets.all(16.0), child:SfCartesianChart(
+              trackballBehavior:TrackballBehavior(activationMode: ActivationMode.doubleTap), //SparkChartTrackball(activationMode: SparkChartActivationMode.doubleTap),
+              zoomPanBehavior: zoomPanBehavior2,
+              borderWidth: 2.0,
+              primaryXAxis: CategoryAxis(),
+              primaryYAxis: NumericAxis(),
+              series: <BarSeries<RecordDataStats, String>>[
+                BarSeries(
+                    dataSource: RecordList.symptomList,
+                    xValueMapper: (RecordDataStats rec, _) => rec.key,
+                    yValueMapper: (RecordDataStats rec, _) => rec.value,
+                    name: 'Symptom Data from Journal Entries',
+                    color: AppColors.mainAppColor,
+                    xAxisName: 'Symptoms',
+                    yAxisName: 'Counts',
+                    spacing: 1.5,
+                    dataLabelSettings:
+                        const DataLabelSettings(isVisible: true)),
+              ],
+              title: ChartTitle(text: 'Symptom Data from Journal Entries'),
+            ),
           ),
-        ),
+             Row(mainAxisAlignment:MainAxisAlignment.end,children: [ Text('Reset Zoom'),IconButton(icon: Icon(Icons.refresh),onPressed:() =>zoomPanBehavior2.reset()),],),
+
+            ],
+            ),),
       ],
     );
   }
