@@ -8,21 +8,22 @@ import 'package:flutter/services.dart';
 import 'package:adhd_journal_flutter/splash_screendart.dart';
 
 class RecordsDB {
-
   static const platform =
-  MethodChannel('com.activitylogger.release1/ADHDJournal');
-/// Remains here because it can be called from other methods
-   void changePasswords() async {
+      MethodChannel('com.activitylogger.release1/ADHDJournal');
+
+  /// Remains here because it can be called from other methods
+  void changePasswords() async {
     _changeDBPassword(dbPassword, userPassword);
   }
+
   static final RecordsDB recordDB = RecordsDB();
 
-  Future<Database> get database async{
-        return await openOrCreateDatabase();
+  Future<Database> get database async {
+    return await openOrCreateDatabase();
   }
 
-  openOrCreateDatabase() async{
-    return  await openDatabase(
+  openOrCreateDatabase() async {
+    return await openDatabase(
       join(await getDatabasesPath(), 'activitylogger_db.db'),
       password: dbPassword,
       onCreate: (database, version) {
@@ -38,21 +39,16 @@ class RecordsDB {
     );
   }
 
-
   Future<void> _changeDBPassword(String oldPassword, String newPassword) async {
     try {
       await platform.invokeMethod('changeDBPasswords',
           {'oldDBPassword': oldPassword, 'newDBPassword': newPassword});
-      dbPassword=newPassword;
+      dbPassword = newPassword;
       await encryptedSharedPrefs.setString('dbPassword', newPassword);
-    }
-
-    on Exception catch (ex) {
-      if(kDebugMode){
+    } on Exception catch (ex) {
+      if (kDebugMode) {
         print(ex);
       }
-
-
     }
   }
 }

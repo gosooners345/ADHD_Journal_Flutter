@@ -7,11 +7,7 @@ import 'main.dart';
 
 import 'splash_screendart.dart';
 
-
-
-
 /// Required to open the application , simple login form to start
-
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({
@@ -22,12 +18,12 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-
 late String dbPassword;
 late String userPassword;
 bool isPasswordChecked = false;
 String greeting = '';
 TextField loginField = TextField();
+
 ///Handles the states of the application.
 class _LoginScreenState extends State<LoginScreen> {
   String loginPassword = '';
@@ -49,8 +45,6 @@ class _LoginScreenState extends State<LoginScreen> {
       resetLoginFieldState();
     });
   }
-
-
 
   void loadStateStuff() async {
     prefs = await SharedPreferences.getInstance();
@@ -116,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
             if (text.length == userPassword.length) {
               if (text == userPassword) {
                 Navigator.pushNamed(context, '/success').then((value) => {
-recordHolder.clear(),
+                      recordHolder.clear(),
                       resetLoginFieldState(),
                     });
               } else {
@@ -178,14 +172,11 @@ recordHolder.clear(),
             Padding(
               padding: const EdgeInsets.only(
                   left: 15.0, right: 15.0, top: 15, bottom: 0),
-
               child: loginField,
             ),
             Padding(
               padding: const EdgeInsets.only(top: 60.0),
-              child: Center(
-
-                  ),
+              child: Center(),
             ),
             SizedBox(
               height: 50,
@@ -203,7 +194,7 @@ recordHolder.clear(),
                       return ElevatedButton(
                         onPressed: () {
                           refreshPrefs();
-callingCard=true;
+                          callingCard = true;
                           if (loginPassword == userPassword &&
                               passwordEnabled) {
                             stuff.clear();
@@ -211,8 +202,8 @@ callingCard=true;
 
                             Navigator.pushNamed(context, '/success')
                                 .then((value) => {
-                                  stuff.clear(),
-                              recordHolder.clear(),
+                                      stuff.clear(),
+                                      recordHolder.clear(),
                                       refreshPrefs(),
                                       resetLoginFieldState(),
                                     });
@@ -220,10 +211,11 @@ callingCard=true;
                             loginPassword = '';
                             stuff.clear();
                             Navigator.pushNamed(context, '/success').then(
-                                (value) =>
-                                    {
+                                (value) => {
                                       recordHolder.clear(),
-                                      refreshPrefs(), resetLoginFieldState()});
+                                      refreshPrefs(),
+                                      resetLoginFieldState()
+                                    });
                           }
                         },
                         child: Text(
@@ -235,14 +227,14 @@ callingCard=true;
                         ConnectionState.waiting) {
                       return ElevatedButton(
                         onPressed: () {
-                          callingCard= true;
+                          callingCard = true;
                           if (loginPassword == userPassword) {
                             Navigator.pushNamed(context, '/success').then(
-                                (value) =>
-                                    {
+                                (value) => {
                                       recordHolder.clear(),
                                       refreshPrefs(),
-                                      resetLoginFieldState()});
+                                      resetLoginFieldState()
+                                    });
                             stuff.clear();
                           }
                         },

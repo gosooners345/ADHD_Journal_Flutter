@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'symptom_selector_screen.dart';
 import 'records_data_class_db.dart';
 
-
 class ComposeRecordsWidget extends StatefulWidget {
   const ComposeRecordsWidget(
       {Key? key, required this.record, required this.id, required this.title})
@@ -62,39 +61,36 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
     }
   }
 
-
-  void addRecord() async{
+  void addRecord() async {
     recordsBloc.addRecord(super.widget.record);
   }
-  void updateRecord() async{
+
+  void updateRecord() async {
     recordsBloc.updateRecord(super.widget.record);
   }
 
   quickTimer() async {
     var duration = const Duration(milliseconds: 2);
-    return Timer(duration,addRecord);
-  }
-  updateTimer() async{
-    return Timer(const Duration(milliseconds: 2),updateRecord);
+    return Timer(duration, addRecord);
   }
 
-
+  updateTimer() async {
+    return Timer(const Duration(milliseconds: 2), updateRecord);
+  }
 
 //Saves the record in the database
   void saveRecord(Records record) async {
-     record.timeUpdated = DateTime.now();
+    record.timeUpdated = DateTime.now();
     if (super.widget.id == 0) {
-  quickTimer();
-     }
-    else {
+      quickTimer();
+    } else {
       updateTimer();
     }
 
-if (kDebugMode) {
-  print(listSize);
-
-
-}Navigator.pop(context, super.widget.record);
+    if (kDebugMode) {
+      print(listSize);
+    }
+    Navigator.pop(context, super.widget.record);
   }
 
   //Loads an already existing record in the database
@@ -147,7 +143,13 @@ if (kDebugMode) {
     return Scaffold(
       appBar: AppBar(
         title: Text(super.widget.title),
-        actions: [IconButton(onPressed: (){Navigator.pushNamed(context, '/composehelp');}, icon: Icon(Icons.help))],
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/composehelp');
+              },
+              icon: Icon(Icons.help))
+        ],
       ),
       key: _formKey,
       body: Center(
@@ -161,11 +163,11 @@ if (kDebugMode) {
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(4),
                       borderSide: BorderSide(
-                          color: AppColors.mainAppColor.withOpacity(1.0), width: 1)),
+                          color: AppColors.mainAppColor.withOpacity(1.0),
+                          width: 1)),
                   labelText: 'What do you want to call this?'),
               textCapitalization: TextCapitalization.sentences,
               controller: titleController,
-
               onChanged: (text) {
                 super.widget.record.title = text;
               },
@@ -177,7 +179,8 @@ if (kDebugMode) {
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4),
                     borderSide: BorderSide(
-                        color: AppColors.mainAppColor.withOpacity(1.0), width: 1)),
+                        color: AppColors.mainAppColor.withOpacity(1.0),
+                        width: 1)),
                 labelText: 'What\'s on your mind? ',
               ),
               keyboardType: TextInputType.multiline,
@@ -196,26 +199,27 @@ if (kDebugMode) {
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4),
                     borderSide: BorderSide(
-                        color: AppColors.mainAppColor.withOpacity(1.0), width: 1)),
+                        color: AppColors.mainAppColor.withOpacity(1.0),
+                        width: 1)),
                 labelText: 'How do you feel today?',
               ),
               controller: emotionsController,
               onChanged: (text) {
                 super.widget.record.emotions = text;
               },
-
             ),
             space,
             //Source Field
             TextField(
               decoration: InputDecoration(
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4),
-                    borderSide: BorderSide(
-                        color: AppColors.mainAppColor.withOpacity(1.0), width: 1)),
-                labelText: 'Do you have anything to add to this?',
-                hintText: 'Add your thoughts or what you think could\'ve triggered this here'
-              ),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: BorderSide(
+                          color: AppColors.mainAppColor.withOpacity(1.0),
+                          width: 1)),
+                  labelText: 'Do you have anything to add to this?',
+                  hintText:
+                      'Add your thoughts or what you think could\'ve triggered this here'),
               keyboardType: TextInputType.multiline,
               minLines: 1,
               maxLines: null,
@@ -224,7 +228,6 @@ if (kDebugMode) {
               onChanged: (text) {
                 super.widget.record.sources = text;
               },
-
             ),
             space,
             //Symptom Field,
@@ -260,9 +263,8 @@ if (kDebugMode) {
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4),
                     borderSide: BorderSide(
-
-                        color: AppColors.mainAppColor.withOpacity(1.0), width: 1)
-                ),
+                        color: AppColors.mainAppColor.withOpacity(1.0),
+                        width: 1)),
                 hintText: 'Add event tags here.',
                 labelText: 'What categories does this fall under?',
               ),
@@ -323,7 +325,8 @@ if (kDebugMode) {
                   }
                 });
               },
-              title: successStateWidget,activeColor: AppColors.mainAppColor,
+              title: successStateWidget,
+              activeColor: AppColors.mainAppColor,
             ),
             space,
             ElevatedButton(

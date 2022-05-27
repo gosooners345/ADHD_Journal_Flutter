@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     loadPreferences();
 
-   startTimer();
+    startTimer();
   }
 
   void loadPreferences() async {
@@ -37,13 +37,11 @@ class _SplashScreenState extends State<SplashScreen> {
     return Timer(duration, route);
   }
 
-
-  void getPackageInfo() async{
+  void getPackageInfo() async {
     packInfo = await PackageInfo.fromPlatform();
   }
 
- void route() {
-
+  void route() {
     getPackageInfo();
 
     var firstVisit = prefs.getBool('firstVisit') ?? true;
@@ -63,9 +61,9 @@ class _SplashScreenState extends State<SplashScreen> {
           ),
           Image.asset('images/app_icon_demo.png'),
           const Padding(
-            padding: EdgeInsets.all( 20.0),
-            child: Text(
-                'Welcome to ADHD Journal! Loading up your journal now...'),
+            padding: EdgeInsets.all(20.0),
+            child:
+                Text('Welcome to ADHD Journal! Loading up your journal now...'),
           ),
         ],
       ),

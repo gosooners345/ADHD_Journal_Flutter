@@ -11,6 +11,7 @@ class OnBoardingWidget extends StatefulWidget {
   @override
   State<OnBoardingWidget> createState() => _OnBoardingWidgetState();
 }
+
 // Variables to store inside the DB
 String savedPasswordValue = '';
 String greetingValueSaved = '';
@@ -27,14 +28,14 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     //color: Colors.black,
   );
   var pageInfoStyle = const TextStyle(
-  //  color: Colors.black,
+    //  color: Colors.black,
     letterSpacing: 0.7,
     height: 1.5,
   );
 
   late Material materialButton;
   late int index;
- // Color background = Colors.white;
+  // Color background = Colors.white;
 
   @override
   void initState() {
@@ -139,7 +140,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     ),
                     child: Icon(
                       Icons.security_sharp,
-                     // color: Colors.black,
+                      // color: Colors.black,
                       size: 60.0,
                     ),
                   ),
@@ -172,52 +173,52 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
           //Home Page
           PageModel(
               widget: DecoratedBox(
-                decoration: BoxDecoration(
-                    border: Border.all(
-                      width: 0.0,
-                    )),
-                child: SingleChildScrollView(
-                  controller: ScrollController(),
-                  child: Column(
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 45.0,
-                          vertical: 90.0,
-                        ),
-                        child: Icon(
-                          Icons.home,
-                         // color: Colors.black,
-                          size: 60.0,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 45.0),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Home Page',
-                            style: pageTitleStyle,
-                            textAlign: TextAlign.left,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding:
-                        const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            home_page_intro_paragraph_string,
-                            style: pageInfoStyle,
-                            textAlign: TextAlign.left,
-                          ),
-                        ),
-                      )
-                    ],
+            decoration: BoxDecoration(
+                border: Border.all(
+              width: 0.0,
+            )),
+            child: SingleChildScrollView(
+              controller: ScrollController(),
+              child: Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 45.0,
+                      vertical: 90.0,
+                    ),
+                    child: Icon(
+                      Icons.home,
+                      // color: Colors.black,
+                      size: 60.0,
+                    ),
                   ),
-                ),
-              )),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Home Page',
+                        style: pageTitleStyle,
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        home_page_intro_paragraph_string,
+                        style: pageInfoStyle,
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          )),
           // Dashboard
           PageModel(
               widget: DecoratedBox(
@@ -237,7 +238,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     ),
                     child: Icon(
                       Icons.dashboard,
-                    //  color: Colors.black,
+                      //  color: Colors.black,
                       size: 60.0,
                     ),
                   ),
@@ -271,62 +272,61 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
           // Record Entry page
           PageModel(
               widget: DecoratedBox(
-                decoration: BoxDecoration(
-                    border: Border.all(
-                      width: 0.0,
-                    )),
-                child: SingleChildScrollView(
-                  controller: ScrollController(),
-                  child: Column(
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 45.0,
-                          vertical: 90.0,
-                        ),
-                        child: Icon(
-                          Icons.edit,
-                       //   color: Colors.black,
-                          size: 60.0,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 45.0),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Composing Entries',
-                            style: pageTitleStyle,
-                            textAlign: TextAlign.left,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding:
-                        const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            records_intro_paragraph_string,
-                            style: pageInfoStyle,
-                            textAlign: TextAlign.left,
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              )),
-          // Settings Page
-          PageModel(
-              widget: DecoratedBox(
             decoration: BoxDecoration(
-              border: Border.all(
-                width: 0.0,
+                border: Border.all(
+              width: 0.0,
+            )),
+            child: SingleChildScrollView(
+              controller: ScrollController(),
+              child: Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 45.0,
+                      vertical: 90.0,
+                    ),
+                    child: Icon(
+                      Icons.edit,
+                      //   color: Colors.black,
+                      size: 60.0,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Composing Entries',
+                        style: pageTitleStyle,
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        records_intro_paragraph_string,
+                        style: pageInfoStyle,
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  )
+                ],
               ),
             ),
-            child: ListView(
-
+          )),
+          // Settings Page
+          PageModel(
+            widget: DecoratedBox(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 0.0,
+                ),
+              ),
+              child: ListView(
                 children: [
                   const Padding(
                     padding: EdgeInsets.symmetric(
@@ -352,25 +352,28 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                   Padding(
                     padding:
                         EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-    child: Align(
+                    child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
                         settings_paragraph_intro_string,
                         style: pageInfoStyle,
                         textAlign: TextAlign.left,
                       ),
-                    ),),
+                    ),
+                  ),
                 ],
-    ),),),
-          //Last page
-          PageModel(
-              widget: DecoratedBox(
-            decoration: BoxDecoration(
-              border: Border.all(
-                width: 0.0,
               ),
             ),
-            child: ListView(
+          ),
+          //Last page
+          PageModel(
+            widget: DecoratedBox(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 0.0,
+                ),
+              ),
+              child: ListView(
                 children: [
                   const Padding(
                     padding: EdgeInsets.symmetric(
@@ -424,23 +427,30 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     child: TextField(
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
-                         labelText: 'Enter your name here',
+                          labelText: 'Enter your name here',
                           hintText: 'Enter your name here'),
                       onChanged: (text) {
                         greetingValueSaved = text;
                       },
                     ),
                   ),
-                  Padding(padding: const EdgeInsets.all(15.0),
-                  child:CheckboxListTile(title: const Text("Password enabled?"),
-    activeColor: AppColors.mainAppColor,
-    value: isSaved,
-    onChanged: (bool? changed) {
-    setState(() {
-    isSaved = changed!;
-
-    });}),),
-                  ElevatedButton(style: ButtonStyle(backgroundColor: MaterialStateProperty.all(AppColors.mainAppColor),),
+                  Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: CheckboxListTile(
+                        title: const Text("Password enabled?"),
+                        activeColor: AppColors.mainAppColor,
+                        value: isSaved,
+                        onChanged: (bool? changed) {
+                          setState(() {
+                            isSaved = changed!;
+                          });
+                        }),
+                  ),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(AppColors.mainAppColor),
+                    ),
                     onPressed: () async {
                       if (savedPasswordValue != '') {
                         await encryptedSharedPrefs.setString(
@@ -452,7 +462,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                         prefs.setBool('firstVisit', false);
                         dbPassword = savedPasswordValue;
                         userPassword = savedPasswordValue;
-callingCard = false;
+                        callingCard = false;
                         Navigator.pushReplacementNamed(context, '/success');
                       } else {
                         try {
@@ -461,7 +471,7 @@ callingCard = false;
                               builder: (BuildContext context) => AlertDialog(
                                     title: const Text('Password Required!'),
                                     content: const Text(
-                                       password_Required_Message_String),
+                                        password_Required_Message_String),
                                     actions: [
                                       TextButton(
                                           onPressed: () async {
@@ -504,8 +514,10 @@ callingCard = false;
                       netDragPercent: dragDistance,
                       pagesLength: pagesLength,
                       indicator: Indicator(
-                        activeIndicator: ActiveIndicator(color: AppColors.mainAppColor),
-                        closedIndicator: const ClosedIndicator(color: Colors.white),
+                        activeIndicator:
+                            ActiveIndicator(color: AppColors.mainAppColor),
+                        closedIndicator:
+                            const ClosedIndicator(color: Colors.white),
                         indicatorDesign: IndicatorDesign.line(
                           lineDesign: LineDesign(
                             lineType: DesignType.line_uniform,
@@ -523,5 +535,3 @@ callingCard = false;
     );
   }
 }
-
-

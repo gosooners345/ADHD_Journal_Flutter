@@ -1,4 +1,3 @@
-
 class Records implements Comparable {
   int id;
   String title;
@@ -65,7 +64,7 @@ class Records implements Comparable {
     return a.compareTo(b);
   }
 
-  static Comparable compareTimes(Records a, Records b){
+  static Comparable compareTimes(Records a, Records b) {
     return a.compareTimesUpdated(b.timeUpdated);
   }
 
@@ -73,29 +72,29 @@ class Records implements Comparable {
   int compareTo(other) {
     return compareTimesUpdated(other.timeUpdated);
   }
-  int compareTitles(String title){
+
+  int compareTitles(String title) {
     return title.toUpperCase().compareTo(title.toUpperCase());
   }
 
-  int compareTags(String tags){
+  int compareTags(String tags) {
     return tags.toUpperCase().compareTo(tags.toUpperCase());
   }
 
   int compareTimesUpdated(DateTime other) {
-  if(timeUpdated.isBefore(other)){
-    return 1;
-  }
-  else if(timeUpdated.isAfter(other)){
-    return -1;
-  }
-  else {
-    return 0;
-  }
+    if (timeUpdated.isBefore(other)) {
+      return 1;
+    } else if (timeUpdated.isAfter(other)) {
+      return -1;
+    } else {
+      return 0;
+    }
   }
 
-  int compareTimesCreated(DateTime other){
+  int compareTimesCreated(DateTime other) {
     return timeCreated.compareTo(other);
   }
+
   int compareRatings(double other) {
     return rating.compareTo(other);
   }

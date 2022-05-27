@@ -37,16 +37,16 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
     //clear the string so it can be updated with new symptoms.
     super.widget.symptoms = '';
     String unfilteredString = '';
-    if(symptomsChecked.isNotEmpty){
+    if (symptomsChecked.isNotEmpty) {
       for (String element in symptomsChecked) {
-      unfilteredString += element + ',';
-    }
-    var indexComma = unfilteredString.lastIndexOf(',');
-    var filteredString =
-        unfilteredString.replaceRange(indexComma, indexComma + 1, '');
-    super.widget.symptoms = filteredString;}
-    else{
-      super.widget.symptoms='';
+        unfilteredString += element + ',';
+      }
+      var indexComma = unfilteredString.lastIndexOf(',');
+      var filteredString =
+          unfilteredString.replaceRange(indexComma, indexComma + 1, '');
+      super.widget.symptoms = filteredString;
+    } else {
+      super.widget.symptoms = '';
     }
   }
 
@@ -55,33 +55,40 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('ADHD Symptom Selection'),
-       leading:  IconButton(
-           onPressed: () {
-             addItemsToSymptomList();
-             Navigator.pop(context,super.widget.symptoms);
-           },
-           icon: Icon(Icons.arrow_back)),
+        leading: IconButton(
+            onPressed: () {
+              addItemsToSymptomList();
+              Navigator.pop(context, super.widget.symptoms);
+            },
+            icon: Icon(Icons.arrow_back)),
       ),
       body: ListView.separated(
-        itemCount: symptomList.length,
-        separatorBuilder: (BuildContext context, int index) => Divider(color: AppColors.mainAppColor,),
-        itemBuilder: (BuildContext context, int index) => Card(
-            shape:  RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),borderRadius: BorderRadius.circular(10)),
-          elevation: 2.0,
-          child:CheckboxListTile(activeColor: AppColors.mainAppColor,
-            value: symptomListSelection[index].isChecked,
-            onChanged: (bool? changed) {
-              setState(() {
-                symptomListSelection[index].isChecked = changed!;
-                if (changed == true) {
-                  symptomsChecked.add(symptomListSelection[index].symptom);
-                } else {
-                  symptomsChecked.remove(symptomListSelection[index].symptom);
-                }
-              });
-            },
-            title: Text(symptomListSelection[index].symptom)),)
-      ),
+          itemCount: symptomList.length,
+          separatorBuilder: (BuildContext context, int index) => Divider(
+                color: AppColors.mainAppColor,
+              ),
+          itemBuilder: (BuildContext context, int index) => Card(
+                shape: RoundedRectangleBorder(
+                    side: BorderSide(color: AppColors.mainAppColor, width: 1.0),
+                    borderRadius: BorderRadius.circular(10)),
+                elevation: 2.0,
+                child: CheckboxListTile(
+                    activeColor: AppColors.mainAppColor,
+                    value: symptomListSelection[index].isChecked,
+                    onChanged: (bool? changed) {
+                      setState(() {
+                        symptomListSelection[index].isChecked = changed!;
+                        if (changed == true) {
+                          symptomsChecked
+                              .add(symptomListSelection[index].symptom);
+                        } else {
+                          symptomsChecked
+                              .remove(symptomListSelection[index].symptom);
+                        }
+                      });
+                    },
+                    title: Text(symptomListSelection[index].symptom)),
+              )),
       floatingActionButton: FloatingActionButton.extended(
         label: const Text('Save'),
         onPressed: () {

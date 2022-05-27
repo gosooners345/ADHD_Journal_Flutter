@@ -6,70 +6,74 @@ import 'records_repository.dart';
 
 import 'dart:async';
 
-class RecordsBloc{
+class RecordsBloc {
   final _recordsRepo = RecordsRepository();
-  int maxID =0;
+  int maxID = 0;
 
   //Master stream controller, hopefully performant
-  final _recordsController = StreamController<List<Records>>.broadcast(sync: true);
-    List<Records> recordHolder=[];
-  get  recordStuffs => _recordsController.stream;
+  final _recordsController =
+      StreamController<List<Records>>.broadcast(sync: true);
+  List<Records> recordHolder = [];
+  get recordStuffs => _recordsController.stream;
 
   RecordsBloc() {
     getRecords();
   }
 
-  RecordsBloc.searchedList(String query){
+  RecordsBloc.searchedList(String query) {
     getSearchedRecords(query);
   }
 
-  getSearchedRecords(String query) async{
+  getSearchedRecords(String query) async {
     _recordsController.sink.add(await _recordsRepo.getSearchedRecords(query));
-
   }
 
-  getSortedRecords(String type) async{
-    _recordsController.sink.add(await _recordsRepo.getRecordsSortedByType(type));
+  getSortedRecords(String type) async {
+    _recordsController.sink
+        .add(await _recordsRepo.getRecordsSortedByType(type));
   }
 
-  getRecords() async{
+  getRecords() async {
     _recordsController.sink.add(await _recordsRepo.getRecords());
     recordHolder = await _recordsRepo.getRecords();
-    if(recordHolder.length>0)
-    maxID=getMaxID();
+    if (recordHolder.length > 0)
+      maxID = getMaxID();
     else
-      maxID=0;
+      maxID = 0;
 
-    if ( kDebugMode) {
+    if (kDebugMode) {
       print(maxID);
     }
   }
-  addRecord(Records record) async{
+
+  addRecord(Records record) async {
     await _recordsRepo.insertRecord(record);
     getRecords();
   }
-  updateRecord(Records record) async{
+
+  updateRecord(Records record) async {
     await _recordsRepo.updateRecord(record);
     getRecords();
   }
- deleteRecordByID(int ID) async{
+
+  deleteRecordByID(int ID) async {
     await _recordsRepo.deleteRecord(ID);
     getRecords();
- }
- void changeDBPasswords(){
+  }
+
+  void changeDBPasswords() {
     _recordsRepo.changePassword();
- }
- dispose(){
-   _recordsController.close();
- }
+  }
 
- int getMaxID(){
-    var id =0;
-    recordHolder.sort((a,b)=>a.comparableIDs(a.id, b.id));
-    id =recordHolder.last.id+1;
-    recordHolder.sort((a,b) => a.compareTimesCreated(b.timeCreated));
+  dispose() {
+    _recordsController.close();
+  }
+
+  int getMaxID() {
+    var id = 0;
+    recordHolder.sort((a, b) => a.comparableIDs(a.id, b.id));
+    id = recordHolder.last.id + 1;
+    recordHolder.sort((a, b) => a.compareTimesCreated(b.timeCreated));
     return id;
- }
-
-
+  }
 }

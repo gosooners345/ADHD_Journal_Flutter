@@ -17,7 +17,6 @@ class RecordList {
   static List<RecordRatingStats> ratingsList = [];
   static List<RecordDataStats> symptomList = [];
 
-
   static void loadLists() async {
     emotionsList = await _getEmotionCounts();
     symptomList = await _getSymptomCounts();
@@ -96,7 +95,7 @@ class RecordList {
   static Future<List<RecordRatingStats>> _getRatingsList() async {
     List<RecordRatingStats> ratingsData = List.empty(growable: true);
     var testList = recordsBloc.recordHolder;
-    testList.sort((a,b) => a.timeCreated.compareTo(b.timeCreated));
+    testList.sort((a, b) => a.timeCreated.compareTo(b.timeCreated));
     for (Records record in testList) {
       ratingsData.add(RecordRatingStats(record.timeCreated, record.rating));
     }
