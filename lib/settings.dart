@@ -271,7 +271,7 @@ class _SettingsPage extends State<SettingsPage> {
           ListTile(
             onTap: () {
               if (Platform.isIOS) {
-                LaunchReview.launch();
+                LaunchReview.launch(iOSAppId: '1624483395');
               } else {
                 LaunchReview.launch(
                     androidAppId: 'com.activitylogger.release1');
