@@ -50,7 +50,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
         "You have ${recordsBloc.recordHolder.length} entries in your journal.\r\n"
         "Your average rating is ${avgRating.roundToDouble()}.\r\n"
         "You're trending more  on $successString based on your Success/Fail ratings.\r\n"
-        "Your most recently occurring symptoms are: ${recordsBloc.recordHolder.first.symptoms}.";
+        "Your most recently occurring symptoms are: ${recordsBloc.recordHolder.last.symptoms}.";
 
     return summaryString;
   }

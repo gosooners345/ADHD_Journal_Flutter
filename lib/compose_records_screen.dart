@@ -141,7 +141,11 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       appBar: AppBar(
+        leading:  IconButton(icon: Icon(Icons.arrow_back),onPressed: (){
+          saveRecord(super.widget.record);
+        },),
         title: Text(super.widget.title),
         actions: [
           IconButton(

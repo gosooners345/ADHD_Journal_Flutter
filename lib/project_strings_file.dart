@@ -1,35 +1,70 @@
 // ignore_for_file: constant_identifier_names
 
-final symptomList = [
+
+
+/// These arrays are sorted by severity and type.
+final positiveSymptomList=[
   'No Symptoms',
   'A small/big win today',
   'Positive Environment/Grace',
   'Momentum driven',
+  'Flow',
   'Hyperfocus',
-  'Having a bad day',
-  'Working Memory Issues',
-  'Executive Dysfunction',
-  'Distractions',
-  'Sensory Overload',
-  'Brain Fog',
-  'Procrastination',
-  'Mental Sluggishness/Dopamine Hunt',
-  'Impatience',
-  'Hyperactivity',
-  'Impulsiveness',
-  'Unable to focus',
-  'Struggling to focus',
-  'Lacking Motivation',
-  'Stress enhanced ADHD Response',
-  'ADHD Burnout',
-  'Freeze/Mental Paralysis',
-  'Emotional Flooding',
+];
+
+final emotionalSymptomList=[
   'Emotion fueled response',
+  'Emotional Flooding',
   'Rejection Sensitivity Dysphoria',
   'Emotional Meltdown',
+];
+final inattentiveSymptomsList=[
+  'Distractions',
+  'Procrastination',
+  'Sensory Overload',
+  'Struggling to focus',
+  'Unable to focus',
+  'Lacking Motivation',
+  'Brain Fog',
+  'ADHD Burnout',
+  'Freeze/Mental Paralysis',
+];
+final executiveDysfunctionSymptomList=[
+  'Impulsiveness',
+  'Impatience',
+  'Executive Dysfunction',
+  'Hyperactivity',
+  'Mental Sluggishness/Dopamine Hunt',
+  'Having a bad day',
+  'Working Memory Issues',
+];
+final stressorSymptomList=[
+  'Stress enhanced ADHD Response',
   'Existential crisis',
-  'Anxiety'
-  'Depression',
+  'Anxiety',
+      'Depression',
+
+];
+final symptomList = [
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ];
 const String password_Required_Message_String =
     "Please enter a password below to continue.";
