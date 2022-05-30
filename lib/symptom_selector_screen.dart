@@ -13,7 +13,13 @@ class SymptomSelectorScreen extends StatefulWidget {
 
 class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
   Set<String> symptomsChecked = <String>{};
-  List<Symptoms> symptomListSelection = Symptoms.getSymptoms();
+  List<Symptoms> positiveSymptomListSelection = Symptoms.getPositiveSymptoms();
+  List<Symptoms> stressorSymptomsSelection = Symptoms.getStressorSymptomList();
+  List<Symptoms> executiveDysfunctionSelection = Symptoms.getExecutiveDysfuntionSymptoms();
+  List<Symptoms> emotionalListSelection = Symptoms.getEmotionalSymptoms();
+  List<Symptoms> inattentiveSymptomListSelection = Symptoms.getInattentiveSymptoms();
+
+
   @override
   void initState() {
     super.initState();
@@ -26,13 +32,33 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
     symptomsChecked.addAll(super.widget.symptoms.split(','));
     symptomsChecked.removeWhere((item) => (item.isEmpty));
 // Check to see if the symptoms in the list are in the set from the record.
-    for (Symptoms element in symptomListSelection) {
+    //This is going to need expansion because we have 5 lists to check now.
+    for (Symptoms element in positiveSymptomListSelection) {
+      if (symptomsChecked.contains(element.symptom)) {
+        element.isChecked = true;
+      }
+    }
+    for (Symptoms element in inattentiveSymptomListSelection) {
+      if (symptomsChecked.contains(element.symptom)) {
+        element.isChecked = true;
+      }
+    }
+    for (Symptoms element in emotionalListSelection) {
+      if (symptomsChecked.contains(element.symptom)) {
+        element.isChecked = true;
+      }
+    }
+    for (Symptoms element in executiveDysfunctionSelection) {
+      if (symptomsChecked.contains(element.symptom)) {
+        element.isChecked = true;
+      }
+    }
+    for(Symptoms element in stressorSymptomsSelection){
       if (symptomsChecked.contains(element.symptom)) {
         element.isChecked = true;
       }
     }
   }
-
   void addItemsToSymptomList() {
     //clear the string so it can be updated with new symptoms.
     super.widget.symptoms = '';
@@ -62,33 +88,155 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
             },
             icon: Icon(Icons.arrow_back)),
       ),
-      body: ListView.separated(
-          itemCount: symptomList.length,
-          separatorBuilder: (BuildContext context, int index) => Divider(
-                color: AppColors.mainAppColor,
-              ),
-          itemBuilder: (BuildContext context, int index) => Card(
-                shape: RoundedRectangleBorder(
-                    side: BorderSide(color: AppColors.mainAppColor, width: 1.0),
-                    borderRadius: BorderRadius.circular(10)),
-                elevation: 2.0,
-                child: CheckboxListTile(
-                    activeColor: AppColors.mainAppColor,
-                    value: symptomListSelection[index].isChecked,
-                    onChanged: (bool? changed) {
-                      setState(() {
-                        symptomListSelection[index].isChecked = changed!;
-                        if (changed == true) {
-                          symptomsChecked
-                              .add(symptomListSelection[index].symptom);
-                        } else {
-                          symptomsChecked
-                              .remove(symptomListSelection[index].symptom);
-                        }
-                      });
-                    },
-                    title: Text(symptomListSelection[index].symptom)),
-              )),
+      body:CustomScrollView(
+        slivers: [
+          SliverList(delegate: SliverChildListDelegate(
+              [
+      const ListTile(title: Text("Positive Symptoms/Benefits",style: TextStyle(fontWeight: FontWeight.bold),),),
+              ]),),
+        SliverList(delegate: SliverChildBuilderDelegate((BuildContext context, int index){
+            return    Card(
+                    shape: RoundedRectangleBorder(
+                        side: BorderSide(color: AppColors.mainAppColor, width: 1.0),
+                        borderRadius: BorderRadius.circular(10)),
+                    elevation: 2.0,
+                    child: CheckboxListTile(
+                        activeColor: AppColors.mainAppColor,
+                        value: positiveSymptomListSelection[index].isChecked,
+                        onChanged: (bool? changed) {
+                          setState(() {
+                            positiveSymptomListSelection[index].isChecked = changed!;
+                            if (changed == true) {
+                              symptomsChecked
+                                  .add(positiveSymptomListSelection[index].symptom);
+                            } else {
+                              symptomsChecked
+                                  .remove(positiveSymptomListSelection[index].symptom);
+                            }
+                          });
+                        },
+                        title: Text(positiveSymptomListSelection[index].symptom)),
+                  );},childCount: positiveSymptomListSelection.length),
+          ),
+          SliverList(delegate: SliverChildListDelegate(
+              [
+                const ListTile(title: Text("Attention-based symptoms based on intensity",style: TextStyle(fontWeight: FontWeight.bold),),),
+              ]),),
+          SliverList(delegate: SliverChildBuilderDelegate((BuildContext context, int index){
+            return    Card(
+              shape: RoundedRectangleBorder(
+                  side: BorderSide(color: AppColors.mainAppColor, width: 1.0),
+                  borderRadius: BorderRadius.circular(10)),
+              elevation: 2.0,
+              child: CheckboxListTile(
+                  activeColor: AppColors.mainAppColor,
+                  value: inattentiveSymptomListSelection[index].isChecked,
+                  onChanged: (bool? changed) {
+                    setState(() {
+                      inattentiveSymptomListSelection[index].isChecked = changed!;
+                      if (changed == true) {
+                        symptomsChecked
+                            .add(inattentiveSymptomListSelection[index].symptom);
+                      } else {
+                        symptomsChecked
+                            .remove(inattentiveSymptomListSelection[index].symptom);
+                      }
+                    });
+                  },
+                  title: Text(inattentiveSymptomListSelection[index].symptom)),
+            );},childCount: inattentiveSymptomListSelection.length),
+          ),
+          SliverList(delegate: SliverChildListDelegate(
+              [
+                const ListTile(title: Text("Common ADHD symptoms based on intensity ",style: TextStyle(fontWeight: FontWeight.bold),),),
+              ]),),
+          SliverList(delegate: SliverChildBuilderDelegate((BuildContext context, int index){
+            return    Card(
+              shape: RoundedRectangleBorder(
+                  side: BorderSide(color: AppColors.mainAppColor, width: 1.0),
+                  borderRadius: BorderRadius.circular(10)),
+              elevation: 2.0,
+              child: CheckboxListTile(
+                  activeColor: AppColors.mainAppColor,
+                  value: executiveDysfunctionSelection[index].isChecked,
+                  onChanged: (bool? changed) {
+                    setState(() {
+                      executiveDysfunctionSelection[index].isChecked = changed!;
+                      if (changed == true) {
+                        symptomsChecked
+                            .add(executiveDysfunctionSelection[index].symptom);
+                      } else {
+                        symptomsChecked
+                            .remove(executiveDysfunctionSelection[index].symptom);
+                      }
+                    });
+                  },
+                  title: Text(executiveDysfunctionSelection[index].symptom)),
+            );},childCount: executiveDysfunctionSelection.length),
+          ),
+          SliverList(delegate: SliverChildListDelegate(
+              [
+                const ListTile(title: Text("Emotional regulation based symptoms based on intensity",style: TextStyle(fontWeight: FontWeight.bold),),),
+              ]),),
+          SliverList(delegate: SliverChildBuilderDelegate((BuildContext context, int index){
+            return    Card(
+              shape: RoundedRectangleBorder(
+                  side: BorderSide(color: AppColors.mainAppColor, width: 1.0),
+                  borderRadius: BorderRadius.circular(10)),
+              elevation: 2.0,
+              child: CheckboxListTile(
+                  activeColor: AppColors.mainAppColor,
+                  value: emotionalListSelection[index].isChecked,
+                  onChanged: (bool? changed) {
+                    setState(() {
+                      emotionalListSelection[index].isChecked = changed!;
+                      if (changed == true) {
+                        symptomsChecked
+                            .add(emotionalListSelection[index].symptom);
+                      } else {
+                        symptomsChecked
+                            .remove(emotionalListSelection[index].symptom);
+                      }
+                    });
+                  },
+                  title: Text(emotionalListSelection[index].symptom)),
+            );},childCount: emotionalListSelection.length),
+          ),
+          SliverList(delegate: SliverChildListDelegate(
+              [
+                const ListTile(title: Text("Stress-based symptoms based on intensity",style: TextStyle(fontWeight: FontWeight.bold),),),
+              ]),),
+          SliverList(delegate: SliverChildBuilderDelegate((BuildContext context, int index){
+            return    Card(
+              shape: RoundedRectangleBorder(
+                  side: BorderSide(color: AppColors.mainAppColor, width: 1.0),
+                  borderRadius: BorderRadius.circular(10)),
+              elevation: 2.0,
+              child: CheckboxListTile(
+                  activeColor: AppColors.mainAppColor,
+                  value: stressorSymptomsSelection[index].isChecked,
+                  onChanged: (bool? changed) {
+                    setState(() {
+                      stressorSymptomsSelection[index].isChecked = changed!;
+                      if (changed == true) {
+                        symptomsChecked
+                            .add(stressorSymptomsSelection[index].symptom);
+                      } else {
+                        symptomsChecked
+                            .remove(stressorSymptomsSelection[index].symptom);
+                      }
+                    });
+                  },
+                  title: Text(stressorSymptomsSelection[index].symptom)),
+            );},childCount: stressorSymptomsSelection.length),
+          ),
+        ]),
+
+
+
+
+
+
       floatingActionButton: FloatingActionButton.extended(
         label: const Text('Save'),
         onPressed: () {
@@ -105,12 +253,41 @@ class Symptoms {
   bool isChecked;
 
   Symptoms(this.symptom, this.isChecked);
-  static List<Symptoms> getSymptoms() {
+  ///This will need modified where all four lists are used instead of the original.
+  static List<Symptoms> getPositiveSymptoms() {
     List<Symptoms> symptomsList = List.empty(growable: true);
-    for (String element in symptomList) {
+    for (String element in positiveSymptomList) {
       symptomsList.add(Symptoms(element, false));
     }
     return symptomsList;
+  }
+  static List<Symptoms> getEmotionalSymptoms(){
+    List<Symptoms> emotionSymptoms = List.empty(growable: true);
+    for (String element in emotionalSymptomList){
+      emotionSymptoms.add(Symptoms(element, false));
+    }
+    return emotionSymptoms;
+  }
+  static List<Symptoms> getInattentiveSymptoms(){
+    List<Symptoms> inattentiveSymptoms = List.empty(growable: true);
+    for (String element in inattentiveSymptomsList){
+      inattentiveSymptoms.add(Symptoms(element, false));
+    }
+    return inattentiveSymptoms;
+  }
+  static List<Symptoms>  getExecutiveDysfuntionSymptoms(){
+    List<Symptoms> crazySymptoms = List.empty(growable: true);
+    for (String element in executiveDysfunctionSymptomList){
+      crazySymptoms.add(Symptoms(element, false));
+    }
+    return crazySymptoms;
+  }
+  static List<Symptoms>  getStressorSymptomList(){
+    List<Symptoms> stressSypmtoms = List.empty(growable: true);
+    for (String element in stressorSymptomList){
+      stressSypmtoms.add(Symptoms(element, false));
+    }
+    return stressSypmtoms;
   }
 
   @override
