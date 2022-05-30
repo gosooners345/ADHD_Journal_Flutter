@@ -88,7 +88,9 @@ class ComposeHelpWidget extends StatelessWidget {
           ListTile(
             title: Text('ADHD Symptom field'),
             subtitle: Text(
-                'This is where you identify what particular ADHD Symptoms affected the outcome or triggered the event. You\'ll need to click on the field to access the selection screen. Hit save when completed on this screen.'),
+                'This is where you identify what particular ADHD Symptoms affected the outcome or triggered the event. You\'ll need to click on the field to access the selection screen.\r\n'
+                    'These are sorted by category and by severity going from best to worst. The first category is the list of  positive effects of ADHD and shouldn\'t be conseidered sorted this way.\r\n'
+                    'Hit save when completed on this screen.'),
           ),
           Divider(
             height: 1.0,
