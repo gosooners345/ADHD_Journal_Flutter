@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
+import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,6 +16,18 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+
+  static const platform =
+  MethodChannel('com.activitylogger.release1/ADHDJournal');
+
+  bool checkVisitState = false;
+  bool transferred = false;
+  String dbPassTransfer = "";
+  String userPasswordTransfer = "";
+  String greetingTransfer = "";
+  bool passwordEnabledTransfer = false;
+  bool checkTransferred = false;
+
   @override
   Widget build(BuildContext context) {
     return initScreen(context);
@@ -22,15 +36,48 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    // Load prefs and check for previous android shared prefs files
     loadPreferences();
-
+    // if there was a previous db on device, migrate data
+    if (Platform.isAndroid) {
+      if (checkVisitState) {
+        startTransferTimer();
+      }
+    }
     startTimer();
   }
 
   void loadPreferences() async {
     prefs = await SharedPreferences.getInstance();
     encryptedSharedPrefs = EncryptedSharedPreferences();
+
+    if (Platform.isAndroid) {
+      checkVisitState = await platform.invokeMethod('checkforDB');
+    }
   }
+
+// This will migrate all data from old shared prefs file to the flutter version.
+  void transferData() async {
+  // transferred = await platform.invokeMethod('checkTransferred');
+transferred = prefs.getBool('transferred') ?? false;
+    if (checkVisitState && !transferred) {
+      prefs.setBool('transferred', true);
+      passwordEnabledTransfer =await platform.invokeMethod('migratePasswordPrefs');
+      prefs.setBool('passwordEnabled', passwordEnabledTransfer);
+      dbPassTransfer = await platform.invokeMethod('migrateDBPassword');
+      encryptedSharedPrefs.setString('dbPassword', dbPassTransfer);
+      userPasswordTransfer = await platform.invokeMethod('migrateUserPassword');
+      encryptedSharedPrefs.setString('loginPassword', userPasswordTransfer);
+      greetingTransfer = await platform.invokeMethod('migrateGreeting');
+      prefs.setString('greeting', greetingTransfer);
+      prefs.reload();
+      encryptedSharedPrefs.reload();
+    }
+}
+  startTransferTimer() async{
+    return Timer(const Duration(seconds: 3),transferData);
+  }
+  
 
   startTimer() async {
     var duration = const Duration(seconds: 2);

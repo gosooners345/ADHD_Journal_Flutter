@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:async';
+
 import 'package:adhd_journal_flutter/onboarding_widget_class.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,12 +48,20 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+
+
+
   void loadStateStuff() async {
     prefs = await SharedPreferences.getInstance();
     sharedPrefs = prefs;
     greeting = prefs.getString("greeting") ?? '';
     loginGreeting = "Welcome $greeting !"
         " Please sign in below to get started!";
+    ///This is to see if I need to move the code over here or it can stay in the
+    ///
+    ///
+    ///
+    ///
     userPassword = '';
     userPassword = await encryptedSharedPrefs.getString('loginPassword');
     dbPassword = await encryptedSharedPrefs.getString('dbPassword');
