@@ -22,11 +22,11 @@ class MainActivity: FlutterActivity(){
 
 
 
-private val appContext = this.context;
+//private val appContext = this.context;
     override  fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
-        val appPreferences = getSecretSharedPref(appContext)
+        val appPreferences = getSecretSharedPref(applicationContext)
 
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
