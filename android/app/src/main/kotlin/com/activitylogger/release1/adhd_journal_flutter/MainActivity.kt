@@ -72,8 +72,12 @@ val dbPasswordGet = appPreferences.getString("dbPassword","")
                 }
 
                 "checkForDB" -> {
-                    var testFile = context.getDatabasePath("activitylogger_db.db")
-                    var testPath = testFile.exists()
+                  val testPassword = appPreferences.getString("dbPassword","")
+
+                    var testPath =false
+                    if(testPassword=="")
+                        testPath = true
+
                     result.success(testPath)
                 }
          /*       "checkFirstVisit"->{

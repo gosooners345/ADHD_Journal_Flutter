@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
@@ -39,48 +40,56 @@ class _SplashScreenState extends State<SplashScreen> {
     // Load prefs and check for previous android shared prefs files
     loadPreferences();
     // if there was a previous db on device, migrate data
-    if (Platform.isAndroid) {
-      if (checkVisitState) {
-        startTransferTimer();
-      }
-    }
+if(Platform.isAndroid)
+  {
+    if(!checkVisitState)
+    startTransferTimer();
+  }
     startTimer();
   }
 
   void loadPreferences() async {
     prefs = await SharedPreferences.getInstance();
     encryptedSharedPrefs = EncryptedSharedPreferences();
-
     if (Platform.isAndroid) {
-      checkVisitState = await platform.invokeMethod('checkforDB');
+      checkVisitState = await platform.invokeMethod('checkForDB');
     }
   }
 
 // This will migrate all data from old shared prefs file to the flutter version.
   void transferData() async {
-  // transferred = await platform.invokeMethod('checkTransferred');
-transferred = prefs.getBool('transferred') ?? false;
-    if (checkVisitState && !transferred) {
+    prefs.setBool('firstVisit', checkVisitState);
+
+    transferred = prefs.getBool('transferred') ?? false;
+
+    if (!transferred) {
       prefs.setBool('transferred', true);
-      passwordEnabledTransfer =await platform.invokeMethod('migratePasswordPrefs');
+      passwordEnabledTransfer =
+      await platform.invokeMethod('migratePasswordPrefs');
+      print(passwordEnabledTransfer);
       prefs.setBool('passwordEnabled', passwordEnabledTransfer);
       dbPassTransfer = await platform.invokeMethod('migrateDBPassword');
+      print(dbPassTransfer);
       encryptedSharedPrefs.setString('dbPassword', dbPassTransfer);
       userPasswordTransfer = await platform.invokeMethod('migrateUserPassword');
       encryptedSharedPrefs.setString('loginPassword', userPasswordTransfer);
       greetingTransfer = await platform.invokeMethod('migrateGreeting');
       prefs.setString('greeting', greetingTransfer);
-      prefs.reload();
-      encryptedSharedPrefs.reload();
     }
+
+
+
 }
   startTransferTimer() async{
-    return Timer(const Duration(seconds: 3),transferData);
+
+    return Timer(const Duration(seconds:2),transferData);
   }
   
 
   startTimer() async {
-    var duration = const Duration(seconds: 2);
+
+
+  var duration = const Duration(seconds: 5);
     return Timer(duration, route);
   }
 
