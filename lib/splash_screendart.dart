@@ -4,8 +4,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/services.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+import 'package:path/path.dart' as Path;
+
+//import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite_sqlcipher/sqflite.dart';
 
 import 'main.dart';
 
@@ -17,6 +20,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+late  Database testDB;
 
   static const platform =
   MethodChannel('com.activitylogger.release1/ADHDJournal');
@@ -42,8 +46,10 @@ class _SplashScreenState extends State<SplashScreen> {
     // if there was a previous db on device, migrate data
 if(Platform.isAndroid)
   {
-    if(!checkVisitState)
-    startTransferTimer();
+
+    if(checkVisitState)
+   { startTransferTimer();
+   }
   }
     startTimer();
   }
@@ -52,7 +58,8 @@ if(Platform.isAndroid)
     prefs = await SharedPreferences.getInstance();
     encryptedSharedPrefs = EncryptedSharedPreferences();
     if (Platform.isAndroid) {
-      checkVisitState = await platform.invokeMethod('checkForDB');
+      checkVisitState = await databaseExists(Path.join(await getDatabasesPath(),'activitylogger_db.db'));
+     // checkVisitState = await platform.invokeMethod('checkForDB');
     }
   }
 
@@ -94,7 +101,7 @@ if(Platform.isAndroid)
   }
 
   void getPackageInfo() async {
-    packInfo = await PackageInfo.fromPlatform();
+    // packInfo = await PackageInfo.fromPlatform();
   }
 
   void route() {
@@ -102,7 +109,7 @@ if(Platform.isAndroid)
 
     var firstVisit = prefs.getBool('firstVisit') ?? true;
     if (firstVisit) {
-      Navigator.pushReplacementNamed(context, '/onboarding');
+      Navigator.pushReplacementNamed(( context ), '/onboarding');
     } else {
       Navigator.pushReplacementNamed(context, '/login');
     }

@@ -4,7 +4,7 @@ import 'package:adhd_journal_flutter/record_list_class.dart';
 import 'package:adhd_journal_flutter/record_view_card_class.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
 import 'package:flutter/foundation.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+//import 'package:package_info_plus/package_info_plus.dart';
 import 'main.dart';
 import 'package:flutter/material.dart';
 import 'project_colors.dart';

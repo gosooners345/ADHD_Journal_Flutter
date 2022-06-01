@@ -217,7 +217,7 @@ class _SettingsPage extends State<SettingsPage> {
             iconColor: AppColors.mainAppColor,
             leading: Icon(Icons.info_outline),
             title: Text(
-              'You\'re running version $buildNumber',
+              'You\'re running version 2.0',
               textAlign: TextAlign.left,
             ),
           ),

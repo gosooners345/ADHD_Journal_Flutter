@@ -25,8 +25,8 @@ class MainActivity: FlutterActivity(){
 //private val appContext = this.context;
     override  fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+    SQLiteDatabase.loadLibs(applicationContext)
 
-        val appPreferences = getSecretSharedPref(applicationContext)
 
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
@@ -54,30 +54,39 @@ var oldDBPassword = SQLiteDatabase.getBytes(arg1?.toCharArray())
                     }
                 }
                 "migrateUserPassword"->{
+                    val appPreferences = getSecretSharedPref(this.context)
 val userPassword = appPreferences.getString("password","")
                     result.success(userPassword)
 
                 }
                 "migrateDBPassword"->{
+                    val appPreferences = getSecretSharedPref(this.context)
 val dbPasswordGet = appPreferences.getString("dbPassword","")
                     result.success(dbPasswordGet)
                 }
                 "migrateGreeting" ->{
+                    val appPreferences = getSecretSharedPref(this.context)
                     val greeting = appPreferences.getString("greeting","")
                     result.success(greeting)
                 }
                 "migratePasswordPrefs" ->{
+                    val appPreferences = getSecretSharedPref(this.context)
                     val passprefs = appPreferences.getBoolean("enablePassword",true)
                     result.success(passprefs)
                 }
 
                 "checkForDB" -> {
-                  val testPassword = appPreferences.getString("dbPassword","")
+                    var testPath = false
+                    val context = applicationContext;
+                    val dbFile = context.getDatabasePath("activitylogger_db.db")
 
-                    var testPath =false
-                    if(testPassword=="")
+                if(dbFile.exists()) {
+                    val appPreferences = getSecretSharedPref(context)
+                    val testPassword = appPreferences.getString("dbPassword", "")
+
+                    if (testPassword == "")
                         testPath = true
-
+                }
                     result.success(testPath)
                 }
          /*       "checkFirstVisit"->{

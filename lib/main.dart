@@ -10,8 +10,7 @@ import 'package:adhd_journal_flutter/settings_tutorials/dashboard_help.dart';
 import 'package:adhd_journal_flutter/settings_tutorials/sort_and_filter_help.dart';
 import 'package:adhd_journal_flutter/settings_tutorials/tutorial_help_guide.dart';
 import 'package:adhd_journal_flutter/splash_screendart.dart';
-import 'package:flutter/foundation.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+import 'package:flutter/foundation.dart'; //import 'package:package_info_plus/package_info_plus.dart';
 import 'onboarding_widget_class.dart';
 import 'record_display_widget.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +25,7 @@ void main() {
   runApp(MyApp());
 }
 
-late PackageInfo packInfo;
+//late PackageInfo packInfo;
 late RecordsBloc recordsBloc;
 
 int listSize = 0;
@@ -92,7 +91,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
     title = 'Home';
     try {
       recordsBloc = RecordsBloc();
-      buildNumber = packInfo.version;
+      //buildNumber = packInfo.version;
     } on Exception catch (e, s) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
