@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as Path;
-
 //import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
@@ -44,57 +43,20 @@ late  Database testDB;
     // Load prefs and check for previous android shared prefs files
     loadPreferences();
     // if there was a previous db on device, migrate data
-if(Platform.isAndroid)
-  {
 
-    if(checkVisitState)
-   { startTransferTimer();
-   }
-  }
     startTimer();
   }
 
   void loadPreferences() async {
     prefs = await SharedPreferences.getInstance();
     encryptedSharedPrefs = EncryptedSharedPreferences();
-    if (Platform.isAndroid) {
-      checkVisitState = await databaseExists(Path.join(await getDatabasesPath(),'activitylogger_db.db'));
-     // checkVisitState = await platform.invokeMethod('checkForDB');
-    }
   }
 
 // This will migrate all data from old shared prefs file to the flutter version.
-  void transferData() async {
-    prefs.setBool('firstVisit', checkVisitState);
 
-    transferred = prefs.getBool('transferred') ?? false;
-
-    if (!transferred) {
-      prefs.setBool('transferred', true);
-      passwordEnabledTransfer =
-      await platform.invokeMethod('migratePasswordPrefs');
-      print(passwordEnabledTransfer);
-      prefs.setBool('passwordEnabled', passwordEnabledTransfer);
-      dbPassTransfer = await platform.invokeMethod('migrateDBPassword');
-      print(dbPassTransfer);
-      encryptedSharedPrefs.setString('dbPassword', dbPassTransfer);
-      userPasswordTransfer = await platform.invokeMethod('migrateUserPassword');
-      encryptedSharedPrefs.setString('loginPassword', userPasswordTransfer);
-      greetingTransfer = await platform.invokeMethod('migrateGreeting');
-      prefs.setString('greeting', greetingTransfer);
-    }
-
-
-
-}
-  startTransferTimer() async{
-
-    return Timer(const Duration(seconds:2),transferData);
-  }
   
 
   startTimer() async {
-
 
   var duration = const Duration(seconds: 5);
     return Timer(duration, route);
