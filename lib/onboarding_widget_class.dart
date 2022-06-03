@@ -447,10 +447,10 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                         }),
                   ),
                   ElevatedButton(
-                    style: ButtonStyle(
+                   /* style: ButtonStyle(
                       backgroundColor:
                           MaterialStateProperty.all(AppColors.mainAppColor),
-                    ),
+                    ),*/
                     onPressed: () async {
                       if (savedPasswordValue != '') {
                         await encryptedSharedPrefs.setString(

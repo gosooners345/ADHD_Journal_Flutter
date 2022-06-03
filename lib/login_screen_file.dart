@@ -57,11 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
     greeting = prefs.getString("greeting") ?? '';
     loginGreeting = "Welcome $greeting !"
         " Please sign in below to get started!";
-    ///This is to see if I need to move the code over here or it can stay in the
-    ///
-    ///
-    ///
-    ///
+
     userPassword = '';
     userPassword = await encryptedSharedPrefs.getString('loginPassword');
     dbPassword = await encryptedSharedPrefs.getString('dbPassword');
