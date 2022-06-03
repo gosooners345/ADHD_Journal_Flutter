@@ -9,7 +9,7 @@ final positiveSymptomList=[
   'Major win today',
   'Positive Environment/Grace',
   'Momentum driven',
-  'Emotional Resiliency'
+  'Emotional Resiliency',
   'Flow',
   'Hyperfocus',
 ];

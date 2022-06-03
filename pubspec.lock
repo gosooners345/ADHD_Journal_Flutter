@@ -28,7 +28,7 @@ packages:
       name: async
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.8.2"
+    version: "2.9.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -247,13 +247,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.0"
-  package_info_plus:
+  package_info:
     dependency: "direct main"
     description:
-      name: package_info_plus
+      name: package_info
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.1"
+    version: "2.0.2"
   path:
     dependency: "direct main"
     description:

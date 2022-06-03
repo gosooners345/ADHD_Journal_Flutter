@@ -6,7 +6,7 @@ import 'package:adhd_journal_flutter/onboarding_widget_class.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'main.dart';
-
+import 'package:package_info/package_info.dart';
 import 'splash_screendart.dart';
 
 /// Required to open the application , simple login form to start
@@ -199,8 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     } else if (snapshot.hasData) {
                       return ElevatedButton(
                         onPressed: () {
-                          refreshPrefs();
-                          callingCard = true;
+                          callingCard = true;refreshPrefs();
                           if (loginPassword == userPassword &&
                               passwordEnabled) {
                             stuff.clear();
@@ -212,15 +211,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                       recordHolder.clear(),
                                       refreshPrefs(),
                                       resetLoginFieldState(),
+                            //  recordsBloc.dispose()
                                     });
                           } else if (!passwordEnabled) {
+                            callingCard = true;
+                            refreshPrefs();
                             loginPassword = '';
                             stuff.clear();
                             Navigator.pushNamed(context, '/success').then(
                                 (value) => {
                                       recordHolder.clear(),
                                       refreshPrefs(),
-                                      resetLoginFieldState()
+                                      resetLoginFieldState(),
+                              //    recordsBloc.dispose()
                                     });
                           }
                         },
@@ -239,7 +242,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 (value) => {
                                       recordHolder.clear(),
                                       refreshPrefs(),
-                                      resetLoginFieldState()
+                                      resetLoginFieldState(),
+                                  recordsBloc.dispose(),
                                     });
                             stuff.clear();
                           }

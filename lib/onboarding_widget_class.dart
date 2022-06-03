@@ -4,6 +4,8 @@ import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:onboarding/onboarding.dart';
 import 'package:flutter/material.dart';
 import 'splash_screendart.dart';
+import 'package:package_info/package_info.dart';
+
 import 'project_strings_file.dart';
 
 class OnBoardingWidget extends StatefulWidget {
@@ -457,7 +459,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                             'loginPassword', savedPasswordValue);
                         await encryptedSharedPrefs.setString(
                             'dbPassword', savedPasswordValue);
-                        prefs.setBool('passwordEnabled', isSaved);
+                       prefs.setBool('passwordEnabled', isSaved);
                         prefs.setString('greeting', greetingValueSaved);
                         prefs.setBool('firstVisit', false);
                         dbPassword = savedPasswordValue;

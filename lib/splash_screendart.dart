@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as Path;
-//import 'package:package_info_plus/package_info_plus.dart';
+import 'package:package_info/package_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 
@@ -40,12 +40,13 @@ late  Database testDB;
   @override
   void initState() {
     super.initState();
+    getPackageInfo();
     // Load prefs and check for previous android shared prefs files
     loadPreferences();
     // if there was a previous db on device, migrate data
 if(Platform.isAndroid)
   {
-migrateData();
+migrateTimer();
   }
     startTimer();
   }
@@ -53,20 +54,25 @@ migrateData();
   void loadPreferences() async {
     prefs = await SharedPreferences.getInstance();
     encryptedSharedPrefs = EncryptedSharedPreferences();
-     if(Platform.isAndroid){
-       checkVisitState = await databaseExists(Path.join(await getDatabasesPath(),'activitylogger_db.db'));
-     }
+    if(Platform.isAndroid){
+      checkVisitState = await databaseExists(Path.join(await getDatabasesPath(),'activitylogger_db.db'));
+    }
   }
 
 // This will migrate all data from old shared prefs file to the flutter version.
 void migrateData() async {
-  if (checkVisitState) {
+var checkFirstVisit = false;
+    if(checkVisitState){
+  checkFirstVisit = prefs.getBool('firstVisit')!;
+}
+
+  if (checkFirstVisit) {
     var dbPasswordMigrated = await platform.invokeMethod('migrateDBPassword');
     var userPasswordMigrated = await platform.invokeMethod(
         'migrateUserPassword');
     var passwordPrefs = await platform.invokeMethod('migratePasswordPrefs');
-    var greetingmigrated = await platform.invokeMethod('migrateGreeting');
-    prefs.setString('greeting', greetingmigrated);
+    var greetingMigrated = await platform.invokeMethod('migrateGreeting');
+    prefs.setString('greeting', greetingMigrated);
     prefs.setBool('passwordEnabled', passwordPrefs);
     encryptedSharedPrefs.setString('dbPassword', dbPasswordMigrated);
     encryptedSharedPrefs.setString('loginPassword', userPasswordMigrated);
@@ -85,7 +91,8 @@ void migrateData() async {
   }
 
   void getPackageInfo() async {
-    // packInfo = await PackageInfo.fromPlatform();
+     packInfo = await PackageInfo.fromPlatform();
+     buildInfo = packInfo.version;
   }
 
   void route() {
@@ -121,3 +128,5 @@ void migrateData() async {
 late SharedPreferences prefs;
 late EncryptedSharedPreferences encryptedSharedPrefs;
 late ThemeMode deviceTheme;
+late PackageInfo packInfo;
+late String buildInfo;

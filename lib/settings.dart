@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:adhd_journal_flutter/project_colors.dart';
 import 'package:launch_review/launch_review.dart';
 import 'package:flutter/services.dart';
+import 'package:package_info/package_info.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter/material.dart';
 import 'splash_screendart.dart';
@@ -180,6 +181,7 @@ class _SettingsPage extends State<SettingsPage> {
                   );
                   passwordLabelText = "Password Enabled";
                   prefs.setBool('passwordEnabled', value);
+                  print(value);
                 } else if (!value) {
                   lockIcon = Icon(
                     Icons.lock_open,
@@ -187,6 +189,7 @@ class _SettingsPage extends State<SettingsPage> {
                   );
                   passwordLabelText = "Password Disabled";
                   prefs.setBool('passwordEnabled', value);
+                  print(value);
                 }
                 passwordLabelWidget = Text(passwordLabelText);
               });
@@ -217,7 +220,7 @@ class _SettingsPage extends State<SettingsPage> {
             iconColor: AppColors.mainAppColor,
             leading: Icon(Icons.info_outline),
             title: Text(
-              'You\'re running version 2.0',
+              'You are running version $buildInfo',
               textAlign: TextAlign.left,
             ),
           ),

@@ -7,6 +7,7 @@ import 'package:path/path.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'package:flutter/services.dart';
 import 'package:adhd_journal_flutter/splash_screendart.dart';
+import 'package:package_info/package_info.dart';
 
 class RecordsDB {
   static const platform =
