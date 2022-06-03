@@ -45,7 +45,7 @@ late  Database testDB;
     // if there was a previous db on device, migrate data
 if(Platform.isAndroid)
   {
-migrateTimer();
+migrateData();
   }
     startTimer();
   }
@@ -54,7 +54,7 @@ migrateTimer();
     prefs = await SharedPreferences.getInstance();
     encryptedSharedPrefs = EncryptedSharedPreferences();
      if(Platform.isAndroid){
-
+       checkVisitState = await databaseExists(Path.join(await getDatabasesPath(),'activitylogger_db.db'));
      }
   }
 
@@ -71,8 +71,8 @@ void migrateData() async {
     encryptedSharedPrefs.setString('dbPassword', dbPasswordMigrated);
     encryptedSharedPrefs.setString('loginPassword', userPasswordMigrated);
     prefs.setBool('firstVisit', !checkVisitState);
-    prefs.reload();
-    encryptedSharedPrefs.reload();
+/*    prefs.reload();
+    encryptedSharedPrefs.reload();*/
   }
 }
   migrateTimer() async{
