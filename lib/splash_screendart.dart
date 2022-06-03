@@ -43,21 +43,43 @@ late  Database testDB;
     // Load prefs and check for previous android shared prefs files
     loadPreferences();
     // if there was a previous db on device, migrate data
-
+if(Platform.isAndroid)
+  {
+migrateTimer();
+  }
     startTimer();
   }
 
   void loadPreferences() async {
     prefs = await SharedPreferences.getInstance();
     encryptedSharedPrefs = EncryptedSharedPreferences();
+     if(Platform.isAndroid){
+
+     }
   }
 
 // This will migrate all data from old shared prefs file to the flutter version.
-
-  
+void migrateData() async {
+  if (checkVisitState) {
+    var dbPasswordMigrated = await platform.invokeMethod('migrateDBPassword');
+    var userPasswordMigrated = await platform.invokeMethod(
+        'migrateUserPassword');
+    var passwordPrefs = await platform.invokeMethod('migratePasswordPrefs');
+    var greetingmigrated = await platform.invokeMethod('migrateGreeting');
+    prefs.setString('greeting', greetingmigrated);
+    prefs.setBool('passwordEnabled', passwordPrefs);
+    encryptedSharedPrefs.setString('dbPassword', dbPasswordMigrated);
+    encryptedSharedPrefs.setString('loginPassword', userPasswordMigrated);
+    prefs.setBool('firstVisit', !checkVisitState);
+    prefs.reload();
+    encryptedSharedPrefs.reload();
+  }
+}
+  migrateTimer() async{
+    return Timer(Duration(seconds: 2),migrateData);
+  }
 
   startTimer() async {
-
   var duration = const Duration(seconds: 5);
     return Timer(duration, route);
   }

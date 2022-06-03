@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:adhd_journal_flutter/login_screen_file.dart';
 import 'package:flutter/foundation.dart';
@@ -41,8 +42,12 @@ class RecordsDB {
 
   Future<void> _changeDBPassword(String oldPassword, String newPassword) async {
     try {
+
       await platform.invokeMethod('changeDBPasswords',
           {'oldDBPassword': oldPassword, 'newDBPassword': newPassword});
+    /*  else{
+        (await database).execute("PRAGMA rekey = $newPassword");
+      }*/
       dbPassword = newPassword;
       await encryptedSharedPrefs.setString('dbPassword', newPassword);
     } on Exception catch (ex) {
