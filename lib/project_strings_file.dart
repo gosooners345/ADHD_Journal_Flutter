@@ -6,8 +6,10 @@
 final positiveSymptomList=[
   'No Symptoms',
   'A small/big win today',
+  'Major win today',
   'Positive Environment/Grace',
   'Momentum driven',
+  'Emotional Resiliency'
   'Flow',
   'Hyperfocus',
 ];
