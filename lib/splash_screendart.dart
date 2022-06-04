@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/services.dart';
@@ -64,6 +65,10 @@ void migrateData() async {
 var checkFirstVisit = false;
     if(checkVisitState){
   checkFirstVisit = prefs.getBool('firstVisit')!;
+  if(kDebugMode)
+    {
+      print(checkFirstVisit);
+    }
 }
 
   if (checkFirstVisit) {
@@ -72,11 +77,11 @@ var checkFirstVisit = false;
         'migrateUserPassword');
     var passwordPrefs = await platform.invokeMethod('migratePasswordPrefs');
     var greetingMigrated = await platform.invokeMethod('migrateGreeting');
-    prefs.setString('greeting', greetingMigrated);
-    prefs.setBool('passwordEnabled', passwordPrefs);
+   await prefs.setString('greeting', greetingMigrated);
+  await  prefs.setBool('passwordEnabled', passwordPrefs);
     encryptedSharedPrefs.setString('dbPassword', dbPasswordMigrated);
     encryptedSharedPrefs.setString('loginPassword', userPasswordMigrated);
-    prefs.setBool('firstVisit', !checkVisitState);
+    await prefs.setBool('firstVisit', !checkVisitState);
 /*    prefs.reload();
     encryptedSharedPrefs.reload();*/
   }

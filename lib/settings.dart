@@ -206,7 +206,7 @@ class _SettingsPage extends State<SettingsPage> {
           ListTile(
             iconColor: AppColors.mainAppColor,
             leading: Icon(Icons.info_outline),
-            title: Text(
+            title: const Text(
               'Application info',
               textScaleFactor: 1.15,
             ),
@@ -218,7 +218,7 @@ class _SettingsPage extends State<SettingsPage> {
           ),
           ListTile(
             iconColor: AppColors.mainAppColor,
-            leading: Icon(Icons.info_outline),
+            leading: const Icon(Icons.info_outline),
             title: Text(
               'You are running version $buildInfo',
               textAlign: TextAlign.left,

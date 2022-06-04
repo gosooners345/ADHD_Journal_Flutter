@@ -199,7 +199,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     } else if (snapshot.hasData) {
                       return ElevatedButton(
                         onPressed: () {
-                          callingCard = true;refreshPrefs();
+                          callingCard = true;//refreshPrefs();
+                          resetLoginFieldState();
                           if (loginPassword == userPassword &&
                               passwordEnabled) {
                             stuff.clear();
@@ -210,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       stuff.clear(),
                                       recordHolder.clear(),
                                       refreshPrefs(),
-                                      resetLoginFieldState(),
+resetLoginFieldState(),
                             //  recordsBloc.dispose()
                                     });
                           } else if (!passwordEnabled) {
@@ -222,8 +223,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 (value) => {
                                       recordHolder.clear(),
                                       refreshPrefs(),
-                                      resetLoginFieldState(),
-                              //    recordsBloc.dispose()
+resetLoginFieldState(),
+
                                     });
                           }
                         },
@@ -237,6 +238,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       return ElevatedButton(
                         onPressed: () {
                           callingCard = true;
+                          resetLoginFieldState();
                           if (loginPassword == userPassword) {
                             Navigator.pushNamed(context, '/success').then(
                                 (value) => {

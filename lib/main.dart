@@ -125,6 +125,10 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
               recordsBloc.dispose();
               if (callingCard) {
                 Navigator.pop(context);
+                if(kDebugMode)
+                  {
+                    print(callingCard);
+                  }
               } else {
                 Navigator.pushReplacement(
                     context,
