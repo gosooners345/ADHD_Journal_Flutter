@@ -200,7 +200,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       return ElevatedButton(
                         onPressed: () {
                           callingCard = true;//refreshPrefs();
-                          resetLoginFieldState();
+                          setState((){
+                          resetLoginFieldState();});
                           if (loginPassword == userPassword &&
                               passwordEnabled) {
                             stuff.clear();
@@ -211,7 +212,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                       stuff.clear(),
                                       recordHolder.clear(),
                                       refreshPrefs(),
-resetLoginFieldState(),
+                              setState((){
+resetLoginFieldState();}),
                             //  recordsBloc.dispose()
                                     });
                           } else if (!passwordEnabled) {
@@ -223,8 +225,8 @@ resetLoginFieldState(),
                                 (value) => {
                                       recordHolder.clear(),
                                       refreshPrefs(),
-resetLoginFieldState(),
-
+                                  setState((){
+                                    resetLoginFieldState();}),
                                     });
                           }
                         },
