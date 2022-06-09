@@ -47,27 +47,6 @@ final stressorSymptomList=[
       'Depression',
 
 ];
-final symptomList = [
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-];
 const String password_Required_Message_String =
     "Please enter a password below to continue.";
 const String first_intro_paragraph_string =
@@ -90,3 +69,8 @@ const String home_page_intro_paragraph_string =
     'Once you log in, you\'ll see your journal entries, the navigation bar at the bottom, the compose button in the lower right hand corner, and several buttons on top. '
     "\r\n Here\'s a quick rundown of the buttons: The search button is in the middlw with a clear all button for resetting the list after a search is completed, the sort button is the second from the right, and the settings is button on the upper right hand corner of the screen."
     "\r\n This is where you will probably spend most of the time in the app if you\'re not composing an entry or viewing the dashboard. ";
+const String resource_link_title = 'Click here to quickly access resources about ADHD and to learn more about how to cope with it\'s many symptoms';
+
+const String link_how_to_ADHD_YT = 'https://www.youtube.com/c/HowtoADHD';
+const String link_chadd_website = 'https://www.chadd.org';
+const String link_additudemag_website = 'https://www.additudemag.com/';

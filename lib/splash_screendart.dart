@@ -41,6 +41,11 @@ late  Database testDB;
   @override
   void initState() {
     super.initState();
+    if(Platform.isAndroid){
+      backArrowIcon= Icon(Icons.arrow_back);
+    } else {
+      backArrowIcon = Icon(Icons.arrow_back_ios);
+    }
     getPackageInfo();
     // Load prefs and check for previous android shared prefs files
     loadPreferences();
@@ -82,8 +87,6 @@ var checkFirstVisit = false;
     encryptedSharedPrefs.setString('dbPassword', dbPasswordMigrated);
     encryptedSharedPrefs.setString('loginPassword', userPasswordMigrated);
     await prefs.setBool('firstVisit', !checkVisitState);
-/*    prefs.reload();
-    encryptedSharedPrefs.reload();*/
   }
 }
   migrateTimer() async{
@@ -135,3 +138,4 @@ late EncryptedSharedPreferences encryptedSharedPrefs;
 late ThemeMode deviceTheme;
 late PackageInfo packInfo;
 late String buildInfo;
+late Icon backArrowIcon;

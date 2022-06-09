@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:adhd_journal_flutter/project_colors.dart';
+import 'package:adhd_journal_flutter/splash_screendart.dart';
 import 'package:flutter/foundation.dart';
 import 'main.dart';
 import 'package:flutter/material.dart';
@@ -32,11 +33,11 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
   double ratingValue = 0.0;
   bool successState = false;
   bool isChecked = false;
-  Text successStateWidget = Text('');
+  Text successStateWidget = const Text('');
   String successLabelText = '';
   SizedBox space = const SizedBox(height: 16);
   SizedBox space2 = const SizedBox(height: 8);
-  Text ratingSliderWidget = Text('');
+  Text ratingSliderWidget = const Text('');
   String ratingInfo = '';
 
   @override
@@ -143,7 +144,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
     return Scaffold(
 
       appBar: AppBar(
-        leading:  IconButton(icon: Icon(Icons.arrow_back),onPressed: (){
+        leading:  IconButton(icon: backArrowIcon,onPressed: (){
           saveRecord(super.widget.record);
         },),
         title: Text(super.widget.title),
@@ -152,7 +153,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
               onPressed: () {
                 Navigator.pushNamed(context, '/composehelp');
               },
-              icon: Icon(Icons.help))
+              icon: const Icon(Icons.help))
         ],
       ),
       key: _formKey,

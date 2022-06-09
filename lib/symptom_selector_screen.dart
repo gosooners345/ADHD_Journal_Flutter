@@ -1,4 +1,5 @@
 import 'package:adhd_journal_flutter/project_colors.dart';
+import 'package:adhd_journal_flutter/splash_screendart.dart';
 import 'package:flutter/material.dart';
 
 import 'project_strings_file.dart';
@@ -86,7 +87,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
               addItemsToSymptomList();
               Navigator.pop(context, super.widget.symptoms);
             },
-            icon: Icon(Icons.arrow_back)),
+            icon: backArrowIcon),
       ),
       body:CustomScrollView(
         slivers: [

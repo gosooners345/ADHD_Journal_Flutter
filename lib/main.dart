@@ -5,6 +5,7 @@ import 'package:adhd_journal_flutter/dashboard_stats_display_widget.dart';
 import 'package:adhd_journal_flutter/record_list_class.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
 import 'package:adhd_journal_flutter/settings.dart';
+import 'package:adhd_journal_flutter/settings_link_page/helpful_links.dart';
 import 'package:adhd_journal_flutter/settings_tutorials/compose_tutorial.dart';
 import 'package:adhd_journal_flutter/settings_tutorials/dashboard_help.dart';
 import 'package:adhd_journal_flutter/settings_tutorials/sort_and_filter_help.dart';
@@ -64,6 +65,7 @@ class MyApp extends StatelessWidget {
         '/tutorials': (context) => TutorialHelpScreen(),
         '/dashboardhelp': (context) => DashboardHelp(),
         '/searchhelp': (context) => SortHelp(),
+        '/resources' : (context) => HelpfulLinksWidget(),
       },
     );
   }
@@ -92,7 +94,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
     title = 'Home';
     try {
       recordsBloc = RecordsBloc();
-      //buildNumber = packInfo.version;
+      buildInfo = packInfo.version;
     } on Exception catch (e, s) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -136,7 +138,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                         builder: (context) => const LoginScreen()));
               }
             },
-            icon: Icon(Icons.arrow_back)),
+            icon: backArrowIcon),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.search),
@@ -176,7 +178,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
           PopupMenuButton(
             itemBuilder: (BuildContext context) {
               return <PopupMenuItem>[
-                (PopupMenuItem(
+                PopupMenuItem(
                   child: Row(
                     children: const [
                       Icon(Icons.restart_alt),
@@ -189,12 +191,12 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                   onTap: () {
                     recordsBloc.getRecords();
                   },
-                )),
+                ),
                 PopupMenuItem(
                   child: Text("Sort by"),
                   enabled: false,
                 ),
-                (PopupMenuItem(
+                PopupMenuItem(
                   child: Row(
                     children: const [
                       Icon(Icons.history),
@@ -207,7 +209,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                   onTap: () {
                     recordsBloc.getSortedRecords("Most Recent");
                   },
-                )),
+                ),
                 PopupMenuItem(
                     child: Row(
                       children: const [
@@ -261,14 +263,14 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                   MaterialPageRoute(
                       builder: (_) =>
 
-                          /// Change password upon exit if the password has changed.
-                          /// Tested and Passed: 05/09/2022
-                          SettingsPage())).then((value) => {
-                    if (userPassword != dbPassword)
-                      {
-                        verifyPasswordChanged(),
-                      },
-                  });
+                      /// Change password upon exit if the password has changed.
+                      /// Tested and Passed: 05/09/2022
+                      SettingsPage())).then((value) =>
+              {
+                if (userPassword != dbPassword) {
+                  verifyPasswordChanged(),
+                },
+              });
             },
           ),
         ],
@@ -287,7 +289,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                         builder: (context) => const LoginScreen()));
               }
             },
-            icon: Icon(Icons.arrow_back)),
+            icon: backArrowIcon),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.settings),
@@ -296,15 +298,13 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                   context,
                   MaterialPageRoute(
                       builder: (_) =>
-
                           /// Change password upon exit if the password has changed.
                           /// Tested and Passed: 05/09/2022
                           SettingsPage())).then((value) => {
                     setState(() {
                       greeting = prefs.getString('greeting')!;
                     }),
-                    if (userPassword != dbPassword)
-                      {
+                    if (userPassword != dbPassword) {
                         verifyPasswordChanged(),
                       },
                   });
@@ -326,9 +326,10 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
           title = 'Dashboard';
           RecordList.loadLists();
         }
-      } else {
+      }  else {
         _selectedIndex = 0;
       }
+
     });
   }
 

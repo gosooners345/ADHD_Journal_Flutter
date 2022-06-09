@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:adhd_journal_flutter/project_colors.dart';
+import 'package:adhd_journal_flutter/project_strings_file.dart';
 import 'package:launch_review/launch_review.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info/package_info.dart';
@@ -30,7 +31,7 @@ class _SettingsPage extends State<SettingsPage> {
   String passwordValue = userPassword;
 
   String greetingValue = '';
-  Text passwordLabelWidget = Text('');
+  Text passwordLabelWidget = const Text('');
   bool passwordEnabled = false;
   late SwitchListTile passwordEnabledTile;
   //Visual changes based on parameter values
@@ -97,15 +98,15 @@ class _SettingsPage extends State<SettingsPage> {
               userPassword = passwordValue;
               Navigator.pop(context);
             },
-            icon: const Icon(Icons.arrow_back)),
+            icon: backArrowIcon),
       ),
       extendBody: true,
       body: ListView(
         children: <Widget>[
           ListTile(
             iconColor: AppColors.mainAppColor,
-            leading: Icon(Icons.display_settings),
-            title: Text(
+            leading: const Icon(Icons.display_settings),
+            title: const Text(
               'Customization Settings',
               textScaleFactor: 1.15,
             ),
@@ -137,8 +138,8 @@ class _SettingsPage extends State<SettingsPage> {
           ),
           ListTile(
             iconColor: AppColors.mainAppColor,
-            leading: Icon(Icons.security),
-            title: Text(
+            leading: const Icon(Icons.security),
+            title: const Text(
               'Security Settings',
               textScaleFactor: 1.15,
             ),
@@ -205,7 +206,7 @@ class _SettingsPage extends State<SettingsPage> {
           ),
           ListTile(
             iconColor: AppColors.mainAppColor,
-            leading: Icon(Icons.info_outline),
+            leading: const Icon(Icons.info_outline),
             title: const Text(
               'Application info',
               textScaleFactor: 1.15,
@@ -230,7 +231,7 @@ class _SettingsPage extends State<SettingsPage> {
             color: AppColors.mainAppColor,
           ),
           ListTile(
-            leading: Icon(Icons.email_outlined),
+            leading: const Icon(Icons.email_outlined),
             onTap: () {
               try {
                 emailDev();
@@ -253,10 +254,10 @@ class _SettingsPage extends State<SettingsPage> {
               }
             },
             iconColor: AppColors.mainAppColor,
-            title: Text('Contact Me'),
+            title: const Text('Contact Me'),
             subtitle: Row(
               children: [
-                Expanded(
+                const Expanded(
                   child: Text(
                     "Tell me about your experience using this app or request new features here!",
                     softWrap: true, /*textScaleFactor: 1.15,*/
@@ -280,9 +281,9 @@ class _SettingsPage extends State<SettingsPage> {
                     androidAppId: 'com.activitylogger.release1');
               }
             },
-            title: Text('Rate my app'),
+            title: const Text('Rate my app'),
             iconColor: AppColors.mainAppColor,
-            leading: Icon(Icons.star),
+            leading: const Icon(Icons.star),
           ),
           Divider(
             height: 1.0,
@@ -291,12 +292,27 @@ class _SettingsPage extends State<SettingsPage> {
           ),
           ListTile(
             iconColor: AppColors.mainAppColor,
-            leading: Icon(Icons.help),
-            title: Text("How to use app?"),
-            subtitle: Text(
-                "Click here to get further guidance on how to use features in the app"),
+            leading: const Icon(Icons.help),
+            title: const Text("How to use app?"),
+            subtitle: const Text(
+                "Click here to learn how to get the most out of the app."),
             onTap: () {
               Navigator.pushNamed(context, '/tutorials');
+            },
+          ),
+          Divider(
+            height: 1.0,
+            thickness: 0.5,
+            color: AppColors.mainAppColor,
+          ),
+          ListTile(
+            iconColor: AppColors.mainAppColor,
+            leading: const Icon(Icons.book),
+            title: const Text('Resources'),
+            subtitle: const Text(
+                resource_link_title),
+            onTap: () {
+              Navigator.pushNamed(context, '/resources');
             },
           )
         ],
@@ -307,7 +323,7 @@ class _SettingsPage extends State<SettingsPage> {
   void emailDev() async {
     final Email email = Email(
         subject:
-            "Bugs and Feature Request for ADHD Journal version $buildNumber",
+            "Bugs and Feature Request for ADHD Journal version $buildInfo",
         body: '',
         recipients: ['boomersooner12345@gmail.com'],
         isHTML: false);
