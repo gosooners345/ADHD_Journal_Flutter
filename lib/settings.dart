@@ -29,7 +29,7 @@ class _SettingsPage extends State<SettingsPage> {
   bool isChecked = false;
   //Preference Values
   String passwordValue = userPassword;
-
+ String passwordHintValue = passwordHint;
   String greetingValue = '';
   Text passwordLabelWidget = const Text('');
   bool passwordEnabled = false;
@@ -42,7 +42,7 @@ class _SettingsPage extends State<SettingsPage> {
   //Text Controllers
   late TextEditingController passwordController = TextEditingController();
   late TextEditingController greetingController = TextEditingController();
-
+  late TextEditingController passwordHintController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -53,6 +53,7 @@ class _SettingsPage extends State<SettingsPage> {
     setState(() {
       greetingController = TextEditingController(text: greetingValue);
       passwordController = TextEditingController(text: passwordValue);
+      passwordHintController = TextEditingController(text: passwordHintValue);
       if (isPasswordChecked) {
         lockIcon = Icon(
           Icons.lock,
@@ -74,6 +75,7 @@ class _SettingsPage extends State<SettingsPage> {
   ///Save string values into the preferences
   void saveSettings(String value, String key) async {
     encryptedSharedPrefs.setString(key, value);
+    await   encryptedSharedPrefs.setString(key, value);
   }
 
   void saveSettings2(bool value, String key) async {
@@ -89,6 +91,8 @@ class _SettingsPage extends State<SettingsPage> {
         leading: IconButton(
             onPressed: () {
               prefs.setBool('passwordEnabled', isPasswordChecked);
+              saveSettings(passwordHintValue, 'passwordHint');
+              passwordHint = passwordHintValue;
               saveSettings(passwordValue, 'loginPassword');
               prefs.setString('greeting', greetingValue);
               setState(() {
@@ -160,6 +164,24 @@ class _SettingsPage extends State<SettingsPage> {
                   hintText: 'Enter a secure password'),
               onChanged: (text) {
                 passwordValue = text;
+              },
+            ),
+          ),
+          spacer,
+          Divider(
+            height: 1.0,
+            thickness: 0.5,
+            color: AppColors.mainAppColor,
+          ),spacer, ListTile(
+            title: TextField(
+              obscureText: false,
+              controller:passwordHintController,
+              decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Password Hint',
+                  hintText: 'Enter a password hint here.'),
+              onChanged: (text) {
+                passwordHintValue = text;
               },
             ),
           ),
@@ -256,13 +278,13 @@ class _SettingsPage extends State<SettingsPage> {
             iconColor: AppColors.mainAppColor,
             title: const Text('Contact Me'),
             subtitle: Row(
-              children: [
-                const Expanded(
+              children: const [
+                Expanded(
+                  flex: 1,
                   child: Text(
                     "Tell me about your experience using this app or request new features here!",
                     softWrap: true, /*textScaleFactor: 1.15,*/
                   ),
-                  flex: 1,
                 ),
               ],
             ),

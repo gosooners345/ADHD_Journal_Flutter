@@ -41,8 +41,8 @@ late  Database testDB;
   @override
   void initState() {
     super.initState();
-    if(Platform.isAndroid){
-      backArrowIcon= Icon(Icons.arrow_back);
+    if (Platform.isAndroid) {
+      backArrowIcon = Icon(Icons.arrow_back);
     } else {
       backArrowIcon = Icon(Icons.arrow_back_ios);
     }
@@ -50,10 +50,11 @@ late  Database testDB;
     // Load prefs and check for previous android shared prefs files
     loadPreferences();
     // if there was a previous db on device, migrate data
-if(Platform.isAndroid)
-  {
-migrateTimer();
-  }
+    if (Platform.isAndroid) {
+      migrateTimer();
+    }
+    //Add a password hint variable and preference to the application for users to add a hint so they can be reminded what their password is.
+    checkPasswordHintTimer();
     startTimer();
   }
 
@@ -65,10 +66,14 @@ migrateTimer();
     }
   }
 
+  void checkPasswordHintMethod() async{
+   passwordHint = await encryptedSharedPrefs.getString('passwordHint')??'';
+}
+
 // This will migrate all data from old shared prefs file to the flutter version.
 void migrateData() async {
 var checkFirstVisit = false;
-    if(checkVisitState){
+    if (checkVisitState) {
   checkFirstVisit = prefs.getBool('firstVisit')!;
   if(kDebugMode)
     {
@@ -90,12 +95,17 @@ var checkFirstVisit = false;
   }
 }
   migrateTimer() async{
-    return Timer(Duration(seconds: 2),migrateData);
+    return Timer(const Duration(seconds: 2),migrateData);
   }
 
   startTimer() async {
   var duration = const Duration(seconds: 5);
     return Timer(duration, route);
+  }
+  //This timer doesn't need to be very long since we're just checking for a password hint
+  //If one doesn't exist, the user will create one after logging in.
+  checkPasswordHintTimer() async {
+    return Timer(const Duration(seconds: 1),checkPasswordHintMethod);
   }
 
   void getPackageInfo() async {
@@ -139,3 +149,4 @@ late ThemeMode deviceTheme;
 late PackageInfo packInfo;
 late String buildInfo;
 late Icon backArrowIcon;
+String passwordHint = '';

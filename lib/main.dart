@@ -84,6 +84,7 @@ late ListView recordViews;
 
 class ADHDJournalAppHPState extends State<ADHDJournalApp> {
   static Choice selectedChoice = sortOptions[0];
+
   String title = '';
   var _selectedIndex = 0;
   String header = "";
@@ -95,6 +96,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
     try {
       recordsBloc = RecordsBloc();
       buildInfo = packInfo.version;
+
     } on Exception catch (e, s) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

@@ -6,7 +6,6 @@ import 'package:adhd_journal_flutter/onboarding_widget_class.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'main.dart';
-import 'package:package_info/package_info.dart';
 import 'splash_screendart.dart';
 
 /// Required to open the application , simple login form to start
@@ -35,20 +34,27 @@ class _LoginScreenState extends State<LoginScreen> {
   late TextEditingController stuff;
   late Widget loginField;
   late Widget greetingField;
+  String hintText = '';
+  String hintPrompt = '';
+
 
   @override
   void initState() {
     super.initState();
+    if (passwordHint == '') {
+      hintText = 'Enter secure password';
+hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember your password in case you forget. \r\n Set it to something memorable.\r\n This will be encrypted like your password so nobody can read your hint.'
+    '\r\n You can enter this in settings.';
 
+    } else {
+      hintText ='Password Hint is : $passwordHint';
+    }
     loadStateStuff();
-
     setState(() {
       stuff = TextEditingController();
       resetLoginFieldState();
     });
   }
-
-
 
 
   void loadStateStuff() async {
@@ -61,6 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
     userPassword = '';
     userPassword = await encryptedSharedPrefs.getString('loginPassword');
     dbPassword = await encryptedSharedPrefs.getString('dbPassword');
+    passwordHint =await encryptedSharedPrefs.getString('passwordHint');
     passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
     isPasswordChecked = passwordEnabled;
 // This code seem
@@ -91,16 +98,25 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void resetLoginFieldState() {
+
     setState(() {
+      if (passwordHint == '') {
+        hintText = 'Enter secure password';
+        hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember your password in case you forget. \r\n Set it to something memorable.\r\n This will be encrypted like your password so nobody can read your hint.'
+            '\r\n You can enter this in settings.';
+
+      } else {
+        hintText ='Password Hint is : $passwordHint';
+      }
       greetingField = Row(children: [
         Expanded(
             child: Text(
-          loginGreeting,
-          style: TextStyle(
-            fontSize: 20.0,
-          ),
-          textAlign: TextAlign.center,
-        ))
+              loginGreeting,
+              style: TextStyle(
+                fontSize: 20.0,
+              ),
+              textAlign: TextAlign.center,
+            ))
       ]);
 
       if (passwordEnabled) {
@@ -110,15 +126,16 @@ class _LoginScreenState extends State<LoginScreen> {
           decoration: InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Password',
-              hintText: 'Enter secure password'),
+              hintText: hintText),
           onChanged: (text) {
             loginPassword = text;
             if (text.length == userPassword.length) {
               if (text == userPassword) {
-                Navigator.pushNamed(context, '/success').then((value) => {
-                      recordHolder.clear(),
-                      resetLoginFieldState(),
-                    });
+                Navigator.pushNamed(context, '/success').then((value) =>
+                {
+                  recordHolder.clear(),
+                  resetLoginFieldState(),
+                });
               } else {
                 showDialog(
                     context: context,
@@ -141,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     });
               }
             }
-          },
+        },
           enabled: true,
         );
       } else {
@@ -189,45 +206,90 @@ class _LoginScreenState extends State<LoginScreen> {
               width: 250,
               child: FutureBuilder(
                   future: getPassword(),
-                  builder: (
-                    BuildContext context,
-                    AsyncSnapshot<bool> snapshot,
-                  ) {
+                  builder: (BuildContext context,
+                      AsyncSnapshot<bool> snapshot,) {
                     if (snapshot.hasError) {
                       return Text(
                           'Error returning password enabled information');
                     } else if (snapshot.hasData) {
                       return ElevatedButton(
                         onPressed: () {
-                          callingCard = true;//refreshPrefs();
-                          setState((){
-                          resetLoginFieldState();});
+                          callingCard = true;
+                          setState(() {
+                            resetLoginFieldState();
+                          });
                           if (loginPassword == userPassword &&
                               passwordEnabled) {
                             stuff.clear();
                             loginPassword = '';
-
+                           /* if(passwordHint==''){
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text(
+                                        "Password Hint available ",
+                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                      content:Column(children: [ Text(
+                                          'The app now allows you to store a hint so it\'s easier to remember your password in case you forget. Set it to something memorable. This will be encrypted like your password so nobody can read your hint.'
+                                              '\r\n You can enter this in settings.'),
+                                      ]),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text("Ok"))
+                                      ],
+                                    );
+                                  });
+                            }*/
                             Navigator.pushNamed(context, '/success')
                                 .then((value) => {
-                                      stuff.clear(),
-                                      recordHolder.clear(),
-                                      refreshPrefs(),
-                              setState((){
-resetLoginFieldState();}),
-                            //  recordsBloc.dispose()
-                                    });
+                              stuff.clear(),
+                              recordHolder.clear(),
+                              refreshPrefs(),
+                              setState(() {
+                                resetLoginFieldState();
+                              }),
+                            });
                           } else if (!passwordEnabled) {
                             callingCard = true;
                             refreshPrefs();
+                          /*  if(passwordHint==''){
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text(
+                                        "Password Hint available ",
+                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                      content:Column(children: [ Text(
+                                          'The app now allows you to store a hint so it\'s easier to remember your password in case you forget. Set it to something memorable. This will be encrypted like your password so nobody can read your hint.'
+                                              '\r\n You can enter this in settings.'),
+                                      ]),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text("Ok"))
+                                      ],
+                                    );
+                                  });
+                            }*/
                             loginPassword = '';
                             stuff.clear();
                             Navigator.pushNamed(context, '/success').then(
-                                (value) => {
-                                      recordHolder.clear(),
-                                      refreshPrefs(),
-                                  setState((){
-                                    resetLoginFieldState();}),
-                                    });
+                                    (value) => {
+                                  recordHolder.clear(),
+                                  refreshPrefs(),
+                                  setState(() {
+                                    resetLoginFieldState();
+                                  }),
+                                });
                           }
                         },
                         child: Text(
@@ -243,12 +305,12 @@ resetLoginFieldState();}),
                           resetLoginFieldState();
                           if (loginPassword == userPassword) {
                             Navigator.pushNamed(context, '/success').then(
-                                (value) => {
-                                      recordHolder.clear(),
-                                      refreshPrefs(),
-                                      resetLoginFieldState(),
+                                    (value) => {
+                                  recordHolder.clear(),
+                                  refreshPrefs(),
+                                  resetLoginFieldState(),
                                   recordsBloc.dispose(),
-                                    });
+                                });
                             stuff.clear();
                           }
                         },
@@ -264,6 +326,9 @@ resetLoginFieldState();}),
             ),
             SizedBox(
               height: 130,
+            ),
+            Padding(
+              padding: EdgeInsets.all(8.0),child: Text(hintPrompt,style: const TextStyle(fontSize: 18.0)),
             ),
           ],
         ),

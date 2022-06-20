@@ -19,18 +19,37 @@ class RecordDisplayWidget extends StatefulWidget {
   @override
   State<RecordDisplayWidget> createState() => RecordDisplayWidgetState();
 }
-
+TextEditingController passwordHintController = TextEditingController();
 late TextEditingController searchController;
 
 class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
   @override
   void initState() {
     super.initState();
+
     try {
       searchController = TextEditingController();
       recordsBloc = RecordsBloc();
       startTimer();
       greeting = prefs.getString('greeting') ?? '';
+      /*if(passwordHint == ''){
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Password Hint needed. \r\n '
+                  'The app now allows you to store a hint so it\'s easier to remember your password in case you forget. Set it to something memorable. '
+                  'Head to the settings by clicking the gear icon and entering a password hint in the text box provided. It will remain encrypted so that it is secure.'),
+              duration: const Duration(milliseconds: 1500),
+              width: 280.0,
+              // Width of the SnackBar.
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8.0,
+              ),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4.0),
+              ),
+            ));
+      }*/
       if (kDebugMode) {
         print('everything is sorted now');
       }
@@ -39,6 +58,29 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
         print(s);
       }
     }
+    /* if(passwordHint==''){
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text(
+                                        "Password Hint available ",
+                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                      content:Column(children: [ Text(
+                                          'The app now allows you to store a hint so it\'s easier to remember your password in case you forget. Set it to something memorable. This will be encrypted like your password so nobody can read your hint.'
+                                              '\r\n You can enter this in settings.'),
+                                      ]),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text("Ok"))
+                                      ],
+                                    );
+                                  });
+                            }*/
   }
 
 // For updating the list when its opening. this
