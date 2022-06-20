@@ -102,9 +102,9 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
     setState(() {
       if (passwordHint == '') {
         hintText = 'Enter secure password';
-        hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember your password in case you forget. \r\n Set it to something memorable.\r\n This will be encrypted like your password so nobody can read your hint.'
+        hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember your password in case you forget.'
+            ' Set it to something memorable.\r\n This will be encrypted like your password so nobody can read your hint.'
             '\r\n You can enter this in settings.';
-
       } else {
         hintText ='Password Hint is : $passwordHint';
       }

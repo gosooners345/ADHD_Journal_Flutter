@@ -53,7 +53,7 @@ class _SettingsPage extends State<SettingsPage> {
     setState(() {
       greetingController = TextEditingController(text: greetingValue);
       passwordController = TextEditingController(text: passwordValue);
-      passwordHintController = TextEditingController(text: passwordHintValue);
+      passwordHintController = TextEditingController(text: passwordHint);
       if (isPasswordChecked) {
         lockIcon = Icon(
           Icons.lock,
@@ -82,6 +82,11 @@ class _SettingsPage extends State<SettingsPage> {
     prefs.setBool(key, value);
   }
 
+  void clearSetting(String key) async {
+    encryptedSharedPrefs.remove(key);
+    await encryptedSharedPrefs.remove(key);
+  }
+
   /// The display for the screen
   @override
   Widget build(BuildContext context) {
@@ -91,8 +96,12 @@ class _SettingsPage extends State<SettingsPage> {
         leading: IconButton(
             onPressed: () {
               prefs.setBool('passwordEnabled', isPasswordChecked);
-              saveSettings(passwordHintValue, 'passwordHint');
-              passwordHint = passwordHintValue;
+              saveSettings(passwordHint, 'passwordHint');
+              if(passwordHint.isEmpty) {
+
+                print('password hint removed');
+              }
+              //passwordHint = passwordHintValue;
               saveSettings(passwordValue, 'loginPassword');
               prefs.setString('greeting', greetingValue);
               setState(() {
@@ -181,7 +190,7 @@ class _SettingsPage extends State<SettingsPage> {
                   labelText: 'Password Hint',
                   hintText: 'Enter a password hint here.'),
               onChanged: (text) {
-                passwordHintValue = text;
+                passwordHint = text;
               },
             ),
           ),

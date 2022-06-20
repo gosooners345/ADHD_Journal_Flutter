@@ -416,6 +416,19 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     child: TextField(
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
+                          labelText: 'Enter your name here',
+                          hintText: 'Enter your name here'),
+                      onChanged: (text) {
+                        greetingValueSaved = text;
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 15.0, right: 15.0, top: 15, bottom: 0),
+                    child: TextField(
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
                           labelText: 'New Password for diary',
                           hintText: 'Enter a secure Password'),
                       onChanged: (text) {
@@ -429,10 +442,10 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     child: TextField(
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: 'Enter your name here',
-                          hintText: 'Enter your name here'),
+                          labelText: 'Password Hint',
+                          hintText: 'Enter a hint to help you remember your password easier here'),
                       onChanged: (text) {
-                        greetingValueSaved = text;
+                        passwordHint = text;
                       },
                     ),
                   ),
@@ -455,6 +468,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     ),*/
                     onPressed: () async {
                       if (savedPasswordValue != '') {
+                        await encryptedSharedPrefs.setString('passwordHint', passwordHint);
                         await encryptedSharedPrefs.setString(
                             'loginPassword', savedPasswordValue);
                         await encryptedSharedPrefs.setString(
