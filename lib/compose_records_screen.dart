@@ -333,15 +333,24 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
               title: successStateWidget,
               activeColor: AppColors.mainAppColor,
             ),
-            space,
-            ElevatedButton(
-              onPressed: () {
-                saveRecord(super.widget.record);
-              },
-              child: const Text('Submit'),
-            ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(onPressed: (){
+        try{
+          saveRecord(super.widget.record);
+        }
+        on Exception {
+        _showAlert(context, "Save failed");
+        }
+      }, label: Text("Save"),
+      icon: Icon(Icons.save),),
+    );
+  }
+  void _showAlert(BuildContext context,String title){
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(title),
       ),
     );
   }

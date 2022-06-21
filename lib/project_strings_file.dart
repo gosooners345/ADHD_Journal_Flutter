@@ -57,19 +57,24 @@ const String records_intro_paragraph_string =
     'how you\'re feeling, relevant ADHD symptoms, any thoughts about the event or  entry you might have, a rating from 0 (bad) to 100 (great), and give it a success or fail rating.';
 const String security_paragraph_intro_string =
     'This journal is your private journal. This means it is going to be encrypted so that hackers and unsuspecting people can\'t just log into this app and see your private thoughts.'
-    'You will need to enter a password to encrypt the journal, even though you may not feel like putting it in to log in every time. The journal is stored inside an encrypted database.';
-//'The journal is stored inside an encrypted database locally and the password is stored inside an encrypted file so hackers can\'t steal your info  ';
+    'You will need to enter a password to encrypt the journal, even though you may not feel like putting it in to log in every time. The journal is stored inside an encrypted database.'
+'The journal is stored inside an encrypted database locally and the password is stored inside an encrypted file so hackers can\'t steal your info  ';
 const String settings_paragraph_intro_string =
     'From the settings page, you can change your password, greeting and give feedback and email the developer about any bugs or app ideas for future updates.';
 const String dashboard_paragraph_intro_string =
     'The dashboard gives you an overview of statistics information about your ratings, success/fail rate, emotional info, symptom data, and a summary of the data.';
 const String sixth_paragraph_intro_string =
-    'You\'ve made it to the end of the tutorial. A couple of things left to do, first I\'ll need you to enter a password and your name so I can greet you when you enter the app. After that, hit save and you\'ll be ready to go! Let\'s make mental health better for everyone!';
+    'You\'ve made it to the end of the tutorial. A couple of things left to do, first I\'ll need you to enter  your name, a password, and a password hint so I can greet you when you enter the app.'
+    ' After that, hit save and you\'ll be ready to go!'
+    ' Let\'s make mental health better for everyone!';
 const String home_page_intro_paragraph_string =
     'Once you log in, you\'ll see your journal entries, the navigation bar at the bottom, the compose button in the lower right hand corner, and several buttons on top. '
     "\r\n Here\'s a quick rundown of the buttons: The search button is in the middlw with a clear all button for resetting the list after a search is completed, the sort button is the second from the right, and the settings is button on the upper right hand corner of the screen."
     "\r\n This is where you will probably spend most of the time in the app if you\'re not composing an entry or viewing the dashboard. ";
 const String resource_link_title = 'Click here to quickly access resources about ADHD and to learn more about how to cope with it\'s many symptoms';
+const String password_hint_needed = 'The app now features the ability to add a password hint so you can remember your password easier. '
+    'Enter a password hint below and hit save to continue.'
+    '';
 
 const String link_how_to_ADHD_YT = 'https://www.youtube.com/c/HowtoADHD';
 const String link_chadd_website = 'https://www.chadd.org';

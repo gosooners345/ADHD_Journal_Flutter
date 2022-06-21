@@ -2,9 +2,8 @@ import 'dart:io';
 
 import 'package:adhd_journal_flutter/project_colors.dart';
 import 'package:adhd_journal_flutter/project_strings_file.dart';
+import 'package:flutter/foundation.dart';
 import 'package:launch_review/launch_review.dart';
-import 'package:flutter/services.dart';
-import 'package:package_info/package_info.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter/material.dart';
 import 'splash_screendart.dart';
@@ -22,8 +21,6 @@ String buildNumber = '';
 
 class _SettingsPage extends State<SettingsPage> {
   //Native code handling methods
-  static const platform =
-      MethodChannel('com.activitylogger.release1/ADHDJournal');
 
   //Parameter setting stuff
   bool isChecked = false;
@@ -48,11 +45,13 @@ class _SettingsPage extends State<SettingsPage> {
     super.initState();
 
 // Parameter Value setting
-    greetingValue = prefs.getString('greeting') ?? '';
-
+    /*greetingValue = prefs.getString('greeting') ?? '';*/
+if(passwordHint ==" "){
+  passwordHint = '';
+}
     setState(() {
-      greetingController = TextEditingController(text: greetingValue);
-      passwordController = TextEditingController(text: passwordValue);
+      greetingController = TextEditingController(text: greeting);
+      passwordController = TextEditingController(text: userPassword);
       passwordHintController = TextEditingController(text: passwordHint);
       if (isPasswordChecked) {
         lockIcon = Icon(
@@ -76,16 +75,14 @@ class _SettingsPage extends State<SettingsPage> {
   void saveSettings(String value, String key) async {
     encryptedSharedPrefs.setString(key, value);
     await   encryptedSharedPrefs.setString(key, value);
-  }
+  encryptedSharedPrefs.reload();
 
+  }
   void saveSettings2(bool value, String key) async {
     prefs.setBool(key, value);
   }
 
-  void clearSetting(String key) async {
-    encryptedSharedPrefs.remove(key);
-    await encryptedSharedPrefs.remove(key);
-  }
+
 
   /// The display for the screen
   @override
@@ -96,20 +93,16 @@ class _SettingsPage extends State<SettingsPage> {
         leading: IconButton(
             onPressed: () {
               prefs.setBool('passwordEnabled', isPasswordChecked);
-              saveSettings(passwordHint, 'passwordHint');
-              if(passwordHint.isEmpty) {
-
-                print('password hint removed');
+              if(passwordHint == ''){
+                passwordHint = ' ';
               }
-              //passwordHint = passwordHintValue;
-              saveSettings(passwordValue, 'loginPassword');
-              prefs.setString('greeting', greetingValue);
-              setState(() {
-                greeting = greetingValue;
-              });
-
-              userPassword = passwordValue;
-              Navigator.pop(context);
+              saveSettings(passwordHint, 'passwordHint');
+              saveSettings(userPassword, 'loginPassword');
+              prefs.setString('greeting', greeting);
+              if(kDebugMode){
+                print(passwordHint);
+              }
+              Future.delayed( const Duration(milliseconds: 50), () => Navigator.pop(context));
             },
             icon: backArrowIcon),
       ),
@@ -139,7 +132,7 @@ class _SettingsPage extends State<SettingsPage> {
                   labelText: 'Greeting',
                   hintText: 'Enter your name here'),
               onChanged: (text) {
-                greetingValue = text;
+                greeting = text;
               },
             ),
           ),
@@ -163,6 +156,7 @@ class _SettingsPage extends State<SettingsPage> {
             color: AppColors.mainAppColor,
           ),
           spacer,
+          //Password tile
           ListTile(
             title: TextField(
               obscureText: false,
@@ -172,7 +166,9 @@ class _SettingsPage extends State<SettingsPage> {
                   labelText: 'Password',
                   hintText: 'Enter a secure password'),
               onChanged: (text) {
-                passwordValue = text;
+                if(text != '' || text !=' '){
+                userPassword = text;
+                }
               },
             ),
           ),
@@ -181,7 +177,8 @@ class _SettingsPage extends State<SettingsPage> {
             height: 1.0,
             thickness: 0.5,
             color: AppColors.mainAppColor,
-          ),spacer, ListTile(
+          ),spacer,
+          ListTile(
             title: TextField(
               obscureText: false,
               controller:passwordHintController,
@@ -190,7 +187,11 @@ class _SettingsPage extends State<SettingsPage> {
                   labelText: 'Password Hint',
                   hintText: 'Enter a password hint here.'),
               onChanged: (text) {
+                if(text!= '' || text !=' '){
                 passwordHint = text;
+                } else {
+                  passwordHint = ' ';
+                }
               },
             ),
           ),

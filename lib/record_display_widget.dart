@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:adhd_journal_flutter/project_strings_file.dart';
 import 'package:adhd_journal_flutter/record_list_class.dart';
 import 'package:adhd_journal_flutter/record_view_card_class.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
@@ -32,55 +33,17 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
       recordsBloc = RecordsBloc();
       startTimer();
       greeting = prefs.getString('greeting') ?? '';
-      /*if(passwordHint == ''){
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Password Hint needed. \r\n '
-                  'The app now allows you to store a hint so it\'s easier to remember your password in case you forget. Set it to something memorable. '
-                  'Head to the settings by clicking the gear icon and entering a password hint in the text box provided. It will remain encrypted so that it is secure.'),
-              duration: const Duration(milliseconds: 1500),
-              width: 280.0,
-              // Width of the SnackBar.
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8.0,
-              ),
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4.0),
-              ),
-            ));
-      }*/
+passwordTimer();
       if (kDebugMode) {
         print('everything is sorted now');
       }
+
     } catch (e, s) {
       if (kDebugMode) {
         print(s);
       }
     }
-    /* if(passwordHint==''){
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text(
-                                        "Password Hint available ",
-                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                      ),
-                                      content:Column(children: [ Text(
-                                          'The app now allows you to store a hint so it\'s easier to remember your password in case you forget. Set it to something memorable. This will be encrypted like your password so nobody can read your hint.'
-                                              '\r\n You can enter this in settings.'),
-                                      ]),
-                                      actions: [
-                                        TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text("Ok"))
-                                      ],
-                                    );
-                                  });
-                            }*/
+
   }
 
 // For updating the list when its opening. this
@@ -90,6 +53,15 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
     return Timer(duration, executeClick);
   }
 
+  passwordTimer() async{
+   return Timer(Duration(seconds:0),checkHint );
+  }
+
+  void checkHint() async {
+    if(passwordHint == '' || passwordHint == ' '){
+      _showAlertWithDelegate(context, "Password Hint Needed","ADD Hint",enterSettings);
+    }
+  }
   void executeClick() async {
     RecordList.loadLists();
   }
@@ -149,32 +121,15 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
                     showDialog(
                         context: context,
                         builder: (BuildContext context) => AlertDialog(
-                              title: const Text('Delete Record?'),
+                              title: const Text('Delete Entry?'),
                               content: const Text(
-                                  'Are you sure you want to delete this record?'),
+                                  'Are you sure you want to delete this entry?'),
                               actions: [
                                 TextButton(
                                     onPressed: () {
                                       Navigator.pop(context);
                                       recordsBloc.deleteRecordByID(record.id);
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text('Record Deleted'),
-                                          duration: const Duration(
-                                              milliseconds: 1500),
-                                          width: 280.0,
-                                          // Width of the SnackBar.
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 8.0,
-                                          ),
-                                          behavior: SnackBarBehavior.floating,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(4.0),
-                                          ),
-                                        ),
-                                      );
+                                     _showAlert(context, "Entry Deleted");
                                       //print('Deleted Record');
                                     },
                                     child: const Text('Yes')),
@@ -197,7 +152,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
             )
           : const Center(
               child:
-                  Text('Add a new record by hitting the Record button below!'),
+                  Text('Add a new record by hitting the create button below!'),
             );
     } else if (snapshot.hasError) {
       if (kDebugMode) {
@@ -213,7 +168,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
           child: Column(
             children: const <Widget>[
               CircularProgressIndicator(),
-              Text('Loading your records'),
+              Text('Loading your journal entries.'),
             ],
           ),
         ),
@@ -241,26 +196,79 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
                         id: 1,
                         title: 'Edit Entry',
                       )))
-          .then((value) => ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Record saved'),
-                  duration: const Duration(milliseconds: 1500),
-                  width: 280.0,
-                  // Width of the SnackBar.
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8.0,
-                  ),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4.0),
+          .then((value) => _showAlert(context,'Record Saved'),
+              );
+    });
+  }
+  
+  void enterSettings(BuildContext context){
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(
+              "Password Hint Needed",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            content:ListTile(title:
+            const Text(password_hint_needed
+                ),subtitle:
+                ListTile(
+                  title: TextField(
+                    obscureText: false,
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Password Hint',
+                        hintText: 'Enter a password hint here.'),
+                    onChanged: (text) {
+                      passwordHint = text;
+                    },
                   ),
                 ),
-              ));
-    });
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    saveSettings(passwordHint, 'passwordHint');
+                    Navigator.pop(context);
+                    _showAlert(context, "Password hint saved.");
+
+                  },
+                  child: const Text("Ok"))
+            ],
+          );
+        });
+  }
+
+  void _showAlert(BuildContext context,String title){
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(title),
+        ),
+    );
+  }
+  void _showAlertWithDelegate(BuildContext context,String title,String message,Function delegate){
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(title),
+        action: SnackBarAction(
+          label: message,
+          onPressed: (){
+            delegate(context);
+          },
+        ),
+      ),
+    );
+  }
+  void saveSettings(String value, String key) async {
+    encryptedSharedPrefs.setString(key, value);
+    await   encryptedSharedPrefs.setString(key, value);
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Column(
       children: <Widget>[
         const SizedBox(height: 20),

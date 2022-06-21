@@ -12,7 +12,6 @@ import 'package:adhd_journal_flutter/settings_tutorials/sort_and_filter_help.dar
 import 'package:adhd_journal_flutter/settings_tutorials/tutorial_help_guide.dart';
 import 'package:adhd_journal_flutter/splash_screendart.dart';
 import 'package:flutter/foundation.dart';
-import 'package:package_info/package_info.dart';
 import 'onboarding_widget_class.dart';
 import 'record_display_widget.dart';
 import 'package:flutter/material.dart';
@@ -127,18 +126,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
         leading: IconButton(
             onPressed: () {
               recordsBloc.dispose();
-              if (callingCard) {
-                Navigator.pop(context);
-                if(kDebugMode)
-                  {
-                    print(callingCard);
-                  }
-              } else {
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const LoginScreen()));
-              }
+              Navigator.pop(context);
             },
             icon: backArrowIcon),
         actions: <Widget>[
@@ -148,7 +136,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
               showDialog(
                 context: context,
                 builder: (BuildContext context) => AlertDialog(
-                  title: const Text('Search Records'),
+                  title: const Text('Search Entries'),
                   content: Padding(
                     padding: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
                     child: TextField(
@@ -243,9 +231,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                   child: Row(
                     children: const [
                       Icon(Icons.stars),
-                      SizedBox(
-                        width: 10,
-                      ),
+                      SizedBox(width: 10,),
                       Text('Rating')
                     ],
                   ),
@@ -267,8 +253,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
 
                       /// Change password upon exit if the password has changed.
                       /// Tested and Passed: 05/09/2022
-                      SettingsPage())).then((value) =>
-              {
+                      SettingsPage())).then((value) => {
                 if (userPassword != dbPassword) {
                   verifyPasswordChanged(),
                 },
@@ -282,14 +267,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
         leading: IconButton(
             onPressed: () {
               recordsBloc.dispose();
-              if (callingCard) {
                 Navigator.pop(context);
-              } else {
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const LoginScreen()));
-              }
             },
             icon: backArrowIcon),
         actions: <Widget>[
@@ -359,21 +337,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                       timeUpdated: DateTime.now()),
                   id: 0,
                   title: 'Compose New Entry'))).then((value) => {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Record saved'),
-                duration: const Duration(milliseconds: 1500),
-                width: 280.0,
-                // Width of the SnackBar.
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8.0,
-                ),
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4.0),
-                ),
-              ),
-            ),
+            _showAlert(context,"Journal Entry Saved"),
             executeRefresh(),
           });
     } on Exception catch (ex) {
@@ -382,10 +346,17 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
       }
     }
   }
-
+  /// This alert is a non intrusive way to show alerts to the user.
+  void _showAlert(BuildContext context,String title){
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(title),
+      ),
+    );
+  }
   /// This method allows users to access an existing record to edit. The future implementations will prevent timestamps from being edited
   /// Checked and Passed : true
-
+  ///
 // This is where the Buttons associated with the bottom navigation bar will be located.
   final dashboardButtonItem =
       BottomNavigationBarItem(label: 'Dashboard', icon: Icon(Icons.dashboard));
@@ -393,7 +364,12 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
       BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home');
 
   quickTimer() async {
+    try{
     return Timer(Duration(milliseconds: 1), executeRefresh);
+    }
+    on Exception catch(ex){
+      _showAlert(context, ex.toString());
+    }
   }
 
   void executeRefresh() async {
@@ -419,44 +395,12 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
     try {
       int results = getPasswordChangeResults();
       if (results == 0) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Password changed successfully!'),
-            duration: const Duration(milliseconds: 1500),
-            width: 280.0,
-            // Width of the SnackBar.
-            padding: const EdgeInsets.symmetric(
-              horizontal: 8.0,
-            ),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.horizontal(
-                  left: Radius.circular(10.0), right: Radius.circular(10.0)),
-            ),
-          ),
-        );
+       _showAlert(context, "Password Change Successful!");
       } else {
         throw Exception("Password Change Failed");
       }
-    } on Exception catch (ex) {
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text(
-                ex.toString(),
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              content: Text('Your password change failed.'),
-              actions: [
-                TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text("Ok"))
-              ],
-            );
-          });
+    } on Exception {
+     _showAlert(context, "Password Change failed");
     }
   }
 
@@ -483,7 +427,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
       appBar: appBars()[_selectedIndex],
       body: Center(child: screens().elementAt(_selectedIndex)),
       floatingActionButton: FloatingActionButton.extended(
-        label: Text('Record'),
+        label: Text('Compose'),
         icon: Icon(Icons.edit),
         onPressed: () {
           setState(() {

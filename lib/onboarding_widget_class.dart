@@ -4,7 +4,6 @@ import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:onboarding/onboarding.dart';
 import 'package:flutter/material.dart';
 import 'splash_screendart.dart';
-import 'package:package_info/package_info.dart';
 
 import 'project_strings_file.dart';
 
@@ -48,28 +47,6 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
   }
 
 // Onboarding pages location
-  Material _skipButton({void Function(int)? setIndex}) {
-    return Material(
-      borderRadius: defaultSkipButtonBorderRadius,
-      color: AppColors.mainAppColor,
-      child: InkWell(
-        borderRadius: defaultSkipButtonBorderRadius,
-        onTap: () {
-          if (setIndex != null) {
-            index = 6;
-            setIndex(6);
-          }
-        },
-        child: const Padding(
-          padding: defaultSkipButtonPadding,
-          child: Text(
-            'Skip',
-            style: defaultSkipButtonTextStyle,
-          ),
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -434,7 +411,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                           hintText: 'Enter a secure Password'),
                       onChanged: (text) {
 
-                        greetingValueSaved = text;
+                        savedPasswordValue = text;
                       },
                     ),
                   ),
@@ -448,32 +425,6 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                           hintText: 'Enter a hint to help you remember your password easier here'),
                       onChanged: (text) {
                         passwordHint = text;
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 15, bottom: 0),
-                    child: TextField(
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Enter a diary password here',
-                          hintText: 'Enter a secure password for your diary.'),
-                      onChanged: (text) {
-                        savedPasswordValue = text;
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 15, bottom: 0),
-                    child: TextField(
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Enter a password hint here',
-                          hintText: 'Enter a hint to make it easy to remember your password.'),
-                      onChanged: (text) {
-                        passwordHintValueSaved = text;
                       },
                     ),
                   ),
@@ -505,8 +456,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                         prefs.setBool('firstVisit', false);
                         dbPassword = savedPasswordValue;
                         userPassword = savedPasswordValue;
-                        callingCard = false;
-                        Navigator.pushReplacementNamed(context, '/success');
+                        Navigator.pushReplacementNamed(context, '/login');
                       } else {
                         try {
                           showDialog(

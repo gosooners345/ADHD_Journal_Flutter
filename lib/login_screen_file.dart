@@ -95,16 +95,13 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
     passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
     greeting = prefs.getString("greeting") ?? '';
     loginGreeting = "Welcome $greeting! Please sign in below to get started!";
+    resetLoginFieldState();
   }
 
   void resetLoginFieldState() {
-
     setState(() {
-      if (passwordHint == '') {
+      if (passwordHint == '' || passwordHint == ' ') {
         hintText = 'Enter secure password';
-        hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember your password in case you forget.'
-            ' Set it to something memorable.\r\n This will be encrypted like your password so nobody can read your hint.'
-            '\r\n You can enter this in settings.';
       } else {
         hintText ='Password Hint is : $passwordHint';
       }
@@ -134,6 +131,7 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
                 Navigator.pushNamed(context, '/success').then((value) =>
                 {
                   recordHolder.clear(),
+                  stuff.clear(),
                   resetLoginFieldState(),
                 });
               } else {
@@ -222,29 +220,6 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
                               passwordEnabled) {
                             stuff.clear();
                             loginPassword = '';
-                           /* if(passwordHint==''){
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text(
-                                        "Password Hint available ",
-                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                      ),
-                                      content:Column(children: [ Text(
-                                          'The app now allows you to store a hint so it\'s easier to remember your password in case you forget. Set it to something memorable. This will be encrypted like your password so nobody can read your hint.'
-                                              '\r\n You can enter this in settings.'),
-                                      ]),
-                                      actions: [
-                                        TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text("Ok"))
-                                      ],
-                                    );
-                                  });
-                            }*/
                             Navigator.pushNamed(context, '/success')
                                 .then((value) => {
                               stuff.clear(),
@@ -255,31 +230,8 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
                               }),
                             });
                           } else if (!passwordEnabled) {
-                            callingCard = true;
+
                             refreshPrefs();
-                          /*  if(passwordHint==''){
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text(
-                                        "Password Hint available ",
-                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                      ),
-                                      content:Column(children: [ Text(
-                                          'The app now allows you to store a hint so it\'s easier to remember your password in case you forget. Set it to something memorable. This will be encrypted like your password so nobody can read your hint.'
-                                              '\r\n You can enter this in settings.'),
-                                      ]),
-                                      actions: [
-                                        TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text("Ok"))
-                                      ],
-                                    );
-                                  });
-                            }*/
                             loginPassword = '';
                             stuff.clear();
                             Navigator.pushNamed(context, '/success').then(
@@ -301,7 +253,6 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
                         ConnectionState.waiting) {
                       return ElevatedButton(
                         onPressed: () {
-                          callingCard = true;
                           resetLoginFieldState();
                           if (loginPassword == userPassword) {
                             Navigator.pushNamed(context, '/success').then(
@@ -327,9 +278,7 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
             SizedBox(
               height: 130,
             ),
-            Padding(
-              padding: EdgeInsets.all(8.0),child: Text(hintPrompt,style: const TextStyle(fontSize: 18.0)),
-            ),
+
           ],
         ),
       ),
