@@ -17,6 +17,7 @@ class OnBoardingWidget extends StatefulWidget {
 // Variables to store inside the DB
 String savedPasswordValue = '';
 String greetingValueSaved = '';
+String passwordHintValueSaved = '';
 bool callingCard = false;
 
 class _OnBoardingWidgetState extends State<OnBoardingWidget> {
@@ -432,7 +433,8 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                           labelText: 'New Password for diary',
                           hintText: 'Enter a secure Password'),
                       onChanged: (text) {
-                        savedPasswordValue = text;
+
+                        greetingValueSaved = text;
                       },
                     ),
                   ),
@@ -450,6 +452,32 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     ),
                   ),
                   Padding(
+                    padding: const EdgeInsets.only(
+                        left: 15.0, right: 15.0, top: 15, bottom: 0),
+                    child: TextField(
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Enter a diary password here',
+                          hintText: 'Enter a secure password for your diary.'),
+                      onChanged: (text) {
+                        savedPasswordValue = text;
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 15.0, right: 15.0, top: 15, bottom: 0),
+                    child: TextField(
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Enter a password hint here',
+                          hintText: 'Enter a hint to make it easy to remember your password.'),
+                      onChanged: (text) {
+                        passwordHintValueSaved = text;
+                      },
+                    ),
+                  ),
+                  Padding(
                     padding: const EdgeInsets.all(15.0),
                     child: CheckboxListTile(
                         title: const Text("Password enabled?"),
@@ -462,15 +490,14 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                         }),
                   ),
                   ElevatedButton(
-                   /* style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(AppColors.mainAppColor),
-                    ),*/
+
                     onPressed: () async {
                       if (savedPasswordValue != '') {
                         await encryptedSharedPrefs.setString('passwordHint', passwordHint);
                         await encryptedSharedPrefs.setString(
                             'loginPassword', savedPasswordValue);
+                        await encryptedSharedPrefs.setString(
+                            'passwordHint', passwordHintValueSaved);
                         await encryptedSharedPrefs.setString(
                             'dbPassword', savedPasswordValue);
                        prefs.setBool('passwordEnabled', isSaved);
