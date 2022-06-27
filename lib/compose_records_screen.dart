@@ -333,6 +333,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
               title: successStateWidget,
               activeColor: AppColors.mainAppColor,
             ),
+            SizedBox(height: 20,)
           ],
         ),
       ),
