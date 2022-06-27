@@ -8,7 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../project_colors.dart';
 
 class HelpfulLinksWidget extends StatelessWidget {
-  Divider headerDivider = Divider(
+  final Divider headerDivider = Divider(
     height: 2.0,
     thickness: 1.5,
     color: AppColors.mainAppColor,
@@ -19,6 +19,7 @@ class HelpfulLinksWidget extends StatelessWidget {
   Widget build(BuildContext context) {
    return Scaffold(appBar: AppBar(title: const Text("Resources"),leading:IconButton(icon: backArrowIcon,onPressed: (){Navigator.pop(context);},),),
      body:
+         // General resources
          CustomScrollView(
            slivers: [
              SliverList(delegate: SliverChildListDelegate([
@@ -26,16 +27,18 @@ class HelpfulLinksWidget extends StatelessWidget {
                headerDivider
              ]),
              ),
+
              SliverList(delegate: SliverChildBuilderDelegate((BuildContext context,int index){
-               return Card(child:ListTile(style:ListTileStyle.list,title: linkArray[index].title,onTap: (){
-                 _launchURL(linkArray[index].url);
-               },enableFeedback: true,),elevation: 2.0,borderOnForeground: true,
+               return Card(elevation: 2.0,borderOnForeground: true,
                  shape: RoundedRectangleBorder(
                      side: BorderSide(color: AppColors.mainAppColor, width: 1.0),
-                     borderRadius: BorderRadius.circular(10)),);
+                     borderRadius: BorderRadius.circular(10)),child:ListTile(style:ListTileStyle.list,title: linkArray[index].title,onTap: (){
+                 _launchURL(linkArray[index].url);
+               },enableFeedback: true,),);
              },childCount: linkArray.length,
              ),
              ),
+             // Youtube links
              SliverList(delegate: SliverChildListDelegate([
                headerDivider,
               ListTile(title: const Text("Video resources",style: TextStyle(fontWeight: FontWeight.bold),),leading: Icon(Icons.play_circle_outlined,color: AppColors.mainAppColor,),),
@@ -43,15 +46,29 @@ class HelpfulLinksWidget extends StatelessWidget {
              ]),
              ),
              SliverList(delegate: SliverChildBuilderDelegate((BuildContext context,int index){
-               return Card(child:ListTile(style:ListTileStyle.list,title: youtube_LinksArray[index].title,onTap: (){
-    _launchURL(youtube_LinksArray[index].url);
-    },enableFeedback: true,),elevation: 2.0,borderOnForeground: true,
+               return Card(elevation: 2.0,borderOnForeground: true,
     shape: RoundedRectangleBorder(
     side: BorderSide(color: AppColors.mainAppColor, width: 1.0),
-    borderRadius: BorderRadius.circular(10)),);
+    borderRadius: BorderRadius.circular(10)),child:ListTile(style:ListTileStyle.list,title: youtube_LinksArray[index].title,onTap: (){
+    _launchURL(youtube_LinksArray[index].url);
+    },enableFeedback: true,),);
     },childCount: youtube_LinksArray.length,
              ),
              ),
+             //Podcasts
+       /*      SliverList(delegate: SliverChildListDelegate([headerDivider,ListTile(title: Text("Podcasts",style: TextStyle(fontWeight: FontWeight.bold),),leading: Icon(Icons.play_circle_outlined,color: AppColors.mainAppColor, )),headerDivider,
+    ],),),
+           SliverList(delegate: SliverChildBuilderDelegate((BuildContext context, int index){
+             return Card(elevation: 2.0,borderOnForeground: true,
+             shape: RoundedRectangleBorder(side: BorderSide(color: AppColors.mainAppColor,width: 1.0),
+                 borderRadius: BorderRadius.circular(10)),child: ListView.builder(itemBuilder: (BuildContext context, int index2){
+                   return ListTile(style: ListTileStyle.list,title: podcast_LinksArray[index].serviceTitles[index2],
+                     onTap:(){_launchURL(podcast_LinksArray[index].urlLinks[index2]);},);
+                 })
+            );
+
+           }),)*/
+
            ],
          ),
    );

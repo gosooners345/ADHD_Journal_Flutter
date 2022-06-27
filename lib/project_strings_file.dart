@@ -79,3 +79,9 @@ const String password_hint_needed = 'The app now features the ability to add a p
 const String link_how_to_ADHD_YT = 'https://www.youtube.com/c/HowtoADHD';
 const String link_chadd_website = 'https://www.chadd.org';
 const String link_additudemag_website = 'https://www.additudemag.com/';
+
+const link_adhd_rewired = [
+  'https://podcasts.apple.com/us/podcast/adhd-rewired/id849400337?mt=2',
+  'https://open.spotify.com/show/1NYBs6dbNcVDWNpcuT6ldv',
+
+];
