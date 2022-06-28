@@ -28,7 +28,7 @@ packages:
       name: async
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.9.0"
+    version: "2.8.2"
   boolean_selector:
     dependency: transitive
     description:
@@ -119,7 +119,7 @@ packages:
       name: ffi
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "2.0.1"
   file:
     dependency: transitive
     description:
@@ -442,14 +442,14 @@ packages:
       name: syncfusion_flutter_charts
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "20.1.60+1"
+    version: "20.1.61"
   syncfusion_flutter_core:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "20.1.60"
+    version: "20.1.61"
   synchronized:
     dependency: transitive
     description:
@@ -484,7 +484,7 @@ packages:
       name: url_launcher
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.1.3"
+    version: "6.1.4"
   url_launcher_android:
     dependency: transitive
     description:
@@ -519,7 +519,7 @@ packages:
       name: url_launcher_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.5"
+    version: "2.1.0"
   url_launcher_web:
     dependency: transitive
     description:
