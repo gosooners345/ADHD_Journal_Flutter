@@ -108,8 +108,9 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                 ),
               ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+                  SizedBox(width: 15,),
                   const Text('Reset Zoom'),
                   IconButton(
                     icon: const Icon(Icons.refresh),
@@ -157,9 +158,9 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                 side: BorderSide(color: AppColors.mainAppColor, width: 1.0),
                 borderRadius: BorderRadius.circular(10)),
             elevation: 2.0,
-            child: Column(
+            child:Column(
               children: [
-                Padding(
+            Container(height:400,child:Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: SfCartesianChart(
                     zoomPanBehavior: zoomPanBehavior1,
@@ -176,7 +177,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                         name: 'Emotion Data from Journal Entries',
                         color: AppColors.mainAppColor,
                         xAxisName: 'Emotions',
-                        spacing: 1.5,
+                        spacing:0,
                         dataLabelSettings: const DataLabelSettings(
                           isVisible: true,
                         ),
@@ -186,18 +187,19 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                     title:
                         ChartTitle(text: 'Emotion Data from Journal Entries'),
                   ),
-                ),
+                ),),
                 Row(
                   children: [
+                    SizedBox(width: 15,),
                     const Text('Reset Zoom'),
                     IconButton(
                         onPressed: () => zoomPanBehavior1.reset(),
                         icon: const Icon(Icons.refresh)),
                   ],
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.start,
                 ),
               ],
-            )),
+            ),),
         //Symptoms Chart
         Card(
           shape: RoundedRectangleBorder(
@@ -205,10 +207,10 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
               borderRadius: BorderRadius.circular(10)),
           elevation: 2.0,
           //child: //SizedBox(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
+          child:
+          Column(
+            children: [Container(height: 850,child:
+              Padding(padding: EdgeInsets.all(16.0),
                 child: SfCartesianChart(
                   trackballBehavior: TrackballBehavior(
                       activationMode: ActivationMode
@@ -226,25 +228,28 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                         color: AppColors.mainAppColor,
                         xAxisName: 'Symptoms',
                         yAxisName: 'Counts',
-                        spacing: 1.5,
+                        spacing: 0.5,
                         dataLabelSettings:
                             const DataLabelSettings(isVisible: true)),
                   ],
                   title: ChartTitle(text: 'Symptom Data from Journal Entries'),
                 ),
-              ),
+              ),),
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+                  SizedBox(width: 15,),
                   const Text('Reset Zoom'),
                   IconButton(
                       icon: const Icon(Icons.refresh),
                       onPressed: () => zoomPanBehavior2.reset()),
+
                 ],
               ),
+
             ],
-          ),
-        ),
+          ),),
+
       ],
     );
   }
