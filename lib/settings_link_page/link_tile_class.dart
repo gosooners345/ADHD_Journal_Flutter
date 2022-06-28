@@ -36,5 +36,7 @@ var youtube_LinksArray =[
   LinkTilesDataClass( title: Text('How to ADHD Youtube Channel'),url:Uri.parse(link_how_to_ADHD_YT)),
 
 ];
+/*
 var podcast_LinksArray =[PodcastTilesDataClass(title: Text('ADHD reWired'),host: Text('Dr. Eric Tivers'), serviceTitles:['Apple Podcasts',
   "Spotify",] , urlLinks:link_adhd_rewired ) ];
+*/

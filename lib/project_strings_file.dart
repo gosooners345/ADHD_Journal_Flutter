@@ -98,7 +98,7 @@ final sorrow_emotion_cluster = [
   'mourning','disappointed','death','torn','devastated','hurt',
 ];
 final stress_based_emotion_cluster = ['stressed','nervous','uneasy','puzzled','conflicted',
-'confused',];
+  'confused',];
 final mindful_state_emotion_cluster =['humble','sobered','humbled','informed',];
 final conviction_based_emotion_cluster = ['convicted','remorse','remorseful','regretful','repentant',
   'guilt','guilty','regret','serious'];
@@ -112,7 +112,7 @@ final fear_emotion_cluster = [
 final extreme_emotion_cluster = ['reckless','impulsive',
   'tired',
   'exhausted','overwhelmed', 'apathetic','apathy','struggling','lethargic',
-'empty','lazy','self-destructive','meh','crazy','bored'
+  'empty','lazy','self-destructive','meh','crazy','bored'
 ];
 final peaceful_emotion_cluster = [
   'content', 'peace', 'peaceful','loved','calm','thankful','blessed','love','relaxed','relief',
@@ -121,7 +121,7 @@ final peaceful_emotion_cluster = [
 final confidence_emotion_cluster = [
   'confident', 'bold','boldness','challenged','inspired','respected','respectful',
   'accomplished','victorious','passion','determination','awake','determined','hope',
-'curious','motivated','good','functional','successful','hopeful','relieved','calmer',
+  'curious','motivated','good','functional','successful','hopeful','relieved','calmer',
 ];
 
 
