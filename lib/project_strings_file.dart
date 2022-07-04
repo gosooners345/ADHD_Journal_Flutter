@@ -22,8 +22,10 @@ final emotionalSymptomList=[
 ];
 final inattentiveSymptomsList=[
   'Distractions',
+  'Bored',
   'Procrastination',
   'Sensory Overload',
+  'Overwhelmed',
   'Struggling to focus',
   'Unable to focus',
   'Lacking Motivation',
@@ -69,7 +71,7 @@ const String sixth_paragraph_intro_string =
     ' Let\'s make mental health better for everyone!';
 const String home_page_intro_paragraph_string =
     'Once you log in, you\'ll see your journal entries, the navigation bar at the bottom, the compose button in the lower right hand corner, and several buttons on top. '
-    "\r\n Here\'s a quick rundown of the buttons: The search button is in the middlw with a clear all button for resetting the list after a search is completed, the sort button is the second from the right, and the settings is button on the upper right hand corner of the screen."
+    "\r\n Here\'s a quick rundown of the buttons: The search button is in the middle with a clear all button for resetting the list after a search is completed, the sort button is the second from the right, and the settings is button on the upper right hand corner of the screen."
     "\r\n This is where you will probably spend most of the time in the app if you\'re not composing an entry or viewing the dashboard. ";
 const String resource_link_title = 'Click here to quickly access resources about ADHD and to learn more about how to cope with it\'s many symptoms';
 const String password_hint_needed = 'The app now features the ability to add a password hint so you can remember your password easier. '
@@ -79,49 +81,65 @@ const String password_hint_needed = 'The app now features the ability to add a p
 const String link_how_to_ADHD_YT = 'https://www.youtube.com/c/HowtoADHD';
 const String link_chadd_website = 'https://www.chadd.org';
 const String link_additudemag_website = 'https://www.additudemag.com/';
+
 final anger_emotion_cluster = [
   'angry', 'anger', 'furious', 'angered', 'mad','rage',
-  'enraged','bitter','bitterness','hatred','triggered',
-  'frustrated','annoyed',
+  'enraged','hatred','triggered','annoyed','spiteful','hostile','resentful',
+  'frustrated','obstinate','pissed off','peeved','rebellious','vengeful','upset'
 ];
 final joy_emotion_cluster = [
   'some joy', 'joy','joyful','happy','lively','exuberant','happier','happiest',
-  'joyful', 'ecstatic','pumped','excited','excitement',
+  'ecstatic','pumped','excited','excitement','glee','gleeful','delighted',
 ];
 final sorrow_emotion_cluster = [
   'grief','depressed','depression','sad',
   'sadness','sorrowful',
-  'despair','upset','discouraged','crappy','lonely',
+  'despair','upset','discouraged','crappy',
   'near tears', 'tearful',
   'broken','suicidal','heartache','heartbroken','heartbreak',
   'achy','dumb','horrible','shame','despair','dread','dreadful','sorrow',
   'mourning','disappointed','death','torn','devastated','hurt',
 ];
 final stress_based_emotion_cluster = ['stressed','nervous','uneasy','puzzled','conflicted',
-  'confused',];
+  'confused','crazy','overwhelmed',];
 final mindful_state_emotion_cluster =['humble','sobered','humbled','informed',];
-final conviction_based_emotion_cluster = ['convicted','remorse','remorseful','regretful','repentant',
-  'guilt','guilty','regret','serious'];
-final body_pain_emotion_cluster = ['sore','pain','sick','sleepy'];
+final conviction_based_emotion_cluster = ['convicted','repentant',
+  'serious'];
+final body_pain_emotion_cluster = ['sore','pain','sick','achy'];
 final fear_emotion_cluster = [
   'terrified', 'anxious', 'anxiety','rejected','uneasy','skeptical','nervous',
   'stressed','panicky','panic','fear','fearful','untrusting','deceived',
   'distress','distressed','scared','hopeless','helpless','fidgety','worried',
-  'flakey','insane','unsure','trapped','frightened','mistrust','shocked','surprised',
+  'flaky','insane','unsure','trapped','frightened','mistrust','shocked','surprised',
+  'uncertain','flakey'
 ];
-final extreme_emotion_cluster = ['reckless','impulsive',
-  'tired',
-  'exhausted','overwhelmed', 'apathetic','apathy','struggling','lethargic',
-  'empty','lazy','self-destructive','meh','crazy','bored'
+final apathetic_emotion_cluster = ['reckless','impulsive',
+ 'apathetic','apathy','struggling','lethargic',
+  'lazy','self-destructive','meh','bored'
 ];
 final peaceful_emotion_cluster = [
-  'content', 'peace', 'peaceful','loved','calm','thankful','blessed','love','relaxed','relief',
-  'slightest bit of relief',''
+  'content', 'peace', 'peaceful','calm','thankful','blessed','relaxed','relief',
+  'slightest bit of relief','pleased','mellow','adequate','calmer',''
 ];
 final confidence_emotion_cluster = [
-  'confident', 'bold','boldness','challenged','inspired','respected','respectful',
-  'accomplished','victorious','passion','determination','awake','determined','hope',
-  'curious','motivated','good','functional','successful','hopeful','relieved','calmer',
+  'confident', 'bold','boldness','challenged','inspired','respected','respectful','energetic','focused',
+  'accomplished','victorious','passion','determination','awake','determined','hope','eager',
+  'curious','motivated','good','functional','successful','hopeful','relieved','in the groove','groovy',
+  'catching fire','fired up','brave','courage','courageous','hyperfocused',
 ];
-
-
+final shame_emotion_cluster = ['ashamed','humiliated','foolish','guilty','guilt','humble','idiotic','embarrassed','regretful','shameful','remorseful','worthless',
+'remorse','regret'];
+final hurt_emotion_cluster =[
+'abandoned','abused','attacked',
+  'belittled'  'bitter','bitterness',
+  'cheated',  'disappointed',
+  'dismayed',  'grieving',  'gypped',  'humiliated',
+  'mournful',  'sorrowful',  'rejected',  'resentful',
+];
+final confused_emotion_cluster =[ 'baffled','befuddled','bewildered','confused','puzzled','flustered','disoriented','scattered','troubled','unfocused',];
+final love_emotion_cluster = ['loved','love','warm','caring','devoted','affectionate','aroused'];
+final surprised_emotion_cluster=['amazed','aghast','astonished','incredulous','startled','shocked',];
+final wanting_emotion_cluster = ['empty','envious','homesick','jealous','ignored','hungry','lonely'];
+final body_exhaustion_cluster = ['tired','sleepy','exhausted'];
+final weak_emotional_cluster = ['weak','inadequate','controlled','burdened','lost','powerless','restricted','discouraged','hopeless','inhibited','helpless','despair','despairing',
+'broken'];

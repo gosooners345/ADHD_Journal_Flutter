@@ -54,36 +54,37 @@ class RecordList {
     countMap['Joy'] = 0;
     countMap['Confident'] = 0;
     countMap['Hurt'] = 0;
+    countMap['Sad'] = 0;
     countMap['Peace'] = 0;
-    countMap['Motivated'] = 0;
+    countMap['Wanting'] = 0;
     countMap['Physical pain'] = 0;
     countMap['Mindful'] = 0;
     countMap['Convicted'] = 0;
     countMap['Stressed'] = 0;
-    countMap['Awe'] =0;
+    countMap['Confused'] =0;
     countMap['Love']=0;
-    countMap['Grateful'] =0;
     countMap['Shame'] = 0;
     countMap['Apathetic'] =0;
     countMap['Surprised'] =0;
-
+countMap['Weak'] = 0;
+countMap['Physically tired'] = 0;
 
     // This will iterate through the list to get the quantity of each specific element in the emotion list.
     emotionCounts.forEach((element) {
 
       var sanitizedElement = element.trimLeft().trimRight().toLowerCase();
-/*
+
       if(anger_emotion_cluster.contains(sanitizedElement)){
         countMap['Anger']++;
-      }
-      else if(joy_emotion_cluster.contains(sanitizedElement)){
-        countMap['Joy']++;
       }
       else if(fear_emotion_cluster.contains(sanitizedElement)){
         countMap['Anxiety']++;
       }
-      else if(extreme_emotion_cluster.contains(sanitizedElement)){
-        countMap['Motivated']++;
+      else if(joy_emotion_cluster.contains(sanitizedElement)){
+        countMap['Joy']++;
+      }
+      else if(apathetic_emotion_cluster.contains(sanitizedElement)){
+        countMap['Apathetic']++;
       }
       else if(peaceful_emotion_cluster.contains(sanitizedElement)){
         countMap['Peace']++;
@@ -106,9 +107,31 @@ class RecordList {
       else if(mindful_state_emotion_cluster.contains(sanitizedElement)){
         countMap['Mindful']++;
       }
-      else if(){
+      else if(hurt_emotion_cluster.contains(sanitizedElement)){
+        countMap['Hurt']++;
       }
-     else*/ if (!countMap.containsKey(sanitizedElement)) {
+      else if(wanting_emotion_cluster.contains(sanitizedElement)){
+        countMap['Wanting']++;
+      }
+      else if(shame_emotion_cluster.contains(sanitizedElement)){
+        countMap['Shame']++;
+      }
+      else if(love_emotion_cluster.contains(sanitizedElement)){
+        countMap['Love']++;
+      }
+      else if(surprised_emotion_cluster.contains(sanitizedElement)){
+        countMap['Surprised']++;
+      }
+      else if(body_exhaustion_cluster.contains(sanitizedElement)){
+        countMap['Physically tired']++;
+      }
+      else if(weak_emotional_cluster.contains(sanitizedElement)){
+        countMap['Weak']++;
+      }
+      else if(confused_emotion_cluster.contains(sanitizedElement)){
+        countMap['Confused']++;
+      }
+     else if (!countMap.containsKey(sanitizedElement)) {
         countMap[sanitizedElement] = 1;
       } else {
         countMap[sanitizedElement]++;
