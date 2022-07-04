@@ -49,61 +49,66 @@ class RecordList {
     for (Records record in recordsBloc.recordHolder) {
       emotionCounts.addAll(record.emotions.split(','));
     }
-    countMap['Anger based'] = 0;
-    countMap['Fear based'] = 0;
-    countMap['Joy based'] = 0;
-    countMap['Confidence based'] = 0;
-    countMap['Sorrow based'] = 0;
-    countMap['Peaceful based'] = 0;
-    countMap['Motivation based'] = 0;
-    countMap['Physical body based'] = 0;
-    countMap['Mindful based'] = 0;
-    countMap['Conviction based'] = 0;
-    countMap['Stress based'] = 0;
+    countMap['Anger'] = 0;
+    countMap['Anxiety'] = 0;
+    countMap['Joy'] = 0;
+    countMap['Confident'] = 0;
+    countMap['Hurt'] = 0;
+    countMap['Peace'] = 0;
+    countMap['Motivated'] = 0;
+    countMap['Physical pain'] = 0;
+    countMap['Mindful'] = 0;
+    countMap['Convicted'] = 0;
+    countMap['Stressed'] = 0;
+    countMap['Awe'] =0;
+    countMap['Love']=0;
+    countMap['Grateful'] =0;
+    countMap['Shame'] = 0;
+    countMap['Apathetic'] =0;
+    countMap['Surprised'] =0;
+
 
     // This will iterate through the list to get the quantity of each specific element in the emotion list.
     emotionCounts.forEach((element) {
 
       var sanitizedElement = element.trimLeft().trimRight().toLowerCase();
-
+/*
       if(anger_emotion_cluster.contains(sanitizedElement)){
-        countMap['Anger based']++;
+        countMap['Anger']++;
       }
       else if(joy_emotion_cluster.contains(sanitizedElement)){
-        countMap['Joy based']++;
+        countMap['Joy']++;
       }
       else if(fear_emotion_cluster.contains(sanitizedElement)){
-        countMap['Fear based']++;
+        countMap['Anxiety']++;
       }
       else if(extreme_emotion_cluster.contains(sanitizedElement)){
-        countMap['Motivation based']++;
+        countMap['Motivated']++;
       }
       else if(peaceful_emotion_cluster.contains(sanitizedElement)){
-        countMap['Peaceful based']++;
+        countMap['Peace']++;
       }
       else if(confidence_emotion_cluster.contains(sanitizedElement)){
-        countMap['Confidence based']++;
+        countMap['Confident']++;
       }
       else if(sorrow_emotion_cluster.contains(sanitizedElement)){
-        countMap['Sorrow based']++;
+        countMap['Sad']++;
       }
       else if(body_pain_emotion_cluster.contains(sanitizedElement)){
-        countMap['Physical body based']++;
+        countMap['Physical pain']++;
       }
       else if(conviction_based_emotion_cluster.contains(sanitizedElement)){
-        countMap['Conviction based']++;
+        countMap['Convicted']++;
       }
       else if(stress_based_emotion_cluster.contains(sanitizedElement)){
-        countMap['Stress based']++;
+        countMap['Stressed']++;
       }
       else if(mindful_state_emotion_cluster.contains(sanitizedElement)){
-        countMap['Mindful based']++;
+        countMap['Mindful']++;
       }
-
-
-
-
-     else if (!countMap.containsKey(sanitizedElement)) {
+      else if(){
+      }
+     else*/ if (!countMap.containsKey(sanitizedElement)) {
         countMap[sanitizedElement] = 1;
       } else {
         countMap[sanitizedElement]++;
