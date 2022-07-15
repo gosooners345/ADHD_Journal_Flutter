@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../project_colors.dart';
+import '../project_resources/project_colors.dart';
 
 class ComposeHelpWidget extends StatelessWidget {
   @override

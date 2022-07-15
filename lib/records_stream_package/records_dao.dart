@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 
 import 'records_db_class.dart';
-import 'package:adhd_journal_flutter/records_data_class_db.dart';
+import 'package:adhd_journal_flutter/record_data_package/records_data_class_db.dart';
 
 class RecordsDao {
   final RecordsDB recordsDB = RecordsDB.recordDB;

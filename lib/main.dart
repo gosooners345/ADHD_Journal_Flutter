@@ -1,8 +1,8 @@
 // ignore_for_file: prefer_const_constructors, prefer_final_fields
 
 import 'dart:async';
-import 'package:adhd_journal_flutter/dashboard_stats_display_widget.dart';
-import 'package:adhd_journal_flutter/record_list_class.dart';
+import 'package:adhd_journal_flutter/ui/dashboard_stats_display_widget.dart';
+import 'package:adhd_journal_flutter/record_data_package/record_list_class.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
 import 'package:adhd_journal_flutter/settings.dart';
 import 'package:adhd_journal_flutter/settings_link_page/helpful_links.dart';
@@ -10,15 +10,15 @@ import 'package:adhd_journal_flutter/settings_tutorials/compose_tutorial.dart';
 import 'package:adhd_journal_flutter/settings_tutorials/dashboard_help.dart';
 import 'package:adhd_journal_flutter/settings_tutorials/sort_and_filter_help.dart';
 import 'package:adhd_journal_flutter/settings_tutorials/tutorial_help_guide.dart';
-import 'package:adhd_journal_flutter/splash_screendart.dart';
+import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
 import 'package:flutter/foundation.dart';
-import 'onboarding_widget_class.dart';
-import 'record_display_widget.dart';
+import 'app_start_package/onboarding_widget_class.dart';
+import 'ui/record_display_widget.dart';
 import 'package:flutter/material.dart';
-import 'project_colors.dart';
-import 'records_data_class_db.dart';
-import 'login_screen_file.dart';
-import 'compose_records_screen.dart';
+import 'project_resources/project_colors.dart';
+import 'record_data_package/records_data_class_db.dart';
+import 'app_start_package/login_screen_file.dart';
+import 'records_compose_components/compose_records_screen.dart';
 
 List<Records> recordHolder = [];
 int id = 0;

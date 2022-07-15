@@ -1,7 +1,7 @@
-import 'package:adhd_journal_flutter/project_colors.dart';
+import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'records_data_class_db.dart';
+import '../record_data_package/records_data_class_db.dart';
 
 class RecordCardViewWidget extends StatefulWidget {
   RecordCardViewWidget({Key? key, required this.record}) : super(key: key);

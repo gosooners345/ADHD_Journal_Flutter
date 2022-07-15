@@ -1,8 +1,8 @@
-import 'package:adhd_journal_flutter/record_list_class.dart';
+import 'package:adhd_journal_flutter/record_data_package/record_list_class.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:adhd_journal_flutter/project_colors.dart';
-import 'main.dart';
+import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
+import '../main.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class DashboardViewWidget extends StatefulWidget {

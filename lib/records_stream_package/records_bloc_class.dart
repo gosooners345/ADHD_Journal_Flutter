@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:adhd_journal_flutter/records_data_class_db.dart';
+import 'package:adhd_journal_flutter/record_data_package/records_data_class_db.dart';
 import 'package:flutter/foundation.dart';
 import 'records_repository.dart';
 

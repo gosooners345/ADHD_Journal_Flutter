@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'package:adhd_journal_flutter/project_colors.dart';
-import 'package:adhd_journal_flutter/splash_screendart.dart';
+import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
+import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
 import 'package:flutter/foundation.dart';
-import 'main.dart';
+import '../main.dart';
 import 'package:flutter/material.dart';
 import 'symptom_selector_screen.dart';
-import 'records_data_class_db.dart';
+import '../record_data_package/records_data_class_db.dart';
 
 class ComposeRecordsWidget extends StatefulWidget {
   const ComposeRecordsWidget(

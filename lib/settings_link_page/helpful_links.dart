@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:adhd_journal_flutter/settings_link_page/link_tile_class.dart';
-import 'package:adhd_journal_flutter/splash_screendart.dart';
+import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../project_colors.dart';
+import '../project_resources/project_colors.dart';
 
 class HelpfulLinksWidget extends StatelessWidget {
   final Divider headerDivider = Divider(

@@ -1,4 +1,4 @@
-import 'package:adhd_journal_flutter/project_strings_file.dart';
+import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

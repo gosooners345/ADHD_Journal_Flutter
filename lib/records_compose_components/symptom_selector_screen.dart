@@ -1,8 +1,8 @@
-import 'package:adhd_journal_flutter/project_colors.dart';
-import 'package:adhd_journal_flutter/splash_screendart.dart';
+import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
+import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
 import 'package:flutter/material.dart';
 
-import 'project_strings_file.dart';
+import '../project_resources/project_strings_file.dart';
 
 class SymptomSelectorScreen extends StatefulWidget {
   SymptomSelectorScreen({Key? key, required this.symptoms}) : super(key: key);

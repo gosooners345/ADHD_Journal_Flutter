@@ -1,13 +1,13 @@
 import 'dart:io';
 
-import 'package:adhd_journal_flutter/project_colors.dart';
-import 'package:adhd_journal_flutter/project_strings_file.dart';
+import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
+import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
 import 'package:flutter/foundation.dart';
 import 'package:launch_review/launch_review.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter/material.dart';
-import 'splash_screendart.dart';
-import 'login_screen_file.dart';
+import 'app_start_package/splash_screendart.dart';
+import 'app_start_package/login_screen_file.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);

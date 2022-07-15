@@ -1,4 +1,4 @@
-import 'package:adhd_journal_flutter/project_colors.dart';
+import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:flutter/material.dart';
 
 class TutorialHelpScreen extends StatelessWidget {

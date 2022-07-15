@@ -1,18 +1,18 @@
 import 'dart:async';
 
-import 'package:adhd_journal_flutter/project_strings_file.dart';
-import 'package:adhd_journal_flutter/record_list_class.dart';
-import 'package:adhd_journal_flutter/record_view_card_class.dart';
+import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
+import 'package:adhd_journal_flutter/record_data_package/record_list_class.dart';
+import 'package:adhd_journal_flutter/ui_components/record_view_card_class.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
 import 'package:flutter/foundation.dart';
 //import 'package:package_info_plus/package_info_plus.dart';
-import 'main.dart';
+import '../main.dart';
 import 'package:flutter/material.dart';
-import 'project_colors.dart';
-import 'splash_screendart.dart';
-import 'records_data_class_db.dart';
-import 'login_screen_file.dart';
-import 'compose_records_screen.dart';
+import '../project_resources/project_colors.dart';
+import '../app_start_package/splash_screendart.dart';
+import '../record_data_package/records_data_class_db.dart';
+import '../app_start_package/login_screen_file.dart';
+import '../records_compose_components/compose_records_screen.dart';
 
 class RecordDisplayWidget extends StatefulWidget {
   const RecordDisplayWidget({Key? key}) : super(key: key);

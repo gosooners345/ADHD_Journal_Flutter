@@ -1,11 +1,11 @@
-import 'package:adhd_journal_flutter/login_screen_file.dart';
-import 'package:adhd_journal_flutter/project_colors.dart';
+import 'package:adhd_journal_flutter/app_start_package/login_screen_file.dart';
+import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:onboarding/onboarding.dart';
 import 'package:flutter/material.dart';
-import 'splash_screendart.dart';
+import '../app_start_package/splash_screendart.dart';
 
-import 'project_strings_file.dart';
+import '../project_resources/project_strings_file.dart';
 
 class OnBoardingWidget extends StatefulWidget {
   const OnBoardingWidget({Key? key}) : super(key: key);

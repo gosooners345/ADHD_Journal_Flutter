@@ -2,10 +2,10 @@
 
 import 'dart:async';
 
-import 'package:adhd_journal_flutter/onboarding_widget_class.dart';
+import 'onboarding_widget_class.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'main.dart';
+import '../main.dart';
 import 'splash_screendart.dart';
 
 /// Required to open the application , simple login form to start
