@@ -2,6 +2,9 @@
 
 import 'dart:async';
 
+import 'package:provider/provider.dart';
+
+import '../project_resources/project_colors.dart';
 import 'onboarding_widget_class.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -178,6 +181,8 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
 
   @override
   Widget build(BuildContext context) {
+    return Consumer<ThemeSwap>(
+        builder: (context, ThemeSwap themeNotifier, child) {
     return Scaffold(
       //backgroundColor: Colors.white,
       appBar: AppBar(
@@ -282,6 +287,6 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
           ],
         ),
       ),
-    );
+    );});
   }
 }

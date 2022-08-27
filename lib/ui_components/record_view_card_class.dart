@@ -1,6 +1,7 @@
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../record_data_package/records_data_class_db.dart';
 
 class RecordCardViewWidget extends StatefulWidget {
@@ -18,6 +19,8 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
   SizedBox space2 = const SizedBox(width: 8);
   @override
   Widget build(BuildContext context) {
+    return Consumer<ThemeSwap>(
+        builder: (context, ThemeSwap themeNotifier, child) {
     return Theme(
       data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
       child: Column(
@@ -59,7 +62,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
             children: [
               Divider(
                 height: 1,
-                color: AppColors.mainAppColor,
+                color: Color(themeNotifier.isColorSeed),
               ),
               SizedBox(
                 height: 2,
@@ -77,7 +80,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
               ]),
               Divider(
                 height: 1,
-                color: AppColors.mainAppColor,
+                color: Color(themeNotifier.isColorSeed),
               ),
               SizedBox(
                 height: 2,
@@ -95,7 +98,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
               ]),
               Divider(
                 height: 1,
-                color: AppColors.mainAppColor,
+                color: Color(themeNotifier.isColorSeed),
               ),
               SizedBox(
                 height: 2,
@@ -113,7 +116,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
               ]),
               Divider(
                 height: 1,
-                color: AppColors.mainAppColor,
+                color: Color(themeNotifier.isColorSeed),
               ),
               SizedBox(
                 height: 2,
@@ -125,7 +128,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
               ]),
               Divider(
                 height: 1,
-                color: AppColors.mainAppColor,
+                color: Color(themeNotifier.isColorSeed),
               ),
             ],
           ),
@@ -155,6 +158,6 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
         ],
       ),
       // )
-    );
+    );});
   }
 }

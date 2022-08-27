@@ -12,6 +12,7 @@ import 'package:adhd_journal_flutter/settings_tutorials/sort_and_filter_help.dar
 import 'package:adhd_journal_flutter/settings_tutorials/tutorial_help_guide.dart';
 import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
 import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
 import 'app_start_package/onboarding_widget_class.dart';
 import 'ui/record_display_widget.dart';
 import 'package:flutter/material.dart';
@@ -39,34 +40,41 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      debugShowMaterialGrid: false,
-      title: 'ADHD Journal',
-      theme: ThemeData(
-          colorSchemeSeed: AppColors.mainAppColor,
-          useMaterial3: true,
-          brightness: Brightness.light),
-      darkTheme: ThemeData(
-          colorSchemeSeed: AppColors.mainAppColor,
-          useMaterial3: true,
-          brightness: Brightness.dark),
-      themeMode: ThemeMode.system,
-      initialRoute: '/',
-      routes: {
-        '/': (context) => SplashScreen(),
-        '/onboarding': (context) => OnBoardingWidget(),
-        '/savePassword': (context) => LoginScreen(),
-        '/login': (context) => LoginScreen(),
-        '/success': (context) => ADHDJournalApp(),
-        '/fail': (context) => LoginScreen(),
-        '/composehelp': (context) => ComposeHelpWidget(),
-        '/tutorials': (context) => TutorialHelpScreen(),
-        '/dashboardhelp': (context) => DashboardHelp(),
-        '/searchhelp': (context) => SortHelp(),
-        '/resources' : (context) => HelpfulLinksWidget(),
+    return ChangeNotifierProvider(create: (_)=>ThemeSwap(),
+    child: Consumer<ThemeSwap>(
+      builder: (context, ThemeSwap themeSwap, child){
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          debugShowMaterialGrid: false,
+          title: 'ADHD Journal',
+          theme: ThemeData(
+              colorSchemeSeed: Color(themeSwap.isColorSeed), // This will be replaced with a shared preferences item,
+              useMaterial3: true,
+              brightness: Brightness.light),
+          darkTheme: ThemeData(
+              colorSchemeSeed: Color(themeSwap.isColorSeed), //This will be replaced with a shared preferences item,
+              useMaterial3: true,
+              brightness: Brightness.dark),
+          themeMode: ThemeMode.system,
+          initialRoute: '/',
+          routes: {
+            '/': (context) => SplashScreen(),
+            '/onboarding': (context) => OnBoardingWidget(),
+            '/savePassword': (context) => LoginScreen(),
+            '/login': (context) => LoginScreen(),
+            '/success': (context) => ADHDJournalApp(),
+            '/fail': (context) => LoginScreen(),
+            '/composehelp': (context) => ComposeHelpWidget(),
+            '/tutorials': (context) => TutorialHelpScreen(),
+            '/dashboardhelp': (context) => DashboardHelp(),
+            '/searchhelp': (context) => SortHelp(),
+            '/resources' : (context) => HelpfulLinksWidget(),
+          },
+        );
       },
+    ),
     );
+
   }
 }
 
@@ -423,25 +431,30 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
   /// This compiles the screen display for the application.
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: appBars()[_selectedIndex],
-      body: Center(child: screens().elementAt(_selectedIndex)),
-      floatingActionButton: FloatingActionButton.extended(
-        label: Text('Compose'),
-        icon: Icon(Icons.edit),
-        onPressed: () {
-          setState(() {
-            try {
-              _createRecord();
-            } on Exception catch (ex) {
-              // ignore: avoid_print
-              print(ex);
-            }
-          });
-        },
-      ),
-      bottomNavigationBar: bottomBar(),
+    return Consumer<ThemeSwap>(
+      builder:(context,ThemeSwap themeSwapper, child){
+        return Scaffold(
+          appBar: appBars()[_selectedIndex],
+          body: Center(child: screens().elementAt(_selectedIndex)),
+          floatingActionButton: FloatingActionButton.extended(
+            label: Text('Compose'),
+            icon: Icon(Icons.edit),
+            onPressed: () {
+              setState(() {
+                try {
+                  _createRecord();
+                } on Exception catch (ex) {
+                  // ignore: avoid_print
+                  print(ex);
+                }
+              });
+            },
+          ),
+          bottomNavigationBar: bottomBar(),
+        );
+      },
     );
+
   }
 }
 

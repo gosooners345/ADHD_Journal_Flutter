@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../project_resources/project_colors.dart';
 
 class DashboardHelp extends StatelessWidget {
+  const DashboardHelp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    return Consumer<ThemeSwap>(
+        builder: (context, ThemeSwap themeNotifier, child) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard Guide'),
@@ -14,7 +19,7 @@ class DashboardHelp extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: AppColors.mainAppColor,
+            color: Color(themeNotifier.isColorSeed),
           ),
           const ListTile(
             title: Text(
@@ -23,7 +28,7 @@ class DashboardHelp extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: AppColors.mainAppColor,
+            color: Color(themeNotifier.isColorSeed),
           ),
           const ListTile(
             title: Text(
@@ -35,7 +40,7 @@ class DashboardHelp extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: AppColors.mainAppColor,
+            color: Color(themeNotifier.isColorSeed),
           ),
           const ListTile(
             title: Text('The graphing cards'),
@@ -47,7 +52,7 @@ class DashboardHelp extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: AppColors.mainAppColor,
+            color: Color(themeNotifier.isColorSeed),
           ),
           const ListTile(
             title: Text('How to zoom in on each card'),
@@ -57,6 +62,6 @@ class DashboardHelp extends StatelessWidget {
           ),
         ],
       ),
-    );
+    );});
   }
 }

@@ -41,6 +41,8 @@ dependencies:
   intl:
   launch_review:
   url_launcher:
+  provider:
+  flutter_colorpicker:
   path:
   charts_flutter: ^0.12.0
   syncfusion_flutter_charts: ^20.1.57

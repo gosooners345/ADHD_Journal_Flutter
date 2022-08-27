@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
 import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
 import '../main.dart';
 import 'package:flutter/material.dart';
 import 'symptom_selector_screen.dart';
@@ -141,6 +142,8 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
 
   @override
   Widget build(BuildContext context) {
+    return Consumer<ThemeSwap>(
+        builder: (context, ThemeSwap themeNotifier, child) {
     return Scaffold(
 
       appBar: AppBar(
@@ -168,7 +171,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(4),
                       borderSide: BorderSide(
-                          color: AppColors.mainAppColor.withOpacity(1.0),
+                          color: Color(themeNotifier.isColorSeed).withOpacity(1.0),
                           width: 1)),
                   labelText: 'What do you want to call this?'),
               textCapitalization: TextCapitalization.sentences,
@@ -184,7 +187,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4),
                     borderSide: BorderSide(
-                        color: AppColors.mainAppColor.withOpacity(1.0),
+                        color: Color(themeNotifier.isColorSeed).withOpacity(1.0),
                         width: 1)),
                 labelText: 'What\'s on your mind? ',
               ),
@@ -204,7 +207,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4),
                     borderSide: BorderSide(
-                        color: AppColors.mainAppColor.withOpacity(1.0),
+                        color: Color(themeNotifier.isColorSeed).withOpacity(1.0),
                         width: 1)),
                 labelText: 'How do you feel today?',
               ),
@@ -241,7 +244,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4), // if you need this
                 side: BorderSide(
-                  color: Colors.red.withOpacity(1.0),
+                  color: Color(themeNotifier.isColorSeed).withOpacity(1.0),
                   width: 1,
                 ),
               ),
@@ -268,7 +271,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4),
                     borderSide: BorderSide(
-                        color: AppColors.mainAppColor.withOpacity(1.0),
+                        color: Color(themeNotifier.isColorSeed).withOpacity(1.0),
                         width: 1)),
                 hintText: 'Add event tags here.',
                 labelText: 'What categories does this fall under?',
@@ -331,7 +334,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
                 });
               },
               title: successStateWidget,
-              activeColor: AppColors.mainAppColor,
+              activeColor: Color(themeNotifier.isColorSeed),
             ),
             SizedBox(height: 20,)
           ],
@@ -346,7 +349,7 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
         }
       }, label: Text("Save"),
       icon: Icon(Icons.save),),
-    );
+    );});
   }
   void _showAlert(BuildContext context,String title){
     ScaffoldMessenger.of(context).showSnackBar(

@@ -5,6 +5,7 @@ import 'package:adhd_journal_flutter/record_data_package/record_list_class.dart'
 import 'package:adhd_journal_flutter/ui_components/record_view_card_class.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
 import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
 //import 'package:package_info_plus/package_info_plus.dart';
 import '../main.dart';
 import 'package:flutter/material.dart';
@@ -67,16 +68,16 @@ passwordTimer();
   }
 
   /// Stream widget testing here
-  Widget getRecordsDisplay() {
+  Widget getRecordsDisplay(ThemeSwap themeNotifier) {
     return StreamBuilder(
       stream: recordsBloc.recordStuffs,
       builder: (BuildContext context, AsyncSnapshot<List<Records>> snapshot) {
-        return getRecordCards(snapshot);
+        return getRecordCards(snapshot,themeNotifier);
       },
     );
   }
 
-  Widget getRecordCards(AsyncSnapshot<List<Records>> snapshot) {
+  Widget getRecordCards(AsyncSnapshot<List<Records>> snapshot,ThemeSwap themeNotifier) {
     if (snapshot.hasData) {
       return snapshot.data!.isNotEmpty
           ? ListView.builder(
@@ -87,7 +88,7 @@ passwordTimer();
                   background: Card(
                     shape: RoundedRectangleBorder(
                         side: BorderSide(
-                            color: AppColors.mainAppColor, width: 1.0),
+                            color: Color(themeNotifier.isColorSeed), width: 1.0),
                         borderRadius: BorderRadius.circular(10)),
                     elevation: 2.0,
                     child: const Padding(
@@ -100,13 +101,13 @@ passwordTimer();
                         ),
                       ),
                     ),
-                    color: AppColors.mainAppColor,
+                    color: Color(themeNotifier.isColorSeed),
                   ),
                   key: ObjectKey(record),
                   child: Card(
                       shape: RoundedRectangleBorder(
                           side: BorderSide(
-                              color: AppColors.mainAppColor, width: 1.0),
+                              color: Color(themeNotifier.isColorSeed), width: 1.0),
                           borderRadius: BorderRadius.circular(10)),
                       child: ListTile(
                         onTap: () {
@@ -268,7 +269,8 @@ passwordTimer();
 
   @override
   Widget build(BuildContext context) {
-
+    return Consumer<ThemeSwap>(
+        builder: (context, ThemeSwap themeNotifier, child) {
     return Column(
       children: <Widget>[
         const SizedBox(height: 20),
@@ -287,8 +289,8 @@ passwordTimer();
             ],
           ),
         ),
-        Expanded(child: getRecordsDisplay())
+        Expanded(child: getRecordsDisplay(themeNotifier))
       ],
-    );
+    );});
   }
 }

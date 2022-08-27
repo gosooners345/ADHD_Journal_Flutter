@@ -3,6 +3,7 @@ import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:onboarding/onboarding.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../app_start_package/splash_screendart.dart';
 
 import '../project_resources/project_strings_file.dart';
@@ -50,6 +51,8 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
 
   @override
   Widget build(BuildContext context) {
+    return Consumer<ThemeSwap>(
+        builder: (context, ThemeSwap themeNotifier, child) {
     return Scaffold(
       body: Onboarding(
         pages: <PageModel>[
@@ -432,7 +435,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     padding: const EdgeInsets.all(15.0),
                     child: CheckboxListTile(
                         title: const Text("Password enabled?"),
-                        activeColor: AppColors.mainAppColor,
+                        activeColor: Color(themeNotifier.isColorSeed),
                         value: isSaved,
                         onChanged: (bool? changed) {
                           setState(() {
@@ -508,7 +511,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                       pagesLength: pagesLength,
                       indicator: Indicator(
                         activeIndicator:
-                            ActiveIndicator(color: AppColors.mainAppColor),
+                            ActiveIndicator(color: Color(themeNotifier.isColorSeed)),
                         closedIndicator:
                             const ClosedIndicator(color: Colors.white),
                         indicatorDesign: IndicatorDesign.line(
@@ -525,6 +528,6 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
           );
         },
       ),
-    );
+    );});
   }
 }

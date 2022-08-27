@@ -79,6 +79,8 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('ADHD Symptom Selection'),

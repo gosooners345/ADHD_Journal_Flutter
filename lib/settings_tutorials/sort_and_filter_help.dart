@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../project_resources/project_colors.dart';
 
 class SortHelp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    return Consumer<ThemeSwap>(
+        builder: (context, ThemeSwap themeNotifier, child) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Sorting and Searching Guide'),
@@ -14,7 +17,7 @@ class SortHelp extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: AppColors.mainAppColor,
+            color: Color(themeNotifier.isColorSeed),
           ),
           ListTile(
             title: Text(
@@ -25,7 +28,7 @@ class SortHelp extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: AppColors.mainAppColor,
+            color: Color(themeNotifier.isColorSeed),
           ),
           ListTile(
             title: Text("Search Function"),
@@ -35,7 +38,7 @@ class SortHelp extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: AppColors.mainAppColor,
+            color: Color(themeNotifier.isColorSeed),
           ),
           ListTile(
             title: Text("Sorting Function"),
@@ -45,7 +48,7 @@ class SortHelp extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: AppColors.mainAppColor,
+            color: Color(themeNotifier.isColorSeed),
           ),
           ListTile(
             title: Text("The Reset Button"),
@@ -54,6 +57,6 @@ class SortHelp extends StatelessWidget {
           )
         ],
       ),
-    );
+    );});
   }
 }

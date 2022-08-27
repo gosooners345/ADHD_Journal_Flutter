@@ -6,7 +6,9 @@ import 'package:flutter/foundation.dart';
 import 'package:launch_review/launch_review.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'app_start_package/splash_screendart.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'app_start_package/login_screen_file.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -40,12 +42,23 @@ class _SettingsPage extends State<SettingsPage> {
   late TextEditingController passwordController = TextEditingController();
   late TextEditingController greetingController = TextEditingController();
   late TextEditingController passwordHintController = TextEditingController();
+
+  Color currentColor = AppColors.mainAppColor;
+  Color pickerColor = AppColors.mainAppColor;
+  void changeColor(ThemeSwap swapper,int value) {
+    setState(() {
+
+//      colorSeed = color.value;
+    });
+    saveColorSettings(swapper,value);
+  }
+
   @override
   void initState() {
     super.initState();
 
 // Parameter Value setting
-    /*greetingValue = prefs.getString('greeting') ?? '';*/
+
 if(passwordHint ==" "){
   passwordHint = '';
 }
@@ -56,14 +69,14 @@ if(passwordHint ==" "){
       if (isPasswordChecked) {
         lockIcon = Icon(
           Icons.lock,
-          color: AppColors.mainAppColor,
+          color: Color(colorSeed),
         );
         passwordLabelText = "Password Enabled";
         passwordLabelWidget = Text(passwordLabelText);
       } else {
         lockIcon = Icon(
           Icons.lock_open,
-          color: AppColors.mainAppColor,
+          color: Color(colorSeed),
         );
         passwordLabelText = "Password Disabled";
         passwordLabelWidget = Text(passwordLabelText);
@@ -81,12 +94,27 @@ if(passwordHint ==" "){
   void saveSettings2(bool value, String key) async {
     prefs.setBool(key, value);
   }
+  void saveColorSettings(ThemeSwap swapper,int colorValue) async{
 
+    setState(() {
+      swapper.themeColor = colorValue;
+    //  swapper.notifyListeners();
+    });
+
+  }
+  void setColor(Color color){
+    setState(() {
+      colorSeed = color.value;
+      currentColor = color;
+    });
+  }
 
 
   /// The display for the screen
   @override
   Widget build(BuildContext context) {
+    return Consumer<ThemeSwap>(
+        builder: (context, ThemeSwap themeNotifier, child) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
@@ -110,7 +138,7 @@ if(passwordHint ==" "){
       body: ListView(
         children: <Widget>[
           ListTile(
-            iconColor: AppColors.mainAppColor,
+            iconColor: Color(themeNotifier.isColorSeed),
             leading: const Icon(Icons.display_settings),
             title: const Text(
               'Customization Settings',
@@ -120,7 +148,7 @@ if(passwordHint ==" "){
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: AppColors.mainAppColor,
+            color: Color(themeNotifier.isColorSeed),
           ),
           spacer,
           ListTile(
@@ -138,12 +166,47 @@ if(passwordHint ==" "){
           ),
           spacer,
           Divider(
+            height: 1.0,
+            thickness: 0.5,
+            color: Color(colorSeed),
+          ),
+          spacer,
+          ListTile(
+            title:Text("Application Theme Colors",),
+            onTap: (){
+showDialog(context: context, builder: (BuildContext builder){
+  return AlertDialog(
+    title: Text("Pick a new color to theme your journal with."),
+    content: SingleChildScrollView(
+      child: MaterialPicker(
+        pickerColor: pickerColor,
+        onColorChanged: setColor,
+      ),
+
+    ),
+    actions: [
+      ElevatedButton(onPressed: (){
+        setState(() {
+          currentColor = pickerColor;
+        changeColor(themeNotifier,colorSeed );
+
+        });
+        Navigator.of(context).pop();
+
+      }, child: Text("Set theme color")),
+    ],
+  );
+});
+            },
+          ),
+          spacer,
+          Divider(
             height: 2.0,
             thickness: 2.0,
-            color: AppColors.mainAppColor,
+            color: Color(themeNotifier.isColorSeed),
           ),
           ListTile(
-            iconColor: AppColors.mainAppColor,
+            iconColor: Color(themeNotifier.isColorSeed),
             leading: const Icon(Icons.security),
             title: const Text(
               'Security Settings',
@@ -153,7 +216,7 @@ if(passwordHint ==" "){
           Divider(
             height: 1.0,
             thickness: .5,
-            color: AppColors.mainAppColor,
+            color: Color(themeNotifier.isColorSeed),
           ),
           spacer,
           //Password tile
@@ -176,7 +239,7 @@ if(passwordHint ==" "){
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: AppColors.mainAppColor,
+            color: Color(themeNotifier.isColorSeed),
           ),spacer,
           ListTile(
             title: TextField(
@@ -199,7 +262,7 @@ if(passwordHint ==" "){
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: AppColors.mainAppColor,
+            color: Color(themeNotifier.isColorSeed),
           ),
           SwitchListTile(
             value: isPasswordChecked,
@@ -210,7 +273,7 @@ if(passwordHint ==" "){
                 if (value) {
                   lockIcon = Icon(
                     Icons.lock,
-                    color: AppColors.mainAppColor,
+                    color: Color(themeNotifier.isColorSeed),
                   );
                   passwordLabelText = "Password Enabled";
                   prefs.setBool('passwordEnabled', value);
@@ -218,7 +281,7 @@ if(passwordHint ==" "){
                 } else if (!value) {
                   lockIcon = Icon(
                     Icons.lock_open,
-                    color: AppColors.mainAppColor,
+                    color: Color(themeNotifier.isColorSeed),
                   );
                   passwordLabelText = "Password Disabled";
                   prefs.setBool('passwordEnabled', value);
@@ -234,10 +297,10 @@ if(passwordHint ==" "){
           Divider(
             height: 2.0,
             thickness: 2.0,
-            color: AppColors.mainAppColor,
+            color: Color(themeNotifier.isColorSeed),
           ),
           ListTile(
-            iconColor: AppColors.mainAppColor,
+            iconColor: Color(themeNotifier.isColorSeed),
             leading: const Icon(Icons.info_outline),
             title: const Text(
               'Application info',
@@ -247,10 +310,10 @@ if(passwordHint ==" "){
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: AppColors.mainAppColor,
+            color: Color(themeNotifier.isColorSeed),
           ),
           ListTile(
-            iconColor: AppColors.mainAppColor,
+            iconColor: Color(themeNotifier.isColorSeed),
             leading: const Icon(Icons.info_outline),
             title: Text(
               'You are running version $buildInfo',
@@ -260,7 +323,7 @@ if(passwordHint ==" "){
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: AppColors.mainAppColor,
+            color: Color(themeNotifier.isColorSeed),
           ),
           ListTile(
             leading: const Icon(Icons.email_outlined),
@@ -285,7 +348,7 @@ if(passwordHint ==" "){
                 );
               }
             },
-            iconColor: AppColors.mainAppColor,
+            iconColor: Color(themeNotifier.isColorSeed),
             title: const Text('Contact Me'),
             subtitle: Row(
               children: const [
@@ -302,7 +365,7 @@ if(passwordHint ==" "){
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: AppColors.mainAppColor,
+            color: Color(themeNotifier.isColorSeed),
           ),
           ListTile(
             onTap: () {
@@ -314,16 +377,16 @@ if(passwordHint ==" "){
               }
             },
             title: const Text('Rate my app'),
-            iconColor: AppColors.mainAppColor,
+            iconColor: Color(themeNotifier.isColorSeed),
             leading: const Icon(Icons.star),
           ),
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: AppColors.mainAppColor,
+            color: Color(themeNotifier.isColorSeed),
           ),
           ListTile(
-            iconColor: AppColors.mainAppColor,
+            iconColor: Color(themeNotifier.isColorSeed),
             leading: const Icon(Icons.help),
             title: const Text("How to use app?"),
             subtitle: const Text(
@@ -335,10 +398,10 @@ if(passwordHint ==" "){
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: AppColors.mainAppColor,
+            color: Color(themeNotifier.isColorSeed),
           ),
           ListTile(
-            iconColor: AppColors.mainAppColor,
+            iconColor: Color(themeNotifier.isColorSeed),
             leading: const Icon(Icons.book),
             title: const Text('Resources'),
             subtitle: const Text(
@@ -350,7 +413,8 @@ if(passwordHint ==" "){
         ],
       ),
     );
-  }
+  });
+}
 
   void emailDev() async {
     final Email email = Email(

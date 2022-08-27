@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'dart:io';
+import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
+
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as Path;
 import 'package:package_info/package_info.dart';
@@ -64,6 +66,8 @@ late  Database testDB;
     if(Platform.isAndroid){
       checkVisitState = await databaseExists(Path.join(await getDatabasesPath(),'activitylogger_db.db'));
     }
+    colorSeed = await prefs.getInt("apptheme") ?? AppColors.mainAppColor.value;
+
   }
 
   void checkPasswordHintMethod() async{
@@ -150,3 +154,7 @@ late PackageInfo packInfo;
 late String buildInfo;
 late Icon backArrowIcon;
 String passwordHint = '';
+int colorSeed =AppColors.mainAppColor.value;
+late ThemeData lightTheme;
+late ThemeData darkTheme;
+
