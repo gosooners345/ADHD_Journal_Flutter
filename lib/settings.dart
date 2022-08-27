@@ -48,8 +48,8 @@ class _SettingsPage extends State<SettingsPage> {
   void changeColor(ThemeSwap swapper,int value) {
     setState(() {
 
-//      colorSeed = color.value;
     });
+    colorSeed=value;
     saveColorSettings(swapper,value);
   }
 

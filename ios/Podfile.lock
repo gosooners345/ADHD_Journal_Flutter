@@ -64,7 +64,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
-  Flutter: 405776dd0763d7e32a8f989d4e271ca1317d080c
+  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_email_sender: 02d7443217d8c41483223627972bfdc09f74276b
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   launch_review: 75d5a956ba8eaa493e9c9d4bf4c05e505e8d5ed0

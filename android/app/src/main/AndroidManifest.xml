@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.activitylogger.release1.adhd_journal_flutter">
+    package="com.activitylogger.release1.adh`d_journal_flutter">
    <application
         android:label="ADHD Journal"
         android:name="${applicationName}"
