@@ -13,7 +13,7 @@ if (flutterRoot == null) {
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
-    flutterVersionCode = '35'
+    flutterVersionCode = '46'
 }
 
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
@@ -68,7 +68,7 @@ flutter {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.21"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.7.10"
     implementation "net.zetetic:android-database-sqlcipher:4.5.1"
     implementation "androidx.security:security-crypto:1.1.0-alpha03"
 

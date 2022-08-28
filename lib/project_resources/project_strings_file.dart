@@ -62,7 +62,7 @@ const String security_paragraph_intro_string =
     'You will need to enter a password to encrypt the journal, even though you may not feel like putting it in to log in every time. The journal is stored inside an encrypted database.'
 'The journal is stored inside an encrypted database locally and the password is stored inside an encrypted file so hackers can\'t steal your info  ';
 const String settings_paragraph_intro_string =
-    'From the settings page, you can change your password, greeting and give feedback and email the developer about any bugs or app ideas for future updates.';
+    'From the settings page, you can change your password, greeting, app\'s theme color, and give feedback and email the developer about any bugs or app ideas for future updates.';
 const String dashboard_paragraph_intro_string =
     'The dashboard gives you an overview of statistics information about your ratings, success/fail rate, emotional info, symptom data, and a summary of the data.';
 const String sixth_paragraph_intro_string =
