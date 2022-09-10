@@ -6,7 +6,6 @@ import 'package:adhd_journal_flutter/ui_components/record_view_card_class.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
-//import 'package:package_info_plus/package_info_plus.dart';
 import '../main.dart';
 import 'package:flutter/material.dart';
 import '../project_resources/project_colors.dart';
@@ -68,17 +67,20 @@ passwordTimer();
   }
 
   /// Stream widget testing here
-  Widget getRecordsDisplay(ThemeSwap themeNotifier) {
-    return StreamBuilder(
+  Widget getRecordsDisplay() {
+    return Consumer<ThemeSwap>(
+        builder: (context, ThemeSwap themeNotifier, child) { return StreamBuilder(
       stream: recordsBloc.recordStuffs,
       builder: (BuildContext context, AsyncSnapshot<List<Records>> snapshot) {
-        return getRecordCards(snapshot,themeNotifier);
+        return getRecordCards(snapshot);
       },
-    );
+    );});
   }
 
-  Widget getRecordCards(AsyncSnapshot<List<Records>> snapshot,ThemeSwap themeNotifier) {
+  Widget getRecordCards(AsyncSnapshot<List<Records>> snapshot) {
     if (snapshot.hasData) {
+      return Consumer<ThemeSwap>(
+          builder: (context, ThemeSwap themeNotifier, child) {
       return snapshot.data!.isNotEmpty
           ? ListView.builder(
               itemBuilder: (context, index) {
@@ -155,7 +157,8 @@ passwordTimer();
               child:
                   Text('Add a new record by hitting the create button below!'),
             );
-    } else if (snapshot.hasError) {
+    });}
+      else if (snapshot.hasError) {
       if (kDebugMode) {
         print(snapshot.error);
       }
@@ -289,7 +292,7 @@ passwordTimer();
             ],
           ),
         ),
-        Expanded(child: getRecordsDisplay(themeNotifier))
+        Expanded(child: getRecordsDisplay())
       ],
     );});
   }
