@@ -7,7 +7,6 @@ import 'package:path/path.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'package:flutter/services.dart';
 import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
-import 'package:package_info/package_info.dart';
 
 class RecordsDB {
   static const platform =
@@ -25,6 +24,7 @@ class RecordsDB {
   }
 
   openOrCreateDatabase() async {
+    dbLocation = join(await getDatabasesPath(),'activitylogger_db.db');
     return await openDatabase(
       join(await getDatabasesPath(), 'activitylogger_db.db'),
       password: dbPassword,
@@ -46,9 +46,6 @@ class RecordsDB {
 
       await platform.invokeMethod('changeDBPasswords',
           {'oldDBPassword': oldPassword, 'newDBPassword': newPassword});
-    /*  else{
-        (await database).execute("PRAGMA rekey = $newPassword");
-      }*/
       dbPassword = newPassword;
       await encryptedSharedPrefs.setString('dbPassword', newPassword);
     } on Exception catch (ex) {
@@ -58,3 +55,5 @@ class RecordsDB {
     }
   }
 }
+
+String dbLocation = "";
