@@ -3,7 +3,8 @@
 import 'dart:async';
 
 import 'package:provider/provider.dart';
-
+import 'package:googleapis/drive/v3.dart' as drive;
+import 'package:google_sign_in/google_sign_in.dart' as signIn;
 import '../project_resources/project_colors.dart';
 import 'onboarding_widget_class.dart';
 import 'package:flutter/material.dart';
@@ -179,6 +180,12 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
     });
   }
 
+  Future<void> googleAuthenticationMethod() async{
+    final googleSignIn = signIn.GoogleSignIn.standard(scopes: [drive.DriveApi.driveScope]);
+    final signIn.GoogleSignInAccount? account = await googleSignIn.signIn();
+    print("User account $account");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(
@@ -284,9 +291,15 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
               height: 130,
             ),
 
+            IconButton(onPressed: (){
+              googleAuthenticationMethod();
+            }, icon: Icon(Icons.g_mobiledata_outlined))
+
           ],
         ),
       ),
-    );});
+    );
+        }
+        );
   }
 }
