@@ -8,11 +8,10 @@ import 'package:path_provider/path_provider.dart';
 import 'security_storage.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-const _clientId = "639171720797-1947q85ikvusptoul5tdhjffodrlhlrh.apps.googleusercontent.com";
-const _scopes = ['https://www.googleapis.com/auth/drive.file'];
+
 
 class GoogleDrive {
-  final storage = SecureStorage();
+
   //Get Authenticated Http Client
   Future<http.Client> getHttpClient() async {
     //Get Credentials

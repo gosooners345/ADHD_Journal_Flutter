@@ -1,10 +1,12 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:google_sign_in/google_sign_in.dart' as signIn;
+import '../drive_api_backup_general/security_storage.dart';
 import '../project_resources/project_colors.dart';
 import 'onboarding_widget_class.dart';
 import 'package:flutter/material.dart';
@@ -183,7 +185,12 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
   Future<void> googleAuthenticationMethod() async{
     final googleSignIn = signIn.GoogleSignIn.standard(scopes: [drive.DriveApi.driveScope]);
     final signIn.GoogleSignInAccount? account = await googleSignIn.signIn();
-    print("User account $account");
+    if (kDebugMode) {
+      print("User account $account");
+    }
+    final authHeaders = await account?.authHeaders;
+    final authenticateClient = GoogleAuthClient(authHeaders!);
+    final driveApi = drive.DriveApi(authenticateClient);
   }
 
   @override
@@ -305,16 +312,19 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
 }
 
 String driveStoreDirectory = "/Journals/DBbackups";
-
+const _clientId = "639171720797-1947q85ikvusptoul5tdhjffodrlhlrh.apps.googleusercontent.com";
+const _scopes = ['https://www.googleapis.com/auth/drive.file'];
 
 class GoogleAuthClient extends http.BaseClient{
 final Map<String,String> _headers;
  final http.Client _client = new http.Client();
 GoogleAuthClient(this._headers);
-
-
+final storage = SecureStorage();
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) {
 return _client.send(request..headers.addAll(_headers));
   }
+
+
+
 }
