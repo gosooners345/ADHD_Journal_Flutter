@@ -293,7 +293,7 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
 
             IconButton(onPressed: (){
               googleAuthenticationMethod();
-            }, icon: Icon(Icons.g_mobiledata_outlined))
+            }, icon: Icon(Icons.add_to_drive_outlined))
 
           ],
         ),

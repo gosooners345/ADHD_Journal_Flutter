@@ -51,6 +51,7 @@ android {
         applicationId "com.activitylogger.release1"
         minSdkVersion 26
         targetSdkVersion flutter.targetSdkVersion
+        compileSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
 ndk{
