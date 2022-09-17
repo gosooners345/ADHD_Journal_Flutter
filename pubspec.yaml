@@ -48,6 +48,7 @@ dependencies:
   provider:
   flutter_colorpicker:
   path:
+  path_provider:
   charts_flutter: ^0.12.0
   syncfusion_flutter_charts: ^20.1.57
   onboarding: ^3.1.0

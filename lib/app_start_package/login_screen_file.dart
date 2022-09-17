@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:async';
-
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:google_sign_in/google_sign_in.dart' as signIn;
@@ -301,5 +301,20 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
     );
         }
         );
+  }
+}
+
+String driveStoreDirectory = "/Journals/DBbackups";
+
+
+class GoogleAuthClient extends http.BaseClient{
+final Map<String,String> _headers;
+ final http.Client _client = new http.Client();
+GoogleAuthClient(this._headers);
+
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) {
+return _client.send(request..headers.addAll(_headers));
   }
 }

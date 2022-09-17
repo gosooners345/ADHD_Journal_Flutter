@@ -7,12 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 
 import 'package:flutter/services.dart';
-import 'package:path/path.dart' as Path;
+import 'package:path/path.dart' as path;
 import 'package:package_info/package_info.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 
 import '../main.dart';
+import '../records_stream_package/records_db_class.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -64,7 +66,7 @@ late  Database testDB;
     prefs = await SharedPreferences.getInstance();
     encryptedSharedPrefs = EncryptedSharedPreferences();
     if(Platform.isAndroid){
-      checkVisitState = await databaseExists(Path.join(await getDatabasesPath(),'activitylogger_db.db'));
+      checkVisitState = await databaseExists(path.join(await getDatabasesPath(),'activitylogger_db.db'));
     }
     colorSeed = await prefs.getInt("apptheme") ?? AppColors.mainAppColor.value;
 
@@ -115,6 +117,8 @@ var checkFirstVisit = false;
   void getPackageInfo() async {
      packInfo = await PackageInfo.fromPlatform();
      buildInfo = packInfo.version;
+     dbLocation = path.join(await getDatabasesPath(),'activitylogger_db.db');
+
   }
 
   void route() {
@@ -122,7 +126,7 @@ var checkFirstVisit = false;
 
     var firstVisit = prefs.getBool('firstVisit') ?? true;
     if (firstVisit) {
-      Navigator.pushReplacementNamed(( context ), '/onboarding');
+      Navigator.pushReplacementNamed((  context ), '/onboarding');
     } else {
       Navigator.pushReplacementNamed(context, '/login');
     }

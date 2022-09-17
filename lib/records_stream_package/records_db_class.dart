@@ -24,7 +24,7 @@ class RecordsDB {
   }
 
   openOrCreateDatabase() async {
-    dbLocation = join(await getDatabasesPath(),'activitylogger_db.db');
+
     return await openDatabase(
       join(await getDatabasesPath(), 'activitylogger_db.db'),
       password: dbPassword,
