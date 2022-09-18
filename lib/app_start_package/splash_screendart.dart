@@ -13,8 +13,6 @@ import 'package:package_info/package_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 
-import '../main.dart';
-import '../records_stream_package/records_db_class.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -118,7 +116,8 @@ var checkFirstVisit = false;
      packInfo = await PackageInfo.fromPlatform();
      buildInfo = packInfo.version;
      dbLocation = path.join(await getDatabasesPath(),'activitylogger_db.db');
-
+ await prefs.setString('dblocation', dbLocation);
+ userActiveBackup = prefs.getBool('drivebackup') ?? false;
   }
 
   void route() {
@@ -161,4 +160,5 @@ String passwordHint = '';
 int colorSeed =AppColors.mainAppColor.value;
 late ThemeData lightTheme;
 late ThemeData darkTheme;
-
+String dbLocation = "";
+bool userActiveBackup = false;

@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:google_sign_in/google_sign_in.dart' as signIn;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:sqflite_sqlcipher/sqflite.dart';
 import '../drive_api_backup_general/security_storage.dart';
 import '../project_resources/project_colors.dart';
 import 'onboarding_widget_class.dart';
@@ -188,10 +190,48 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
     if (kDebugMode) {
       print("User account $account");
     }
+
     final authHeaders = await account?.authHeaders;
     final authenticateClient = GoogleAuthClient(authHeaders!);
     final driveApi = drive.DriveApi(authenticateClient);
+    bool dbexists = await databaseExists(dbLocation);
+    if(userActiveBackup = false){
+    if(account !=null) {
+      if (dbexists) {
+        uploadDBFiles(driveApi);
+      }
+      else {
+        restoreDBFiles(driveApi);
+      }
+      //final userHasApproved = true;
+      if(userActiveBackup = false) {
+          userActiveBackup = true;
+        }
+      sharedPrefs.setBool('drivebackup', userActiveBackup);
+
+    }
+    else{
+      print("error: Account needs to be signed in to back data up");
+    }}
+    else{
+      if (dbexists) {
+        uploadDBFiles(driveApi);
+      }
+      else {
+        restoreDBFiles(driveApi);
+      }
+    }
   }
+//Experimental
+  Future<void> uploadDBFiles(drive.DriveApi driver) async{
+    print("Testing");
+
+  }
+  //Experimental
+  Future<void> restoreDBFiles(drive.DriveApi driver) async{
+print("testing");
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -237,7 +277,9 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
                           });
                           if (loginPassword == userPassword &&
                               passwordEnabled) {
-                            stuff.clear();
+                            if(userActiveBackup){
+                              googleAuthenticationMethod();
+                            }
                             loginPassword = '';
                             Navigator.pushNamed(context, '/success')
                                 .then((value) => {
@@ -253,6 +295,9 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
                             refreshPrefs();
                             loginPassword = '';
                             stuff.clear();
+                            if(userActiveBackup){
+                              googleAuthenticationMethod();
+                            }
                             Navigator.pushNamed(context, '/success').then(
                                     (value) => {
                                   recordHolder.clear(),
@@ -274,6 +319,10 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
                         onPressed: () {
                           resetLoginFieldState();
                           if (loginPassword == userPassword) {
+                            print(dbLocation);
+                            if(userActiveBackup){
+                              googleAuthenticationMethod();
+                            }
                             Navigator.pushNamed(context, '/success').then(
                                     (value) => {
                                   recordHolder.clear(),

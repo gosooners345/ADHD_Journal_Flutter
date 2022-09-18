@@ -56,4 +56,3 @@ class RecordsDB {
   }
 }
 
-String dbLocation = "";
