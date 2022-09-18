@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:async';
+import 'package:adhd_journal_flutter/drive_api_backup_general/google_drive_backup_class.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -14,6 +15,7 @@ import 'onboarding_widget_class.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart';
+import 'dart:io';
 import 'splash_screendart.dart';
 
 /// Required to open the application , simple login form to start
@@ -44,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
   late Widget greetingField;
   String hintText = '';
   String hintPrompt = '';
-
+GoogleDrive googleDrive = GoogleDrive();
 
   @override
   void initState() {
@@ -185,51 +187,25 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
   }
 
   Future<void> googleAuthenticationMethod() async{
-    final googleSignIn = signIn.GoogleSignIn.standard(scopes: [drive.DriveApi.driveScope]);
-    final signIn.GoogleSignInAccount? account = await googleSignIn.signIn();
-    if (kDebugMode) {
-      print("User account $account");
-    }
 
-    final authHeaders = await account?.authHeaders;
-    final authenticateClient = GoogleAuthClient(authHeaders!);
-    final driveApi = drive.DriveApi(authenticateClient);
     bool dbexists = await databaseExists(dbLocation);
-    if(userActiveBackup = false){
-    if(account !=null) {
-      if (dbexists) {
-        uploadDBFiles(driveApi);
-      }
-      else {
-        restoreDBFiles(driveApi);
-      }
-      //final userHasApproved = true;
-      if(userActiveBackup = false) {
-          userActiveBackup = true;
-        }
-      sharedPrefs.setBool('drivebackup', userActiveBackup);
+  googleDrive.getHttpClient();
+userActiveBackup = true;
+prefs.setBool("drivebackup", userActiveBackup);
+uploadDBFiles();
 
-    }
-    else{
-      print("error: Account needs to be signed in to back data up");
-    }}
-    else{
-      if (dbexists) {
-        uploadDBFiles(driveApi);
-      }
-      else {
-        restoreDBFiles(driveApi);
-      }
-    }
+
   }
 //Experimental
-  Future<void> uploadDBFiles(drive.DriveApi driver) async{
-    print("Testing");
+  Future<void> uploadDBFiles() async{
+ googleDrive.uploadFileToGoogleDrive(File(dbLocation));
 
+ print("Backup saved");
   }
   //Experimental
-  Future<void> restoreDBFiles(drive.DriveApi driver) async{
-print("testing");
+  Future<void> restoreDBFiles() async{
+googleDrive.downloadGoogleDriveFile( "activitylogger_db.db");
+print("successful");
   }
 
 
@@ -278,7 +254,7 @@ print("testing");
                           if (loginPassword == userPassword &&
                               passwordEnabled) {
                             if(userActiveBackup){
-                              googleAuthenticationMethod();
+                              uploadDBFiles();
                             }
                             loginPassword = '';
                             Navigator.pushNamed(context, '/success')
@@ -296,7 +272,7 @@ print("testing");
                             loginPassword = '';
                             stuff.clear();
                             if(userActiveBackup){
-                              googleAuthenticationMethod();
+                            uploadDBFiles();
                             }
                             Navigator.pushNamed(context, '/success').then(
                                     (value) => {
@@ -321,7 +297,7 @@ print("testing");
                           if (loginPassword == userPassword) {
                             print(dbLocation);
                             if(userActiveBackup){
-                              googleAuthenticationMethod();
+                              uploadDBFiles();
                             }
                             Navigator.pushNamed(context, '/success').then(
                                     (value) => {
@@ -349,8 +325,10 @@ print("testing");
 
             IconButton(onPressed: (){
               googleAuthenticationMethod();
-            }, icon: Icon(Icons.add_to_drive_outlined))
-
+            }, icon: Icon(Icons.add_to_drive_outlined)),
+            IconButton(onPressed: (){
+              restoreDBFiles();
+            }, icon: Icon(Icons.download))
           ],
         ),
       ),
@@ -360,20 +338,7 @@ print("testing");
   }
 }
 
-String driveStoreDirectory = "/Journals/DBbackups";
-const _clientId = "639171720797-1947q85ikvusptoul5tdhjffodrlhlrh.apps.googleusercontent.com";
-const _scopes = ['https://www.googleapis.com/auth/drive.file'];
-
-class GoogleAuthClient extends http.BaseClient{
-final Map<String,String> _headers;
- final http.Client _client = new http.Client();
-GoogleAuthClient(this._headers);
-final storage = SecureStorage();
-  @override
-  Future<http.StreamedResponse> send(http.BaseRequest request) {
-return _client.send(request..headers.addAll(_headers));
-  }
+String driveStoreDirectory = "Journals";
 
 
 
-}
