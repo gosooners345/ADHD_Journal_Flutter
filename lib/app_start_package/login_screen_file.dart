@@ -197,15 +197,19 @@ uploadDBFiles();
 
   }
 //Experimental
-  Future<void> uploadDBFiles() async{
- googleDrive.uploadFileToGoogleDrive(File(dbLocation));
-
- print("Backup saved");
+  Future<void> uploadDBFiles() async {
+    googleDrive.uploadFileToGoogleDrive(File(dbLocation));
+    googleDrive.uploadFileToGoogleDrive(File("$dbLocation-wal"));
+    googleDrive.uploadFileToGoogleDrive(File("$dbLocation-shm"));
+    print("Backup saved");
   }
   //Experimental
-  Future<void> restoreDBFiles() async{
-googleDrive.downloadGoogleDriveFile( "activitylogger_db.db");
-print("successful");
+  Future<void> restoreDBFiles() async {
+    googleDrive.downloadGoogleDriveFile("activitylogger_db.db");
+    googleDrive.downloadGoogleDriveFile("activitylogger_db.db-wal");
+    googleDrive.downloadGoogleDriveFile("activitylogger_db.db-shm");
+
+    print("successful");
   }
 
 

@@ -93,12 +93,13 @@ class GoogleDrive {
         fileToUpload,
         uploadMedia: ga.Media(file.openRead(), file.lengthSync()),
       );
-      final queryDrive = await drive.files.list (
-        q: "name contains 'activitylogger_db.db'",
+
+      /*final queryDrive = await drive.files.list (
+        q: "name = 'activitylogger_db.db'",
         $fields: "files(id, name,createdTime)",
 
-      );
-      final files = queryDrive.files;
+      );*/
+      /*final files = queryDrive.files;
       var saveThis = files?.first;
       var idList = [];
       int? test = files?.length!;
@@ -107,15 +108,10 @@ class GoogleDrive {
           if(files?[i].id != saveThis!.id )
             idList.add(files?[i].id);
         }
-      for (var element in idList) {drive.files.delete(element);}
+*/
+//      for (var element in idList) {drive.files.delete(element);}
       }
-    final queryDrive = await drive.files.list (
-      q: "name contains 'activitylogger_db.db'",
-      $fields: "files(id, name,createdTime)",
 
-    );
-    final files = queryDrive.files;
-    print(files?.length);
     }
 
 
@@ -125,12 +121,12 @@ class GoogleDrive {
     var drive = ga.DriveApi(client);
 
 final queryDrive = await drive.files.list (
-q: "name contains 'activitylogger_db.db'",
+q: "name = '$fName'",
     $fields: "files(id, name)",
 
 );
     final files = queryDrive.files;
-final subFiles = files?.last;
+final subFiles = files?.first;
 String? fileID = subFiles?.id;
     ga.Media file = await drive.files.get(fileID!, downloadOptions: ga.DownloadOptions.fullMedia) as ga.Media;
 
