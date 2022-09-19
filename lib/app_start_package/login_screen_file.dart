@@ -198,6 +198,7 @@ uploadDBFiles();
   }
 //Experimental
   Future<void> uploadDBFiles() async {
+    googleDrive.deleteOutdatedBackups("activitylogger_db.db");
     googleDrive.uploadFileToGoogleDrive(File(dbLocation));
     googleDrive.uploadFileToGoogleDrive(File("$dbLocation-wal"));
     googleDrive.uploadFileToGoogleDrive(File("$dbLocation-shm"));
@@ -205,10 +206,7 @@ uploadDBFiles();
   }
   //Experimental
   Future<void> restoreDBFiles() async {
-    googleDrive.downloadGoogleDriveFile("activitylogger_db.db");
-    googleDrive.downloadGoogleDriveFile("activitylogger_db.db-wal");
-    googleDrive.downloadGoogleDriveFile("activitylogger_db.db-shm");
-
+googleDrive.downloadDatabaseBackups("activitylogger_db.db");
     print("successful");
   }
 

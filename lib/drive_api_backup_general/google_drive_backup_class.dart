@@ -20,24 +20,25 @@ const _scopes = ['https://www.googleapis.com/auth/drive.file'];
 class GoogleDrive {
 
   String fileID = "";
+  late ga.DriveApi drive;
+
   //Get Authenticated Http Client
   Future<http.Client> getHttpClient() async {
-
-    final googleSignIn = signIn.GoogleSignIn.standard(scopes: [ga.DriveApi.driveScope,
-        ga.DriveApi.driveAppdataScope]);
-     signIn.GoogleSignInAccount? account;
-      if(userActiveBackup = false) {
-        account = await googleSignIn.signIn();
-      } else {
-        account = await googleSignIn.signInSilently(reAuthenticate: true);
-      }
-      var authHeaders = await account?.authHeaders;
-      var authenticateClient = GoogleAuthClient(authHeaders!);
+    final googleSignIn = signIn.GoogleSignIn.standard(
+        scopes: [ga.DriveApi.driveScope,
+          ga.DriveApi.driveAppdataScope]);
+    signIn.GoogleSignInAccount? account;
+    if (userActiveBackup = false) {
+      account = await googleSignIn.signIn();
+    } else {
+      account = await googleSignIn.signInSilently(reAuthenticate: true);
+    }
+    var authHeaders = await account?.authHeaders;
+    var authenticateClient = GoogleAuthClient(authHeaders!);
 
     print(authenticateClient._headers);
-      return authenticateClient;
-
-    }
+    return authenticateClient;
+  }
 
 
   // check if the directory folder is already available in drive , if available return its id
@@ -80,68 +81,78 @@ class GoogleDrive {
 
   uploadFileToGoogleDrive(File file) async {
     var client = await getHttpClient();
-    var drive = ga.DriveApi(client);
-    String? folderId =  await _getFolderId(drive);
-    if(folderId == null){
+    drive = ga.DriveApi(client);
+    String? folderId = await _getFolderId(drive);
+    if (folderId == null) {
       print("Sign-in first Error");
-    }else {
+    } else {
       ga.File fileToUpload = ga.File();
       fileToUpload.parents = [folderId];
       fileToUpload.name = p.basename(file.absolute.path);
-
       var response = await drive.files.create(
         fileToUpload,
         uploadMedia: ga.Media(file.openRead(), file.lengthSync()),
       );
+    }
+  }
 
-      /*final queryDrive = await drive.files.list (
-        q: "name = 'activitylogger_db.db'",
-        $fields: "files(id, name,createdTime)",
-
-      );*/
-      /*final files = queryDrive.files;
-      var saveThis = files?.first;
+  deleteOutdatedBackups(String fileName) async {
+    var client = await getHttpClient();
+    drive = ga.DriveApi(client);
+    final queryDrive = await drive.files.list(
+      q: "name contains '$fileName'",
+      $fields: "files(id, name,createdTime)",
+    );
+    final files = queryDrive.files;
+    if (files?.isNotEmpty == true) {
       var idList = [];
       int? test = files?.length!;
-      for(int i = 0; i <= test!-1!;i++)
-        {
-          if(files?[i].id != saveThis!.id )
-            idList.add(files?[i].id);
-        }
-*/
-//      for (var element in idList) {drive.files.delete(element);}
+      for (int i = 0; i <= test! - 1!; i++) {
+        idList.add(files?[i].id);
       }
-
+      for (var element in idList) {
+        drive.files.delete(element);
+      }
     }
+  }
 
-
-  Future<void> downloadGoogleDriveFile(String fName) async {
-    const mimeType = "application/vnd.google-apps.folder";
+  Future<void> downloadDatabaseBackups(String fileName) async {
     var client = await getHttpClient();
-    var drive = ga.DriveApi(client);
-
-final queryDrive = await drive.files.list (
-q: "name = '$fName'",
-    $fields: "files(id, name)",
-
-);
+    drive = ga.DriveApi(client);
+    String fileLocation = await getDatabasesPath();
+    final queryDrive = await drive.files.list(
+      q: "name contains '$fileName'",
+      $fields: "files(id, name,createdTime)",
+    );
     final files = queryDrive.files;
-final subFiles = files?.first;
-String? fileID = subFiles?.id;
-    ga.Media file = await drive.files.get(fileID!, downloadOptions: ga.DownloadOptions.fullMedia) as ga.Media;
-
-    final saveFile = File(dbLocation);
-    List<int> dataStore = [];
-    file.stream.listen((data) {
-      print("DataReceived: ${data.length}");
-      dataStore.insertAll(dataStore.length, data);
-    }, onDone: () {
-      print("Task Done");
-      saveFile.writeAsBytes(dataStore);
-      print("File saved at ${saveFile.path}");
-    }, onError: (error) {
-      print("Some Error");
-    });
+    var idList = [];
+    var nameList = [];
+    int? queryCt = files?.length;
+    if (queryCt! > 0) {
+      for (int i = 0; i < queryCt; i++) {
+        idList.add(files?[i].id);
+        nameList.add(files?[i].name);
+      }
+      for (int i = 0; i < idList.length; i++) {
+        ga.Media file = await drive.files.get(
+            idList[i], downloadOptions: ga.DownloadOptions.fullMedia) as ga
+            .Media;
+        final saveFile = File(p.join(fileLocation, nameList[i]));
+        List<int> dataStore = [];
+        file.stream.listen((data) {
+        //  print("DataReceived: ${data.length}");
+          dataStore.insertAll(dataStore.length, data);
+        }, onDone: () {
+          print("Task Done");
+          saveFile.writeAsBytes(dataStore);
+          print("File saved at ${saveFile.path}");
+        }, onError: (error) {
+          print("Some Error");
+        });
+      }
+    } else {
+      print("Nothing's here");
+    }
   }
 }
 class GoogleAuthClient extends http.BaseClient{
