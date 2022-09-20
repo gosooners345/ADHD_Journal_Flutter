@@ -28,11 +28,11 @@ class GoogleDrive {
         scopes: [ga.DriveApi.driveScope,
           ga.DriveApi.driveAppdataScope]);
     signIn.GoogleSignInAccount? account;
-    if (userActiveBackup = false) {
-      account = await googleSignIn.signIn();
-    } else {
+   // if (userActiveBackup = false) {
+     // account = await googleSignIn.signIn();
+    //} else {
       account = await googleSignIn.signInSilently(reAuthenticate: true);
-    }
+   // }
     var authHeaders = await account?.authHeaders;
     var authenticateClient = GoogleAuthClient(authHeaders!);
 

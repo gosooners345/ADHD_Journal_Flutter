@@ -206,6 +206,7 @@ uploadDBFiles();
   }
   //Experimental
   Future<void> restoreDBFiles() async {
+    googleDrive.getHttpClient();
 googleDrive.downloadDatabaseBackups("activitylogger_db.db");
     print("successful");
   }
