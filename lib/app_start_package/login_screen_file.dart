@@ -190,14 +190,15 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
 
     bool dbexists = await databaseExists(dbLocation);
   googleDrive.getHttpClient();
-userActiveBackup = true;
-prefs.setBool("drivebackup", userActiveBackup);
+/*userActiveBackup = true;
+prefs.setBool("drivebackup", userActiveBackup);*/
 uploadDBFiles();
 
 
   }
 //Experimental
   Future<void> uploadDBFiles() async {
+    googleDrive.getHttpClient();
     googleDrive.deleteOutdatedBackups("activitylogger_db.db");
     googleDrive.uploadFileToGoogleDrive(File(dbLocation));
     googleDrive.uploadFileToGoogleDrive(File("$dbLocation-wal"));

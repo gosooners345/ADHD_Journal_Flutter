@@ -118,7 +118,7 @@ var checkFirstVisit = false;
      buildInfo = packInfo.version;
      dbLocation = path.join(await getDatabasesPath(),'activitylogger_db.db');
  await prefs.setString('dblocation', dbLocation);
- userActiveBackup = prefs.getBool('drivebackup') ?? false;
+ userActiveBackup = prefs.getBool('backupTest') ?? false;
   }
 
   void route() {
