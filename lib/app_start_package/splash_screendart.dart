@@ -104,7 +104,7 @@ var checkFirstVisit = false;
   }
 
   startTimer() async {
-  var duration = const Duration(seconds: 5);
+  var duration = const Duration(seconds: 6);
     return Timer(duration, route);
   }
   //This timer doesn't need to be very long since we're just checking for a password hint
