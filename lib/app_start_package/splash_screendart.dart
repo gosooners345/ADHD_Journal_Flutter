@@ -57,7 +57,7 @@ late  Database testDB;
       migrateTimer();
     }
     //Add a password hint variable and preference to the application for users to add a hint so they can be reminded what their password is.
-    checkPasswordHintTimer();
+    //checkPasswordHintTimer();
     startTimer();
   }
 
@@ -109,16 +109,16 @@ var checkFirstVisit = false;
   }
   //This timer doesn't need to be very long since we're just checking for a password hint
   //If one doesn't exist, the user will create one after logging in.
-  checkPasswordHintTimer() async {
+  /*checkPasswordHintTimer() async {
     return Timer(const Duration(seconds: 1),checkPasswordHintMethod);
-  }
+  }*/
 
   void getPackageInfo() async {
      packInfo = await PackageInfo.fromPlatform();
      buildInfo = packInfo.version;
      dbLocation = path.join(await getDatabasesPath(),'activitylogger_db.db');
  await prefs.setString('dblocation', dbLocation);
- userActiveBackup = prefs.getBool('backupTest') ?? false;
+ userActiveBackup = prefs.getBool('testBackup') ?? false;
   }
 
   void route() {

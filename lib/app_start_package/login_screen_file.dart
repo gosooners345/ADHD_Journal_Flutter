@@ -3,13 +3,8 @@
 import 'dart:async';
 import 'package:adhd_journal_flutter/drive_api_backup_general/google_drive_backup_class.dart';
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:googleapis/drive/v3.dart' as drive;
-import 'package:google_sign_in/google_sign_in.dart' as signIn;
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
-import '../drive_api_backup_general/security_storage.dart';
 import '../project_resources/project_colors.dart';
 import 'onboarding_widget_class.dart';
 import 'package:flutter/material.dart';
@@ -47,10 +42,21 @@ class _LoginScreenState extends State<LoginScreen> {
   String hintText = '';
   String hintPrompt = '';
 GoogleDrive googleDrive = GoogleDrive();
-
+late Widget driveButton;
   @override
   void initState() {
     super.initState();
+    if(userActiveBackup){
+      googleDrive.getHttpClient();
+      setState(() {
+        driveButton = Text("");
+      });
+    }
+    else{
+      setState(() {
+        driveButton = ElevatedButton(onPressed: (){googleDrive.getHttpClient();}, child: Row(children: [Icon(Icons.add_to_drive),Text("Sign in to Drive")],));
+      });
+    }
     if (passwordHint == '') {
       hintText = 'Enter secure password';
 hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember your password in case you forget. \r\n Set it to something memorable.\r\n This will be encrypted like your password so nobody can read your hint.'
@@ -59,11 +65,14 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
     } else {
       hintText ='Password Hint is : $passwordHint';
     }
+    userActiveBackup = prefs.getBool('testBackup') ?? false;
     loadStateStuff();
+
     setState(() {
       stuff = TextEditingController();
       resetLoginFieldState();
     });
+
   }
 
 
@@ -79,8 +88,10 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
     dbPassword = await encryptedSharedPrefs.getString('dbPassword');
     passwordHint =await encryptedSharedPrefs.getString('passwordHint');
     passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
+
+
     isPasswordChecked = passwordEnabled;
-// This code seem
+// This code will get the Google Drive api token for usage in auto backup and sync
 
     setState(() {
       resetLoginFieldState();
@@ -125,7 +136,9 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
               textAlign: TextAlign.center,
             ))
       ]);
-
+      if(userActiveBackup){
+        checkFileAge();
+      }
       if (passwordEnabled) {
         loginField = TextField(
           obscureText: true,
@@ -138,6 +151,7 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
             loginPassword = text;
             if (text.length == userPassword.length) {
               if (text == userPassword) {
+
                 Navigator.pushNamed(context, '/success').then((value) =>
                 {
                   recordHolder.clear(),
@@ -186,29 +200,44 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
     });
   }
 
+
   Future<void> googleAuthenticationMethod() async{
-
-    bool dbexists = await databaseExists(dbLocation);
   googleDrive.getHttpClient();
-/*userActiveBackup = true;
-prefs.setBool("drivebackup", userActiveBackup);*/
-uploadDBFiles();
+  }
 
 
+  Future<void> checkFileAge() async{
+    File file = File(dbLocation);
+    bool fileCheckAge =await googleDrive.checkFileAge("activitylogger_db.db-wal");
+    if(!fileCheckAge || !file.existsSync() ){
+      restoreDBFiles();
+    } else{
+      uploadDBFiles();
+    }
   }
 //Experimental
   Future<void> uploadDBFiles() async {
     googleDrive.getHttpClient();
+    print("Uploading Now");
     googleDrive.deleteOutdatedBackups("activitylogger_db.db");
     googleDrive.uploadFileToGoogleDrive(File(dbLocation));
     googleDrive.uploadFileToGoogleDrive(File("$dbLocation-wal"));
     googleDrive.uploadFileToGoogleDrive(File("$dbLocation-shm"));
-    print("Backup saved");
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Your journal is now uploaded!'),
+
+        ));
   }
+
   //Experimental
   Future<void> restoreDBFiles() async {
     googleDrive.getHttpClient();
 googleDrive.downloadDatabaseBackups("activitylogger_db.db");
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Your journal is  synced  now!'),
+        ));
     print("successful");
   }
 
@@ -247,7 +276,7 @@ googleDrive.downloadDatabaseBackups("activitylogger_db.db");
                       AsyncSnapshot<bool> snapshot,) {
                     if (snapshot.hasError) {
                       return Text(
-                          'Error returning password enabled information');
+                          'Error returning password  information');
                     } else if (snapshot.hasData) {
                       return ElevatedButton(
                         onPressed: () {
@@ -257,9 +286,7 @@ googleDrive.downloadDatabaseBackups("activitylogger_db.db");
                           });
                           if (loginPassword == userPassword &&
                               passwordEnabled) {
-                            if(userActiveBackup){
-                              uploadDBFiles();
-                            }
+
                             loginPassword = '';
                             Navigator.pushNamed(context, '/success')
                                 .then((value) => {
@@ -275,9 +302,7 @@ googleDrive.downloadDatabaseBackups("activitylogger_db.db");
                             refreshPrefs();
                             loginPassword = '';
                             stuff.clear();
-                            if(userActiveBackup){
-                            uploadDBFiles();
-                            }
+
                             Navigator.pushNamed(context, '/success').then(
                                     (value) => {
                                   recordHolder.clear(),
@@ -300,9 +325,6 @@ googleDrive.downloadDatabaseBackups("activitylogger_db.db");
                           resetLoginFieldState();
                           if (loginPassword == userPassword) {
                             print(dbLocation);
-                            if(userActiveBackup){
-                              uploadDBFiles();
-                            }
                             Navigator.pushNamed(context, '/success').then(
                                     (value) => {
                                   recordHolder.clear(),
@@ -325,14 +347,14 @@ googleDrive.downloadDatabaseBackups("activitylogger_db.db");
             ),
             SizedBox(
               height: 130,
-            ),
+            ),driveButton
 
-            IconButton(onPressed: (){
+            /*IconButton(onPressed: (){
               googleAuthenticationMethod();
             }, icon: Icon(Icons.add_to_drive_outlined)),
             IconButton(onPressed: (){
               restoreDBFiles();
-            }, icon: Icon(Icons.download))
+            }, icon: Icon(Icons.download))*/
           ],
         ),
       ),

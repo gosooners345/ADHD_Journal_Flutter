@@ -36,6 +36,10 @@ class GoogleDrive {
    userActiveBackup = prefs.getBool("testBackup") ?? false;
     } else {
       account = await googleSignIn.signInSilently(reAuthenticate: true);
+      userActiveBackup = true;
+      prefs.setBool('testBackup', userActiveBackup);
+      prefs.reload();
+      userActiveBackup = prefs.getBool("testBackup") ?? false;
     }
     var authHeaders = await account?.authHeaders;
     var authenticateClient = GoogleAuthClient(authHeaders!);
@@ -82,7 +86,6 @@ class GoogleDrive {
     }
   }
 
-
   uploadFileToGoogleDrive(File file) async {
     var client = await getHttpClient();
     drive = ga.DriveApi(client);
@@ -100,12 +103,36 @@ class GoogleDrive {
     }
   }
 
+  Future<bool> checkFileAge(String fileName) async{
+    var client = await getHttpClient();
+    drive = ga.DriveApi(client);
+    File file =File(dbLocation);
+    var modifiedTime = await file.lastModified();
+    //Query for files on Drive to test against device
+    final queryDrive = await drive.files.list(
+      q: "name contains '$fileName'",
+      $fields: "files(id, name,createdTime,modifiedTime)",
+    );
+    final files = queryDrive.files;
+    //if (files?.isNotEmpty == true) {
+      var checkFile= files?.first;
+      var checkTime = checkFile?.createdTime;
+      //This returns if the Drive file is older than the device DB last
+      return (checkTime!.isBefore(modifiedTime));
+
+
+  }
+
+
   deleteOutdatedBackups(String fileName) async {
     var client = await getHttpClient();
     drive = ga.DriveApi(client);
+    File file = File(dbLocation);
+    var modifiedTime = await file.lastModified();
+
     final queryDrive = await drive.files.list(
       q: "name contains '$fileName'",
-      $fields: "files(id, name,createdTime)",
+      $fields: "files(id, name,createdTime,modifiedTime)",
     );
     final files = queryDrive.files;
     if (files?.isNotEmpty == true) {
@@ -114,6 +141,7 @@ class GoogleDrive {
       for (int i = 0; i <= test! - 1!; i++) {
         idList.add(files?[i].id);
       }
+      //Removes outdated backups.
       for (var element in idList) {
         drive.files.delete(element);
       }
@@ -126,8 +154,9 @@ class GoogleDrive {
     String fileLocation = await getDatabasesPath();
     final queryDrive = await drive.files.list(
       q: "name contains '$fileName'",
-      $fields: "files(id, name,createdTime)",
+      $fields: "files(id, name,createdTime,modifiedTime)",
     );
+
     final files = queryDrive.files;
     var idList = [];
     var nameList = [];
@@ -144,7 +173,6 @@ class GoogleDrive {
         final saveFile = File(p.join(fileLocation, nameList[i]));
         List<int> dataStore = [];
         file.stream.listen((data) {
-        //  print("DataReceived: ${data.length}");
           dataStore.insertAll(dataStore.length, data);
         }, onDone: () {
           print("Task Done");
