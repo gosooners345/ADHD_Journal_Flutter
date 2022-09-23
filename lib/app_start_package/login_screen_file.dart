@@ -2,9 +2,7 @@
 
 import 'dart:async';
 import 'package:adhd_journal_flutter/drive_api_backup_general/google_drive_backup_class.dart';
-import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
-import 'package:sqflite_sqlcipher/sqflite.dart';
 import '../project_resources/project_colors.dart';
 import 'onboarding_widget_class.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String hintPrompt = '';
 GoogleDrive googleDrive = GoogleDrive();
 late Widget driveButton;
+ bool loggedIn = false;
   @override
   void initState() {
     super.initState();
@@ -54,7 +53,10 @@ late Widget driveButton;
     }
     else{
       setState(() {
-        driveButton = ElevatedButton(onPressed: (){googleDrive.getHttpClient();}, child: Row(children: [Icon(Icons.add_to_drive),Text("Sign in to Drive")],));
+        driveButton = ElevatedButton(onPressed: (){
+          googleDrive.getHttpClient();
+          checkFileAge();
+          }, child: Row(children: [Icon(Icons.add_to_drive),Text("Sign in to Drive")],));
       });
     }
     if (passwordHint == '') {
@@ -76,20 +78,18 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
   }
 
 
+
   void loadStateStuff() async {
     prefs = await SharedPreferences.getInstance();
     sharedPrefs = prefs;
     greeting = prefs.getString("greeting") ?? '';
     loginGreeting = "Welcome $greeting !"
         " Please sign in below to get started!";
-
     userPassword = '';
     userPassword = await encryptedSharedPrefs.getString('loginPassword');
     dbPassword = await encryptedSharedPrefs.getString('dbPassword');
     passwordHint =await encryptedSharedPrefs.getString('passwordHint');
     passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
-
-
     isPasswordChecked = passwordEnabled;
 // This code will get the Google Drive api token for usage in auto backup and sync
 
@@ -154,6 +154,9 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
 
                 Navigator.pushNamed(context, '/success').then((value) =>
                 {
+if(userActiveBackup){
+  checkFileAge(),
+},
                   recordHolder.clear(),
                   stuff.clear(),
                   resetLoginFieldState(),
@@ -173,6 +176,7 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
                           TextButton(
                               onPressed: () {
                                 Navigator.pop(context);
+
                               },
                               child: Text("Ok"))
                         ],
@@ -201,19 +205,17 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
   }
 
 
-  Future<void> googleAuthenticationMethod() async{
-  googleDrive.getHttpClient();
-  }
-
-
-  Future<void> checkFileAge() async{
+  /// Check the user's Google Drive for age of file or even if the file exists
+  Future<void> checkFileAge() async {
     File file = File(dbLocation);
-    bool fileCheckAge =await googleDrive.checkFileAge("activitylogger_db.db-wal");
-    if(!fileCheckAge || !file.existsSync() ){
-      restoreDBFiles();
-    } else{
-      uploadDBFiles();
-    }
+    bool fileCheckAge = await googleDrive.checkFileAge(
+        "activitylogger_db.db-wal");
+      if (!fileCheckAge || !file.existsSync()) {
+        restoreDBFiles();
+      } else {
+        uploadDBFiles();
+      }
+
   }
 //Experimental
   Future<void> uploadDBFiles() async {
@@ -234,9 +236,13 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
   Future<void> restoreDBFiles() async {
     googleDrive.getHttpClient();
 googleDrive.downloadDatabaseBackups("activitylogger_db.db");
+var getFileTime = File(dbLocation);
+var time = getFileTime.lastModifiedSync();
+
+
     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Your journal is  synced  now!'),
+          content: Text('Your journal is synced as of ${time.toUtc()}'),
         ));
     print("successful");
   }
@@ -247,7 +253,6 @@ googleDrive.downloadDatabaseBackups("activitylogger_db.db");
     return Consumer<ThemeSwap>(
         builder: (context, ThemeSwap themeNotifier, child) {
     return Scaffold(
-      //backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text("ADHD Journal"),
       ),
@@ -286,10 +291,12 @@ googleDrive.downloadDatabaseBackups("activitylogger_db.db");
                           });
                           if (loginPassword == userPassword &&
                               passwordEnabled) {
+                            loggedIn=true;
 
                             loginPassword = '';
                             Navigator.pushNamed(context, '/success')
                                 .then((value) => {
+                                  loggedIn = false,
                               stuff.clear(),
                               recordHolder.clear(),
                               refreshPrefs(),
@@ -302,9 +309,10 @@ googleDrive.downloadDatabaseBackups("activitylogger_db.db");
                             refreshPrefs();
                             loginPassword = '';
                             stuff.clear();
-
+loggedIn=true;
                             Navigator.pushNamed(context, '/success').then(
                                     (value) => {
+                                      loggedIn=false,
                                   recordHolder.clear(),
                                   refreshPrefs(),
                                   setState(() {

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:adhd_journal_flutter/app_start_package/login_screen_file.dart';
 import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
+import 'package:flutter/foundation.dart';
 import 'package:googleapis/drive/v3.dart' as ga;
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:http/http.dart' as http;
@@ -21,7 +22,7 @@ class GoogleDrive {
 
   String fileID = "";
   late ga.DriveApi drive;
-
+bool firstUse = false;
   //Get Authenticated Http Client
   Future<http.Client> getHttpClient() async {
     final googleSignIn = signIn.GoogleSignIn.standard(
@@ -54,8 +55,6 @@ class GoogleDrive {
   //   if not able to create id then it means user authentication has failed
   Future<String?> _getFolderId(ga.DriveApi driveApi) async {
     const mimeType = "application/vnd.google-apps.folder";
-
-
     try {
       final found = await driveApi.files.list(
         q: "mimeType = '$mimeType' and name = '$driveStoreDirectory'",
@@ -66,7 +65,6 @@ class GoogleDrive {
         print("Sign-in first Error");
         return null;
       }
-
       // The folder already exists
       if (files.isNotEmpty) {
         return files.first.id;
@@ -106,29 +104,48 @@ class GoogleDrive {
   Future<bool> checkFileAge(String fileName) async{
     var client = await getHttpClient();
     drive = ga.DriveApi(client);
-    File file =File(dbLocation);
-    var modifiedTime = await file.lastModified();
-    //Query for files on Drive to test against device
-    final queryDrive = await drive.files.list(
-      q: "name contains '$fileName'",
-      $fields: "files(id, name,createdTime,modifiedTime)",
-    );
-    final files = queryDrive.files;
-    //if (files?.isNotEmpty == true) {
-      var checkFile= files?.first;
-      var checkTime = checkFile?.createdTime;
+    File file = File(dbLocation);
+    var testFile =File("$dbLocation-wal");
+    if(testFile.existsSync()){
+      file=File("$dbLocation-wal");
+    }
+
+      var modifiedTime =  file.lastModifiedSync();
+      //Query for files on Drive to test against device
+      var queryDrive = await drive.files.list(
+        q: "name contains '$fileName'",
+        $fields: "files(id, name,createdTime,modifiedTime)",
+      );
+      var files = queryDrive.files;
+      // Need for repeating until query is loaded or no file exists
+      var i = 0;
+      while (files!.isEmpty) {
+        var queryDrive = await drive.files.list(
+          q: "name contains '$fileName'",
+          $fields: "files(id, name,createdTime,modifiedTime)",
+        );
+        files = queryDrive.files;
+        i++;
+        if(i==5){
+          break;
+        }
+        if (kDebugMode) {
+          print(i);
+        }
+      }
+      var checkFile = files?.first;
+      var checkTime = checkFile?.modifiedTime;
       //This returns if the Drive file is older than the device DB last
+      print(checkTime?.isBefore(modifiedTime));
       return (checkTime!.isBefore(modifiedTime));
+    }
 
 
-  }
 
 
   deleteOutdatedBackups(String fileName) async {
     var client = await getHttpClient();
     drive = ga.DriveApi(client);
-    File file = File(dbLocation);
-    var modifiedTime = await file.lastModified();
 
     final queryDrive = await drive.files.list(
       q: "name contains '$fileName'",
@@ -189,9 +206,9 @@ class GoogleDrive {
 }
 class GoogleAuthClient extends http.BaseClient{
   final Map<String,String> _headers;
-  final http.Client _client = new http.Client();
+  final http.Client _client = http.Client();
   GoogleAuthClient(this._headers);
-  final storage = SecureStorage();
+
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) {
     return _client.send(request..headers.addAll(_headers));
