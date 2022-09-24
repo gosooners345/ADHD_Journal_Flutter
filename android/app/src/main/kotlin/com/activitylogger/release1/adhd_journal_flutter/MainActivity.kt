@@ -89,11 +89,6 @@ val dbPasswordGet = appPreferences.getString("dbPassword","")
                 }
                     result.success(testPath)
                 }
-         /*       "checkFirstVisit"->{
-                    val firstVisit = appPreferences.getBoolean("firstUse",true)
-result.success(firstVisit)
-
-                }*/
 
             }
         }

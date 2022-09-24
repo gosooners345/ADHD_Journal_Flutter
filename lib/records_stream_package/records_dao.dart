@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 
 import 'records_db_class.dart';
@@ -144,21 +145,32 @@ class RecordsDao {
     await db.update('records', record.toMapForDB(),
         where: 'id =?', whereArgs: [record.id]);
     await db.batch().commit();
-    //return result;
   }
 
   deleteRecord(int id) async {
     final db = await recordsDB.database;
     await db.delete('records', where: 'id =?', whereArgs: [id]);
     await db.batch().commit();
-    //return result;
   }
 
   void changeDBPasswords() async {
     recordsDB.changePasswords();
   }
 
+  // Test force the wal into the db and clean it out.
   void writeCheckpoint() async{
-    recordsDB.writeCheckpoint();
+final db = await recordsDB.database;
+var query = "PRAGMA SQLITE_DEFAULT_WAL_AUTOCHECKPOINT = 100";
+try {
+  await db.execute(query);
+  query = "PRAGMA wal_checkpoint(full)";
+  await db.execute(query);
+await db.batch().commit();
+} on Exception catch(e){
+
+  if (kDebugMode) {
+    print(e.toString());
+  }
+}
   }
 }

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:adhd_journal_flutter/app_start_package/login_screen_file.dart';
 import 'package:flutter/foundation.dart';
@@ -41,6 +40,7 @@ class RecordsDB {
     );
   }
 
+
   Future<void> _changeDBPassword(String oldPassword, String newPassword) async {
     try {
 
@@ -53,10 +53,6 @@ class RecordsDB {
         print(ex);
       }
     }
-  }
-  Future<void> writeCheckpoint() async{
-
-
   }
 }
 

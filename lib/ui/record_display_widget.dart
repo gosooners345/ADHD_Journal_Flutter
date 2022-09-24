@@ -133,7 +133,8 @@ passwordTimer();
                                       Navigator.pop(context);
                                       recordsBloc.deleteRecordByID(record.id);
                                      _showAlert(context, "Entry Deleted");
-                                      //print('Deleted Record');
+                                   recordsBloc.writeCheckpoint();
+                                   _showAlert(context, "Changes to DB Saved");
                                     },
                                     child: const Text('Yes')),
                                 TextButton(
@@ -200,7 +201,9 @@ passwordTimer();
                         id: 1,
                         title: 'Edit Entry',
                       )))
-          .then((value) => _showAlert(context,'Record Saved'),
+          .then((value) { _showAlert(context,'Record Saved');
+      recordsBloc.writeCheckpoint();
+      _showAlert(context, "Changes to DB Saved");}
               );
     });
   }
@@ -268,6 +271,7 @@ passwordTimer();
   void saveSettings(String value, String key) async {
     encryptedSharedPrefs.setString(key, value);
     await   encryptedSharedPrefs.setString(key, value);
+
   }
 
   @override

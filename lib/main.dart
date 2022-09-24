@@ -347,6 +347,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                   title: 'Compose New Entry'))).then((value) => {
             _showAlert(context,"Journal Entry Saved"),
             executeRefresh(),
+
           });
     } on Exception catch (ex) {
       if (kDebugMode) {
@@ -382,6 +383,8 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
 
   void executeRefresh() async {
     RecordList.loadLists();
+    recordsBloc.writeCheckpoint();
+    _showAlert(context, "Changes to DB Saved");
     if (kDebugMode) {
       print('Executed');
     }
