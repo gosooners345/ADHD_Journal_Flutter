@@ -69,7 +69,6 @@ bool firstUse = false;
       if (files.isNotEmpty) {
         return files.first.id;
       }
-
       // Create a folder
       ga.File folder = ga.File();
       folder.name = driveStoreDirectory;
