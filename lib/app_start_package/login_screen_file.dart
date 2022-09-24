@@ -291,12 +291,9 @@ var time = getFileTime.lastModifiedSync();
                           });
                           if (loginPassword == userPassword &&
                               passwordEnabled) {
-                            loggedIn=true;
-
                             loginPassword = '';
                             Navigator.pushNamed(context, '/success')
                                 .then((value) => {
-                                  loggedIn = false,
                               stuff.clear(),
                               recordHolder.clear(),
                               refreshPrefs(),
@@ -305,14 +302,11 @@ var time = getFileTime.lastModifiedSync();
                               }),
                             });
                           } else if (!passwordEnabled) {
-
                             refreshPrefs();
                             loginPassword = '';
                             stuff.clear();
-loggedIn=true;
                             Navigator.pushNamed(context, '/success').then(
                                     (value) => {
-                                      loggedIn=false,
                                   recordHolder.clear(),
                                   refreshPrefs(),
                                   setState(() {
