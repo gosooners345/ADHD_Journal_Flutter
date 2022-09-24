@@ -54,5 +54,9 @@ class RecordsDB {
       }
     }
   }
+  Future<void> writeCheckpoint() async{
+
+
+  }
 }
 

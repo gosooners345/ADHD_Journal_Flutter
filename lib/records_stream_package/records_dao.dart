@@ -157,4 +157,8 @@ class RecordsDao {
   void changeDBPasswords() async {
     recordsDB.changePasswords();
   }
+
+  void writeCheckpoint() async{
+    recordsDB.writeCheckpoint();
+  }
 }

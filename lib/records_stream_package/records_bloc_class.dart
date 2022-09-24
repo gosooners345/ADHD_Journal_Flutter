@@ -65,6 +65,10 @@ class RecordsBloc {
     _recordsRepo.changePassword();
   }
 
+  void writeCheckpoint(){
+    _recordsRepo.writeCheckpoint();
+  }
+
   dispose() {
     _recordsController.close();
   }

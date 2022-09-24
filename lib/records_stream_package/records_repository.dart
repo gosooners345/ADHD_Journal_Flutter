@@ -16,4 +16,7 @@ class RecordsRepository {
   void changePassword() {
     recordsDao.changeDBPasswords();
   }
+  void writeCheckpoint(){
+    recordsDao.writeCheckpoint();
+  }
 }
