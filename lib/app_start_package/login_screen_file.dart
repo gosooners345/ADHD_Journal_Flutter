@@ -40,25 +40,16 @@ class _LoginScreenState extends State<LoginScreen> {
   String hintText = '';
   String hintPrompt = '';
 GoogleDrive googleDrive = GoogleDrive();
-late Widget driveButton;
- bool loggedIn = false;
+ late  ElevatedButton driveButton;
+
   @override
   void initState() {
     super.initState();
+    userActiveBackup = prefs.getBool('testBackup') ?? false;
     if(userActiveBackup){
-      googleDrive.getHttpClient();
-      setState(() {
-        driveButton = Text("");
-      });
+      googleDrive.getHttpClientSilently();
     }
-    else{
-      setState(() {
-        driveButton = ElevatedButton(onPressed: (){
-          googleDrive.getHttpClient();
-          checkFileAge();
-          }, child: Row(children: [Icon(Icons.add_to_drive),Text("Sign in to Drive")],));
-      });
-    }
+
     if (passwordHint == '') {
       hintText = 'Enter secure password';
 hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember your password in case you forget. \r\n Set it to something memorable.\r\n This will be encrypted like your password so nobody can read your hint.'
@@ -67,10 +58,17 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
     } else {
       hintText ='Password Hint is : $passwordHint';
     }
-    userActiveBackup = prefs.getBool('testBackup') ?? false;
-    loadStateStuff();
 
+    loadStateStuff();
     setState(() {
+      driveButton = ElevatedButton(onPressed: (){
+        googleDrive.getHttpClient();
+        checkFileAge();
+        resetLoginFieldState();
+        setState(() {
+          getSyncStateStatus();
+        });
+      }, child: Row(children: [Icon(Icons.add_to_drive),Text("Sign in to Drive")],));
       stuff = TextEditingController();
       resetLoginFieldState();
     });
@@ -106,6 +104,11 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
     return opener + greeting + closer;
   }
 
+  Future<bool> getSyncStateStatus() async{
+   await Future.delayed(Duration(seconds: 1));
+    return userActiveBackup;
+}
+
   Future<bool> getPassword() async {
     await Future.delayed(Duration(seconds: 0));
     return prefs.getBool('passwordEnabled') ?? true;
@@ -116,6 +119,8 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
     passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
     greeting = prefs.getString("greeting") ?? '';
     loginGreeting = "Welcome $greeting! Please sign in below to get started!";
+    userActiveBackup = prefs.getBool('testBackup')?? false;
+await getSyncStateStatus();
     resetLoginFieldState();
   }
 
@@ -136,9 +141,10 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
               textAlign: TextAlign.center,
             ))
       ]);
+      getSyncStateStatus();
       if(userActiveBackup){
         checkFileAge();
-      }
+             }
       if (passwordEnabled) {
         loginField = TextField(
           obscureText: true,
@@ -154,9 +160,8 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
 
                 Navigator.pushNamed(context, '/success').then((value) =>
                 {
-if(userActiveBackup){
-  checkFileAge(),
-},
+
+                refreshPrefs(),
                   recordHolder.clear(),
                   stuff.clear(),
                   resetLoginFieldState(),
@@ -208,18 +213,23 @@ if(userActiveBackup){
   /// Check the user's Google Drive for age of file or even if the file exists
   Future<void> checkFileAge() async {
     File file = File(dbLocation);
+    try{
     bool fileCheckAge = await googleDrive.checkFileAge(
         "activitylogger_db.db-wal");
-      if (!fileCheckAge || !file.existsSync()) {
-        restoreDBFiles();
-      } else {
-        uploadDBFiles();
-      }
+    if (!fileCheckAge || !file.existsSync()) {
+      restoreDBFiles();
+    } else {
+      uploadDBFiles();
+    }
+    } on Exception catch (ex){
+      restoreDBFiles();
+    }
+
 
   }
 //Experimental
   Future<void> uploadDBFiles() async {
-    googleDrive.getHttpClient();
+    googleDrive.getHttpClientSilently();
     print("Uploading Now");
     googleDrive.deleteOutdatedBackups("activitylogger_db.db");
     googleDrive.uploadFileToGoogleDrive(File(dbLocation));
@@ -234,17 +244,26 @@ if(userActiveBackup){
 
   //Experimental
   Future<void> restoreDBFiles() async {
-    googleDrive.getHttpClient();
+    googleDrive.getHttpClientSilently();
+    try{
 googleDrive.downloadDatabaseBackups("activitylogger_db.db");
 var getFileTime = File(dbLocation);
 var time = getFileTime.lastModifiedSync();
 
 
-    ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Your journal is synced as of ${time.toUtc()}'),
-        ));
-    print("successful");
+ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text('Your journal is synced as of ${time.toUtc()}'),
+    ));
+print("successful");
+    }on Exception catch(ex){
+      print(ex.toString());
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('You need to open up the journal once to back it up.'),
+          ));
+    }
+
   }
 
 
@@ -286,9 +305,9 @@ var time = getFileTime.lastModifiedSync();
                       return ElevatedButton(
                         onPressed: () {
                           callingCard = true;
-                          setState(() {
+                         /* setState(() {
                             resetLoginFieldState();
-                          });
+                          });*/
                           if (loginPassword == userPassword &&
                               passwordEnabled) {
                             loginPassword = '';
@@ -302,16 +321,17 @@ var time = getFileTime.lastModifiedSync();
                               }),
                             });
                           } else if (!passwordEnabled) {
-                            refreshPrefs();
+                      //      refreshPrefs();
                             loginPassword = '';
                             stuff.clear();
                             Navigator.pushNamed(context, '/success').then(
                                     (value) => {
+                                      refreshPrefs(),
                                   recordHolder.clear(),
-                                  refreshPrefs(),
-                                  setState(() {
+                                 resetLoginFieldState()
+                                  /*setState(() {
                                     resetLoginFieldState();
-                                  }),
+                                  }),*/
                                 });
                           }
                         },
@@ -324,9 +344,9 @@ var time = getFileTime.lastModifiedSync();
                         ConnectionState.waiting) {
                       return ElevatedButton(
                         onPressed: () {
-                          resetLoginFieldState();
+
                           if (loginPassword == userPassword) {
-                            print(dbLocation);
+                            resetLoginFieldState();
                             Navigator.pushNamed(context, '/success').then(
                                     (value) => {
                                   recordHolder.clear(),
@@ -349,7 +369,30 @@ var time = getFileTime.lastModifiedSync();
             ),
             SizedBox(
               height: 130,
-            ),driveButton
+            ),Padding(
+              padding: const EdgeInsets.only(top: 60.0),
+              child: Center(child:  FutureBuilder( future: getSyncStateStatus(),
+                  builder: (BuildContext context, AsyncSnapshot<bool> snapshot,){
+                if(snapshot.hasError){
+                  return Text("Error");
+                }
+                else if(snapshot.hasData){
+                  if(snapshot.data! == true){
+                    return Text("");
+                  }
+                  else{
+                    return driveButton;
+                  }
+                }
+                else {
+                  return Text("Waiting");
+                }
+
+
+
+              }),),
+            ),
+
 
             /*IconButton(onPressed: (){
               googleAuthenticationMethod();

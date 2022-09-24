@@ -57,7 +57,7 @@ late  Database testDB;
       migrateTimer();
     }
     //Add a password hint variable and preference to the application for users to add a hint so they can be reminded what their password is.
-    //checkPasswordHintTimer();
+
     startTimer();
   }
 
@@ -119,6 +119,9 @@ var checkFirstVisit = false;
      dbLocation = path.join(await getDatabasesPath(),'activitylogger_db.db');
  await prefs.setString('dblocation', dbLocation);
  userActiveBackup = prefs.getBool('testBackup') ?? false;
+ if (kDebugMode) {
+   print("Backup is $userActiveBackup");
+ }
   }
 
   void route() {

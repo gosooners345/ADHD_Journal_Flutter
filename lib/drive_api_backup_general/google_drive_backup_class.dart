@@ -23,32 +23,43 @@ class GoogleDrive {
   String fileID = "";
   late ga.DriveApi drive;
 bool firstUse = false;
+
   //Get Authenticated Http Client
   Future<http.Client> getHttpClient() async {
     final googleSignIn = signIn.GoogleSignIn.standard(
         scopes: [ga.DriveApi.driveScope,
           ga.DriveApi.driveAppdataScope]);
     signIn.GoogleSignInAccount? account;
-    if (userActiveBackup = false) {
+firstUse=true;
       account = await googleSignIn.signIn();
    userActiveBackup = true;
    prefs.setBool('testBackup', userActiveBackup);
    prefs.reload();
    userActiveBackup = prefs.getBool("testBackup") ?? false;
-    } else {
-      account = await googleSignIn.signInSilently(reAuthenticate: true);
-      userActiveBackup = true;
-      prefs.setBool('testBackup', userActiveBackup);
-      prefs.reload();
-      userActiveBackup = prefs.getBool("testBackup") ?? false;
-    }
+ prefs.setBool("authenticated", firstUse);
     var authHeaders = await account?.authHeaders;
     var authenticateClient = GoogleAuthClient(authHeaders!);
 
     print(authenticateClient._headers);
     return authenticateClient;
   }
+  Future<http.Client> getHttpClientSilently() async {
+    final googleSignIn = signIn.GoogleSignIn.standard(
+        scopes: [ga.DriveApi.driveScope,
+          ga.DriveApi.driveAppdataScope]);
+    signIn.GoogleSignInAccount? account;
 
+    account = await googleSignIn.signInSilently(reAuthenticate: true);
+    userActiveBackup = true;
+    prefs.setBool('testBackup', userActiveBackup);
+    prefs.reload();
+    userActiveBackup = prefs.getBool("testBackup") ?? false;
+    var authHeaders = await account?.authHeaders;
+    var authenticateClient = GoogleAuthClient(authHeaders!);
+
+    print(authenticateClient._headers);
+    return authenticateClient;
+  }
 
   // check if the directory folder is already available in drive , if available return its id
   // if not available create a folder in drive and return id
@@ -62,7 +73,9 @@ bool firstUse = false;
       );
       final files = found.files;
       if (files == null) {
-        print("Sign-in first Error");
+        if (kDebugMode) {
+          print("Sign-in first Error");
+        }
         return null;
       }
       // The folder already exists
@@ -74,21 +87,28 @@ bool firstUse = false;
       folder.name = driveStoreDirectory;
       folder.mimeType = mimeType;
       final folderCreation = await driveApi.files.create(folder);
-      print("Folder ID: ${folderCreation.id}");
+      if (kDebugMode) {
+        print("Folder ID: ${folderCreation.id}");
+      }
 
       return folderCreation.id;
     } catch (e) {
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
       return null;
     }
   }
 
   uploadFileToGoogleDrive(File file) async {
-    var client = await getHttpClient();
+   var client = await getHttpClientSilently();
+
     drive = ga.DriveApi(client);
     String? folderId = await _getFolderId(drive);
     if (folderId == null) {
-      print("Sign-in first Error");
+      if (kDebugMode) {
+        print("Sign-in first Error");
+      }
     } else {
       ga.File fileToUpload = ga.File();
       fileToUpload.parents = [folderId];
@@ -101,7 +121,7 @@ bool firstUse = false;
   }
 
   Future<bool> checkFileAge(String fileName) async{
-    var client = await getHttpClient();
+    var client = await getHttpClientSilently();
     drive = ga.DriveApi(client);
     File file = File(dbLocation);
     var testFile =File("$dbLocation-wal");
@@ -135,7 +155,7 @@ bool firstUse = false;
       var checkFile = files?.first;
       var checkTime = checkFile?.modifiedTime;
       //This returns if the Drive file is older than the device DB last
-      print(checkTime?.isBefore(modifiedTime));
+
       return (checkTime!.isBefore(modifiedTime));
     }
 
@@ -143,7 +163,7 @@ bool firstUse = false;
 
 
   deleteOutdatedBackups(String fileName) async {
-    var client = await getHttpClient();
+    var client = await getHttpClientSilently();
     drive = ga.DriveApi(client);
 
     final queryDrive = await drive.files.list(
@@ -165,7 +185,7 @@ bool firstUse = false;
   }
 
   Future<void> downloadDatabaseBackups(String fileName) async {
-    var client = await getHttpClient();
+    var client = await getHttpClientSilently();
     drive = ga.DriveApi(client);
     String fileLocation = await getDatabasesPath();
     final queryDrive = await drive.files.list(
@@ -191,15 +211,23 @@ bool firstUse = false;
         file.stream.listen((data) {
           dataStore.insertAll(dataStore.length, data);
         }, onDone: () {
-          print("Task Done");
+          if (kDebugMode) {
+            print("Task Done");
+          }
           saveFile.writeAsBytes(dataStore);
-          print("File saved at ${saveFile.path}");
+          if (kDebugMode) {
+            print("File saved at ${saveFile.path}");
+          }
         }, onError: (error) {
-          print("Some Error");
+          if (kDebugMode) {
+            print("Some Error");
+          }
         });
       }
     } else {
-      print("Nothing's here");
+      if (kDebugMode) {
+        print("Nothing's here");
+      }
     }
   }
 }

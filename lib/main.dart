@@ -265,6 +265,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                 if (userPassword != dbPassword) {
                   verifyPasswordChanged(),
                 },
+                userActiveBackup = prefs.getBool("testBackup") ?? false
               });
             },
           ),

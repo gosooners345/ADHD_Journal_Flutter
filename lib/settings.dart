@@ -32,10 +32,13 @@ class _SettingsPage extends State<SettingsPage> {
   String greetingValue = '';
   Text passwordLabelWidget = const Text('');
   bool passwordEnabled = false;
+  Text syncTextWidget = const Text('');
   late SwitchListTile passwordEnabledTile;
   //Visual changes based on parameter values
   String passwordLabelText = 'Password Enabled';
+  String  syncTextLabelText = "Turn backup on/off";
   late Icon lockIcon;
+  Icon syncIcon=Icon(Icons.sync,color: Color(colorSeed),);
   // Convenience Widget for spacing and alignment
   SizedBox spacer = const SizedBox(height: 16, width: 8);
   //Text Controllers
@@ -62,6 +65,7 @@ class _SettingsPage extends State<SettingsPage> {
 if(passwordHint ==" "){
   passwordHint = '';
 }
+
     setState(() {
       greetingController = TextEditingController(text: greeting);
       passwordController = TextEditingController(text: userPassword);
@@ -72,15 +76,25 @@ if(passwordHint ==" "){
           color: Color(colorSeed),
         );
         passwordLabelText = "Password Enabled";
-        passwordLabelWidget = Text(passwordLabelText);
+      //  passwordLabelWidget = Text(passwordLabelText);
       } else {
         lockIcon = Icon(
           Icons.lock_open,
           color: Color(colorSeed),
         );
         passwordLabelText = "Password Disabled";
-        passwordLabelWidget = Text(passwordLabelText);
+       // passwordLabelWidget = Text(passwordLabelText);
       }
+      passwordLabelWidget = Text(passwordLabelText);
+      if(userActiveBackup){
+        syncIcon =Icon(Icons.sync,color: Color(colorSeed),);
+        syncTextLabelText = "Backup and Sync to Drive Enabled";
+      }
+      else{
+        syncIcon=Icon(Icons.sync_disabled,color: Color(colorSeed),);
+        syncTextLabelText = "Backup and Sync to Drive Disabled";
+      }
+      syncTextWidget = Text(syncTextLabelText);
     });
   }
 
@@ -98,7 +112,7 @@ if(passwordHint ==" "){
 
     setState(() {
       swapper.themeColor = colorValue;
-    //  swapper.notifyListeners();
+
     });
 
   }
@@ -172,7 +186,7 @@ if(passwordHint ==" "){
           ),
           spacer,
           ListTile(
-            title:Text("Application Theme Colors",),
+            title:const Text("Application Theme Colors",),
             onTap: (){
 showDialog(context: context, builder: (BuildContext builder){
   return AlertDialog(
@@ -299,6 +313,48 @@ showDialog(context: context, builder: (BuildContext builder){
             thickness: 2.0,
             color: Color(themeNotifier.isColorSeed),
           ),
+          //Sync
+          spacer,
+          Divider(
+            height: 1.0,
+            thickness: 0.5,
+            color: Color(themeNotifier.isColorSeed),
+          ),
+          SwitchListTile(
+            value: userActiveBackup,
+            onChanged: (bool value) {
+              userActiveBackup = value;
+              userActiveBackup = value;
+              setState(() {
+                if (value) {
+                  syncIcon = Icon(Icons.sync,
+                    color: Color(themeNotifier.isColorSeed),
+                  );
+                  syncTextLabelText = "Backup and Sync to Drive Enabled";
+                  prefs.setBool('testBackup', value);
+                  if (kDebugMode) {
+                    print("Backup and sync is $value");
+                  }
+                } else if (!value) {
+                  syncIcon = Icon(Icons.sync_disabled,
+                    color: Color(themeNotifier.isColorSeed),
+                  );
+                  syncTextLabelText = "Backup and Sync for Drive Disabled";
+                  prefs.setBool('testBackup', value);
+                  print("Backup and Sync is $value");
+                }
+                syncTextWidget = Text(syncTextLabelText);
+              });
+            },
+            title: syncTextWidget,
+            secondary: syncIcon,
+          ),
+          spacer,
+          Divider(
+            height: 2.0,
+            thickness: 2.0,
+            color: Color(themeNotifier.isColorSeed),
+          ),
           ListTile(
             iconColor: Color(themeNotifier.isColorSeed),
             leading: const Icon(Icons.info_outline),
@@ -312,6 +368,7 @@ showDialog(context: context, builder: (BuildContext builder){
             thickness: 0.5,
             color: Color(themeNotifier.isColorSeed),
           ),
+
           ListTile(
             iconColor: Color(themeNotifier.isColorSeed),
             leading: const Icon(Icons.info_outline),
