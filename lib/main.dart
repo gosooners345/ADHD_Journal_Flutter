@@ -385,7 +385,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
   void executeRefresh() async {
     RecordList.loadLists();
     recordsBloc.writeCheckpoint();
-    _showAlert(context, "Changes to DB Saved");
+
     if (kDebugMode) {
       print('Executed');
     }

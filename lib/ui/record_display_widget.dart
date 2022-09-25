@@ -134,7 +134,6 @@ passwordTimer();
                                       recordsBloc.deleteRecordByID(record.id);
                                      _showAlert(context, "Entry Deleted");
                                    recordsBloc.writeCheckpoint();
-                                   _showAlert(context, "Changes to DB Saved");
                                     },
                                     child: const Text('Yes')),
                                 TextButton(

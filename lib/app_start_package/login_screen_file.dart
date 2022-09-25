@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'package:adhd_journal_flutter/drive_api_backup_general/google_drive_backup_class.dart';
+import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import '../project_resources/project_colors.dart';
 import 'onboarding_widget_class.dart';
@@ -35,8 +36,8 @@ class _LoginScreenState extends State<LoginScreen> {
   bool passwordEnabled = true;
   late SharedPreferences sharedPrefs;
   late TextEditingController stuff;
-  late Widget loginField;
-  late Widget greetingField;
+  TextField loginField = TextField();
+  Row greetingField = Row(children: [],);
   String hintText = '';
   String hintPrompt = '';
 GoogleDrive googleDrive = GoogleDrive();
@@ -49,7 +50,7 @@ GoogleDrive googleDrive = GoogleDrive();
     if(userActiveBackup){
       googleDrive.getHttpClientSilently();
     }
-
+    loadStateStuff();
     if (passwordHint == '') {
       hintText = 'Enter secure password';
 hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember your password in case you forget. \r\n Set it to something memorable.\r\n This will be encrypted like your password so nobody can read your hint.'
@@ -59,7 +60,7 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
       hintText ='Password Hint is : $passwordHint';
     }
 
-    loadStateStuff();
+
     setState(() {
       driveButton = ElevatedButton(onPressed: (){
         googleDrive.getHttpClient();
@@ -68,9 +69,9 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
         setState(() {
           getSyncStateStatus();
         });
-      }, child: Row(children: [Icon(Icons.add_to_drive),Text("Sign in to Drive")],));
+      }, child: Row(children: const [Icon(Icons.add_to_drive),Text("Sign in to Drive")],));
       stuff = TextEditingController();
-      resetLoginFieldState();
+    //  resetLoginFieldState();
     });
 
   }
@@ -125,6 +126,9 @@ await getSyncStateStatus();
   }
 
   void resetLoginFieldState() {
+    if(userActiveBackup){
+      checkFileAge();
+    }
     setState(() {
       if (passwordHint == '' || passwordHint == ' ') {
         hintText = 'Enter secure password';
@@ -141,10 +145,8 @@ await getSyncStateStatus();
               textAlign: TextAlign.center,
             ))
       ]);
-      getSyncStateStatus();
-      if(userActiveBackup){
-        checkFileAge();
-             }
+
+
       if (passwordEnabled) {
         loginField = TextField(
           obscureText: true,
@@ -157,14 +159,12 @@ await getSyncStateStatus();
             loginPassword = text;
             if (text.length == userPassword.length) {
               if (text == userPassword) {
-
                 Navigator.pushNamed(context, '/success').then((value) =>
                 {
-
                 refreshPrefs(),
                   recordHolder.clear(),
                   stuff.clear(),
-                  resetLoginFieldState(),
+                  //resetLoginFieldState(),
                 });
               } else {
                 showDialog(
@@ -181,7 +181,6 @@ await getSyncStateStatus();
                           TextButton(
                               onPressed: () {
                                 Navigator.pop(context);
-
                               },
                               child: Text("Ok"))
                         ],
@@ -221,7 +220,7 @@ await getSyncStateStatus();
     } else {
       uploadDBFiles();
     }
-    } on Exception catch (ex){
+    } on Exception {
       restoreDBFiles();
     }
 
@@ -230,7 +229,9 @@ await getSyncStateStatus();
 //Experimental
   Future<void> uploadDBFiles() async {
     googleDrive.getHttpClientSilently();
-    print("Uploading Now");
+    if (kDebugMode) {
+      print("Uploading Now");
+    }
     googleDrive.deleteOutdatedBackups("activitylogger_db.db");
     googleDrive.uploadFileToGoogleDrive(File(dbLocation));
     googleDrive.uploadFileToGoogleDrive(File("$dbLocation-wal"));
@@ -245,25 +246,24 @@ await getSyncStateStatus();
   //Experimental
   Future<void> restoreDBFiles() async {
     googleDrive.getHttpClientSilently();
-    try{
-googleDrive.downloadDatabaseBackups("activitylogger_db.db");
-var getFileTime = File(dbLocation);
-var time = getFileTime.lastModifiedSync();
-
-
-ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text('Your journal is synced as of ${time.toUtc()}'),
-    ));
-print("successful");
-    }on Exception catch(ex){
+    try {
+      googleDrive.downloadDatabaseBackups("activitylogger_db.db");
+      var getFileTime = File(dbLocation);
+      var time = getFileTime.lastModifiedSync();
+// Show Snack Bar displaying the last time action was
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Your journal is synced as of ${time.toUtc()}'),
+          ));
+      print("successful");
+    } on Exception catch (ex) {
       print(ex.toString());
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('You need to open up the journal once to back it up.'),
+            content: Text(
+                'You need to open up the journal once to back it up.'),
           ));
     }
-
   }
 
 
@@ -305,9 +305,7 @@ print("successful");
                       return ElevatedButton(
                         onPressed: () {
                           callingCard = true;
-                         /* setState(() {
-                            resetLoginFieldState();
-                          });*/
+
                           if (loginPassword == userPassword &&
                               passwordEnabled) {
                             loginPassword = '';
@@ -316,22 +314,18 @@ print("successful");
                               stuff.clear(),
                               recordHolder.clear(),
                               refreshPrefs(),
-                              setState(() {
-                                resetLoginFieldState();
-                              }),
+
                             });
                           } else if (!passwordEnabled) {
-                      //      refreshPrefs();
+
                             loginPassword = '';
                             stuff.clear();
                             Navigator.pushNamed(context, '/success').then(
                                     (value) => {
                                       refreshPrefs(),
                                   recordHolder.clear(),
-                                 resetLoginFieldState()
-                                  /*setState(() {
-                                    resetLoginFieldState();
-                                  }),*/
+
+
                                 });
                           }
                         },
@@ -344,14 +338,11 @@ print("successful");
                         ConnectionState.waiting) {
                       return ElevatedButton(
                         onPressed: () {
-
                           if (loginPassword == userPassword) {
-                            resetLoginFieldState();
                             Navigator.pushNamed(context, '/success').then(
                                     (value) => {
                                   recordHolder.clear(),
                                   refreshPrefs(),
-                                  resetLoginFieldState(),
                                   recordsBloc.dispose(),
                                 });
                             stuff.clear();
@@ -387,19 +378,9 @@ print("successful");
                 else {
                   return Text("Waiting");
                 }
-
-
-
               }),),
             ),
 
-
-            /*IconButton(onPressed: (){
-              googleAuthenticationMethod();
-            }, icon: Icon(Icons.add_to_drive_outlined)),
-            IconButton(onPressed: (){
-              restoreDBFiles();
-            }, icon: Icon(Icons.download))*/
           ],
         ),
       ),
