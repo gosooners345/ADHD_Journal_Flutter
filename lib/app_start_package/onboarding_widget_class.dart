@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../app_start_package/splash_screendart.dart';
 
+import '../drive_api_backup_general/google_drive_backup_class.dart';
 import '../project_resources/project_strings_file.dart';
 
 class OnBoardingWidget extends StatefulWidget {
@@ -22,7 +23,8 @@ bool callingCard = false;
 
 class _OnBoardingWidgetState extends State<OnBoardingWidget> {
   bool isSaved = false;
-
+  GoogleDrive googleDrive = GoogleDrive();
+  late  ElevatedButton driveButton;
   var pageTitleStyle = const TextStyle(
     fontSize: 23.0,
     wordSpacing: 1,
@@ -45,6 +47,10 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     super.initState();
     encryptedSharedPrefs = EncryptedSharedPreferences();
     index = 0;
+    driveButton = ElevatedButton(onPressed: (){
+      googleDrive.getHttpClient();
+
+    }, child: Row(children: [Icon(Icons.add_to_drive),Text("Sign in to Drive")],));
   }
 
 // Onboarding pages location
@@ -443,6 +449,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                           });
                         }),
                   ),
+
                   ElevatedButton(
 
                     onPressed: () async {
