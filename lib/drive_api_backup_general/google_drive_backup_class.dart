@@ -8,15 +8,12 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
-import 'security_storage.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:google_sign_in/google_sign_in.dart' as signIn;
 import 'package:firebase_auth/firebase_auth.dart';
 
 
 
-const _clientId = "639171720797-1947q85ikvusptoul5tdhjffodrlhlrh.apps.googleusercontent.com";
-const _scopes = ['https://www.googleapis.com/auth/drive.file'];
 
 class GoogleDrive {
 
