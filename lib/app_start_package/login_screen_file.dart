@@ -8,8 +8,11 @@ import '../project_resources/project_colors.dart';
 import 'onboarding_widget_class.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:encrypt/encrypt.dart' as enc;
+import 'package:adhd_journal_flutter/drive_api_backup_general/preference_backup_class.dart';
 import '../main.dart';
 import 'dart:io';
+
 import 'splash_screendart.dart';
 
 /// Required to open the application , simple login form to start
@@ -71,7 +74,6 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
         });
       }, child: Row(children: const [Icon(Icons.add_to_drive),Text("Sign in to Drive")],));
       stuff = TextEditingController();
-    //  resetLoginFieldState();
     });
 
   }
@@ -91,7 +93,6 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
     passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
     isPasswordChecked = passwordEnabled;
 // This code will get the Google Drive api token for usage in auto backup and sync
-
     setState(() {
       resetLoginFieldState();
     });

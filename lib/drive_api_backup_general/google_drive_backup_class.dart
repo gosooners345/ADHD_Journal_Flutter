@@ -11,7 +11,7 @@ import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:google_sign_in/google_sign_in.dart' as signIn;
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:encrypt/encrypt.dart';
 
 
 
