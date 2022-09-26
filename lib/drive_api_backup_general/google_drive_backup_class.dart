@@ -38,6 +38,12 @@ firstUse=true;
     var authenticateClient = GoogleAuthClient(authHeaders!);
 
     print(authenticateClient._headers);
+    var driveApiKey = authenticateClient._headers;
+    print(driveApiKey["Authorization"]);
+    var apiParse = driveApiKey["Authorization"];
+    var keys = apiParse?.split('.');
+    apiKey = keys![1];
+    print(apiKey);
     return authenticateClient;
   }
   Future<http.Client> getHttpClientSilently() async {
@@ -55,6 +61,12 @@ firstUse=true;
     var authenticateClient = GoogleAuthClient(authHeaders!);
 
     print(authenticateClient._headers);
+    var driveApiKey = authenticateClient._headers;
+    print(driveApiKey["Authorization"]);
+    var apiParse = driveApiKey["Authorization"];
+    var keys = apiParse?.split('.');
+    apiKey = keys![1];
+    print(apiKey);
     return authenticateClient;
   }
 
@@ -241,3 +253,4 @@ class GoogleAuthClient extends http.BaseClient{
 
 
 }
+String apiKey = '';
