@@ -4,7 +4,7 @@ import 'google_drive_backup_class.dart';
 import 'package:adhd_journal_flutter/settings.dart';
 import 'dart:io' as io;
 
-class PreferenceBackup {
+class PreferenceBackupAndEncrypt {
 
   void encryptDatainCSV() async{
 
@@ -18,6 +18,7 @@ class PreferenceBackup {
   void uploadPrefsCSVFile() async{
 
   }
+
 
   final String csvFileString = 'JSp-enc.csv';
 

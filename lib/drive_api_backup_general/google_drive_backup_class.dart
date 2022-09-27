@@ -36,16 +36,13 @@ firstUse=true;
  prefs.setBool("authenticated", firstUse);
     var authHeaders = await account?.authHeaders;
     var authenticateClient = GoogleAuthClient(authHeaders!);
-
-    print(authenticateClient._headers);
     var driveApiKey = authenticateClient._headers;
-    print(driveApiKey["Authorization"]);
     var apiParse = driveApiKey["Authorization"];
     var keys = apiParse?.split('.');
     apiKey = keys![1];
-    print(apiKey);
     return authenticateClient;
   }
+
   Future<http.Client> getHttpClientSilently() async {
     final googleSignIn = signIn.GoogleSignIn.standard(
         scopes: [ga.DriveApi.driveScope,
@@ -60,13 +57,11 @@ firstUse=true;
     var authHeaders = await account?.authHeaders;
     var authenticateClient = GoogleAuthClient(authHeaders!);
 
-    print(authenticateClient._headers);
     var driveApiKey = authenticateClient._headers;
-    print(driveApiKey["Authorization"]);
     var apiParse = driveApiKey["Authorization"];
     var keys = apiParse?.split('.');
     apiKey = keys![1];
-    print(apiKey);
+
     return authenticateClient;
   }
 
@@ -154,7 +149,7 @@ firstUse=true;
         );
         files = queryDrive.files;
         i++;
-        if(i==5){
+        if(files!.isNotEmpty) {
           break;
         }
         if (kDebugMode) {

@@ -92,6 +92,13 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
     passwordHint =await encryptedSharedPrefs.getString('passwordHint');
     passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
     isPasswordChecked = passwordEnabled;
+    apiKey =   await Future.delayed(Duration(seconds: 1),(){encryptedSharedPrefs.getString('apiStorage');}).toString();
+
+    if(kDebugMode) {
+      if (apiKey!.isNotEmpty){
+      print(apiKey);
+    }
+    }
 // This code will get the Google Drive api token for usage in auto backup and sync
     setState(() {
       resetLoginFieldState();
@@ -130,6 +137,9 @@ await getSyncStateStatus();
     if(userActiveBackup){
       checkFileAge();
     }
+    //if(apiKey == ''){
+    encryptedSharedPrefs.setString('apiStorage', apiKey);
+   // }
     setState(() {
       if (passwordHint == '' || passwordHint == ' ') {
         hintText = 'Enter secure password';
@@ -165,7 +175,6 @@ await getSyncStateStatus();
                 refreshPrefs(),
                   recordHolder.clear(),
                   stuff.clear(),
-                  //resetLoginFieldState(),
                 });
               } else {
                 showDialog(
@@ -306,7 +315,6 @@ await getSyncStateStatus();
                       return ElevatedButton(
                         onPressed: () {
                           callingCard = true;
-
                           if (loginPassword == userPassword &&
                               passwordEnabled) {
                             loginPassword = '';
@@ -315,18 +323,14 @@ await getSyncStateStatus();
                               stuff.clear(),
                               recordHolder.clear(),
                               refreshPrefs(),
-
                             });
                           } else if (!passwordEnabled) {
-
                             loginPassword = '';
                             stuff.clear();
                             Navigator.pushNamed(context, '/success').then(
                                     (value) => {
                                       refreshPrefs(),
                                   recordHolder.clear(),
-
-
                                 });
                           }
                         },
