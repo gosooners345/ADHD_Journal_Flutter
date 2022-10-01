@@ -107,17 +107,12 @@ var checkFirstVisit = false;
   var duration = const Duration(seconds: 6);
     return Timer(duration, route);
   }
-  //This timer doesn't need to be very long since we're just checking for a password hint
-  //If one doesn't exist, the user will create one after logging in.
-  /*checkPasswordHintTimer() async {
-    return Timer(const Duration(seconds: 1),checkPasswordHintMethod);
-  }*/
 
   void getPackageInfo() async {
      packInfo = await PackageInfo.fromPlatform();
      buildInfo = packInfo.version;
      dbLocation = path.join(await getDatabasesPath(),'activitylogger_db.db');
- await prefs.setString('dblocation', dbLocation);
+ docsLocation = path.join(await getDatabasesPath(),'journalStuff.txt');
  userActiveBackup = prefs.getBool('testBackup') ?? false;
  if (kDebugMode) {
    print("Backup is $userActiveBackup");
@@ -126,7 +121,6 @@ var checkFirstVisit = false;
 
   void route() {
     getPackageInfo();
-
     var firstVisit = prefs.getBool('firstVisit') ?? true;
     if (firstVisit) {
       Navigator.pushReplacementNamed((  context ), '/onboarding');
@@ -165,4 +159,5 @@ int colorSeed =AppColors.mainAppColor.value;
 late ThemeData lightTheme;
 late ThemeData darkTheme;
 String dbLocation = "";
+String docsLocation = "";
 bool userActiveBackup = false;

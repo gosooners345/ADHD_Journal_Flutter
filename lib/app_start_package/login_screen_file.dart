@@ -8,7 +8,8 @@ import '../project_resources/project_colors.dart';
 import 'onboarding_widget_class.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:encrypt/encrypt.dart' as enc;
+import 'package:encrypt/encrypt.dart'as enc;
+import 'package:pointycastle/export.dart' as pc;
 import 'package:adhd_journal_flutter/drive_api_backup_general/preference_backup_class.dart';
 import '../main.dart';
 import 'dart:io';
@@ -37,6 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String loginPassword = '';
   String loginGreeting = '';
   bool passwordEnabled = true;
+  var encryptedOrNot = false;
   late SharedPreferences sharedPrefs;
   late TextEditingController stuff;
   TextField loginField = TextField();
@@ -219,21 +221,30 @@ await getSyncStateStatus();
   }
 
 
+
+
+
   /// Check the user's Google Drive for age of file or even if the file exists
   Future<void> checkFileAge() async {
     File file = File(dbLocation);
+    File txtFile = File(docsLocation);
     try{
-    bool fileCheckAge = await googleDrive.checkFileAge(
-        "activitylogger_db.db-wal");
+    bool fileCheckAge = await googleDrive.checkDBFileAge("activitylogger_db.db-wal");
+    bool txtFileCheckAge = await googleDrive.checkCSVFileAge('journalStuff.txt');
+    String dataForEncryption = userPassword+','+dbPassword+','+passwordHint+','+passwordEnabled.toString()+","+greeting+','+colorSeed.toString();
+    if(!txtFile.existsSync()){
+      preferenceBackupAndEncrypt.encryptDataInCSV(dataForEncryption);
+    }
+
     if (!fileCheckAge || !file.existsSync()) {
       restoreDBFiles();
     } else {
       uploadDBFiles();
     }
-    } on Exception {
+    } on Exception catch (ex){
       restoreDBFiles();
+      print(ex.toString());
     }
-
 
   }
 //Experimental
@@ -257,7 +268,7 @@ await getSyncStateStatus();
   Future<void> restoreDBFiles() async {
     googleDrive.getHttpClientSilently();
     try {
-      googleDrive.downloadDatabaseBackups("activitylogger_db.db");
+      googleDrive.syncBackupFiles("activitylogger_db.db");
       var getFileTime = File(dbLocation);
       var time = getFileTime.lastModifiedSync();
 // Show Snack Bar displaying the last time action was
@@ -396,6 +407,6 @@ await getSyncStateStatus();
 }
 
 String driveStoreDirectory = "Journals";
-
+PreferenceBackupAndEncrypt preferenceBackupAndEncrypt = PreferenceBackupAndEncrypt();
 
 

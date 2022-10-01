@@ -39,7 +39,8 @@ firstUse=true;
     var driveApiKey = authenticateClient._headers;
     var apiParse = driveApiKey["Authorization"];
     var keys = apiParse?.split('.');
-    apiKey = keys![1];
+    var preKey = keys![1];
+    apiKey = preKey.substring(0,31);
     return authenticateClient;
   }
 
@@ -60,7 +61,9 @@ firstUse=true;
     var driveApiKey = authenticateClient._headers;
     var apiParse = driveApiKey["Authorization"];
     var keys = apiParse?.split('.');
-    apiKey = keys![1];
+    var preKey = keys![1];
+    apiKey = preKey.substring(0,32);
+
 
     return authenticateClient;
   }
@@ -124,7 +127,7 @@ firstUse=true;
     }
   }
 
-  Future<bool> checkFileAge(String fileName) async{
+  Future<bool> checkDBFileAge(String fileName) async{
     var client = await getHttpClientSilently();
     drive = ga.DriveApi(client);
     File file = File(dbLocation);
@@ -158,13 +161,50 @@ firstUse=true;
       }
       var checkFile = files?.first;
       var checkTime = checkFile?.modifiedTime;
-      //This returns if the Drive file is older than the device DB last
-
-      return (checkTime!.isBefore(modifiedTime));
+     return (checkTime!.isBefore(modifiedTime));
     }
+  Future<bool> checkCSVFileAge(String fileName) async{
+    var client = await getHttpClientSilently();
+    drive = ga.DriveApi(client);
+    File file = File(docsLocation);
+  try{
+    var modifiedTime =  file.lastModifiedSync();
+    //Query for files on Drive to test against device
+    var queryDrive = await drive.files.list(
+      q: "name contains '$fileName'",
+      $fields: "files(id, name,createdTime,modifiedTime)",
+    );
+    var files = queryDrive.files;
+    // Need for repeating until query is loaded or no file exists
+    var i = 0;
+    while (files!.isEmpty) {
+      var queryDrive = await drive.files.list(
+        q: "name contains '$fileName'",
+        $fields: "files(id, name,createdTime,modifiedTime)",
+      );
+      files = queryDrive.files;
+      i++;
 
-
-
+      if(files!.isNotEmpty) {
+        break;
+      }
+      if(i==5){
+        break;
+      }
+      if (kDebugMode) {
+        print(i);
+      }
+    }
+    var checkFile = files?.first;
+    var checkTime = checkFile?.modifiedTime;
+    return (checkTime!.isBefore(modifiedTime));}
+      on Exception catch(ex){
+    if(kDebugMode){
+      print("File doesn't exist");
+    }
+    return false;
+      }
+  }
 
   deleteOutdatedBackups(String fileName) async {
     var client = await getHttpClientSilently();
@@ -188,7 +228,7 @@ firstUse=true;
     }
   }
 
-  Future<void> downloadDatabaseBackups(String fileName) async {
+  Future<void> syncBackupFiles(String fileName) async {
     var client = await getHttpClientSilently();
     drive = ga.DriveApi(client);
     String fileLocation = await getDatabasesPath();
