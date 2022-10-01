@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'package:adhd_journal_flutter/drive_api_backup_general/google_drive_backup_class.dart';
+import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import '../project_resources/project_colors.dart';
@@ -9,7 +10,6 @@ import 'onboarding_widget_class.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:encrypt/encrypt.dart'as enc;
-import 'package:pointycastle/export.dart' as pc;
 import 'package:adhd_journal_flutter/drive_api_backup_general/preference_backup_class.dart';
 import '../main.dart';
 import 'dart:io';
@@ -26,18 +26,26 @@ class LoginScreen extends StatefulWidget {
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
-
+bool passwordEnabled = true;
 late String dbPassword;
 late String userPassword;
 bool isPasswordChecked = false;
 String greeting = '';
 TextField loginField = TextField();
+String dlDBPassword ='';
+String dlUserPassword ="";
+int dlColorSeed = 0;
+String dlGreeting = '';
+String dlPasswordHint = '';
+bool dlPasswordEnabled = false;
+String decipheredData ="";
 
+
+GoogleDrive googleDrive = GoogleDrive();
 ///Handles the states of the application.
 class _LoginScreenState extends State<LoginScreen> {
   String loginPassword = '';
   String loginGreeting = '';
-  bool passwordEnabled = true;
   var encryptedOrNot = false;
   late SharedPreferences sharedPrefs;
   late TextEditingController stuff;
@@ -45,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Row greetingField = Row(children: [],);
   String hintText = '';
   String hintPrompt = '';
-GoogleDrive googleDrive = GoogleDrive();
+
  late  ElevatedButton driveButton;
 
   @override
@@ -94,8 +102,9 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
     passwordHint =await encryptedSharedPrefs.getString('passwordHint');
     passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
     isPasswordChecked = passwordEnabled;
-    apiKey =   await Future.delayed(Duration(seconds: 1),(){encryptedSharedPrefs.getString('apiStorage');}).toString();
 
+    // ignore: await_only_futures
+    apiKey = await Future.delayed(Duration(seconds: 1),(){encryptedSharedPrefs.getString('apiStorage');}).toString();
     if(kDebugMode) {
       if (apiKey!.isNotEmpty){
       print(apiKey);
@@ -131,17 +140,16 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
     greeting = prefs.getString("greeting") ?? '';
     loginGreeting = "Welcome $greeting! Please sign in below to get started!";
     userActiveBackup = prefs.getBool('testBackup')?? false;
-await getSyncStateStatus();
+    getSyncStateStatus();
     resetLoginFieldState();
   }
 
   void resetLoginFieldState() {
     if(userActiveBackup){
       checkFileAge();
+    //  encryptedSharedPrefs.setString('apiStorage', apiKey);
     }
-    //if(apiKey == ''){
-    encryptedSharedPrefs.setString('apiStorage', apiKey);
-   // }
+
     setState(() {
       if (passwordHint == '' || passwordHint == ' ') {
         hintText = 'Enter secure password';
@@ -221,26 +229,47 @@ await getSyncStateStatus();
   }
 
 
-
-
-
   /// Check the user's Google Drive for age of file or even if the file exists
   Future<void> checkFileAge() async {
     File file = File(dbLocation);
     File txtFile = File(docsLocation);
     try{
+      bool fileCheckCSV = await googleDrive.checkForCSVFile('journalStuff.txt');
     bool fileCheckAge = await googleDrive.checkDBFileAge("activitylogger_db.db-wal");
-    bool txtFileCheckAge = await googleDrive.checkCSVFileAge('journalStuff.txt');
-    String dataForEncryption = userPassword+','+dbPassword+','+passwordHint+','+passwordEnabled.toString()+","+greeting+','+colorSeed.toString();
-    if(!txtFile.existsSync()){
-      preferenceBackupAndEncrypt.encryptDataInCSV(dataForEncryption);
-    }
+      bool txtFileCheckAge = false;
+      String dataForEncryption = userPassword+','+dbPassword+','+passwordHint+','+passwordEnabled.toString()+","+greeting+','+colorSeed.toString();
 
+
+
+      if(fileCheckCSV) {
+        txtFileCheckAge = await googleDrive.checkCSVFileAge('journalStuff.txt');
+      }
+    if(txtFile.existsSync() && fileCheckCSV){
+
+      if(txtFileCheckAge){
+        preferenceBackupAndEncrypt.encryptDataInCSV(dataForEncryption, googleDrive);
+      }
+      else{
+        preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
+        //checkValuesAndAssign();
+      }
+    }
+    else if(txtFile.existsSync() && !fileCheckCSV){
+      preferenceBackupAndEncrypt.encryptDataInCSV(dataForEncryption, googleDrive);
+    }
+    else if(!txtFile.existsSync()&& fileCheckCSV){
+      preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
+    //  checkValuesAndAssign();
+    }
+    else{
+      preferenceBackupAndEncrypt.encryptDataInCSV(dataForEncryption, googleDrive);
+    }
     if (!fileCheckAge || !file.existsSync()) {
       restoreDBFiles();
     } else {
       uploadDBFiles();
     }
+
     } on Exception catch (ex){
       restoreDBFiles();
       print(ex.toString());
@@ -287,6 +316,47 @@ await getSyncStateStatus();
     }
   }
 
+  void checkValuesAndAssign() async{
+    var newValues = decipheredData.split(',');
+    //String values = userPassword+','+dbPassword+','+passwordHint+','+passwordEnabled.toString()+","+greeting+','+colorSeed.toString();
+    dlUserPassword = newValues[0];
+   // dlDBPassword = newValues[1];
+    dlPasswordHint = newValues[2];
+    dlPasswordEnabled = newValues[3] == "true" ? true : false;
+    dlGreeting = newValues[4];
+    dlColorSeed = int.parse(newValues[5]);
+   if(userPassword !=dlUserPassword){
+     userPassword = dlUserPassword;
+     recordsBloc = RecordsBloc();
+     recordsBloc.changeDBPasswords();
+     recordsBloc.dispose();
+    await encryptedSharedPrefs.setString('loginPassword', userPassword);
+   }
+   if(passwordEnabled != dlPasswordEnabled){
+     passwordEnabled = dlPasswordEnabled;
+     prefs.setBool('passwordEnabled', passwordEnabled);
+     getPassword();
+   }
+   if(passwordHint != dlPasswordHint){
+     passwordHint = dlPasswordHint;
+     await encryptedSharedPrefs.setString('passwordHint', passwordHint);
+   }
+   if(greeting != dlGreeting){
+     greeting = dlGreeting;
+     prefs.setString('greeting', greeting);
+   }
+   if(colorSeed!=dlColorSeed){
+     colorSeed = dlColorSeed;
+     ThemeSwap themeSwapper = ThemeSwap();
+     setState(() {
+       themeSwapper.themeColor=colorSeed;
+     });
+   }
+   print("updated Values in array");
+   loadStateStuff();
+
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -408,5 +478,5 @@ await getSyncStateStatus();
 
 String driveStoreDirectory = "Journals";
 PreferenceBackupAndEncrypt preferenceBackupAndEncrypt = PreferenceBackupAndEncrypt();
-
+String ivTest ='';
 

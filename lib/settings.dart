@@ -49,9 +49,6 @@ class _SettingsPage extends State<SettingsPage> {
   Color currentColor = AppColors.mainAppColor;
   Color pickerColor = AppColors.mainAppColor;
   void changeColor(ThemeSwap swapper,int value) {
-    setState(() {
-
-    });
     colorSeed=value;
     saveColorSettings(swapper,value);
   }
@@ -97,7 +94,6 @@ if(passwordHint ==" "){
       syncTextWidget = Text(syncTextLabelText);
     });
   }
-
   ///Save string values into the preferences
   void saveSettings(String value, String key) async {
     encryptedSharedPrefs.setString(key, value);
@@ -108,11 +104,10 @@ if(passwordHint ==" "){
   void saveSettings2(bool value, String key) async {
     prefs.setBool(key, value);
   }
-  void saveColorSettings(ThemeSwap swapper,int colorValue) async{
 
+  void saveColorSettings(ThemeSwap swapper,int colorValue) async{
     setState(() {
       swapper.themeColor = colorValue;
-
     });
 
   }

@@ -259,14 +259,16 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                   context,
                   MaterialPageRoute(
                       builder: (_) =>
-
                       /// Change password upon exit if the password has changed.
                       /// Tested and Passed: 05/09/2022
                       SettingsPage())).then((value) => {
-                if (userPassword != dbPassword) {
+                                        if (userPassword != dbPassword) {
                   verifyPasswordChanged(),
                 },
-                userActiveBackup = prefs.getBool("testBackup") ?? false
+                userActiveBackup = prefs.getBool("testBackup") ?? false,
+                if(userActiveBackup){
+                preferenceBackupAndEncrypt.encryptDataInCSV(userPassword+','+dbPassword+','+passwordHint+','+passwordEnabled.toString()+","+greeting+','+colorSeed.toString(), googleDrive)
+                },
               });
             },
           ),
@@ -297,6 +299,10 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                     if (userPassword != dbPassword) {
                         verifyPasswordChanged(),
                       },
+                userActiveBackup = prefs.getBool("testBackup") ?? false,
+                if(userActiveBackup){
+                  preferenceBackupAndEncrypt.encryptDataInCSV(userPassword+','+dbPassword+','+passwordHint+','+passwordEnabled.toString()+","+greeting+','+colorSeed.toString(), googleDrive)
+                },
                   });
             },
           ),

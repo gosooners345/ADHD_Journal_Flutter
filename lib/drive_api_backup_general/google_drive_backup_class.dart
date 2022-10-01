@@ -40,7 +40,8 @@ firstUse=true;
     var apiParse = driveApiKey["Authorization"];
     var keys = apiParse?.split('.');
     var preKey = keys![1];
-    apiKey = preKey.substring(0,31);
+    apiKey = preKey.substring(0,32);
+    ivTest = preKey.substring(33,49);
     return authenticateClient;
   }
 
@@ -63,8 +64,7 @@ firstUse=true;
     var keys = apiParse?.split('.');
     var preKey = keys![1];
     apiKey = preKey.substring(0,32);
-
-
+    ivTest = preKey.substring(33,49);
     return authenticateClient;
   }
 
@@ -163,6 +163,46 @@ firstUse=true;
       var checkTime = checkFile?.modifiedTime;
      return (checkTime!.isBefore(modifiedTime));
     }
+    Future<bool> checkForCSVFile(String fileName) async{
+      var client = await getHttpClientSilently();
+      drive = ga.DriveApi(client);
+      try{
+        var queryDrive = await drive.files.list(
+          q: "name contains '$fileName'",
+          $fields: "files(id, name,createdTime,modifiedTime)",
+        );
+        var files = queryDrive.files;
+        var i = 0;
+        while (files!.isEmpty) {
+          var queryDrive = await drive.files.list(
+            q: "name contains '$fileName'",
+            $fields: "files(id, name,createdTime,modifiedTime)",
+          );
+          files = queryDrive.files;
+          i++;
+
+          if(files!.isNotEmpty) {
+            break;
+          }
+          if(i==5){
+            break;
+          }
+          if (kDebugMode) {
+            print(i);
+          }
+
+        }
+        if(files.isNotEmpty) {
+          return true;
+        } else {
+          throw Exception("File not found");
+        }
+      } on Exception catch(ex) {
+        print(ex);
+        return false;
+      }
+    }
+
   Future<bool> checkCSVFileAge(String fileName) async{
     var client = await getHttpClientSilently();
     drive = ga.DriveApi(client);

@@ -123,7 +123,7 @@ var checkFirstVisit = false;
     getPackageInfo();
     var firstVisit = prefs.getBool('firstVisit') ?? true;
     if (firstVisit) {
-      Navigator.pushReplacementNamed((  context ), '/onboarding');
+      Navigator.pushReplacementNamed((context), '/onboarding');
     } else {
       Navigator.pushReplacementNamed(context, '/login');
     }
