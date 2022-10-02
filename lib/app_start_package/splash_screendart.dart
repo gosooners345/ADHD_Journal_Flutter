@@ -113,6 +113,7 @@ var checkFirstVisit = false;
      buildInfo = packInfo.version;
      dbLocation = path.join(await getDatabasesPath(),'activitylogger_db.db');
  docsLocation = path.join(await getDatabasesPath(),'journalStuff.txt');
+ keyLocation = await getDatabasesPath();
  userActiveBackup = prefs.getBool('testBackup') ?? false;
  if (kDebugMode) {
    print("Backup is $userActiveBackup");
@@ -160,4 +161,5 @@ late ThemeData lightTheme;
 late ThemeData darkTheme;
 String dbLocation = "";
 String docsLocation = "";
+String keyLocation ="";
 bool userActiveBackup = false;

@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:adhd_journal_flutter/drive_api_backup_general/google_drive_backup_class.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
 import 'package:flutter/foundation.dart';
+import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 import '../project_resources/project_colors.dart';
 import 'onboarding_widget_class.dart';
@@ -59,21 +60,15 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    userActiveBackup = prefs.getBool('testBackup') ?? false;
-    if(userActiveBackup){
-      googleDrive.getHttpClientSilently();
-    }
+
     loadStateStuff();
     if (passwordHint == '') {
       hintText = 'Enter secure password';
 hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember your password in case you forget. \r\n Set it to something memorable.\r\n This will be encrypted like your password so nobody can read your hint.'
     '\r\n You can enter this in settings.';
-
     } else {
       hintText ='Password Hint is : $passwordHint';
     }
-
-
     setState(() {
       driveButton = ElevatedButton(onPressed: (){
         googleDrive.getHttpClient();
@@ -102,7 +97,14 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
     passwordHint =await encryptedSharedPrefs.getString('passwordHint');
     passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
     isPasswordChecked = passwordEnabled;
-
+    userActiveBackup = prefs.getBool('testBackup') ?? false;
+    if(userActiveBackup){
+      try{
+      googleDrive.getHttpClientSilently();}
+          on Exception catch (ex){
+        googleDrive.getHttpClientSilently();
+          }
+    }
     // ignore: await_only_futures
     apiKey = await Future.delayed(Duration(seconds: 1),(){encryptedSharedPrefs.getString('apiStorage');}).toString();
     if(kDebugMode) {
@@ -233,13 +235,14 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
   Future<void> checkFileAge() async {
     File file = File(dbLocation);
     File txtFile = File(docsLocation);
+    File privKeyFile = File(path.join(keyLocation,"journ_privkey.pem"));
+    File pubKeyFile = File(path.join(keyLocation,"journ_pubkey.pem"));
     try{
       bool fileCheckCSV = await googleDrive.checkForCSVFile('journalStuff.txt');
+
     bool fileCheckAge = await googleDrive.checkDBFileAge("activitylogger_db.db-wal");
       bool txtFileCheckAge = false;
       String dataForEncryption = userPassword+','+dbPassword+','+passwordHint+','+passwordEnabled.toString()+","+greeting+','+colorSeed.toString();
-
-
 
       if(fileCheckCSV) {
         txtFileCheckAge = await googleDrive.checkCSVFileAge('journalStuff.txt');
@@ -247,22 +250,28 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
     if(txtFile.existsSync() && fileCheckCSV){
 
       if(txtFileCheckAge){
-        preferenceBackupAndEncrypt.encryptDataInCSV(dataForEncryption, googleDrive);
+
+        preferenceBackupAndEncrypt.encryptRSAKEYSANDDataInCSV(dataForEncryption, googleDrive);
       }
       else{
+        preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
+
         preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
         //checkValuesAndAssign();
       }
     }
     else if(txtFile.existsSync() && !fileCheckCSV){
-      preferenceBackupAndEncrypt.encryptDataInCSV(dataForEncryption, googleDrive);
+     // preferenceBackupAndEncrypt.generateAndStoreRSAKeys(googleDrive);
+      preferenceBackupAndEncrypt.encryptRSAKEYSANDDataInCSV(dataForEncryption, googleDrive);
     }
     else if(!txtFile.existsSync()&& fileCheckCSV){
+      preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
       preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
     //  checkValuesAndAssign();
     }
     else{
-      preferenceBackupAndEncrypt.encryptDataInCSV(dataForEncryption, googleDrive);
+      //preferenceBackupAndEncrypt.generateAndStoreRSAKeys(googleDrive);
+      preferenceBackupAndEncrypt.encryptRSAKEYSANDDataInCSV(dataForEncryption, googleDrive);
     }
     if (!fileCheckAge || !file.existsSync()) {
       restoreDBFiles();

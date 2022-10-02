@@ -108,7 +108,12 @@ firstUse=true;
   }
 
   uploadFileToGoogleDrive(File file) async {
-   var client = await getHttpClientSilently();
+late var client;
+try{
+  client = await getHttpClientSilently();
+} on Exception catch(ex){
+  client = await getHttpClient();
+}
 
     drive = ga.DriveApi(client);
     String? folderId = await _getFolderId(drive);
@@ -128,7 +133,13 @@ firstUse=true;
   }
 
   Future<bool> checkDBFileAge(String fileName) async{
-    var client = await getHttpClientSilently();
+    late var client;
+    try{
+      client = await getHttpClientSilently();
+    } on Exception catch(ex){
+      client = await getHttpClient();
+    }
+
     drive = ga.DriveApi(client);
     File file = File(dbLocation);
     var testFile =File("$dbLocation-wal");
@@ -155,6 +166,9 @@ firstUse=true;
         if(files!.isNotEmpty) {
           break;
         }
+        if(i==5){
+          break;
+        }
         if (kDebugMode) {
           print(i);
         }
@@ -164,7 +178,14 @@ firstUse=true;
      return (checkTime!.isBefore(modifiedTime));
     }
     Future<bool> checkForCSVFile(String fileName) async{
-      var client = await getHttpClientSilently();
+      late var client;
+      try{
+        client = await getHttpClientSilently();
+      } on Exception catch(ex){
+        print(ex);
+        client = await getHttpClient();
+      }
+
       drive = ga.DriveApi(client);
       try{
         var queryDrive = await drive.files.list(
@@ -204,7 +225,13 @@ firstUse=true;
     }
 
   Future<bool> checkCSVFileAge(String fileName) async{
-    var client = await getHttpClientSilently();
+    late var client;
+    try{
+      client = await getHttpClientSilently();
+    } on Exception catch(ex){
+      client = await getHttpClient();
+    }
+
     drive = ga.DriveApi(client);
     File file = File(docsLocation);
   try{
@@ -269,7 +296,13 @@ firstUse=true;
   }
 
   Future<void> syncBackupFiles(String fileName) async {
-    var client = await getHttpClientSilently();
+    late var client;
+    try{
+      client = await getHttpClientSilently();
+    } on Exception catch(ex){
+      client = await getHttpClient();
+    }
+
     drive = ga.DriveApi(client);
     String fileLocation = await getDatabasesPath();
     final queryDrive = await drive.files.list(
