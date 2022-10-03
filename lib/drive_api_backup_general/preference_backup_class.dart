@@ -25,8 +25,10 @@ class PreferenceBackupAndEncrypt {
 
   void downloadRSAKeys(GoogleDrive drive) async{
    try{
-     io.File privateKeyStorage = io.File(join(await getDatabasesPath(),"journ_privkey.pem"));
-     io.File publicKeyStorage = io.File(join(await getDatabasesPath(),"journ_pubKey.pem"));
+     String privKeyFilePath = join(await getDatabasesPath(),"journ_privkey.pem");
+     io.File privateKeyStorage = io.File(privKeyFilePath);
+     String pubKeyFilePath = join(await getDatabasesPath(),"journ_pubKey.pem");
+     io.File publicKeyStorage = io.File(pubKeyFilePath);
      drive.syncBackupFiles("journ_pubKey.pem");
      drive.syncBackupFiles('journ_privkey.pem');
      if(privateKeyStorage.existsSync()){
@@ -38,8 +40,14 @@ class PreferenceBackupAndEncrypt {
         }
         decodeBytes.add(privKeyReader.readByteSync());
       }
-       var preKeyString = String.fromCharCodes(decodeBytes);
        privKeyReader.closeSync();
+      var recodeBytes = Uint8List.fromList(decodeBytes);
+
+       var preKeyString = String.fromCharCodes(recodeBytes);
+       recodeBytes = base64Decode(preKeyString);
+       preKeyString = base64Encode(recodeBytes);
+
+       print(preKeyString);
       privKey = CryptoUtils.rsaPrivateKeyFromPemPkcs1(preKeyString);
      }
      else{
@@ -81,24 +89,20 @@ throw Exception();
     SecureRandom random = exampleSecureRandom();
 
     keyGen.init(ParametersWithRandom(RSAKeyGeneratorParameters(
-        BigInt.parse('75635'), bitLength, 64), random));
+        BigInt.parse('65537'), bitLength, 64), random));
     final pair = keyGen.generateKeyPair();
     privKey = pair.privateKey as RSAPrivateKey;
     pubKey = pair.publicKey as RSAPublicKey;
     publicKeyStorage.createSync();
 
     var writepubKey = CryptoUtils.encodeRSAPublicKeyToPemPkcs1(pubKey);
-
-
     final pubKeyWriter = publicKeyStorage.openSync(mode: io.FileMode.write);
-  //pubKeyWriter.writeStringSync(CryptoUtils.BEGIN_RSA_PUBLIC_KEY);
-    pubKeyWriter.writeStringSync(CryptoUtils.BEGIN_RSA_PUBLIC_KEY+writepubKey+CryptoUtils.END_RSA_PUBLIC_KEY);
-    //pubKeyWriter.writeStringSync(CryptoUtils.END_RSA_PUBLIC_KEY);
+    pubKeyWriter.writeStringSync(writepubKey);
     pubKeyWriter.closeSync();
     privateKeyStorage.createSync();
     var writePrivKey = CryptoUtils.encodeRSAPrivateKeyToPemPkcs1(privKey);
     final privKeyWriter = privateKeyStorage.openSync(mode: io.FileMode.write);
-    privKeyWriter.writeStringSync(CryptoUtils.BEGIN_RSA_PRIVATE_KEY+writePrivKey+CryptoUtils.END_RSA_PRIVATE_KEY);
+    privKeyWriter.writeStringSync(writePrivKey);
     privKeyWriter.closeSync();
     bool checkPrivKey = await drive.checkForCSVFile("journ_privkey.pem");
     if(checkPrivKey){
@@ -113,20 +117,17 @@ throw Exception();
     print("RSA Keys Generated and uploaded");
 
     Uint8List paddedDataBytes = Uint8List.fromList(data.codeUnits);
-
-   // encrypter = enc.Encrypter(enc.RSA(publicKey: pubKey,privateKey: privKey,encoding: enc.RSAEncoding.PKCS1));
     final cipherText =rsaEncrypt(pubKey, paddedDataBytes);
-    //encrypter.encryptBytes(paddedDataBytes);
+
     if (kriss.kDebugMode) {
       print("data encrypted");
     }
     uploadPrefsCSVFile(cipherText,drive);
-   // decryptDataInCSV(cipherText);
+
 
   }
   Future<void> uploadPrefsCSVFile(Uint8List cipherText,GoogleDrive drive) async{
     try{
-      //Uint8List cipherBytes = cipherText.bytes;
       io.File csvFile = io.File(docsLocation);
       if(!csvFile.existsSync()){
         csvFile.createSync();
@@ -203,20 +204,16 @@ throw Exception();
     }
 
   }
-  Future<String>  decryptDataInCSV(Uint8List cipherText/*enc.Encrypted cipherText*/) async{
+  Future<String>  decryptDataInCSV(Uint8List cipherText) async{
 
-    // encrypter = enc.Encrypter(enc.RSA(publicKey: pubKey,privateKey: privKey,encoding: enc.RSAEncoding.PKCS1));
 
     var decryptedData = rsaDecrypt(privKey,cipherText);
     var stringData = String.fromCharCodes(decryptedData);
-    //if (kriss.kDebugMode) {
             print(stringData);
-   // }
     if (kriss.kDebugMode) {
       print("Data Decrypted");
     }
      return stringData;
-//
   }
 
 
