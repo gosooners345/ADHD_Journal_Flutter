@@ -238,9 +238,10 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
     File privKeyFile = File(path.join(keyLocation,"journ_privkey.pem"));
     File pubKeyFile = File(path.join(keyLocation,"journ_pubkey.pem"));
     try{
-      bool fileCheckCSV = await googleDrive.checkForCSVFile('journalStuff.txt');
+
 
     bool fileCheckAge = await googleDrive.checkDBFileAge("activitylogger_db.db-wal");
+    bool fileCheckCSV = await googleDrive.checkForCSVFile('journalStuff.txt');
       bool txtFileCheckAge = false;
       String dataForEncryption = userPassword+','+dbPassword+','+passwordHint+','+passwordEnabled.toString()+","+greeting+','+colorSeed.toString();
 

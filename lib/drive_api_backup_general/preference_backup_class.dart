@@ -30,26 +30,33 @@ class PreferenceBackupAndEncrypt {
      drive.syncBackupFiles("journ_pubKey.pem");
      drive.syncBackupFiles('journ_privkey.pem');
      if(privateKeyStorage.existsSync()){
-       var privKeyArray = privateKeyStorage.openSync(mode: io.FileMode.read);
-       var privKeyData = <int>[];
-       while(privKeyArray.readByteSync() !=-1){
-         final byte = privKeyArray.readByteSync();
-         privKeyData.add(byte);
-         if(privKeyArray.readByteSync()==-1){
-           break;
-         }
-       }
-       Uint8List tempArray = Uint8List.fromList(privKeyData);
-       var privKeyString = String.fromCharCodes(tempArray);
-       privKey = // as RSAPrivateKey;
-       print(privKeyString);
+       var privKeyReader = privateKeyStorage.openSync(mode: io.FileMode.read);
+       var decodeBytes = <int>[];
+      while(privKeyReader.readByteSync()!=-1){
+        if(privKeyReader.readByteSync()== -1){
+          break;
+        }
+        decodeBytes.add(privKeyReader.readByteSync());
+      }
+       var preKeyString = String.fromCharCodes(decodeBytes);
+       privKeyReader.closeSync();
+      privKey = CryptoUtils.rsaPrivateKeyFromPemPkcs1(preKeyString);
      }
      else{
        throw Exception();
      }
      if(publicKeyStorage.existsSync()){
-pubKey = await parseKeyFromFile<RSAPublicKey>(publicKeyStorage.path);
-print(pubKey);
+       var pubKeyReader = publicKeyStorage.openSync(mode: io.FileMode.read);
+       var decodeBytes = <int>[];
+       while(pubKeyReader.readByteSync() !=-1){
+         if(pubKeyReader.readByteSync() == -1){
+           break;
+         }
+         decodeBytes.add(pubKeyReader.readByteSync());
+       }
+       var prePubKeyString = String.fromCharCodes(decodeBytes);
+       pubKeyReader.closeSync();
+       pubKey = CryptoUtils.rsaPublicKeyFromPemPkcs1(prePubKeyString);
      }
      else{
 throw Exception();
@@ -58,13 +65,6 @@ throw Exception();
    } on Exception catch(ex){
      print(ex);
    }
-
-
-
-
-
-
-
   }
 
   /// Open the file, write into it, close it.
@@ -86,23 +86,19 @@ throw Exception();
     privKey = pair.privateKey as RSAPrivateKey;
     pubKey = pair.publicKey as RSAPublicKey;
     publicKeyStorage.createSync();
-    var writepubKey = pubKey.toString();
-    print(writepubKey);
-    Uint8List writeOutPubKeyBytes = Uint8List.fromList(writepubKey.codeUnits);
-    final pubKeyWriter = publicKeyStorage.openSync(mode: io.FileMode.write);
-    for (int i = 0; i < writeOutPubKeyBytes.length; i++) {
-      pubKeyWriter.writeByteSync(writeOutPubKeyBytes[i]);
-    }
-    pubKeyWriter.closeSync();
 
+    var writepubKey = CryptoUtils.encodeRSAPublicKeyToPemPkcs1(pubKey);
+
+
+    final pubKeyWriter = publicKeyStorage.openSync(mode: io.FileMode.write);
+  //pubKeyWriter.writeStringSync(CryptoUtils.BEGIN_RSA_PUBLIC_KEY);
+    pubKeyWriter.writeStringSync(CryptoUtils.BEGIN_RSA_PUBLIC_KEY+writepubKey+CryptoUtils.END_RSA_PUBLIC_KEY);
+    //pubKeyWriter.writeStringSync(CryptoUtils.END_RSA_PUBLIC_KEY);
+    pubKeyWriter.closeSync();
     privateKeyStorage.createSync();
-    var writePrivKey = privKey.toString();
-    Uint8List writeOutPrivKeyBytes = Uint8List.fromList(
-        writePrivKey.codeUnits);
+    var writePrivKey = CryptoUtils.encodeRSAPrivateKeyToPemPkcs1(privKey);
     final privKeyWriter = privateKeyStorage.openSync(mode: io.FileMode.write);
-    for (int i = 0; i < writeOutPrivKeyBytes.length; i++) {
-      privKeyWriter.writeByteSync(writeOutPrivKeyBytes[i]);
-    }
+    privKeyWriter.writeStringSync(CryptoUtils.BEGIN_RSA_PRIVATE_KEY+writePrivKey+CryptoUtils.END_RSA_PRIVATE_KEY);
     privKeyWriter.closeSync();
     bool checkPrivKey = await drive.checkForCSVFile("journ_privkey.pem");
     if(checkPrivKey){
