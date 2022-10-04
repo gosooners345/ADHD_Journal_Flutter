@@ -3,7 +3,6 @@ import 'dart:ffi';
 import 'dart:typed_data';
 import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
 import 'package:encrypt/encrypt.dart' as enc;
-import 'package:encrypt/encrypt_io.dart';
 import 'package:flutter/foundation.dart' as kriss;
 import 'package:path/path.dart';
 import 'package:pointycastle/export.dart';
@@ -23,30 +22,18 @@ class PreferenceBackupAndEncrypt {
 
  // Generates new keys on each encryption sequence
 
-  void downloadRSAKeys(GoogleDrive drive) async{
+  Future<void> downloadRSAKeys(GoogleDrive drive) async{
    try{
+     await drive.syncBackupFiles("journ_pubKey.pem");
+   await drive.syncBackupFiles('journ_privkey.pem');
      String privKeyFilePath = join(await getDatabasesPath(),"journ_privkey.pem");
      io.File privateKeyStorage = io.File(privKeyFilePath);
      String pubKeyFilePath = join(await getDatabasesPath(),"journ_pubKey.pem");
      io.File publicKeyStorage = io.File(pubKeyFilePath);
-     drive.syncBackupFiles("journ_pubKey.pem");
-     drive.syncBackupFiles('journ_privkey.pem');
+
      if(privateKeyStorage.existsSync()){
-       var privKeyReader = privateKeyStorage.openSync(mode: io.FileMode.read);
-       var decodeBytes = <int>[];
-      while(privKeyReader.readByteSync()!=-1){
-        if(privKeyReader.readByteSync()== -1){
-          break;
-        }
-        decodeBytes.add(privKeyReader.readByteSync());
-      }
-       privKeyReader.closeSync();
-      var recodeBytes = Uint8List.fromList(decodeBytes);
-
-       var preKeyString = String.fromCharCodes(recodeBytes);
-       recodeBytes = base64Decode(preKeyString);
-       preKeyString = base64Encode(recodeBytes);
-
+       var privKeyReader = privateKeyStorage.readAsStringSync();
+    String preKeyString = privKeyReader;
        print(preKeyString);
       privKey = CryptoUtils.rsaPrivateKeyFromPemPkcs1(preKeyString);
      }
@@ -54,16 +41,9 @@ class PreferenceBackupAndEncrypt {
        throw Exception();
      }
      if(publicKeyStorage.existsSync()){
-       var pubKeyReader = publicKeyStorage.openSync(mode: io.FileMode.read);
-       var decodeBytes = <int>[];
-       while(pubKeyReader.readByteSync() !=-1){
-         if(pubKeyReader.readByteSync() == -1){
-           break;
-         }
-         decodeBytes.add(pubKeyReader.readByteSync());
-       }
-       var prePubKeyString = String.fromCharCodes(decodeBytes);
-       pubKeyReader.closeSync();
+       var pubKeyReader = publicKeyStorage.readAsStringSync();
+
+       var prePubKeyString = pubKeyReader;
        pubKey = CryptoUtils.rsaPublicKeyFromPemPkcs1(prePubKeyString);
      }
      else{
@@ -115,28 +95,23 @@ throw Exception();
     drive.uploadFileToGoogleDrive(privateKeyStorage);
     drive.uploadFileToGoogleDrive(publicKeyStorage);
     print("RSA Keys Generated and uploaded");
-
-    Uint8List paddedDataBytes = Uint8List.fromList(data.codeUnits);
-    final cipherText =rsaEncrypt(pubKey, paddedDataBytes);
+    var testBytes = CryptoUtils.rsaEncrypt(data, pubKey);
 
     if (kriss.kDebugMode) {
       print("data encrypted");
     }
-    uploadPrefsCSVFile(cipherText,drive);
+    uploadPrefsCSVFile(testBytes,drive);
 
 
   }
-  Future<void> uploadPrefsCSVFile(Uint8List cipherText,GoogleDrive drive) async{
+  Future<void> uploadPrefsCSVFile(String cipherText,GoogleDrive drive) async{
     try{
       io.File csvFile = io.File(docsLocation);
       if(!csvFile.existsSync()){
         csvFile.createSync();
       }
-      var dataArray = csvFile.openSync(mode: io.FileMode.write);
-      for(int i=0; i<cipherText.length;i++){
-        dataArray.writeByteSync(cipherText[i]);
-      }
-      dataArray.closeSync();
+      csvFile.writeAsStringSync(cipherText);
+
       drive.deleteOutdatedBackups('journalStuff.txt');
       drive.uploadFileToGoogleDrive(csvFile);
     } on Exception catch(ex){
@@ -155,45 +130,17 @@ throw Exception();
 //Decrypt the CSV file
 
 
-  Uint8List rsaEncrypt(RSAPublicKey myPublic, Uint8List dataToEncrypt) {
-    final encryptor = PKCS1Encoding(RSAEngine())
-      ..init(true, PublicKeyParameter<RSAPublicKey>(myPublic)); // true=encrypt
-
-    return _processInBlocks(encryptor, dataToEncrypt);
-  }
-
-  Uint8List rsaDecrypt(RSAPrivateKey myPrivate, Uint8List cipherText) {
-    final decryptor = PKCS1Encoding(RSAEngine())
-      ..init(false, PrivateKeyParameter<RSAPrivateKey>(myPrivate)); // false=decrypt
-
-    return _processInBlocks(decryptor, cipherText);
-  }
   Future<void> downloadPrefsCSVFile(GoogleDrive drive) async{
-//
+
     try{
-      downloadRSAKeys(drive);
+   await   downloadRSAKeys(drive);
       drive.syncBackupFiles("journalStuff.txt");
       io.File csvFile = io.File(docsLocation);
       if(csvFile.existsSync()){
-        var dataArray = csvFile.openSync(mode: io.FileMode.read);
-        var cipherdata = [];
-        while(dataArray.readByteSync() !=-1){
-          final byte =dataArray.readByteSync();
-          cipherdata.add(byte);
-          if(dataArray.readByteSync()==-1){
-            break;
-          }
-        }
-        dataArray.closeSync();
-        var tempArray = <int>[];
-        for(int i =0; i<cipherdata.length;i++){
-          var testVariable = cipherdata[0];
-          tempArray.add(testVariable as int);
-        }
+        var dataArray = CryptoUtils.rsaDecrypt(csvFile.readAsStringSync(encoding: Encoding.getByName("utf-8")!), privKey); //await decryptDataInCSV(csvFile.readAsBytesSync());
+print(dataArray);
+decipheredData = dataArray;
 
-        Uint8List cipherText = Uint8List.fromList(tempArray);
-        decipheredData = await decryptDataInCSV((cipherText));
-        print(decipheredData);
       } else{
         throw Exception();
       }
@@ -204,47 +151,10 @@ throw Exception();
     }
 
   }
-  Future<String>  decryptDataInCSV(Uint8List cipherText) async{
-
-
-    var decryptedData = rsaDecrypt(privKey,cipherText);
-    var stringData = String.fromCharCodes(decryptedData);
-            print(stringData);
-    if (kriss.kDebugMode) {
-      print("Data Decrypted");
-    }
-     return stringData;
-  }
 
 
 
-  Uint8List _processInBlocks(AsymmetricBlockCipher engine, Uint8List input) {
-    final numBlocks = input.length ~/ engine.inputBlockSize +
-        ((input.length % engine.inputBlockSize != 0) ? 1 : 0);
 
-    final output = Uint8List(numBlocks * engine.outputBlockSize);
-
-    var inputOffset = 0;
-    var outputOffset = 0;
-    while (inputOffset < input.length) {
-      final chunkSize = (inputOffset + engine.inputBlockSize <= input.length)
-          ? engine.inputBlockSize
-          : input.length - inputOffset;
-
-      outputOffset += engine.processBlock(
-          input, inputOffset, chunkSize, output, outputOffset);
-
-      inputOffset += chunkSize;
-    }
-
-    return (output.length == outputOffset)
-        ? output
-        : output.sublist(0, outputOffset);
-  }
-
-
-/// Open file, read data into a byte array
-  /// pass into decrypt data in csv and return results
 
 
 

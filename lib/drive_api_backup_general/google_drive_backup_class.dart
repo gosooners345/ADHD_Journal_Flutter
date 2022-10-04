@@ -20,7 +20,16 @@ class GoogleDrive {
   String fileID = "";
   late ga.DriveApi drive;
 bool firstUse = false;
+late http.Client client;
 
+init() async {
+  try{
+    client =await getHttpClientSilently();
+  }
+  on Exception catch(ex){
+    client = await getHttpClient();
+  }
+}
   //Get Authenticated Http Client
   Future<http.Client> getHttpClient() async {
     final googleSignIn = signIn.GoogleSignIn.standard(
@@ -108,7 +117,7 @@ firstUse=true;
   }
 
   uploadFileToGoogleDrive(File file) async {
-late var client;
+
 try{
   client = await getHttpClientSilently();
 } on Exception catch(ex){
@@ -133,13 +142,12 @@ try{
   }
 
   Future<bool> checkDBFileAge(String fileName) async{
-    late var client;
+
     try{
       client = await getHttpClientSilently();
     } on Exception catch(ex){
       client = await getHttpClient();
     }
-
     drive = ga.DriveApi(client);
     File file = File(dbLocation);
     var testFile =File("$dbLocation-wal");
@@ -173,18 +181,22 @@ try{
           print(i);
         }
       }
-      var checkFile = files?.first;
+      if(files.isNotEmpty)
+      {var checkFile = files?.first;
       var checkTime = checkFile?.modifiedTime;
-     return (checkTime!.isBefore(modifiedTime));
+     return (checkTime!.isBefore(modifiedTime));}
+      else {
+        return false;
+      }
     }
     Future<bool> checkForCSVFile(String fileName) async{
-      late var client;
+      /*late var client;
       try{
         client = await getHttpClientSilently();
       } on Exception catch(ex){
         print(ex);
         client = await getHttpClient();
-      }
+      }*/
 
       drive = ga.DriveApi(client);
       try{
@@ -225,12 +237,12 @@ try{
     }
 
   Future<bool> checkCSVFileAge(String fileName) async{
-    late var client;
+   /* late var client;
     try{
       client = await getHttpClientSilently();
     } on Exception catch(ex){
       client = await getHttpClient();
-    }
+    }*/
 
     drive = ga.DriveApi(client);
     File file = File(docsLocation);
@@ -274,7 +286,7 @@ try{
   }
 
   deleteOutdatedBackups(String fileName) async {
-    var client = await getHttpClientSilently();
+   // var client = await getHttpClientSilently();
     drive = ga.DriveApi(client);
 
     final queryDrive = await drive.files.list(
@@ -296,12 +308,12 @@ try{
   }
 
   Future<void> syncBackupFiles(String fileName) async {
-    late var client;
+  /*  late var client;
     try{
       client = await getHttpClientSilently();
     } on Exception catch(ex){
       client = await getHttpClient();
-    }
+    }*/
 
     drive = ga.DriveApi(client);
     String fileLocation = await getDatabasesPath();
