@@ -234,7 +234,7 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
   /// Check the user's Google Drive for age of file or even if the file exists
   Future<void> checkFileAge() async {
     File file = File(dbLocation);// DB
-    File txtFile = File(docsLocation); // Prefs
+   // File txtFile = File(docsLocation); // Prefs
     File privKeyFile = File(path.join(keyLocation,"journ_privkey.pem"));
     try{
       bool fileCheckAge = false;
@@ -256,22 +256,28 @@ else if(!privKeyFile.existsSync() && !onlineKeys){
   preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
 
 }
+else{
+  preferenceBackupAndEncrypt.assignRSAKeys();
+}
 // Next Preferences
       bool fileCheckCSV = await googleDrive.checkForCSVFile('journalStuff.txt');
       bool txtFileCheckAge = false;
       //Check for file
 if(fileCheckCSV) {
   txtFileCheckAge = await googleDrive.checkCSVFileAge('journalStuff.txt');
-  if(txtFileCheckAge) { // if file is older in the cloud
-    if (!txtFile.existsSync()) {
-      preferenceBackupAndEncrypt.encryptData(dataForEncryption, googleDrive);
-    }
+  if (txtFileCheckAge) { // if file is older in the cloud
+    preferenceBackupAndEncrypt.encryptData(dataForEncryption, googleDrive);
   }
-  else{
+  else {
     preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
     showMessage(decipheredData);
   }
 }
+  else{
+    preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
+   showMessage(decipheredData);
+  }
+
 //Last DB
     if (!fileCheckAge || !file.existsSync()) {
       print(false);
