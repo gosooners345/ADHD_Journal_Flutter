@@ -259,6 +259,8 @@ else if(!privKeyFile.existsSync() && !onlineKeys){
 else{
   preferenceBackupAndEncrypt.assignRSAKeys();
 }
+//MOST SCRUTINY FOR ALL THINGS
+
 // Next Preferences
       bool fileCheckCSV = await googleDrive.checkForCSVFile('journalStuff.txt');
       bool txtFileCheckAge = false;
