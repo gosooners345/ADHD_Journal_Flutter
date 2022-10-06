@@ -147,16 +147,16 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
   }
 
   void resetLoginFieldState() {
-    if(userActiveBackup){
+    if (userActiveBackup) {
       checkFileAge();
-    //  encryptedSharedPrefs.setString('apiStorage', apiKey);
+      //  encryptedSharedPrefs.setString('apiStorage', apiKey);
     }
 
     setState(() {
       if (passwordHint == '' || passwordHint == ' ') {
         hintText = 'Enter secure password';
       } else {
-        hintText ='Password Hint is : $passwordHint';
+        hintText = 'Password Hint is : $passwordHint';
       }
       greetingField = Row(children: [
         Expanded(
@@ -184,7 +184,7 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
               if (text == userPassword) {
                 Navigator.pushNamed(context, '/success').then((value) =>
                 {
-                refreshPrefs(),
+                  refreshPrefs(),
                   recordHolder.clear(),
                   stuff.clear(),
                 });
@@ -210,7 +210,7 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
                     });
               }
             }
-        },
+          },
           enabled: true,
         );
       } else {
@@ -236,7 +236,6 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
     File file = File(dbLocation);// DB
     File txtFile = File(docsLocation); // Prefs
     File privKeyFile = File(path.join(keyLocation,"journ_privkey.pem"));
-    File pubKeyFile = File(path.join(keyLocation,"journ_pubkey.pem"));
     try{
       bool fileCheckAge = false;
 try{
@@ -255,6 +254,7 @@ if(!privKeyFile.existsSync() && onlineKeys) {
 }
 else if(!privKeyFile.existsSync() && !onlineKeys){
   preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
+
 }
 // Next Preferences
       bool fileCheckCSV = await googleDrive.checkForCSVFile('journalStuff.txt');
@@ -455,9 +455,8 @@ if(fileCheckCSV) {
                     }
                   }),
             ),
-            SizedBox(
-              height: 130,
-            ),Padding(
+          SizedBox(height: 130,),
+            Padding(
               padding: const EdgeInsets.only(top: 60.0),
               child: Center(child:  FutureBuilder( future: getSyncStateStatus(),
                   builder: (BuildContext context, AsyncSnapshot<bool> snapshot,){
@@ -477,7 +476,17 @@ if(fileCheckCSV) {
                 }
               }),),
             ),
-
+            SizedBox(
+              height: 130, child:  ElevatedButton(
+              onPressed: () {
+                preferenceBackupAndEncrypt.replaceRsaKeys(googleDrive);
+              },
+              child: Text(
+                'Reset RSA Keys',
+                style: TextStyle(color: Colors.white, fontSize: 25),
+              ),
+            ),
+            ),
           ],
         ),
       ),

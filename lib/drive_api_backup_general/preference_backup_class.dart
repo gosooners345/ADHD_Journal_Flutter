@@ -1,8 +1,5 @@
 import 'dart:convert';
-import 'dart:ffi';
-import 'dart:typed_data';
 import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
-import 'package:encrypt/encrypt.dart' as enc;
 import 'package:flutter/foundation.dart' as kriss;
 import 'package:path/path.dart';
 import 'package:pointycastle/export.dart';
@@ -11,50 +8,61 @@ import 'package:sqflite_sqlcipher/sqflite.dart';
 import '../app_start_package/login_screen_file.dart';
 import 'google_drive_backup_class.dart';
 import 'CryptoUtils.dart';
-import 'package:adhd_journal_flutter/settings.dart';
 import 'dart:io' as io;
 
 class PreferenceBackupAndEncrypt {
   RSAKeyGenerator keyGen = RSAKeyGenerator();
-  late enc.Encrypter encrypter;
   late RSAPrivateKey  privKey;
   late RSAPublicKey pubKey;
 
- // Generates new keys on each encryption sequence
 
+  //Assign RSA Keys
+  void assignRSAKeys() async  {
+  try{
+
+    String privKeyFilePath = join(await getDatabasesPath(),"journ_privkey.pem");
+    io.File privateKeyStorage = io.File(privKeyFilePath);
+    String pubKeyFilePath = join(await getDatabasesPath(),"journ_pubKey.pem");
+    io.File publicKeyStorage = io.File(pubKeyFilePath);
+
+    if(privateKeyStorage.existsSync()){
+      var privKeyReader = privateKeyStorage.readAsStringSync();
+      String preKeyString = privKeyReader;
+      print(preKeyString);
+      privKey = CryptoUtils.rsaPrivateKeyFromPemPkcs1(preKeyString);
+    }
+    else {
+      throw Exception("File not found");
+    }
+
+    if(publicKeyStorage.existsSync()){
+      var pubKeyReader = publicKeyStorage.readAsStringSync();
+      var prePubKeyString = pubKeyReader;
+      pubKey = CryptoUtils.rsaPublicKeyFromPemPkcs1(prePubKeyString);
+    }
+    else{
+      throw Exception();
+    }
+
+  }on Exception catch(ex){
+    print(ex);
+
+  }
+
+
+  }
+  //Download and  Assign RSA Keys
   Future<void> downloadRSAKeys(GoogleDrive drive) async{
    try{
      await drive.syncBackupFiles("journ_pubKey.pem");
    await drive.syncBackupFiles('journ_privkey.pem');
-     String privKeyFilePath = join(await getDatabasesPath(),"journ_privkey.pem");
-     io.File privateKeyStorage = io.File(privKeyFilePath);
-     String pubKeyFilePath = join(await getDatabasesPath(),"journ_pubKey.pem");
-     io.File publicKeyStorage = io.File(pubKeyFilePath);
-
-     if(privateKeyStorage.existsSync()){
-       var privKeyReader = privateKeyStorage.readAsStringSync();
-    String preKeyString = privKeyReader;
-       print(preKeyString);
-      privKey = CryptoUtils.rsaPrivateKeyFromPemPkcs1(preKeyString);
-     }
-     else{
-       throw Exception();
-     }
-     if(publicKeyStorage.existsSync()){
-       var pubKeyReader = publicKeyStorage.readAsStringSync();
-       var prePubKeyString = pubKeyReader;
-       pubKey = CryptoUtils.rsaPublicKeyFromPemPkcs1(prePubKeyString);
-     }
-     else{
-throw Exception();
-     }
-
+   assignRSAKeys();
    } on Exception catch(ex){
      print(ex);
    }
   }
+  //Download latest Preferences file
   Future<void> downloadPrefsCSVFile(GoogleDrive drive) async{
-
     try{
       await drive.syncBackupFiles("journalStuff.txt");
       io.File csvFile = io.File(docsLocation);
@@ -76,14 +84,12 @@ throw Exception();
     }
 
   }
+  //Decrypt the Data
   void decryptData(String data, GoogleDrive drive){
 
   }
-  /// Open the file, write into it, close it.
-  /// Upload it - later
 
-
-  //Encrypt the CSV File instead of the data going into it.
+  //Encrypt RSA Keys and assign the values to the variables
   void encryptRsaKeysAndUpload(GoogleDrive drive) async{
     try {
       io.File privateKeyStorage = io.File(
@@ -139,7 +145,7 @@ throw Exception();
     var testBytes = CryptoUtils.rsaEncrypt(data, pubKey);
     print("data encrypted, uploading now");
     uploadPrefsCSVFile(testBytes, drive);
-
+print("Preferences uploaded");
   }
   Future<void> uploadPrefsCSVFile(String cipherText,GoogleDrive drive) async{
     try{
@@ -162,8 +168,6 @@ throw Exception();
     return secureRandom;
   }
 
-
-//Decrypt the CSV file
 
 
 
