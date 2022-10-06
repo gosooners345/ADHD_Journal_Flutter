@@ -267,7 +267,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                 },
                 userActiveBackup = prefs.getBool("testBackup") ?? false,
                 if(userActiveBackup){
-                preferenceBackupAndEncrypt.encryptRSAKEYSANDDataInCSV(userPassword+','+dbPassword+','+passwordHint+','+passwordEnabled.toString()+","+greeting+','+colorSeed.toString(), googleDrive)
+               // preferenceBackupAndEncrypt.encryptRSAKEYSANDDataInCSV(userPassword+','+dbPassword+','+passwordHint+','+passwordEnabled.toString()+","+greeting+','+colorSeed.toString(), googleDrive)
                 },
               });
             },
@@ -301,7 +301,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                       },
                 userActiveBackup = prefs.getBool("testBackup") ?? false,
                 if(userActiveBackup){
-                  preferenceBackupAndEncrypt.encryptRSAKEYSANDDataInCSV(userPassword+','+dbPassword+','+passwordHint+','+passwordEnabled.toString()+","+greeting+','+colorSeed.toString(), googleDrive)
+                  preferenceBackupAndEncrypt.encryptData(userPassword+','+dbPassword+','+passwordHint+','+passwordEnabled.toString()+","+greeting+','+colorSeed.toString(), googleDrive)
                 },
                   });
             },

@@ -69,11 +69,7 @@ firstUse=true;
     var authenticateClient = GoogleAuthClient(authHeaders!);
 
     var driveApiKey = authenticateClient._headers;
-    var apiParse = driveApiKey["Authorization"];
-    var keys = apiParse?.split('.');
-    var preKey = keys![1];
-    apiKey = preKey.substring(0,32);
-    ivTest = preKey.substring(33,49);
+
     return authenticateClient;
   }
 
@@ -182,21 +178,16 @@ try{
         }
       }
       if(files.isNotEmpty)
-      {var checkFile = files?.first;
-      var checkTime = checkFile?.modifiedTime;
+      {var checkFile = files.first;
+      var checkTime = checkFile.modifiedTime;
      return (checkTime!.isBefore(modifiedTime));}
-      else {
+      else if(files.isEmpty){
+        return true;}
+      else{
         return false;
       }
     }
     Future<bool> checkForCSVFile(String fileName) async{
-      /*late var client;
-      try{
-        client = await getHttpClientSilently();
-      } on Exception catch(ex){
-        print(ex);
-        client = await getHttpClient();
-      }*/
 
       drive = ga.DriveApi(client);
       try{
@@ -237,12 +228,7 @@ try{
     }
 
   Future<bool> checkCSVFileAge(String fileName) async{
-   /* late var client;
-    try{
-      client = await getHttpClientSilently();
-    } on Exception catch(ex){
-      client = await getHttpClient();
-    }*/
+
 
     drive = ga.DriveApi(client);
     File file = File(docsLocation);

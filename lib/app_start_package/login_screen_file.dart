@@ -233,62 +233,53 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
 
   /// Check the user's Google Drive for age of file or even if the file exists
   Future<void> checkFileAge() async {
-    File file = File(dbLocation);
-    File txtFile = File(docsLocation);
+    File file = File(dbLocation);// DB
+    File txtFile = File(docsLocation); // Prefs
     File privKeyFile = File(path.join(keyLocation,"journ_privkey.pem"));
     File pubKeyFile = File(path.join(keyLocation,"journ_pubkey.pem"));
     try{
       bool fileCheckAge = false;
 try{
-  while(await googleDrive.getHttpClientSilently() == null){
-
-  }
- fileCheckAge     = await googleDrive.checkDBFileAge("activitylogger_db.db-wal");
+await Future.delayed(Duration(seconds: 3),() async {
+  fileCheckAge = await googleDrive.checkDBFileAge("activitylogger_db.db-wal");
+});
 }
 on Exception catch (ex){
-
       fileCheckAge = await googleDrive.checkDBFileAge("activitylogger_db.db")? true: false;
-
 }
-    bool fileCheckCSV = await googleDrive.checkForCSVFile('journalStuff.txt');
-      bool txtFileCheckAge = false;
       String dataForEncryption = userPassword+','+dbPassword+','+passwordHint+','+passwordEnabled.toString()+","+greeting+','+colorSeed.toString();
-
-      if(fileCheckCSV) {
-        txtFileCheckAge = await googleDrive.checkCSVFileAge('journalStuff.txt');
-      }
-    if(txtFile.existsSync() && fileCheckCSV){
-
-      if(txtFileCheckAge){
-
-        preferenceBackupAndEncrypt.encryptRSAKEYSANDDataInCSV(dataForEncryption, googleDrive);
-      }
-      else{
-        preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
-
-        preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
-        //checkValuesAndAssign();
-      }
+var onlineKeys = await googleDrive.checkForCSVFile('journ_privkey.pem');
+// Keys first
+if(!privKeyFile.existsSync() && onlineKeys) {
+  await preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
+}
+else if(!privKeyFile.existsSync() && !onlineKeys){
+  preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
+}
+// Next Preferences
+      bool fileCheckCSV = await googleDrive.checkForCSVFile('journalStuff.txt');
+      bool txtFileCheckAge = false;
+      //Check for file
+if(fileCheckCSV) {
+  txtFileCheckAge = await googleDrive.checkCSVFileAge('journalStuff.txt');
+  if(txtFileCheckAge) { // if file is older in the cloud
+    if (!txtFile.existsSync()) {
+      preferenceBackupAndEncrypt.encryptData(dataForEncryption, googleDrive);
     }
-    else if(txtFile.existsSync() && !fileCheckCSV){
-     // preferenceBackupAndEncrypt.generateAndStoreRSAKeys(googleDrive);
-      preferenceBackupAndEncrypt.encryptRSAKEYSANDDataInCSV(dataForEncryption, googleDrive);
-    }
-    else if(!txtFile.existsSync()&& fileCheckCSV){
-      preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
-      preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
-    //  checkValuesAndAssign();
-    }
-    else{
-      //preferenceBackupAndEncrypt.generateAndStoreRSAKeys(googleDrive);
-      preferenceBackupAndEncrypt.encryptRSAKEYSANDDataInCSV(dataForEncryption, googleDrive);
-    }
+  }
+  else{
+    preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
+    showMessage(decipheredData);
+  }
+}
+//Last DB
     if (!fileCheckAge || !file.existsSync()) {
-      restoreDBFiles();
+      print(false);
+      await restoreDBFiles();
     } else {
-      uploadDBFiles();
+      print(true);
+    await   uploadDBFiles();
     }
-
     } on Exception catch (ex){
       restoreDBFiles();
       print(ex.toString());
@@ -303,6 +294,7 @@ on Exception catch (ex){
     }
     googleDrive.deleteOutdatedBackups("activitylogger_db.db");
     googleDrive.uploadFileToGoogleDrive(File(dbLocation));
+
     googleDrive.uploadFileToGoogleDrive(File("$dbLocation-wal"));
     googleDrive.uploadFileToGoogleDrive(File("$dbLocation-shm"));
     ScaffoldMessenger.of(context).showSnackBar(
@@ -320,21 +312,21 @@ on Exception catch (ex){
       var getFileTime = File(dbLocation);
       var time = getFileTime.lastModifiedSync();
 // Show Snack Bar displaying the last time action was
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Your journal is synced as of ${time.toUtc()}'),
-          ));
+     showMessage('Your journal is synced as of ${time.toUtc()}');
       print("successful");
     } on Exception catch (ex) {
       print(ex.toString());
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-                'You need to open up the journal once to back it up.'),
-          ));
+      showMessage('You need to open up the journal once to back it up.');
     }
   }
 
+  void showMessage(String message){
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message)
+        ));
+  }
+/// Testing after 15 successful tries of simply moving between devices
   void checkValuesAndAssign() async{
     var newValues = decipheredData.split(',');
     //String values = userPassword+','+dbPassword+','+passwordHint+','+passwordEnabled.toString()+","+greeting+','+colorSeed.toString();
