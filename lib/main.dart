@@ -128,6 +128,12 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
     return const [RecordDisplayWidget(), DashboardViewWidget()];
   }
 
+  void encryptData() async{
+    await Future.delayed(Duration(seconds: 2),(){ preferenceBackupAndEncrypt.encryptData(userPassword+','+dbPassword+','+passwordHint+','+passwordEnabled.toString()+","+greeting+','+colorSeed.toString(), googleDrive);});
+
+
+  }
+
   List<AppBar> appBars() {
     return [
       AppBar(
@@ -263,11 +269,11 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                       /// Tested and Passed: 05/09/2022
                       SettingsPage())).then((value) => {
                                         if (userPassword != dbPassword) {
-                  verifyPasswordChanged(),
-                },
+                                          recordsBloc.changeDBPasswords()
+                                        },
                 userActiveBackup = prefs.getBool("testBackup") ?? false,
                 if(userActiveBackup){
-                preferenceBackupAndEncrypt.encryptData(userPassword+','+dbPassword+','+passwordHint+','+passwordEnabled.toString()+","+greeting+','+colorSeed.toString(), googleDrive)
+                  encryptData()
                 },
               });
             },
@@ -297,11 +303,11 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                       greeting = prefs.getString('greeting')!;
                     }),
                     if (userPassword != dbPassword) {
-                        verifyPasswordChanged(),
+                        recordsBloc.changeDBPasswords()
                       },
                 userActiveBackup = prefs.getBool("testBackup") ?? false,
                 if(userActiveBackup){
-                  preferenceBackupAndEncrypt.encryptData(userPassword+','+dbPassword+','+passwordHint+','+passwordEnabled.toString()+","+greeting+','+colorSeed.toString(), googleDrive)
+encryptData()
                 },
                   });
             },

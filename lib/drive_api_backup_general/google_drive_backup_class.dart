@@ -116,6 +116,7 @@ firstUse=true;
 
 try{
   client = await getHttpClientSilently();
+
 } on Exception catch(ex){
   client = await getHttpClient();
 }

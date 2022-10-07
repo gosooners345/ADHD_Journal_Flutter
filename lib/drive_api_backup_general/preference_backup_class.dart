@@ -68,7 +68,7 @@ class PreferenceBackupAndEncrypt {
       io.File csvFile = io.File(docsLocation);
       if(csvFile.existsSync()){
         var dataArray = '';
-        await Future.delayed(Duration(seconds: 6),(){dataArray = CryptoUtils.rsaDecrypt(csvFile.readAsStringSync(encoding: Encoding.getByName("utf-8")!), privKey);
+        await Future.delayed(Duration(seconds: 1),(){dataArray = CryptoUtils.rsaDecrypt(csvFile.readAsStringSync(encoding: Encoding.getByName("utf-8")!), privKey);
         print(dataArray);
         });
 
@@ -84,11 +84,6 @@ class PreferenceBackupAndEncrypt {
     }
 
   }
-  //Decrypt the Data
-  void decryptData(String data, GoogleDrive drive){
-
-  }
-
   //Encrypt RSA Keys and assign the values to the variables
   void encryptRsaKeysAndUpload(GoogleDrive drive) async{
     try {

@@ -149,7 +149,7 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
   void resetLoginFieldState() {
     if (userActiveBackup) {
       checkFileAge();
-      //  encryptedSharedPrefs.setString('apiStorage', apiKey);
+
     }
 
     setState(() {
@@ -273,20 +273,25 @@ if(fileCheckCSV) {
   else {
     preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
     showMessage(decipheredData);
+
   }
 }
   else{
     preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
    showMessage(decipheredData);
+
   }
 
 //Last DB
     if (!fileCheckAge || !file.existsSync()) {
       print(false);
       await restoreDBFiles();
+    await Future.delayed(Duration(seconds: 5),(){updateValues();});
     } else {
       print(true);
-    await   uploadDBFiles();
+
+      await   uploadDBFiles();
+
     }
     } on Exception catch (ex){
       restoreDBFiles();
@@ -335,21 +340,22 @@ if(fileCheckCSV) {
         ));
   }
 /// Testing after 15 successful tries of simply moving between devices
-  void checkValuesAndAssign() async{
+  void updateValues() async{
     var newValues = decipheredData.split(',');
-    //String values = userPassword+','+dbPassword+','+passwordHint+','+passwordEnabled.toString()+","+greeting+','+colorSeed.toString();
+    showMessage("updating values");
     dlUserPassword = newValues[0];
-   // dlDBPassword = newValues[1];
+    dlDBPassword = newValues[0];
     dlPasswordHint = newValues[2];
     dlPasswordEnabled = newValues[3] == "true" ? true : false;
     dlGreeting = newValues[4];
     dlColorSeed = int.parse(newValues[5]);
-   if(userPassword !=dlUserPassword){
+   if(userPassword !=dlUserPassword || dlDBPassword != dlUserPassword){
      userPassword = dlUserPassword;
-     recordsBloc = RecordsBloc();
-     recordsBloc.changeDBPasswords();
-     recordsBloc.dispose();
+    recordsBloc = RecordsBloc();
+    recordsBloc.changeDBPasswords();
+    recordsBloc.dispose();
     await encryptedSharedPrefs.setString('loginPassword', userPassword);
+    await encryptedSharedPrefs.setString('dbPassword', userPassword);
    }
    if(passwordEnabled != dlPasswordEnabled){
      passwordEnabled = dlPasswordEnabled;
@@ -369,7 +375,9 @@ if(fileCheckCSV) {
      ThemeSwap themeSwapper = ThemeSwap();
      setState(() {
        themeSwapper.themeColor=colorSeed;
+
      });
+
    }
    print("updated Values in array");
    loadStateStuff();
@@ -418,6 +426,7 @@ if(fileCheckCSV) {
                           if (loginPassword == userPassword &&
                               passwordEnabled) {
                             loginPassword = '';
+                            recordsBloc = RecordsBloc();
                             Navigator.pushNamed(context, '/success')
                                 .then((value) => {
                               stuff.clear(),
@@ -425,6 +434,7 @@ if(fileCheckCSV) {
                               refreshPrefs(),
                             });
                           } else if (!passwordEnabled) {
+                            recordsBloc = RecordsBloc();
                             loginPassword = '';
                             stuff.clear();
                             Navigator.pushNamed(context, '/success').then(
