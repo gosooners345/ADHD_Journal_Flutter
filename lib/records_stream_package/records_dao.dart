@@ -160,7 +160,7 @@ class RecordsDao {
   // Test force the wal into the db and clean it out.
   void writeCheckpoint() async{
 final db = await recordsDB.database;
-var query = "PRAGMA SQLITE_DEFAULT_WAL_AUTOCHECKPOINT = 100";
+var query = "PRAGMA SQLITE_DEFAULT_WAL_AUTOCHECKPOINT = 500";
 try {
   await db.execute(query);
   query = "PRAGMA wal_checkpoint(full)";

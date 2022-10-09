@@ -270,7 +270,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                       /// Tested and Passed: 05/09/2022
                       SettingsPage())).then((value) => {
                                         if (userPassword != dbPassword) {
-                                          recordsBloc.changeDBPasswords()
+                                         verifyPasswordChanged()
                                         },
                 userActiveBackup = prefs.getBool("testBackup") ?? false,
                 if(userActiveBackup){
@@ -304,7 +304,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                       greeting = prefs.getString('greeting')!;
                     }),
                     if (userPassword != dbPassword) {
-                        recordsBloc.changeDBPasswords()
+                        verifyPasswordChanged()
                       },
                 userActiveBackup = prefs.getBool("testBackup") ?? false,
                 if(userActiveBackup){

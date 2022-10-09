@@ -26,11 +26,10 @@ try{
     if(privateKeyStorage.existsSync()){
       var privKeyReader = privateKeyStorage.readAsStringSync();
       String preKeyString = privKeyReader;
-      print(preKeyString);
       privKey = CryptoUtils.rsaPrivateKeyFromPemPkcs1(preKeyString);
     }
     else{
-    throw Exception("no File");
+    throw Exception("Need new RSA Keys for application.");
     }
 }on Exception catch(tm){
   print("dead end");

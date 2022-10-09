@@ -48,6 +48,7 @@ class RecordsDB {
           {'oldDBPassword': oldPassword, 'newDBPassword': newPassword});
       dbPassword = newPassword;
       await encryptedSharedPrefs.setString('dbPassword', newPassword);
+
       if (kDebugMode) {
         print("passwords changed");
       }

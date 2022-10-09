@@ -87,6 +87,7 @@ authHeaders = await account?.authHeaders;
   // if not available create a folder in drive and return id
   //   if not able to create id then it means user authentication has failed
   Future<String?> _getFolderId(ga.DriveApi driveApi) async {
+
     const mimeType = "application/vnd.google-apps.folder";
     try {
       final found = await driveApi.files.list(
@@ -201,7 +202,13 @@ authHeaders = await account?.authHeaders;
       }
     }
     Future<bool> checkForFile(String fileName) async{
-
+      await Future.sync(() async {  if(client==null){
+        try{
+          client = await getHttpClientSilently();
+        } on Exception catch(ex){
+          client = await getHttpClient();
+        }
+      }});
       drive = ga.DriveApi(client!);
       try{
         var queryDrive = await drive.files.list(
@@ -240,6 +247,13 @@ authHeaders = await account?.authHeaders;
     }
 
   Future<bool> checkCSVFileAge(String fileName) async{
+    await Future.sync(() async {  if(client==null){
+      try{
+        client = await getHttpClientSilently();
+      } on Exception catch(ex){
+        client = await getHttpClient();
+      }
+    }});
     drive = ga.DriveApi(client!);
     File file = File(docsLocation);
   try{
@@ -282,7 +296,13 @@ authHeaders = await account?.authHeaders;
   }
 
   deleteOutdatedBackups(String fileName) async {
-
+    await Future.sync(() async {  if(client==null){
+      try{
+        client = await getHttpClientSilently();
+      } on Exception catch(ex){
+        client = await getHttpClient();
+      }
+    }});
     drive = ga.DriveApi(client!);
 
     final queryDrive = await drive.files.list(
@@ -304,6 +324,13 @@ authHeaders = await account?.authHeaders;
   }
 
   Future<void> syncBackupFiles(String fileName) async {
+    await Future.sync(() async {  if(client==null){
+      try{
+        client = await getHttpClientSilently();
+      } on Exception catch(ex){
+        client = await getHttpClient();
+      }
+    }});
     drive = ga.DriveApi(client!);
     String fileLocation = await getDatabasesPath();
     final queryDrive = await drive.files.list(

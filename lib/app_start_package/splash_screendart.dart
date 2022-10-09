@@ -79,7 +79,21 @@ appStatus.value= "Getting preferences now";
     prefs = await SharedPreferences.getInstance();
     encryptedSharedPrefs = EncryptedSharedPreferences();
     userPassword = await encryptedSharedPrefs.getString('loginPassword');
-dbPassword = await encryptedSharedPrefs.getString('dbPassword');
+    try{
+dbPassword = await encryptedSharedPrefs.getString('dbPassword');}
+    on Exception catch(ex){
+      print(ex);
+      try {
+        await encryptedSharedPrefs.remove('dbPassword');
+      } on Exception catch(ex){
+        print(ex);
+      }
+      dbPassword = userPassword;
+      await encryptedSharedPrefs.setString('dbPassword', dbPassword);
+    }
+if(userPassword != dbPassword){
+  dbPassword = userPassword;
+}
 passwordHint = await encryptedSharedPrefs.getString('passwordHint')??'';
 greeting = prefs.getString('greeting') ?? '';
 colorSeed = prefs.getInt("apptheme") ?? AppColors.mainAppColor.value;
@@ -227,18 +241,20 @@ Future<void> restoreDBFiles() async {
   try {
     appStatus.value = "Downloading updated journal files";
   await Future.sync(()=>googleDrive.syncBackupFiles("activitylogger_db.db"));
-    var getFileTime = File(dbLocation);
   } on Exception catch (ex) {
 showMessage(ex.toString());
   }
 }
 Future<void> uploadDBFiles() async {
     appStatus.value = "Uploading updated journal files";
-  googleDrive.deleteOutdatedBackups("activitylogger_db.db");
-  googleDrive.uploadFileToGoogleDrive(File(dbLocation));
-  googleDrive.uploadFileToGoogleDrive(File("$dbLocation-wal"));
-  googleDrive.uploadFileToGoogleDrive(File("$dbLocation-shm"));
-
+  try {
+    googleDrive.deleteOutdatedBackups("activitylogger_db.db");
+    googleDrive.uploadFileToGoogleDrive(File(dbLocation));
+    googleDrive.uploadFileToGoogleDrive(File("$dbLocation-wal"));
+    googleDrive.uploadFileToGoogleDrive(File("$dbLocation-shm"));
+  } on Exception catch(ex){
+    print(ex);
+  }
 }
   void showMessage(String message){
     ScaffoldMessenger.of(context).showSnackBar(
