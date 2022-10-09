@@ -443,12 +443,7 @@ prefs.setInt('apptheme', colorSeed);
 
   }
   void checkColors(ThemeSwap themes){
-   /* setState(() {
-      if(themeSwapper.isColorSeed!= themes.isColorSeed){
-        themes.themeColor = themeSwapper.isColorSeed;
 
-      }
-    });*/
     if(themeSwapper.isColorSeed!= themes.isColorSeed){
       themes.themeColor = themeSwapper.isColorSeed;
 

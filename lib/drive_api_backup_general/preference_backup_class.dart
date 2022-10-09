@@ -85,9 +85,7 @@ try{
         while(decipheredData.isEmpty){
           decipheredData = CryptoUtils.rsaDecrypt(csvFile.readAsStringSync(encoding: Encoding.getByName("utf-8")!), privKey!);
         }
-/*if(decipheredData.isNotEmpty){
-csvFile.deleteSync();
-}});*/
+
       });} else{
         throw Exception("File not found");
       }
