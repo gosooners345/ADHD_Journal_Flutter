@@ -140,6 +140,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
         title: Text("Home"),
         leading: IconButton(
             onPressed: () {
+              isThisReturning = true;
               recordsBloc.dispose();
               Navigator.pop(context);
             },
@@ -360,7 +361,7 @@ encryptData()
                   id: 0,
                   title: 'Compose New Entry'))).then((value) => {
             _showAlert(context,"Journal Entry Saved"),
-            executeRefresh(),
+
 
           });
     } on Exception catch (ex) {
@@ -386,23 +387,8 @@ encryptData()
   final homeButtonItem =
       BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home');
 
-  quickTimer() async {
-    try{
-    return Timer(Duration(milliseconds: 1), executeRefresh);
-    }
-    on Exception catch(ex){
-      _showAlert(context, ex.toString());
-    }
-  }
 
-  void executeRefresh() async {
-    RecordList.loadLists();
-    recordsBloc.writeCheckpoint();
 
-    if (kDebugMode) {
-      print('Executed');
-    }
-  }
 
   BottomNavigationBar bottomBar() {
     List<BottomNavigationBarItem> navBar = [

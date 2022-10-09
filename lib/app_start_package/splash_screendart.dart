@@ -9,10 +9,12 @@ import 'package:adhd_journal_flutter/drive_api_backup_general/preference_backup_
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:package_info/package_info.dart';
-
-
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
+
+import '../drive_api_backup_general/google_drive_backup_class.dart';
+import 'login_screen_file.dart';
 
 
 class SplashScreen extends StatefulWidget {
@@ -24,7 +26,8 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
 late  Database testDB;
-
+ConnectivityResult? _connectivityResult;
+late StreamSubscription _connectivitySubscription;
   static const platform =
   MethodChannel('com.activitylogger.release1/ADHDJournal');
 
@@ -36,6 +39,8 @@ late  Database testDB;
   bool passwordEnabledTransfer = false;
   bool checkTransferred = false;
 
+  Text statusUpdateWidget = Text('');
+ValueNotifier<String> appStatus = ValueNotifier("");
   @override
   Widget build(BuildContext context) {
     return initScreen(context);
@@ -44,88 +49,211 @@ late  Database testDB;
   @override
   void initState() {
     super.initState();
+
     if (Platform.isAndroid) {
       backArrowIcon = Icon(Icons.arrow_back);
     } else {
       backArrowIcon = Icon(Icons.arrow_back_ios);
     }
-    getPackageInfo();
-    // Load prefs and check for previous android shared prefs files
-    loadPreferences();
-    // if there was a previous db on device, migrate data
-    if (Platform.isAndroid) {
-      migrateTimer();
-    }
-    //Add a password hint variable and preference to the application for users to add a hint so they can be reminded what their password is.
+    appStatus.value= "Welcome to ADHD Journal! We're getting your stuff ready!";
 
-    startTimer();
+    // Load prefs and check for previous android shared prefs files
+
+   finishTimer();
+
+  }
+
+  Future<bool> _checkConnState() async{
+    final ConnectivityResult result = await Connectivity().checkConnectivity();
+    if(result ==ConnectivityResult.wifi || result == ConnectivityResult.mobile){
+      return true;
+    }
+    else{
+      return false;
+    }
   }
 
   void loadPreferences() async {
+
+appStatus.value= "Getting preferences now";
     prefs = await SharedPreferences.getInstance();
     encryptedSharedPrefs = EncryptedSharedPreferences();
-    if(Platform.isAndroid){
-      checkVisitState = await databaseExists(path.join(await getDatabasesPath(),'activitylogger_db.db'));
+    userPassword = await encryptedSharedPrefs.getString('loginPassword');
+dbPassword = await encryptedSharedPrefs.getString('dbPassword');
+passwordHint = await encryptedSharedPrefs.getString('passwordHint')??'';
+greeting = prefs.getString('greeting') ?? '';
+colorSeed = prefs.getInt("apptheme") ?? AppColors.mainAppColor.value;
+passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
+    isPasswordChecked = passwordEnabled;
+    userActiveBackup = prefs.getBool('testBackup') ?? false;
+//var testConnection = await _checkConnState();
+
+    if(userActiveBackup){
+      try{
+        appStatus.value = "You have backup and sync enabled! Checking for new files";
+//if(testConnection) {
+  googleDrive = GoogleDrive();
+  googleDrive.init();
+
+  googleDrive.client = await googleDrive.getHttpClientSilently();
+  if (googleDrive.client == null) {
+    userActiveBackup = false;
+  }
+  if (userActiveBackup) {
+    checkFileAge();
+  }
+  else { //Failsafe
+    isDataSame = true;
+  }
+//}
+/*else {
+  appStatus.value = "You need to be connected to Mobile Data or Wifi to sync your journal";
+  userActiveBackup = false;
+}*/
+      }on Exception catch(ex){
+        showMessage(ex.toString());
+        userActiveBackup = false;
+      }
+    } else{
+     appStatus.value = "You have backup and sync disabled! You can enable this on Login "
+          "by hitting Add to Drive! You can disable this feature in Settings ";
     }
-    colorSeed = await prefs.getInt("apptheme") ?? AppColors.mainAppColor.value;
-
+   appStatus.value = 'Loading up your journal now...';
   }
 
-  void checkPasswordHintMethod() async{
-   passwordHint = await encryptedSharedPrefs.getString('passwordHint')??'';
-}
-
-// This will migrate all data from old shared prefs file to the flutter version.
-void migrateData() async {
-var checkFirstVisit = false;
-    if (checkVisitState) {
-  checkFirstVisit = prefs.getBool('firstVisit')!;
-  if(kDebugMode)
-    {
-      print(checkFirstVisit);
-    }
-}
-
-  if (checkFirstVisit) {
-    var dbPasswordMigrated = await platform.invokeMethod('migrateDBPassword');
-    var userPasswordMigrated = await platform.invokeMethod(
-        'migrateUserPassword');
-    var passwordPrefs = await platform.invokeMethod('migratePasswordPrefs');
-    var greetingMigrated = await platform.invokeMethod('migrateGreeting');
-   await prefs.setString('greeting', greetingMigrated);
-  await  prefs.setBool('passwordEnabled', passwordPrefs);
-    encryptedSharedPrefs.setString('dbPassword', dbPasswordMigrated);
-    encryptedSharedPrefs.setString('loginPassword', userPasswordMigrated);
-    await prefs.setBool('firstVisit', !checkVisitState);
-  }
-}
-  migrateTimer() async{
-    return Timer(const Duration(seconds: 2),migrateData);
-  }
-
-  startTimer() async {
-  var duration = const Duration(seconds: 6);
+  finishTimer() async {
+  var duration = const Duration(seconds: 8);
+  getPackageInfo();
+  loadPreferences();
     return Timer(duration, route);
   }
-
   void getPackageInfo() async {
+   appStatus.value= "Getting Build and App Version info";
      packInfo = await PackageInfo.fromPlatform();
      buildInfo = packInfo.version;
-     dbLocation = path.join(await getDatabasesPath(),'activitylogger_db.db');
- docsLocation = path.join(await getDatabasesPath(),'journalStuff.txt');
- keyLocation = await getDatabasesPath();
- userActiveBackup = prefs.getBool('testBackup') ?? false;
- if (kDebugMode) {
-   print("Backup is $userActiveBackup");
- }
+    String docDirectory = await Future.sync(() => getDatabasesPath());
+     dbLocation = path.join(docDirectory,'activitylogger_db.db');
+ docsLocation = path.join(docDirectory,'journalStuff.txt');
+ keyLocation = docDirectory;
+  }
+
+  void checkFileAge() async{
+    appStatus.value = "Checking for updated files... \r\nThanks for your patience";
+
+    File dbFile = File(dbLocation);
+    File privateKeyFile = File(path.join(keyLocation,"journ_privkey.pem"));
+    File prefsFile = File(docsLocation);
+    String dataForEncryption = '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
+      bool fileCheckAge = false;
+      try{
+        fileCheckAge = await Future.sync(() =>  googleDrive.checkDBFileAge(dbWal));
+      } on Exception catch(ex){
+        fileCheckAge = await Future.sync(()=>googleDrive.checkDBFileAge(dbName));
+      }
+      bool checkOnlineKeys = await Future.sync(()=>googleDrive.checkForFile('journ_privkey.pem'));
+      if(!privateKeyFile.existsSync() && checkOnlineKeys){
+        await preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
+      }
+      else if(!privateKeyFile.existsSync() && !checkOnlineKeys){
+        preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
+      }
+      else{
+        preferenceBackupAndEncrypt.assignRSAKeys(googleDrive);
+      }
+      bool checkPrefsEncryptedFile = await googleDrive.checkForFile(prefsTransportName);
+      bool txtFileChange = false;
+      if(checkPrefsEncryptedFile){
+        txtFileChange = await googleDrive.checkCSVFileAge(prefsTransportName);
+        if(txtFileChange){
+          preferenceBackupAndEncrypt.encryptData(dataForEncryption, googleDrive);
+        }
+        else{
+         await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
+          if(dataForEncryption == decipheredData){
+            isDataSame = true;
+          } else{
+            isDataSame = false;
+          }
+        }
+      } else{
+      try{
+        if(prefsFile.existsSync()){
+          prefsFile.deleteSync();
+        preferenceBackupAndEncrypt.encryptData(dataForEncryption, googleDrive);
+        }
+      }
+       on Exception catch(ex){
+         await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
+          if(dataForEncryption == decipheredData){
+            isDataSame = true;
+          }          else{
+            isDataSame = false;
+          }
+
+        }
+        prefs.setBool('isDataSame', isDataSame);
+      }
+      bool checkDBFile1 = await googleDrive.checkForFile(dbName);
+      bool checkDBFile2 = await googleDrive.checkForFile(dbWal);
+      if(checkDBFile1 || checkDBFile2){
+        if(!dbFile.existsSync()|| !fileCheckAge){
+ await Future.sync(() =>  restoreDBFiles().whenComplete(() => {
+   if(kDebugMode){
+     print("Download done"),
+   },
+appStatus.value = "Your Journal is synced on device now",
+ }));
+        }
+        else{
+          await Future.sync(() => uploadDBFiles().whenComplete(() =>{
+            if(kDebugMode){
+              print("Upload done"),
+            },
+            appStatus.value = "Your Journal is synced online now",
+          }));
+
+        }
+      }
+      else if(dbFile.existsSync()){
+        await uploadDBFiles();
+      }
+      else{
+        showMessage("You need to create a database for use in this application");
+      }
+    }
+Future<void> restoreDBFiles() async {
+  try {
+    appStatus.value = "Downloading updated journal files";
+  await Future.sync(()=>googleDrive.syncBackupFiles("activitylogger_db.db"));
+    var getFileTime = File(dbLocation);
+  } on Exception catch (ex) {
+showMessage(ex.toString());
+  }
+}
+Future<void> uploadDBFiles() async {
+    appStatus.value = "Uploading updated journal files";
+  googleDrive.deleteOutdatedBackups("activitylogger_db.db");
+  googleDrive.uploadFileToGoogleDrive(File(dbLocation));
+  googleDrive.uploadFileToGoogleDrive(File("$dbLocation-wal"));
+  googleDrive.uploadFileToGoogleDrive(File("$dbLocation-shm"));
+
+}
+  void showMessage(String message){
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:Text(message),
+        ));
   }
 
   void route() {
-    getPackageInfo();
+
     var firstVisit = prefs.getBool('firstVisit') ?? true;
     if (firstVisit) {
+      appStatus.value= "This is your first time using this application. "
+          "\r\nLet's get you started!";
       Navigator.pushReplacementNamed((context), '/onboarding');
     } else {
+      appStatus.value ="Loading Login Screen Now!";
       Navigator.pushReplacementNamed(context, '/login');
     }
   }
@@ -138,10 +266,13 @@ var checkFirstVisit = false;
             height: 35,
           ),
          Expanded(child:Image.asset('images/appicon_appstore.png'),),
-          const Padding(
+         Padding(
             padding: EdgeInsets.all(20.0),
-            child:
-                Text('Welcome to ADHD Journal! Loading up your journal now...'),
+            child:ValueListenableBuilder( valueListenable: appStatus,
+        builder:(BuildContext builder,String value,Widget? child){
+              return Text(value);
+        }),
+
           ),
         ],
       ),
@@ -162,4 +293,9 @@ late ThemeData darkTheme;
 String dbLocation = "";
 String docsLocation = "";
 String keyLocation ="";
+String dbName = "activitylogger_db.db";
+String dbWal = "activitylogger_db.db-wal";
+String prefsTransportName = "journalStuff.txt";
 bool userActiveBackup = false;
+GoogleDrive googleDrive = GoogleDrive();
+bool isDataSame = true;

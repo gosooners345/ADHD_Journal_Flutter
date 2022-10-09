@@ -13,7 +13,7 @@ class AppColors {
 
 class ThemeSwap extends ChangeNotifier{
 
-  int newcolorSeed = AppColors.mainAppColor.value;
+  int newcolorSeed =  AppColors.mainAppColor.value;
   ThemePrefs _themePrefs = ThemePrefs();
   int get isColorSeed => newcolorSeed;
 
@@ -39,10 +39,9 @@ class ThemePrefs {
 
   setTheme(int seedValue) async{
     SharedPreferences getPrefs = await SharedPreferences.getInstance();
-    await getPrefs.setInt(PREF_KEY,seedValue);
+    getPrefs.setInt(PREF_KEY,seedValue);
     getPrefs.reload();
-
-
+getTheme();
   }
   getTheme() async{
     SharedPreferences getPrefs = await SharedPreferences.getInstance();

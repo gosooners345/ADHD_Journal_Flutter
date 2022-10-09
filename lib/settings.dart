@@ -31,7 +31,7 @@ class _SettingsPage extends State<SettingsPage> {
  String passwordHintValue = passwordHint;
   String greetingValue = '';
   Text passwordLabelWidget = const Text('');
-  bool passwordEnabled = false;
+  //bool passwordEnabled = false;
   Text syncTextWidget = const Text('');
   late SwitchListTile passwordEnabledTile;
   //Visual changes based on parameter values
@@ -73,14 +73,13 @@ if(passwordHint ==" "){
           color: Color(colorSeed),
         );
         passwordLabelText = "Password Enabled";
-      //  passwordLabelWidget = Text(passwordLabelText);
+
       } else {
         lockIcon = Icon(
           Icons.lock_open,
           color: Color(colorSeed),
         );
         passwordLabelText = "Password Disabled";
-       // passwordLabelWidget = Text(passwordLabelText);
       }
       passwordLabelWidget = Text(passwordLabelText);
       if(userActiveBackup){
@@ -133,6 +132,7 @@ if(passwordHint ==" "){
               if(passwordHint == ''){
                 passwordHint = ' ';
               }
+              passwordEnabled = isPasswordChecked;
               saveSettings(passwordHint, 'passwordHint');
               saveSettings(userPassword, 'loginPassword');
               prefs.setString('greeting', greeting);

@@ -20,11 +20,17 @@ class GoogleDrive {
   String fileID = "";
   late ga.DriveApi drive;
 bool firstUse = false;
-late http.Client client;
+ http.Client? client;
 
 init() async {
   try{
-    client =await getHttpClientSilently();
+    if(userActiveBackup) {
+      client = await  getHttpClientSilently();
+
+/*    while(client==null){
+      client = await Future.sync(()=> getHttpClientSilently());
+    }*/
+    }
   }
   on Exception catch(ex){
     client = await getHttpClient();
@@ -45,12 +51,6 @@ firstUse=true;
  prefs.setBool("authenticated", firstUse);
     var authHeaders = await account?.authHeaders;
     var authenticateClient = GoogleAuthClient(authHeaders!);
-    var driveApiKey = authenticateClient._headers;
-    var apiParse = driveApiKey["Authorization"];
-    var keys = apiParse?.split('.');
-    var preKey = keys![1];
-    apiKey = preKey.substring(0,32);
-    ivTest = preKey.substring(33,49);
     return authenticateClient;
   }
 
@@ -59,17 +59,27 @@ firstUse=true;
         scopes: [ga.DriveApi.driveScope,
           ga.DriveApi.driveAppdataScope]);
     signIn.GoogleSignInAccount? account;
-
+try{
     account = await googleSignIn.signInSilently(reAuthenticate: true);
+
+} on Exception catch(ex){
+  account = await googleSignIn.signIn();
+
+}
     userActiveBackup = true;
     prefs.setBool('testBackup', userActiveBackup);
     prefs.reload();
     userActiveBackup = prefs.getBool("testBackup") ?? false;
     var authHeaders = await account?.authHeaders;
+    if(authHeaders ==null){
+      account = await Future.sync(() => googleSignIn.signInSilently(reAuthenticate: true));
+authHeaders = await account?.authHeaders;
+    }
+    while(authHeaders==null){
+      account = await Future.sync(() => googleSignIn.signInSilently(reAuthenticate: true));
+      authHeaders = await account?.authHeaders;
+    }
     var authenticateClient = GoogleAuthClient(authHeaders!);
-
-    var driveApiKey = authenticateClient._headers;
-
     return authenticateClient;
   }
 
@@ -114,14 +124,7 @@ firstUse=true;
 
   uploadFileToGoogleDrive(File file) async {
 
-try{
-  client = await getHttpClientSilently();
-
-} on Exception catch(ex){
-  client = await getHttpClient();
-}
-
-    drive = ga.DriveApi(client);
+    drive = ga.DriveApi(client!);
     String? folderId = await _getFolderId(drive);
     if (folderId == null) {
       if (kDebugMode) {
@@ -140,16 +143,25 @@ try{
 
   Future<bool> checkDBFileAge(String fileName) async{
 
-    try{
+  await Future.sync(() async {  if(client==null){
+      try{
       client = await getHttpClientSilently();
-    } on Exception catch(ex){
-      client = await getHttpClient();
-    }
-    drive = ga.DriveApi(client);
+      } on Exception catch(ex){
+        client = await getHttpClient();
+      }
+    }});
+
+    drive = ga.DriveApi(client!);
     File file = File(dbLocation);
     var testFile =File("$dbLocation-wal");
     if(testFile.existsSync()){
       file=File("$dbLocation-wal");
+      if(file.existsSync()){
+        print("all is good");
+      }
+      else{
+        return false;
+      }
     }
 
       var modifiedTime =  file.lastModifiedSync();
@@ -188,9 +200,9 @@ try{
         return false;
       }
     }
-    Future<bool> checkForCSVFile(String fileName) async{
+    Future<bool> checkForFile(String fileName) async{
 
-      drive = ga.DriveApi(client);
+      drive = ga.DriveApi(client!);
       try{
         var queryDrive = await drive.files.list(
           q: "name contains '$fileName'",
@@ -215,7 +227,6 @@ try{
           if (kDebugMode) {
             print(i);
           }
-
         }
         if(files.isNotEmpty) {
           return true;
@@ -229,9 +240,7 @@ try{
     }
 
   Future<bool> checkCSVFileAge(String fileName) async{
-
-
-    drive = ga.DriveApi(client);
+    drive = ga.DriveApi(client!);
     File file = File(docsLocation);
   try{
     var modifiedTime =  file.lastModifiedSync();
@@ -273,8 +282,8 @@ try{
   }
 
   deleteOutdatedBackups(String fileName) async {
-   // var client = await getHttpClientSilently();
-    drive = ga.DriveApi(client);
+
+    drive = ga.DriveApi(client!);
 
     final queryDrive = await drive.files.list(
       q: "name contains '$fileName'",
@@ -295,20 +304,12 @@ try{
   }
 
   Future<void> syncBackupFiles(String fileName) async {
-  /*  late var client;
-    try{
-      client = await getHttpClientSilently();
-    } on Exception catch(ex){
-      client = await getHttpClient();
-    }*/
-
-    drive = ga.DriveApi(client);
+    drive = ga.DriveApi(client!);
     String fileLocation = await getDatabasesPath();
     final queryDrive = await drive.files.list(
       q: "name contains '$fileName'",
       $fields: "files(id, name,createdTime,modifiedTime)",
     );
-
     final files = queryDrive.files;
     var idList = [];
     var nameList = [];
@@ -356,8 +357,4 @@ class GoogleAuthClient extends http.BaseClient{
   Future<http.StreamedResponse> send(http.BaseRequest request) {
     return _client.send(request..headers.addAll(_headers));
   }
-
-
-
 }
-String apiKey = '';

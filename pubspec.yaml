@@ -65,7 +65,7 @@ dependencies:
   aes_crypt: ^0.1.1
   file_cryptor: ^0.0.3
   pointycastle: ^3.6.2
-
+  connectivity_plus: ^1.0.6
 flutter_icons:
   image_path_android: "images/appicon_appstore.png"
   image_path_ios: "images/appicon_appstore.png"
