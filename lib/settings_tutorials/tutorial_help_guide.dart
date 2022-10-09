@@ -6,7 +6,7 @@ class TutorialHelpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(
-        builder: (context, ThemeSwap themeNotifier, child) {
+        builder: (context, swapper, child) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Help Guide"),
@@ -16,10 +16,10 @@ class TutorialHelpScreen extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
-            iconColor: Color(themeNotifier.isColorSeed),
+            iconColor: Color(swapper.isColorSeed),
             title: Text(
                 'Creating a new journal entry, or editing an existing entry'),
             onTap: () {
@@ -29,7 +29,7 @@ class TutorialHelpScreen extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
             title: Text('How to use the dashboard feature'),
@@ -40,7 +40,7 @@ class TutorialHelpScreen extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
             title: Text('How to use sorting and filtering features'),

@@ -7,7 +7,7 @@ class SortHelp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(
-        builder: (context, ThemeSwap themeNotifier, child) {
+        builder: (context, swapper, child) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Sorting and Searching Guide'),
@@ -17,7 +17,7 @@ class SortHelp extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
             title: Text(
@@ -28,7 +28,7 @@ class SortHelp extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
             title: Text("Search Function"),
@@ -38,7 +38,7 @@ class SortHelp extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
             title: Text("Sorting Function"),
@@ -48,7 +48,7 @@ class SortHelp extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
             title: Text("The Reset Button"),

@@ -20,7 +20,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(
-        builder: (context, ThemeSwap themeNotifier, child) {
+        builder: (context, swapper, child) {
     return Theme(
       data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
       child: Column(
@@ -62,7 +62,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
             children: [
               Divider(
                 height: 1,
-                color: Color(themeNotifier.isColorSeed),
+                color: Color(swapper.isColorSeed),
               ),
               SizedBox(
                 height: 2,
@@ -80,7 +80,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
               ]),
               Divider(
                 height: 1,
-                color: Color(themeNotifier.isColorSeed),
+                color: Color(swapper.isColorSeed),
               ),
               SizedBox(
                 height: 2,
@@ -98,7 +98,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
               ]),
               Divider(
                 height: 1,
-                color: Color(themeNotifier.isColorSeed),
+                color: Color(swapper.isColorSeed),
               ),
               SizedBox(
                 height: 2,
@@ -116,7 +116,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
               ]),
               Divider(
                 height: 1,
-                color: Color(themeNotifier.isColorSeed),
+                color: Color(swapper.isColorSeed),
               ),
               SizedBox(
                 height: 2,
@@ -128,7 +128,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
               ]),
               Divider(
                 height: 1,
-                color: Color(themeNotifier.isColorSeed),
+                color: Color(swapper.isColorSeed),
               ),
             ],
           ),

@@ -430,10 +430,9 @@ bool isDBOnline = await googleDrive.checkForFile(dbName);
    if(colorSeed!=dlColorSeed){
      colorSeed = dlColorSeed;
 
-     setState(() {
-       themeSwapper.themeColor=colorSeed;
-     });
+
 prefs.setInt('apptheme', colorSeed);
+checkColors(colorSeed);
    }
    print("updated Values in array");
    isDataSame = true;
@@ -442,21 +441,22 @@ prefs.setInt('apptheme', colorSeed);
    loadStateStuff();
 
   }
-  void checkColors(ThemeSwap themes){
+  void checkColors(int value){
+setState(() {
+  swapper?.themeColor = value;
+  swapper?.notifyListeners();
+});
 
-    if(themeSwapper.isColorSeed!= themes.isColorSeed){
-      themes.themeColor = themeSwapper.isColorSeed;
 
-    }
+
   }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(
-        builder: (context, ThemeSwap themeNotifier, child) {
-         // themeSwapper = themeNotifier;
+        builder: (context, swapper, child) {
 
-           checkColors(themeNotifier);
+
 
     return Scaffold(
       appBar: AppBar(

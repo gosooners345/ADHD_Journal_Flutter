@@ -43,17 +43,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(create: (_)=>ThemeSwap(),
     child: Consumer<ThemeSwap>(
-      builder: (context, ThemeSwap themeSwap, child){
+      builder: (context, swapper, child){
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           debugShowMaterialGrid: false,
           title: 'ADHD Journal',
           theme: ThemeData(
-              colorSchemeSeed: Color(themeSwap.isColorSeed), // This will be replaced with a shared preferences item,
+              colorSchemeSeed: Color(swapper.isColorSeed), // This will be replaced with a shared preferences item,
               useMaterial3: true,
               brightness: Brightness.light),
           darkTheme: ThemeData(
-              colorSchemeSeed: Color(themeSwap.isColorSeed), //This will be replaced with a shared preferences item,
+              colorSchemeSeed: Color(swapper.isColorSeed), //This will be replaced with a shared preferences item,
               useMaterial3: true,
               brightness: Brightness.dark),
           themeMode: ThemeMode.system,
@@ -435,7 +435,7 @@ encryptData()
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(
-      builder:(context,ThemeSwap themeSwapper, child){
+      builder:(context,swapperper, child){
         return Scaffold(
           appBar: appBars()[_selectedIndex],
           body: Center(child: screens().elementAt(_selectedIndex)),

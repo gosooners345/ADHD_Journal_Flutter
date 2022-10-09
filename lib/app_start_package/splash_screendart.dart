@@ -86,6 +86,8 @@ colorSeed = prefs.getInt("apptheme") ?? AppColors.mainAppColor.value;
 passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
     isPasswordChecked = passwordEnabled;
     userActiveBackup = prefs.getBool('testBackup') ?? false;
+    swapper = ThemeSwap();
+    swapper?.themeColor = prefs.getInt("apptheme") ?? AppColors.mainAppColor.value;
 //var testConnection = await _checkConnState();
 
     if(userActiveBackup){
@@ -299,3 +301,4 @@ String prefsTransportName = "journalStuff.txt";
 bool userActiveBackup = false;
 GoogleDrive googleDrive = GoogleDrive();
 bool isDataSame = true;
+ThemeSwap? swapper;

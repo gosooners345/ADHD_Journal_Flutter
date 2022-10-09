@@ -122,7 +122,7 @@ if(passwordHint ==" "){
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(
-        builder: (context, ThemeSwap themeNotifier, child) {
+        builder: (context, swapper, child) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
@@ -147,7 +147,7 @@ if(passwordHint ==" "){
       body: ListView(
         children: <Widget>[
           ListTile(
-            iconColor: Color(themeNotifier.isColorSeed),
+            iconColor: Color(swapper.isColorSeed),
             leading: const Icon(Icons.display_settings),
             title: const Text(
               'Customization Settings',
@@ -157,7 +157,7 @@ if(passwordHint ==" "){
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           spacer,
           ListTile(
@@ -177,7 +177,7 @@ if(passwordHint ==" "){
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(colorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           spacer,
           ListTile(
@@ -197,7 +197,7 @@ showDialog(context: context, builder: (BuildContext builder){
       ElevatedButton(onPressed: (){
         setState(() {
           currentColor = pickerColor;
-        changeColor(themeNotifier,colorSeed );
+        changeColor(swapper,colorSeed );
 
         });
         Navigator.of(context).pop();
@@ -212,10 +212,10 @@ showDialog(context: context, builder: (BuildContext builder){
           Divider(
             height: 2.0,
             thickness: 2.0,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
-            iconColor: Color(themeNotifier.isColorSeed),
+            iconColor: Color(swapper.isColorSeed),
             leading: const Icon(Icons.security),
             title: const Text(
               'Security Settings',
@@ -225,7 +225,7 @@ showDialog(context: context, builder: (BuildContext builder){
           Divider(
             height: 1.0,
             thickness: .5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           spacer,
           //Password tile
@@ -248,7 +248,7 @@ showDialog(context: context, builder: (BuildContext builder){
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),spacer,
           ListTile(
             title: TextField(
@@ -271,7 +271,7 @@ showDialog(context: context, builder: (BuildContext builder){
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           SwitchListTile(
             value: isPasswordChecked,
@@ -282,7 +282,7 @@ showDialog(context: context, builder: (BuildContext builder){
                 if (value) {
                   lockIcon = Icon(
                     Icons.lock,
-                    color: Color(themeNotifier.isColorSeed),
+                    color: Color(swapper.isColorSeed),
                   );
                   passwordLabelText = "Password Enabled";
                   prefs.setBool('passwordEnabled', value);
@@ -290,7 +290,7 @@ showDialog(context: context, builder: (BuildContext builder){
                 } else if (!value) {
                   lockIcon = Icon(
                     Icons.lock_open,
-                    color: Color(themeNotifier.isColorSeed),
+                    color: Color(swapper.isColorSeed),
                   );
                   passwordLabelText = "Password Disabled";
                   prefs.setBool('passwordEnabled', value);
@@ -306,14 +306,14 @@ showDialog(context: context, builder: (BuildContext builder){
           Divider(
             height: 2.0,
             thickness: 2.0,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           //Sync
           spacer,
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           SwitchListTile(
             value: userActiveBackup,
@@ -323,7 +323,7 @@ showDialog(context: context, builder: (BuildContext builder){
               setState(() {
                 if (value) {
                   syncIcon = Icon(Icons.sync,
-                    color: Color(themeNotifier.isColorSeed),
+                    color: Color(swapper.isColorSeed),
                   );
                   syncTextLabelText = "Backup and Sync to Drive Enabled";
                   prefs.setBool('testBackup', value);
@@ -332,7 +332,7 @@ showDialog(context: context, builder: (BuildContext builder){
                   }
                 } else if (!value) {
                   syncIcon = Icon(Icons.sync_disabled,
-                    color: Color(themeNotifier.isColorSeed),
+                    color: Color(swapper.isColorSeed),
                   );
                   syncTextLabelText = "Backup and Sync for Drive Disabled";
                   prefs.setBool('testBackup', value);
@@ -348,10 +348,10 @@ showDialog(context: context, builder: (BuildContext builder){
           Divider(
             height: 2.0,
             thickness: 2.0,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
-            iconColor: Color(themeNotifier.isColorSeed),
+            iconColor: Color(swapper.isColorSeed),
             leading: const Icon(Icons.info_outline),
             title: const Text(
               'Application info',
@@ -361,11 +361,11 @@ showDialog(context: context, builder: (BuildContext builder){
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
 
           ListTile(
-            iconColor: Color(themeNotifier.isColorSeed),
+            iconColor: Color(swapper.isColorSeed),
             leading: const Icon(Icons.info_outline),
             title: Text(
               'You are running version $buildInfo',
@@ -375,7 +375,7 @@ showDialog(context: context, builder: (BuildContext builder){
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
             leading: const Icon(Icons.email_outlined),
@@ -400,7 +400,7 @@ showDialog(context: context, builder: (BuildContext builder){
                 );
               }
             },
-            iconColor: Color(themeNotifier.isColorSeed),
+            iconColor: Color(swapper.isColorSeed),
             title: const Text('Contact Me'),
             subtitle: Row(
               children: const [
@@ -417,7 +417,7 @@ showDialog(context: context, builder: (BuildContext builder){
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
             onTap: () {
@@ -429,16 +429,16 @@ showDialog(context: context, builder: (BuildContext builder){
               }
             },
             title: const Text('Rate my app'),
-            iconColor: Color(themeNotifier.isColorSeed),
+            iconColor: Color(swapper.isColorSeed),
             leading: const Icon(Icons.star),
           ),
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
-            iconColor: Color(themeNotifier.isColorSeed),
+            iconColor: Color(swapper.isColorSeed),
             leading: const Icon(Icons.help),
             title: const Text("How to use app?"),
             subtitle: const Text(
@@ -450,10 +450,10 @@ showDialog(context: context, builder: (BuildContext builder){
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
-            iconColor: Color(themeNotifier.isColorSeed),
+            iconColor: Color(swapper.isColorSeed),
             leading: const Icon(Icons.book),
             title: const Text('Resources'),
             subtitle: const Text(

@@ -7,7 +7,7 @@ class ComposeHelpWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(
-        builder: (context, ThemeSwap themeNotifier, child) {
+        builder: (context, swapper, child) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Compose Entry Guide'),
@@ -17,7 +17,7 @@ class ComposeHelpWidget extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
             title: Text(
@@ -26,7 +26,7 @@ class ComposeHelpWidget extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
             title: Text('Title Text Field'),
@@ -36,7 +36,7 @@ class ComposeHelpWidget extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
             title: Text('Event Description Text Field'),
@@ -46,7 +46,7 @@ class ComposeHelpWidget extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
             title: Text('The Rating Slider'),
@@ -56,7 +56,7 @@ class ComposeHelpWidget extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
             title: Text('The Additional Thoughts/Sources Text Field'),
@@ -66,7 +66,7 @@ class ComposeHelpWidget extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
             title: Text('The Tags Text Field'),
@@ -76,7 +76,7 @@ class ComposeHelpWidget extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
             title: Text('The success/fail switch'),
@@ -86,7 +86,7 @@ class ComposeHelpWidget extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
             title: Text('ADHD Symptom field'),
@@ -98,7 +98,7 @@ class ComposeHelpWidget extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
         ],
       ),

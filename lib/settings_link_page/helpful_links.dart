@@ -16,18 +16,18 @@ class HelpfulLinksWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(
-        builder: (context, ThemeSwap themeNotifier, child) {
+        builder: (context, swapper, child) {
    return Scaffold(appBar: AppBar(title: const Text("Resources"),leading:IconButton(icon: backArrowIcon,onPressed: (){Navigator.pop(context);},),),
      body:
          // General resources
          CustomScrollView(
            slivers: [
              SliverList(delegate: SliverChildListDelegate([
-                ListTile(title: const Text("Helpful Websites",style: TextStyle(fontWeight: FontWeight.bold),),leading: Icon(Icons.web_asset,color: Color(themeNotifier.isColorSeed),),),
+                ListTile(title: const Text("Helpful Websites",style: TextStyle(fontWeight: FontWeight.bold),),leading: Icon(Icons.web_asset,color: Color(swapper.isColorSeed),),),
           Divider(
           height: 2.0,
           thickness: 1.5,
-          color: Color(themeNotifier.isColorSeed),
+          color: Color(swapper.isColorSeed),
           )
              ]),
              ),
@@ -35,7 +35,7 @@ class HelpfulLinksWidget extends StatelessWidget {
              SliverList(delegate: SliverChildBuilderDelegate((BuildContext context,int index){
                return Card(elevation: 2.0,borderOnForeground: true,
                  shape: RoundedRectangleBorder(
-                     side: BorderSide(color: Color(themeNotifier.isColorSeed), width: 1.0),
+                     side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
                      borderRadius: BorderRadius.circular(10)),child:ListTile(style:ListTileStyle.list,title: linkArray[index].title,onTap: (){
                  _launchURL(linkArray[index].url);
                },enableFeedback: true,),);
@@ -47,20 +47,20 @@ class HelpfulLinksWidget extends StatelessWidget {
                Divider(
     height: 2.0,
     thickness: 1.5,
-    color: Color(themeNotifier.isColorSeed),
+    color: Color(swapper.isColorSeed),
   ),
-              ListTile(title: const Text("Video resources",style: TextStyle(fontWeight: FontWeight.bold),),leading: Icon(Icons.play_circle_outlined,color: Color(themeNotifier.isColorSeed),),),
+              ListTile(title: const Text("Video resources",style: TextStyle(fontWeight: FontWeight.bold),),leading: Icon(Icons.play_circle_outlined,color: Color(swapper.isColorSeed),),),
                Divider(
     height: 2.0,
     thickness: 1.5,
-    color: Color(themeNotifier.isColorSeed),
+    color: Color(swapper.isColorSeed),
   ),
              ]),
              ),
              SliverList(delegate: SliverChildBuilderDelegate((BuildContext context,int index){
                return Card(elevation: 2.0,borderOnForeground: true,
     shape: RoundedRectangleBorder(
-    side: BorderSide(color: Color(themeNotifier.isColorSeed), width: 1.0),
+    side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
     borderRadius: BorderRadius.circular(10)),child:ListTile(style:ListTileStyle.list,title: youtube_LinksArray[index].title,onTap: (){
     _launchURL(youtube_LinksArray[index].url);
     },enableFeedback: true,),);
@@ -71,16 +71,16 @@ class HelpfulLinksWidget extends StatelessWidget {
        /*      SliverList(delegate: SliverChildListDelegate([Divider(
     height: 2.0,
     thickness: 1.5,
-    color: Color(themeNotifier.isColorSeed),
-  ),ListTile(title: Text("Podcasts",style: TextStyle(fontWeight: FontWeight.bold),),leading: Icon(Icons.play_circle_outlined,color: Color(themeNotifier.isColorSeed), )),Divider(
+    color: Color(swapper.isColorSeed),
+  ),ListTile(title: Text("Podcasts",style: TextStyle(fontWeight: FontWeight.bold),),leading: Icon(Icons.play_circle_outlined,color: Color(swapper.isColorSeed), )),Divider(
     height: 2.0,
     thickness: 1.5,
-    color: Color(themeNotifier.isColorSeed),
+    color: Color(swapper.isColorSeed),
   ),
     ],),),
            SliverList(delegate: SliverChildBuilderDelegate((BuildContext context, int index){
              return Card(elevation: 2.0,borderOnForeground: true,
-             shape: RoundedRectangleBorder(side: BorderSide(color: Color(themeNotifier.isColorSeed),width: 1.0),
+             shape: RoundedRectangleBorder(side: BorderSide(color: Color(swapper.isColorSeed),width: 1.0),
                  borderRadius: BorderRadius.circular(10)),child: ListView.builder(itemBuilder: (BuildContext context, int index2){
                    return ListTile(style: ListTileStyle.list,title: podcast_LinksArray[index].serviceTitles[index2],
                      onTap:(){_launchURL(podcast_LinksArray[index].urlLinks[index2]);},);
