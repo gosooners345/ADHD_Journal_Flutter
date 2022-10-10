@@ -189,7 +189,8 @@ if(userPassword != dbPassword){
   Future<bool> getSyncStateStatus() async{
     return userActiveBackup;
 }
-
+// Code for value listenable and builder widget, could be a future?
+  /// button widget will not change until prefs are done updating.
 
 
 
