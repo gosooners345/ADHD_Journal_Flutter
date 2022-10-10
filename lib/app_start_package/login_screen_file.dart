@@ -431,9 +431,6 @@ bool isDBOnline = await googleDrive.checkForFile(dbName);
     dlColorSeed = int.parse(newValues[5]);
    if(userPassword !=dlUserPassword || userPassword != dbPassword) {
      userPassword = dlUserPassword;
-     recordsBloc = RecordsBloc();
-     recordsBloc.changeDBPasswords();
-     recordsBloc.dispose();
      var test = await encryptedSharedPrefs.getString('dbPassword');
      if (test != dbPassword) {
        print(test);
@@ -467,7 +464,7 @@ checkColors(colorSeed);});
    prefs.setBool("isDataSame", isDataSame);
    decipheredData = '';
    refreshPrefs();
-/*   loadStateStuff();*/
+
 
   }
   void checkColors(int value){

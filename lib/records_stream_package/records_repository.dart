@@ -13,10 +13,10 @@ class RecordsRepository {
   Future updateRecord(Records record) => recordsDao.updateRecords(record);
   Future deleteRecord(int ID) => recordsDao.deleteRecord(ID);
 
-  void changePassword() {
-    recordsDao.changeDBPasswords();
+  void changePassword(String newPassword) {
+    recordsDao.changePasswords(newPassword);
   }
   void writeCheckpoint(){
-    recordsDao.writeCheckpoint();
+    recordsDao.writemoreCheckpoint();
   }
 }

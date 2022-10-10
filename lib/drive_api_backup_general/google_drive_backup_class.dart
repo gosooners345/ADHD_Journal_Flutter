@@ -122,7 +122,25 @@ authHeaders = await account?.authHeaders;
       return null;
     }
   }
+  uploadFileToGoogleDriveString(String fileName) async {
 
+  File file = File(fileName);
+    drive = ga.DriveApi(client!);
+    String? folderId = await _getFolderId(drive);
+    if (folderId == null) {
+      if (kDebugMode) {
+        print("Sign-in first Error");
+      }
+    } else {
+      ga.File fileToUpload = ga.File();
+      fileToUpload.parents = [folderId];
+      fileToUpload.name = p.basename(file.absolute.path);
+      var response = await drive.files.create(
+        fileToUpload,
+        uploadMedia: ga.Media(file.openRead(), file.lengthSync()),
+      );
+    }
+  }
   uploadFileToGoogleDrive(File file) async {
 
     drive = ga.DriveApi(client!);
@@ -193,7 +211,7 @@ authHeaders = await account?.authHeaders;
       }
       if(files.isNotEmpty)
       {var checkFile = files.first;
-      var checkTime = checkFile.modifiedTime;
+      var checkTime = checkFile.createdTime;
      return (checkTime!.isBefore(modifiedTime));}
       else if(files.isEmpty){
         return true;}

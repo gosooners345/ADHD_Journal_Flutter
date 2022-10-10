@@ -1,6 +1,8 @@
 // ignore_for_file: prefer_const_constructors, prefer_final_fields
 
 import 'dart:async';
+
+import 'dart:io';
 import 'package:adhd_journal_flutter/ui/dashboard_stats_display_widget.dart';
 import 'package:adhd_journal_flutter/record_data_package/record_list_class.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
@@ -266,11 +268,14 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                   context,
                   MaterialPageRoute(
                       builder: (_) =>
-                      /// Change password upon exit if the password has changed.
-                      /// Tested and Passed: 05/09/2022
+
                       SettingsPage())).then((value) => {
                                         if (userPassword != dbPassword) {
-                                         verifyPasswordChanged()
+
+
+recordsBloc.changeDBPasswords(userPassword),
+                                          recordsBloc = RecordsBloc()
+
                                         },
                 userActiveBackup = prefs.getBool("testBackup") ?? false,
                 if(userActiveBackup){
@@ -304,7 +309,8 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                       greeting = prefs.getString('greeting')!;
                     }),
                     if (userPassword != dbPassword) {
-                        verifyPasswordChanged()
+                        recordsBloc.changeDBPasswords(userPassword),//,}
+                      recordsBloc = RecordsBloc()
                       },
                 userActiveBackup = prefs.getBool("testBackup") ?? false,
                 if(userActiveBackup){
@@ -361,7 +367,7 @@ encryptData()
                   id: 0,
                   title: 'Compose New Entry'))).then((value) => {
             _showAlert(context,"Journal Entry Saved"),
-
+recordsBloc.writeCheckpoint()
 
           });
     } on Exception catch (ex) {
@@ -424,7 +430,7 @@ encryptData()
 
   int getPasswordChangeResults() {
     try {
-      recordsBloc.changeDBPasswords();
+      recordsBloc.changeDBPasswords(userPassword);
       return 0;
     } on Exception {
       return 1;
@@ -435,7 +441,7 @@ encryptData()
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(
-      builder:(context,swapperper, child){
+      builder:(context,swapper, child){
         return Scaffold(
           appBar: appBars()[_selectedIndex],
           body: Center(child: screens().elementAt(_selectedIndex)),

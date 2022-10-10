@@ -12,9 +12,9 @@ class RecordsDB {
       MethodChannel('com.activitylogger.release1/ADHDJournal');
 
   /// Remains here because it can be called from other methods
-  void changePasswords() async {
+/*  void changePasswords() async {
     _changeDBPassword(dbPassword, userPassword);
-  }
+  }*/
 
   static final RecordsDB recordDB = RecordsDB();
 
@@ -41,11 +41,11 @@ class RecordsDB {
   }
 
 
-  Future<void> _changeDBPassword(String oldPassword, String newPassword) async {
+  /*Future<void> _changeDBPassword(String oldPassword, String newPassword) async {
     try {
 
-      await platform.invokeMethod('changeDBPasswords',
-          {'oldDBPassword': oldPassword, 'newDBPassword': newPassword});
+      await Future.sync(() =>platform.invokeMethod('changeDBPasswords',
+          {'oldDBPassword': oldPassword, 'newDBPassword': newPassword}));
       dbPassword = newPassword;
       await encryptedSharedPrefs.setString('dbPassword', newPassword);
 
@@ -57,6 +57,6 @@ class RecordsDB {
         print(ex);
       }
     }
-  }
+  }*/
 }
 
