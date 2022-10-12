@@ -62,11 +62,12 @@ class _LoginScreenState extends State<LoginScreen> {
  ConnectivityResult? _connectivityResult;
  late StreamSubscription _connectivitySubscription;
  late  ElevatedButton driveButton;
-
+ bool updated = false;
+ValueNotifier appSynced = ValueNotifier(false);
   @override
   void initState() {
     super.initState();
-
+getSyncState();
     loadStateStuff();
     if (passwordHint == '') {
       hintText = 'Enter secure password';
@@ -81,7 +82,8 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
       //  bool checkConnState = await Future.sync(() => _checkConnState());
     //    if(checkConnState){
         googleDrive.getHttpClient();
-
+        updated = false;
+        getSyncState();
         var checkDB = File(dbLocation);
         var checkKeys = File(path.join(keyLocation,"journ_privkey.pem"));
         var checkPrefs = File(docsLocation);
@@ -193,27 +195,50 @@ if(userPassword != dbPassword){
   /// button widget will not change until prefs are done updating.
 
 
-
   Future<bool> getPasswordEnabledState() async {
 
     return prefs.getBool('passwordEnabled') ?? true;
+  }
+
+  void getSyncState(){
+   while(updated == false){
+     appSynced  = ValueNotifier(false);
+     if(updated = true)
+       break;
+   }
+   appSynced = ValueNotifier(true);
+
   }
 
   void refreshPrefs() async {
     prefs.reload();
     await Future.sync(()=>encryptedSharedPrefs.reload());
     await Future.delayed(Duration(seconds: 1),loadStateStuff);
+    updated = true;
+    getSyncState();
   }
 
   void resetLoginFieldState() {
     if (userActiveBackup) {
-      if(isThisReturning){
+      if(isThisReturning== true){
+        updated = false;
+        getSyncState();
         checkFileAge();
       }
       if (!isDataSame) {
         setState(() {
-        updateValues();});
+          updated = false;
+          getSyncState();
+        updateValues();
+        updated = true;
+        getSyncState();});
       }
+
+    }
+    if(isDataSame){
+      setState((){
+      updated = true;
+      getSyncState();});
     }
     setState(() {
       if (passwordHint == '' || passwordHint == ' ') {
@@ -290,6 +315,12 @@ if(userPassword != dbPassword){
           },
           enabled: false,
         );
+
+      }
+      if(updated==true){
+        setState(() {
+          getSyncState();
+        });
       }
     });
   }
@@ -299,6 +330,7 @@ if(userPassword != dbPassword){
   Future<void> checkFileAge() async {
     isThisReturning = false;
     File file = File(dbLocation);// DB
+
    // File txtFile = File(docsLocation); // Prefs
     File privKeyFile = File(path.join(keyLocation,"journ_privkey.pem"));
     try{
@@ -338,7 +370,8 @@ if(fileCheckCSV) { // If file exists on Google Drive execute
   else {
    await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
    if(dataForEncryption == decipheredData){
-     isDataSame = true;
+
+     getSyncState();
    }else{
      isDataSame=false;
    }
@@ -367,9 +400,11 @@ bool isDBOnline = await googleDrive.checkForFile(dbName);
       }
     } else {
       await uploadDBFiles();
+
     }
       if(!isDataSame){
         updateValues();
+
       }
     } on Exception catch (ex){
       showMessage(ex.toString());
@@ -378,7 +413,9 @@ bool isDBOnline = await googleDrive.checkForFile(dbName);
       await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
       if(!isDataSame){
         updateValues();
+
       }
+
     }
 
   }
@@ -395,8 +432,6 @@ bool isDBOnline = await googleDrive.checkForFile(dbName);
   Future<void> restoreDBFiles() async {
     try {
        await Future.sync(()=>googleDrive.syncBackupFiles(dbName));
-    //  await Future.sync(() => googleDrive.syncBackupFiles(dbWal));
-     // await Future.sync(() => googleDrive.syncBackupFiles("$dbName-shm"));
       var getFileTime = File(dbLocation);
       var time = getFileTime.lastModifiedSync();
      showMessage('Your journal is synced as of ${time.toLocal()}');
@@ -414,6 +449,9 @@ bool isDBOnline = await googleDrive.checkForFile(dbName);
 /// Testing after 15 successful tries of simply moving between devices
   void updateValues() async{
     showMessage("Updating preferences");
+   setState((){
+    updated = false;
+    getSyncState();});
     if(decipheredData ==''){
    File prefsFile = File(docsLocation);
    if(prefsFile.existsSync()){
@@ -462,9 +500,9 @@ checkColors(colorSeed);});
    }
    print("updated Values in array");
    isDataSame = true;
-   prefs.setBool("isDataSame", isDataSame);
    decipheredData = '';
    refreshPrefs();
+
 
 
   }
@@ -506,70 +544,76 @@ setState(() {
             SizedBox(
               height: 50,
               width: 250,
-              child: FutureBuilder(
-                  future: getPasswordEnabledState(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<bool> snapshot,) {
-                    if (snapshot.hasError) {
-                      return Text(
-                          'Error returning password  information');
-                    } else if (snapshot.hasData) {
-                      return ElevatedButton(
-                        onPressed: () {
-                          callingCard = true;
-                          if (loginPassword == userPassword &&
-                              passwordEnabled) {
-                            loginPassword = '';
-                            recordsBloc = RecordsBloc();
+              child:
+              ValueListenableBuilder(valueListenable: appSynced, builder: (BuildContext context,value,Widget? child){
+                if(value ==true){
+    return FutureBuilder(
+    future: getPasswordEnabledState(),
+    builder: (BuildContext context,
+    AsyncSnapshot<bool> snapshot,) {
+    if (snapshot.hasError) {
+    return Text(
+    'Error returning password  information');
+    } else if (snapshot.hasData) {
+    return ElevatedButton(
+    onPressed: () {
+    callingCard = true;
+    if (loginPassword == userPassword &&
+    passwordEnabled) {
+    loginPassword = '';
+    recordsBloc = RecordsBloc();
 
-                            Navigator.pushNamed(context, '/success')
-                                .then((value) => { isThisReturning = true,
-                              stuff.clear(),
-                              recordHolder.clear(),
-                              refreshPrefs(),
-                            });
-                          } else if (!passwordEnabled) {
+    Navigator.pushNamed(context, '/success')
+        .then((value) => { isThisReturning = true,
 
-                            recordsBloc = RecordsBloc();
-                            loginPassword = '';
-                            stuff.clear();
-                            Navigator.pushNamed(context, '/success').then(
-                                    (value) => {isThisReturning = true,
-                                      refreshPrefs(),
-                                  recordHolder.clear(),
-                                });
-                          }
-                        },
-                        child: Text(
-                          'Login',
-                          style: TextStyle(fontSize: 25),
-                        ),
-                      );
-                    } else if (snapshot.connectionState ==
-                        ConnectionState.waiting) {
-                      return ElevatedButton(
-                        onPressed: () {
-                          if (loginPassword == userPassword) {
-                            Navigator.pushNamed(context, '/success').then(
-                                    (value) => {
-                                      isThisReturning = true,
-                                  recordHolder.clear(),
-                                  refreshPrefs(),
-                                  recordsBloc.dispose(),
-                                });
-                            stuff.clear();
-                          }
-                        },
-                        child: Text(
-                          'Login',
-                          style: TextStyle(color: Colors.white, fontSize: 25),
-                        ),
-                      );
-                    } else {
-                      return Text('Waiting for password info');
-                    }
-                  }),
-            ),
+    stuff.clear(),
+    recordHolder.clear(),
+    refreshPrefs(),
+    });
+    } else if (!passwordEnabled) {
+
+    recordsBloc = RecordsBloc();
+    loginPassword = '';
+    stuff.clear();
+    Navigator.pushNamed(context, '/success').then(
+    (value) => {isThisReturning = true,
+    refreshPrefs(),
+    recordHolder.clear(),
+    });
+    }
+    },
+    child: Text(
+    'Login',
+    style: TextStyle(fontSize: 25),
+    ),
+    );
+    } else if (snapshot.connectionState ==
+    ConnectionState.waiting) {
+    return ElevatedButton(
+    onPressed: () {
+    if (loginPassword == userPassword) {
+    Navigator.pushNamed(context, '/success').then(
+    (value) => {
+    isThisReturning = true,
+    recordHolder.clear(),
+    refreshPrefs(),
+    recordsBloc.dispose(),
+    });
+    stuff.clear();
+    }
+    },
+    child: Text(
+    'Login',
+    style: TextStyle(color: Colors.white, fontSize: 25),
+    ),
+    );
+    } else {
+    return Text('Waiting for password info');
+    }
+    });}
+                else{
+                  return Text("Updating Values, please wait");
+              }}),),
           SizedBox(height: 130,),
             Padding(
               padding: const EdgeInsets.only(top: 60.0),

@@ -110,24 +110,28 @@ passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
 //if(testConnection) {
   googleDrive = GoogleDrive();
   googleDrive.init();
-
-  googleDrive.client = await googleDrive.getHttpClientSilently();
-  if (googleDrive.client == null) {
-    userActiveBackup = false;
-  }
+        appStatus.value = "Signing into Google Drive!";
+  googleDrive.client = await googleDrive.getHttpClientSilently().whenComplete(()
+  {
   if (userActiveBackup) {
-    checkFileAge();
+      checkFileAge();
+      }
+    else { //Failsafe
+      isDataSame = true;
+    }
+  });
+  if (googleDrive.account?.authHeaders == null? true : false)  {
+    userActiveBackup = false;
+    appStatus.value = "To protect your data, we are going to have you re-enable drive backup when you go to log in";
   }
-  else { //Failsafe
-    isDataSame = true;
-  }
+
 //}
 /*else {
   appStatus.value = "You need to be connected to Mobile Data or Wifi to sync your journal";
   userActiveBackup = false;
 }*/
       }on Exception catch(ex){
-        showMessage(ex.toString());
+        appStatus.value = "To protect your data, we are going to have you re-enable drive backup when you go to log in";
         userActiveBackup = false;
       }
     } else{
@@ -187,12 +191,15 @@ passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
          await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
           if(dataForEncryption == decipheredData){
             isDataSame = true;
+            appStatus.value = "Don't worry about waiting when things are done loading!";
           } else{
             isDataSame = false;
+            appStatus.value = "Your data will need to be synced before you login";
           }
         }
       } else{
       try{
+        appStatus.value= "Syncing preferences with Google Drive for your other devices to sync up when they connect!";
         if(prefsFile.existsSync()){
           prefsFile.deleteSync();
         preferenceBackupAndEncrypt.encryptData(dataForEncryption, googleDrive);

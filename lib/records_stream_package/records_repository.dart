@@ -19,4 +19,7 @@ class RecordsRepository {
   void writeCheckpoint(){
     recordsDao.writemoreCheckpoint();
   }
+void close(){
+
+}
 }

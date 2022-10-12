@@ -41,22 +41,6 @@ class RecordsDB {
   }
 
 
-  /*Future<void> _changeDBPassword(String oldPassword, String newPassword) async {
-    try {
 
-      await Future.sync(() =>platform.invokeMethod('changeDBPasswords',
-          {'oldDBPassword': oldPassword, 'newDBPassword': newPassword}));
-      dbPassword = newPassword;
-      await encryptedSharedPrefs.setString('dbPassword', newPassword);
-
-      if (kDebugMode) {
-        print("passwords changed");
-      }
-    } on Exception catch (ex) {
-      if (kDebugMode) {
-        print(ex);
-      }
-    }
-  }*/
 }
 

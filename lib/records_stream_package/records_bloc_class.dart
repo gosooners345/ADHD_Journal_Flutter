@@ -78,6 +78,8 @@ getRecords();
 
   dispose() {
     _recordsController.close();
+    _recordsRepo.writeCheckpoint();
+    _recordsRepo.close();
   }
 
   int getMaxID() {

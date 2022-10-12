@@ -167,42 +167,55 @@ class RecordsDao {
 try {
   var disposal = await db.query("records");
  if(Platform.isAndroid){
-  await db.rawQuery(query);await db.rawQuery(query2);}
+  await Future.sync((){
+    db.rawQuery(query);
+  db.rawQuery(query2);
+  });
+  }
  else{
-   await db.execute(query); await db.execute(query2);
+   await Future.sync((){
+     db.execute(query);
+     db.execute(query2);});
+
  }
   disposal = await db.query("records");
 print(disposal.length);
  await Future.sync(()=>writeCheckpoint(db));
-await db.close();
+await Future.sync(() =>db.close());
 // Replacing old files
 
- await Future.delayed(Duration(seconds: 2),(){
-   if(Platform.isAndroid){
+
+   //if(Platform.isAndroid){
      File walfile = File("$dbLocation-wal");
      File shmFile = File("$dbLocation-shm");
-     if(walfile.existsSync()){
-       walfile.deleteSync();
-     }
-     if(shmFile.existsSync()){
-       shmFile.deleteSync();
-     }
 
-   }
+
+
    googleDrive.deleteOutdatedBackups(dbName);
    googleDrive.uploadFileToGoogleDrive(File(dbLocation));
-   //googleDrive.uploadFileToGoogleDrive(File("$dbLocation-wal"));
-   //googleDrive.uploadFileToGoogleDrive(File("$dbLocation-shm"));
- });
+
+   if(walfile.existsSync()){
+     if (kDebugMode) {
+       print(walfile.existsSync());
+     }
+   googleDrive.uploadFileToGoogleDrive(File("$dbLocation-wal"));
+
+
+   }
+   if(shmFile.existsSync()){
+   googleDrive.uploadFileToGoogleDrive(File("$dbLocation-shm"));}
+
 
   query = "PRAGMA key = $newPassword;";
   dbPassword = newPassword;
   db = await recordsDB.database;
-  if(Platform.isAndroid){await db.rawQuery(query);}
-  else{await db.execute(query);}
+  if(Platform.isAndroid){await Future.sync((){db.rawQuery(query);});}
+  else{await Future.sync((){db.execute(query);});}
 
   disposal = await db.query("records");
-  print(disposal.length);
+  if (kDebugMode) {
+    print(disposal.length);
+  }
 
   if (kDebugMode) {
     print("Success");
@@ -216,6 +229,17 @@ await db.close();
 }
   }
 
+
+  void close() async{
+   var db = await recordsDB.database;
+    await Future.sync(() {
+
+      writeCheckpoint(db);
+      close();
+    });
+
+
+  }
   // Test force the wal into the db and clean it out.
   void writeCheckpoint(Database db) async{
 //final db = await recordsDB.database;
