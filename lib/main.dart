@@ -312,7 +312,8 @@ recordsBloc.changeDBPasswords(userPassword),
                     }),
                     if (userPassword != dbPassword) {
                         recordsBloc.changeDBPasswords(userPassword),//,}
-                      recordsBloc = RecordsBloc()
+                      recordsBloc = RecordsBloc(),
+                      recordsBloc.getRecords()
                       },
                 userActiveBackup = prefs.getBool("testBackup") ?? false,
                 if(userActiveBackup){

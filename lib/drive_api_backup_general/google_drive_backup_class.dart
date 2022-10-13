@@ -222,16 +222,7 @@ if(client==null){
 
     drive = ga.DriveApi(client!);
     File file = File(dbLocation);
-    var testFile =File("$dbLocation-wal");
-    if(testFile.existsSync()){
-      file=File("$dbLocation-wal");
-      if(file.existsSync()){
-        print("all is good");
-      }
-      else{
-        return false;
-      }
-    }
+
 
       var modifiedTime =  file.lastModifiedSync();
       //Query for files on Drive to test against device
