@@ -3,15 +3,9 @@ import 'package:adhd_journal_flutter/app_start_package/login_screen_file.dart';
 import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:googleapis/drive/v3.dart' as ga;
-import 'package:googleapis_auth/auth_io.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
-import 'package:sqflite_sqlcipher/sqflite.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:google_sign_in/google_sign_in.dart' as signIn;
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:encrypt/encrypt.dart';
 
 
 
@@ -23,34 +17,19 @@ bool firstUse = false;
  http.Client? client;
   signIn.GoogleSignInAccount? account;
   signIn.GoogleSignIn? googleSignIn;
-init() async {
-  try{
-    if(userActiveBackup) {
-      client = await  getHttpClientSilently();
 
-/*    while(client==null){
-      client = await Future.sync(()=> getHttpClientSilently());
-    }*/
-    }
-  }
-  on Exception catch(ex){
-    client = await getHttpClient();
-  }
-}
   //Get Authenticated Http Client
   Future<http.Client> getHttpClient() async {
     googleSignIn = signIn.GoogleSignIn.standard(
         scopes: [ga.DriveApi.driveScope,
           ga.DriveApi.driveAppdataScope]);
-
-
-firstUse=true;
-      account = await googleSignIn?.signIn();
-   userActiveBackup = true;
-   prefs.setBool('testBackup', userActiveBackup);
-   prefs.reload();
-   userActiveBackup = prefs.getBool("testBackup") ?? false;
- prefs.setBool("authenticated", firstUse);
+    firstUse = true;
+    account = await googleSignIn?.signIn();
+    userActiveBackup = true;
+    prefs.setBool('testBackup', userActiveBackup);
+    prefs.reload();
+    userActiveBackup = prefs.getBool("testBackup") ?? false;
+    prefs.setBool("authenticated", firstUse);
     var authHeaders = await account?.authHeaders;
     var authenticateClient = GoogleAuthClient(authHeaders!);
     return authenticateClient;
@@ -60,41 +39,42 @@ firstUse=true;
     googleSignIn = signIn.GoogleSignIn.standard(
         scopes: [ga.DriveApi.driveScope,
           ga.DriveApi.driveAppdataScope]);
+try {
+  Map<String, String>? authHeaders;
+  account = await googleSignIn?.signInSilently(reAuthenticate: true,suppressErrors: true).whenComplete(() async=> authHeaders =await  account?.authHeaders).onError((error, stackTrace)  async {account = await Future.delayed(Duration(seconds:5),()=>googleSignIn?.signInSilently(suppressErrors: true,reAuthenticate: true));
 
-try{
-    account = await googleSignIn?.signInSilently(reAuthenticate: true);
-    userActiveBackup = true;
-    prefs.setBool('testBackup', userActiveBackup);
-    prefs.reload();
-    userActiveBackup = prefs.getBool("testBackup") ?? false;
-    var authHeaders = await Future.sync(() async=>account?.authHeaders);
-int i =0;
-  while(authHeaders == null){
 
-     account = await Future.sync(()=>googleSignIn?.signIn());
+  if(account?.authHeaders!=null) {
+    authHeaders = await Future.sync(() async=>account?.authHeaders);
+  }
+  if(authHeaders == null){
+    throw Exception("Sign In Please");
+  }
+
+  });
+  userActiveBackup = true;
+  prefs.setBool('testBackup', userActiveBackup);
+  prefs.reload();
+  userActiveBackup = prefs.getBool("testBackup") ?? false;
+ authHeaders = await Future.sync(() async => account?.authHeaders);
+  if (account == null)
+{
+     account = await googleSignIn?.signInSilently(suppressErrors: true,reAuthenticate: true);
+
+
      if(account?.authHeaders!=null) {
        authHeaders = await Future.sync(() async=>account?.authHeaders);
      }
-     else{
-       throw Exception("Failed");
+     if(authHeaders == null){
+       throw Exception("Sign In Please");
      }
-     break;
-
   }
 
     var authenticateClient = GoogleAuthClient(authHeaders!);
     return authenticateClient;}
     on Exception catch(ex){
   print(ex);
-  account = await Future.sync(()=>googleSignIn?.signIn());
-  userActiveBackup = true;
-  prefs.setBool('testBackup', userActiveBackup);
-  prefs.reload();
-  userActiveBackup = prefs.getBool("testBackup") ?? false;
-  account = await googleSignIn?.signIn();
-  var authHeaders = await account?.authHeaders;
-
-  var authenticateClient = GoogleAuthClient(authHeaders!);
+  var authenticateClient = await getHttpClient();
   return authenticateClient;
     }
   }
@@ -164,7 +144,7 @@ int i =0;
         fileToUpload,
         uploadMedia: ga.Media(file.openRead(), file.lengthSync()),
       );
-        account = await googleSignIn?.signOut();
+      //  account = await googleSignIn?.signOut();
       return 1;
 
       }
@@ -172,7 +152,7 @@ int i =0;
         if(kDebugMode){
           print(ex);
         }
-        account = await googleSignIn?.signOut();
+        //account = await googleSignIn?.signOut();
         return 0;
       }
 
@@ -199,14 +179,14 @@ int i =0;
         fileToUpload,
         uploadMedia: ga.Media(file.openRead(), file.lengthSync()),
       );
-      account = await googleSignIn?.signOut();
+   //   account = await googleSignIn?.signOut();
       return 1;
      }
      on Exception catch(ex){
        if(kDebugMode){
          print(ex);
        }
-       account = await googleSignIn?.signOut();
+
        return 0;
      }
 
@@ -345,7 +325,7 @@ if(client==null){
     if(kDebugMode){
       print("File doesn't exist");
     }
-    account = await googleSignIn?.signOut();
+  //  account = await googleSignIn?.signOut();
     return false;
       }
   }
@@ -369,7 +349,7 @@ if(client==null){
       for (var element in idList) {
         drive.files.delete(element);
       }
-      account = await googleSignIn?.signOut();
+   //   account = await googleSignIn?.signOut();
     }
   }
 
@@ -379,7 +359,7 @@ if(client==null){
       client = await getHttpClient();
     }
     drive = ga.DriveApi(client!);
-    String fileLocation = await getDatabasesPath();
+    String fileLocation = keyLocation;
     final queryDrive = await drive.files.list(
       q: "name contains '$fileName'",
       $fields: "files(id, name,createdTime,modifiedTime)",
@@ -415,13 +395,13 @@ if(client==null){
           }
         });
       }
-      account = await googleSignIn?.signOut();
+    //account = await googleSignIn?.signOut();
     } else {
       if (kDebugMode) {
         print("Nothing's here");
 
       }
-      account = await googleSignIn?.signOut();
+     // account = await googleSignIn?.signOut();
     }
   }
 }

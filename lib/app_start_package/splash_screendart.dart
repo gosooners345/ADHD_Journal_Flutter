@@ -56,22 +56,10 @@ ValueNotifier<String> appStatus = ValueNotifier("");
       backArrowIcon = Icon(Icons.arrow_back_ios);
     }
     appStatus.value= "Welcome to ADHD Journal! We're getting your stuff ready!";
-
-    // Load prefs and check for previous android shared prefs files
-
-   finishTimer();
+    finishTimer();
 
   }
 
-  Future<bool> _checkConnState() async{
-    final ConnectivityResult result = await Connectivity().checkConnectivity();
-    if(result ==ConnectivityResult.wifi || result == ConnectivityResult.mobile){
-      return true;
-    }
-    else{
-      return false;
-    }
-  }
 
   void loadPreferences() async {
 
@@ -109,9 +97,9 @@ passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
         appStatus.value = "You have backup and sync enabled! Checking for new files";
 //if(testConnection) {
   googleDrive = GoogleDrive();
-  googleDrive.init();
+  //oogleDrive.init();
         appStatus.value = "Signing into Google Drive!";
-  googleDrive.client = await googleDrive.getHttpClientSilently().whenComplete(()
+  googleDrive.client = await Future.sync(()=>googleDrive.getHttpClientSilently().whenComplete(()
   {
   if (userActiveBackup) {
       checkFileAge();
@@ -119,7 +107,7 @@ passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
     else { //Failsafe
       isDataSame = true;
     }
-  });
+  }));
   if (googleDrive.account?.authHeaders == null? true : false)  {
     userActiveBackup = false;
     appStatus.value = "To protect your data, we are going to have you re-enable drive backup when you go to log in";
@@ -165,11 +153,11 @@ passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
     File prefsFile = File(docsLocation);
     String dataForEncryption = '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
       bool fileCheckAge = false;
-      try{
+    /*  try{
         fileCheckAge = await Future.sync(() =>  googleDrive.checkDBFileAge(dbWal));
-      } on Exception catch(ex){
+      } on Exception catch(ex){*/
         fileCheckAge = await Future.sync(()=>googleDrive.checkDBFileAge(dbName));
-      }
+      //}
       bool checkOnlineKeys = await Future.sync(()=>googleDrive.checkForFile('journ_privkey.pem'));
       if(!privateKeyFile.existsSync() && checkOnlineKeys){
         await preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);

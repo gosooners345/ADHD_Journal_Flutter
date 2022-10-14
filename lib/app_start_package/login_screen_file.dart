@@ -87,9 +87,7 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
         var checkDB = File(dbLocation);
         var checkKeys = File(path.join(keyLocation,"journ_privkey.pem"));
         var checkPrefs = File(docsLocation);
-        if(googleDrive.client == null){
-           googleDrive.client = await googleDrive.getHttpClientSilently();
-        }
+        googleDrive.client ??= await googleDrive.getHttpClientSilently();
         var checkDBOnline = await Future.sync(()=>googleDrive.checkForFile(dbName));
         var checkPrefsOnline = await Future.sync(() => googleDrive.checkForFile(prefsTransportName));
         var checkKeysOnline = await Future.sync(() => googleDrive.checkForFile("journ_privKey.pem"));
@@ -335,14 +333,14 @@ if(userPassword != dbPassword){
     File privKeyFile = File(path.join(keyLocation,"journ_privkey.pem"));
     try{
       bool fileCheckAge = false;
-try{
-await Future.delayed(Duration(seconds: 3),() async {
-  fileCheckAge = await Future.sync(() => googleDrive.checkDBFileAge("activitylogger_db.db-wal"));
-});
-}
-on Exception catch (ex){
-      fileCheckAge = await Future.sync(() =>  googleDrive.checkDBFileAge("activitylogger_db.db"));
-}
+//try{
+//await Future.delayed(Duration(seconds: 3),() async {
+  //fileCheckAge = await Future.sync(() => googleDrive.checkDBFileAge("activitylogger_db.db-wal"));
+//});
+//}
+//on Exception catch (ex){
+      fileCheckAge = await Future.sync(() =>  googleDrive.checkDBFileAge(dbName));
+//}
       String dataForEncryption ='$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
 var onlineKeys = await googleDrive.checkForFile('journ_privkey.pem');
 // Keys first
