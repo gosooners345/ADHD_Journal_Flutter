@@ -38,11 +38,10 @@ bool firstUse = false;
   Future<http.Client> getHttpClientSilently() async {
     googleSignIn = signIn.GoogleSignIn.standard(
         scopes: [ga.DriveApi.driveScope,
-          ga.DriveApi.driveAppdataScope]);
+          ga.DriveApi.driveAppdataScope]);  Map<String, String>? authHeaders;
 try {
-  Map<String, String>? authHeaders;
-  account = await googleSignIn?.signInSilently(reAuthenticate: true,suppressErrors: true).whenComplete(() async=> authHeaders =await  account?.authHeaders).onError((error, stackTrace)  async {account = await Future.delayed(Duration(seconds:5),()=>googleSignIn?.signInSilently(suppressErrors: true,reAuthenticate: true));
 
+  account = await Future.sync(() => googleSignIn?.signInSilently(reAuthenticate: true,suppressErrors: true));
 
   if(account?.authHeaders!=null) {
     authHeaders = await Future.sync(() async=>account?.authHeaders);
@@ -51,19 +50,19 @@ try {
     throw Exception("Sign In Please");
   }
 
-  });
+
   userActiveBackup = true;
   prefs.setBool('testBackup', userActiveBackup);
   prefs.reload();
   userActiveBackup = prefs.getBool("testBackup") ?? false;
- authHeaders = await Future.sync(() async => account?.authHeaders);
+ //authHeaders = await Future.sync(() async => account?.authHeaders);
   if (account == null)
 {
-     account = await googleSignIn?.signInSilently(suppressErrors: true,reAuthenticate: true);
+     account = await Future.sync(() => googleSignIn?.signInSilently(suppressErrors: true,reAuthenticate: true));
 
 
      if(account?.authHeaders!=null) {
-       authHeaders = await Future.sync(() async=>account?.authHeaders);
+       authHeaders = await Future.sync(() async=>account!.authHeaders);
      }
      if(authHeaders == null){
        throw Exception("Sign In Please");

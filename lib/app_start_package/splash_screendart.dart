@@ -130,7 +130,7 @@ passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
   }
 
   finishTimer() async {
-  var duration = const Duration(seconds: 8);
+  var duration = const Duration(seconds: 12);
   getPackageInfo();
   loadPreferences();
     return Timer(duration, route);

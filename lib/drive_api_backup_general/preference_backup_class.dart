@@ -15,44 +15,52 @@ class PreferenceBackupAndEncrypt {
    RSAPrivateKey?  privKey;
    RSAPublicKey? pubKey;
 
+   void assignRSAKeysOffline(){
+     String privKeyFilePath = join(keyLocation,"journ_privkey.pem");
+     io.File privateKeyStorage = io.File(privKeyFilePath);
+     String pubKeyFilePath = join(keyLocation,"journ_pubKey.pem");
+     io.File publicKeyStorage = io.File(pubKeyFilePath);
+     try{
+       if(privateKeyStorage.existsSync()){
+         var privKeyReader = privateKeyStorage.readAsStringSync();
+         String preKeyString = privKeyReader;
+         privKey = CryptoUtils.rsaPrivateKeyFromPemPkcs1(preKeyString);
+       }
+       if(publicKeyStorage.existsSync()){
+         var pubKeyReader = publicKeyStorage.readAsStringSync();
+         var prePubKeyString = pubKeyReader;
+         pubKey = CryptoUtils.rsaPublicKeyFromPemPkcs1(prePubKeyString);
+       }
+     } on Exception catch(ex){
+       print(ex);
+     }
+   }
+
 
 
   //Assign RSA Keys
-  void assignRSAKeys(GoogleDrive drive) async  {
-    String privKeyFilePath = join(await getDatabasesPath(),"journ_privkey.pem");
+  void assignRSAKeys(GoogleDrive drive) async {
+    String privKeyFilePath = join(keyLocation, "journ_privkey.pem");
     io.File privateKeyStorage = io.File(privKeyFilePath);
-    String pubKeyFilePath = join(await getDatabasesPath(),"journ_pubKey.pem");
+    String pubKeyFilePath = join(keyLocation, "journ_pubKey.pem");
     io.File publicKeyStorage = io.File(pubKeyFilePath);
-try{
-    if(privateKeyStorage.existsSync()){
-      var privKeyReader = privateKeyStorage.readAsStringSync();
-      String preKeyString = privKeyReader;
-      privKey = CryptoUtils.rsaPrivateKeyFromPemPkcs1(preKeyString);
+    try {
+      if (privateKeyStorage.existsSync() && publicKeyStorage.existsSync()) {
+        assignRSAKeysOffline();
+      }
+      else {
+        throw Exception("No File");
+      }
+    } on Exception catch (tm) {
+      var checkKeysOnline = await drive.checkForFile("journ_pubKey.pem");
+      var checkPrivKey = await drive.checkForFile("journ_privKey.pem");
+      if (checkKeysOnline && checkPrivKey) {
+        downloadRSAKeys(drive);
+      }
+      else {
+        encryptRsaKeysAndUpload(drive);
+      }
     }
-    else{
-    throw Exception("Need new RSA Keys for application.");
-    }
-}on Exception catch(tm){
-  print("dead end");
-}
-try{
-    if(publicKeyStorage.existsSync()){
-      var pubKeyReader = publicKeyStorage.readAsStringSync();
-      var prePubKeyString = pubKeyReader;
-      pubKey = CryptoUtils.rsaPublicKeyFromPemPkcs1(prePubKeyString);
-    }
-   else{
-     throw Exception("No File");
-    }} on Exception catch(tm) {
-  var checkKeysOnline = await drive.checkForFile("journ_pubKey.pem");
-  var checkPrivKey = await drive.checkForFile("journ_privKey.pem");
-  if (checkKeysOnline && checkPrivKey) {
-    downloadRSAKeys(drive);
-  }
-  else {
-    encryptRsaKeysAndUpload(drive);
-  }
-}
   }
 
   //Download and  Assign RSA Keys
@@ -95,6 +103,33 @@ try{
       }
     }
   }
+
+  void generateRSAKeys(){
+    io.File privateKeyStorage = io.File(
+        join(keyLocation, "journ_privkey.pem"));
+    io.File publicKeyStorage = io.File(
+        join(keyLocation, "journ_pubKey.pem"));
+    int bitLength = 2048;
+    SecureRandom random = exampleSecureRandom();
+
+    keyGen.init(ParametersWithRandom(RSAKeyGeneratorParameters(
+        BigInt.parse('65537'), bitLength, 64), random));
+    final pair = keyGen.generateKeyPair();
+    privKey = pair.privateKey as RSAPrivateKey;
+    pubKey = pair.publicKey as RSAPublicKey;
+    publicKeyStorage.createSync();
+
+    var writepubKey = CryptoUtils.encodeRSAPublicKeyToPemPkcs1(pubKey!);
+    final pubKeyWriter = publicKeyStorage.openSync(mode: io.FileMode.write);
+    pubKeyWriter.writeStringSync(writepubKey);
+    pubKeyWriter.closeSync();
+    privateKeyStorage.createSync();
+    var writePrivKey = CryptoUtils.encodeRSAPrivateKeyToPemPkcs1(privKey!);
+    final privKeyWriter = privateKeyStorage.openSync(mode: io.FileMode.write);
+    privKeyWriter.writeStringSync(writePrivKey);
+    privKeyWriter.closeSync();
+  }
+
   //Encrypt RSA Keys and assign the values to the variables
   void encryptRsaKeysAndUpload(GoogleDrive drive) async{
     try {
@@ -102,26 +137,9 @@ try{
           join(keyLocation, "journ_privkey.pem"));
       io.File publicKeyStorage = io.File(
           join(keyLocation, "journ_pubKey.pem"));
-      int bitLength = 2048;
-      SecureRandom random = exampleSecureRandom();
-
-      keyGen.init(ParametersWithRandom(RSAKeyGeneratorParameters(
-          BigInt.parse('65537'), bitLength, 64), random));
-      final pair = keyGen.generateKeyPair();
-      privKey = pair.privateKey as RSAPrivateKey;
-      pubKey = pair.publicKey as RSAPublicKey;
-      publicKeyStorage.createSync();
-
-      var writepubKey = CryptoUtils.encodeRSAPublicKeyToPemPkcs1(pubKey!);
-      final pubKeyWriter = publicKeyStorage.openSync(mode: io.FileMode.write);
-      pubKeyWriter.writeStringSync(writepubKey);
-      pubKeyWriter.closeSync();
-      privateKeyStorage.createSync();
-      var writePrivKey = CryptoUtils.encodeRSAPrivateKeyToPemPkcs1(privKey!);
-      final privKeyWriter = privateKeyStorage.openSync(mode: io.FileMode.write);
-      privKeyWriter.writeStringSync(writePrivKey);
-      privKeyWriter.closeSync();
-
+      if(privateKeyStorage.existsSync() == false){
+ generateRSAKeys();
+      }
       bool checkPubKey = await drive.checkForFile("journ_pubkey.pem");
       if (checkPubKey) {
         throw Exception("We have keys in the cloud already");
