@@ -234,6 +234,7 @@ if(userPassword != dbPassword){
 
     }
     if(isDataSame){
+
       setState((){
       updated = true;
       getSyncState();});
@@ -333,14 +334,9 @@ if(userPassword != dbPassword){
     File privKeyFile = File(path.join(keyLocation,"journ_privkey.pem"));
     try{
       bool fileCheckAge = false;
-//try{
-//await Future.delayed(Duration(seconds: 3),() async {
-  //fileCheckAge = await Future.sync(() => googleDrive.checkDBFileAge("activitylogger_db.db-wal"));
-//});
-//}
-//on Exception catch (ex){
       fileCheckAge = await Future.sync(() =>  googleDrive.checkDBFileAge(dbName));
-//}
+
+
       String dataForEncryption ='$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
 var onlineKeys = await googleDrive.checkForFile('journ_privkey.pem');
 // Keys first
@@ -368,7 +364,6 @@ if(fileCheckCSV) { // If file exists on Google Drive execute
   else {
    await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
    if(dataForEncryption == decipheredData){
-
      getSyncState();
    }else{
      isDataSame=false;
@@ -634,12 +629,17 @@ setState(() {
               }),),
             ),
             SizedBox(
-              height: 10, child:  ElevatedButton(
+              height: 50, child:  ElevatedButton(
               onPressed: () {
-                checkFileAge();
+               try{
+                 checkFileAge();
+               } on Exception catch(ex){
+                 restoreDBFiles();
+                 updateValues();
+               }
               },
               child: Text(
-                'Reset RSA Keys',
+                'Update Files',
                 style: TextStyle(color: Colors.white, fontSize: 25),
               ),
             ),

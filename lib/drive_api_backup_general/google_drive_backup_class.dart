@@ -20,47 +20,53 @@ bool firstUse = false;
 
   //Get Authenticated Http Client
   Future<http.Client> getHttpClient() async {
-    googleSignIn = signIn.GoogleSignIn.standard(
-        scopes: [ga.DriveApi.driveScope,
-          ga.DriveApi.driveAppdataScope]);
-    firstUse = true;
-    account = await googleSignIn?.signIn();
     userActiveBackup = true;
     prefs.setBool('testBackup', userActiveBackup);
     prefs.reload();
     userActiveBackup = prefs.getBool("testBackup") ?? false;
+    googleSignIn = signIn.GoogleSignIn(signInOption: signIn.SignInOption.standard,
+        scopes: [
+          ga.DriveApi.driveAppdataScope,ga.DriveApi.driveFileScope],forceCodeForRefreshToken: true);
+    firstUse = true;
+
+    account = await googleSignIn?.signIn();
+
     prefs.setBool("authenticated", firstUse);
     var authHeaders = await account?.authHeaders;
+
+
+
+
     var authenticateClient = GoogleAuthClient(authHeaders!);
     return authenticateClient;
   }
 
   Future<http.Client> getHttpClientSilently() async {
-    googleSignIn = signIn.GoogleSignIn.standard(
-        scopes: [ga.DriveApi.driveScope,
-          ga.DriveApi.driveAppdataScope]);  Map<String, String>? authHeaders;
+
+    userActiveBackup = true;
+    prefs.setBool('testBackup', userActiveBackup);
+    prefs.reload();
+    userActiveBackup = prefs.getBool("testBackup") ?? false;
+    Map<String, String>? authHeaders;
+    googleSignIn = signIn.GoogleSignIn(signInOption: signIn.SignInOption.standard,
+        scopes: [
+          ga.DriveApi.driveAppdataScope,ga.DriveApi.driveFileScope],forceCodeForRefreshToken: true);
 try {
 
-  account = await Future.sync(() => googleSignIn?.signInSilently(reAuthenticate: true,suppressErrors: true));
+  account = await Future.sync(() => googleSignIn?.signInSilently(reAuthenticate: true));
 
   if(account?.authHeaders!=null) {
     authHeaders = await Future.sync(() async=>account?.authHeaders);
-  }
-  if(authHeaders == null){
-    throw Exception("Sign In Please");
+  var authenticateClient = GoogleAuthClient(authHeaders!);
+
+
+  return authenticateClient;
   }
 
 
-  userActiveBackup = true;
-  prefs.setBool('testBackup', userActiveBackup);
-  prefs.reload();
-  userActiveBackup = prefs.getBool("testBackup") ?? false;
- //authHeaders = await Future.sync(() async => account?.authHeaders);
   if (account == null)
 {
-     account = await Future.sync(() => googleSignIn?.signInSilently(suppressErrors: true,reAuthenticate: true));
-
-
+     account = await Future.sync(() => googleSignIn?.signInSilently(reAuthenticate: true));
      if(account?.authHeaders!=null) {
        authHeaders = await Future.sync(() async=>account!.authHeaders);
      }
@@ -82,10 +88,7 @@ try {
   // if not available create a folder in drive and return id
   //   if not able to create id then it means user authentication has failed
   Future<String?> _getFolderId(ga.DriveApi driveApi) async {
-    client ??= await  getHttpClientSilently();
-    if(client==null){
-      client = await getHttpClient();
-    }
+   client ??= await  getHttpClientSilently();
 
     const mimeType = "application/vnd.google-apps.folder";
     try {
@@ -123,9 +126,7 @@ try {
   }
   uploadFileToGoogleDriveString(String fileName) async {
     client ??= await  getHttpClientSilently();
-    if(client == null){
-      client = await getHttpClient();
-    }
+
 
   File file = File(fileName);
     drive = ga.DriveApi(client!);
@@ -143,7 +144,7 @@ try {
         fileToUpload,
         uploadMedia: ga.Media(file.openRead(), file.lengthSync()),
       );
-      //  account = await googleSignIn?.signOut();
+
       return 1;
 
       }
@@ -151,7 +152,6 @@ try {
         if(kDebugMode){
           print(ex);
         }
-        //account = await googleSignIn?.signOut();
         return 0;
       }
 
@@ -160,9 +160,7 @@ try {
   }
    uploadFileToGoogleDrive(File file) async {
      client ??= await  getHttpClientSilently();
-     if(client==null){
-       client = await getHttpClient();
-     }
+
     drive = ga.DriveApi(client!);
     String? folderId = await _getFolderId(drive);
     if (folderId == null) {
@@ -178,7 +176,6 @@ try {
         fileToUpload,
         uploadMedia: ga.Media(file.openRead(), file.lengthSync()),
       );
-   //   account = await googleSignIn?.signOut();
       return 1;
      }
      on Exception catch(ex){
@@ -194,9 +191,6 @@ try {
 
   Future<bool> checkDBFileAge(String fileName) async{
     client ??= await  getHttpClientSilently();
-if(client==null){
-  client = await getHttpClient();
-}
 
 
     drive = ga.DriveApi(client!);
@@ -241,9 +235,7 @@ if(client==null){
     }
     Future<bool> checkForFile(String fileName) async{
       client ??= await  getHttpClientSilently();
-      if(client==null){
-        client = await getHttpClient();
-      }
+
       drive = ga.DriveApi(client!);
       try{
         var queryDrive = await drive.files.list(
@@ -283,9 +275,7 @@ if(client==null){
 
   Future<bool> checkCSVFileAge(String fileName) async{
     client ??= await  getHttpClientSilently();
-    if(client==null){
-      client = await getHttpClient();
-    }
+
     drive = ga.DriveApi(client!);
     File file = File(docsLocation);
   try{
@@ -324,7 +314,6 @@ if(client==null){
     if(kDebugMode){
       print("File doesn't exist");
     }
-  //  account = await googleSignIn?.signOut();
     return false;
       }
   }
@@ -348,15 +337,12 @@ if(client==null){
       for (var element in idList) {
         drive.files.delete(element);
       }
-   //   account = await googleSignIn?.signOut();
     }
   }
 
   Future<void> syncBackupFiles(String fileName) async {
     client ??= await  getHttpClientSilently();
-    if(client==null){
-      client = await getHttpClient();
-    }
+
     drive = ga.DriveApi(client!);
     String fileLocation = keyLocation;
     final queryDrive = await drive.files.list(
@@ -394,13 +380,12 @@ if(client==null){
           }
         });
       }
-    //account = await googleSignIn?.signOut();
     } else {
       if (kDebugMode) {
         print("Nothing's here");
 
       }
-     // account = await googleSignIn?.signOut();
+
     }
   }
 }

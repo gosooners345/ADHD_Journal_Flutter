@@ -99,7 +99,7 @@ passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
   googleDrive = GoogleDrive();
   //oogleDrive.init();
         appStatus.value = "Signing into Google Drive!";
-  googleDrive.client = await Future.sync(()=>googleDrive.getHttpClientSilently().whenComplete(()
+  googleDrive.client = await Future.delayed(Duration(seconds: 3),()=>googleDrive.getHttpClientSilently().whenComplete(()
   {
   if (userActiveBackup) {
       checkFileAge();
@@ -153,11 +153,9 @@ passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
     File prefsFile = File(docsLocation);
     String dataForEncryption = '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
       bool fileCheckAge = false;
-    /*  try{
-        fileCheckAge = await Future.sync(() =>  googleDrive.checkDBFileAge(dbWal));
-      } on Exception catch(ex){*/
+
         fileCheckAge = await Future.sync(()=>googleDrive.checkDBFileAge(dbName));
-      //}
+
       bool checkOnlineKeys = await Future.sync(()=>googleDrive.checkForFile('journ_privkey.pem'));
       if(!privateKeyFile.existsSync() && checkOnlineKeys){
         await preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
