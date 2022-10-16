@@ -17,53 +17,151 @@ bool firstUse = false;
  http.Client? client;
   signIn.GoogleSignInAccount? account;
   signIn.GoogleSignIn? googleSignIn;
+  bool clientActive = false;
 
   //Get Authenticated Http Client
-  Future<http.Client> getHttpClient() async {
+  Future<http.Client> getHttpClient([String? exceptionThrown]) async {
     userActiveBackup = true;
     prefs.setBool('testBackup', userActiveBackup);
     prefs.reload();
     userActiveBackup = prefs.getBool("testBackup") ?? false;
+    Map<String, String>? authHeaders = <String, String>{};
+    googleSignIn =
+        signIn.GoogleSignIn(signInOption: signIn.SignInOption.standard,
+            scopes: [
+              ga.DriveApi.driveAppdataScope, ga.DriveApi.driveFileScope],
+            forceCodeForRefreshToken: true);
+    firstUse = true;
+    prefs.setBool("authenticated", firstUse);
+    if (exceptionThrown == null) {
+      try {
+        var authString = "";
+        try {
+          authString =
+          await Future.sync(() => encryptedSharedPrefs.getString("TokenKey"));
+        } on Exception catch (ex) {
+          print(ex);
+          encryptedSharedPrefs.setString("TokenKey", "");
+        }
+        if (authString == '') {
+          throw Exception("String is empty");
+        }
+        var authHeaderList = authString.split(',');
+        authHeaderList.remove('');
+        for (int i = 0; i <= authHeaderList.length - 1; i++) {
+          var entry = authHeaderList[i].split(':');
+          authHeaders?[entry[0]] = entry[1];
+        }
+        account = await Future.sync(() => googleSignIn?.signInSilently());
+        if (account == null) {
+          print("account is null");
+        }
+        if (authHeaders!["Authorization"]?.isNotEmpty == true) {
+          clientActive = true;
+          try {
+            var authenticateClient = GoogleAuthClient(authHeaders!);
+
+            return authenticateClient;
+          }
+          on Exception catch (ex) {
+            print(ex);
+            account = await googleSignIn?.signIn();
+            authHeaders = await account?.authHeaders;
+            var authList = [];
+            if (authHeaders!.isNotEmpty) {
+              authHeaders.forEach((key, value) {
+                authList.add("$key:$value,");
+              });
+              authList.remove("");
+              var authTokenString = "";
+              for (int i = 0; i <= authList.length - 1; i++) {
+                authTokenString += authList[i];
+              }
+              encryptedSharedPrefs.setString("TokenKey", authTokenString);
+            }
+            clientActive = true;
+            var authenticateClient = GoogleAuthClient(authHeaders!);
+            return authenticateClient;
+          }
+        }
+        else {
+          throw Exception("Re Authorize");
+        }
+      } on Exception catch (ex) {
+        print(ex);
+      }
+    }
+
+      account = await googleSignIn?.signIn();
+      authHeaders = await account?.authHeaders;
+      //Store the API Token Granted to the Application in shared preferences
+      var authList = [];
+      if (authHeaders!.isNotEmpty) {
+        authHeaders.forEach((key, value) {
+          authList.add("$key:$value,");
+        });
+        authList.remove("");
+        var authTokenString = "";
+        for (int i = 0; i <= authList.length - 1; i++) {
+          authTokenString += authList[i];
+        }
+        encryptedSharedPrefs.setString("TokenKey", authTokenString);
+      }
+      clientActive = true;
+      var authenticateClient = GoogleAuthClient(authHeaders!);
+      return authenticateClient;
+
+  }
+  Future<http.Client> getHttpClientSilently() async {
+    bool failedSignIn = false;
     googleSignIn = signIn.GoogleSignIn(signInOption: signIn.SignInOption.standard,
         scopes: [
           ga.DriveApi.driveAppdataScope,ga.DriveApi.driveFileScope],forceCodeForRefreshToken: true);
-    firstUse = true;
-
-    account = await googleSignIn?.signIn();
-
-    prefs.setBool("authenticated", firstUse);
-    var authHeaders = await account?.authHeaders;
-
-
-
-
-    var authenticateClient = GoogleAuthClient(authHeaders!);
-    return authenticateClient;
-  }
-
-  Future<http.Client> getHttpClientSilently() async {
-
     userActiveBackup = true;
     prefs.setBool('testBackup', userActiveBackup);
     prefs.reload();
     userActiveBackup = prefs.getBool("testBackup") ?? false;
-    Map<String, String>? authHeaders;
-    googleSignIn = signIn.GoogleSignIn(signInOption: signIn.SignInOption.standard,
+    Map<String, String>? authHeaders = <String,String>{};
+    try{
+      var authString = await Future.sync(()=>encryptedSharedPrefs.getString("TokenKey"));
+      if(authString != ""){
+        var authHeaderList = authString.split(',');
+        authHeaderList.remove('');
+        for(int i = 0; i<= authHeaderList.length-1;i++){
+          var entry = authHeaderList[i].split(':');
+          authHeaders[entry[0]]=entry[1];
+        }
+
+        account = await Future.sync(() => googleSignIn?.signInSilently(reAuthenticate: true));
+        if(account == null){
+          print("account is null");
+        }
+        if(authHeaders["Authorization"]?.isNotEmpty == true){
+          clientActive = true;
+          var authenticateClient = GoogleAuthClient(authHeaders);
+          return authenticateClient;
+        }
+      }
+      else{
+        failedSignIn = true;
+        throw Exception("Failed Sign in ");
+      }
+    } on Exception catch(ex){
+      print(ex);
+          var authenticateClient = await getHttpClient();
+        return authenticateClient;
+      }
+   googleSignIn = signIn.GoogleSignIn(signInOption: signIn.SignInOption.standard,
         scopes: [
           ga.DriveApi.driveAppdataScope,ga.DriveApi.driveFileScope],forceCodeForRefreshToken: true);
 try {
 
   account = await Future.sync(() => googleSignIn?.signInSilently(reAuthenticate: true));
-
   if(account?.authHeaders!=null) {
-    authHeaders = await Future.sync(() async=>account?.authHeaders);
+    authHeaders = await Future.sync(() async=>account!.authHeaders);
   var authenticateClient = GoogleAuthClient(authHeaders!);
-
-
   return authenticateClient;
   }
-
-
   if (account == null)
 {
      account = await Future.sync(() => googleSignIn?.signInSilently(reAuthenticate: true));
@@ -74,12 +172,13 @@ try {
        throw Exception("Sign In Please");
      }
   }
-
-    var authenticateClient = GoogleAuthClient(authHeaders!);
-    return authenticateClient;}
+  clientActive = true;
+  var authenticateClient = GoogleAuthClient(authHeaders!);
+  return authenticateClient;
+    }
     on Exception catch(ex){
   print(ex);
-  var authenticateClient = await getHttpClient();
+  var authenticateClient = await getHttpClient(ex.toString());
   return authenticateClient;
     }
   }
@@ -191,7 +290,6 @@ try {
 
   Future<bool> checkDBFileAge(String fileName) async{
     client ??= await  getHttpClientSilently();
-
 
     drive = ga.DriveApi(client!);
     File file = File(dbLocation);
@@ -308,7 +406,7 @@ try {
     }
     var checkFile = files?.first;
     var checkTime = checkFile?.modifiedTime;
-    account = await googleSignIn?.signOut();
+
     return (checkTime!.isBefore(modifiedTime));}
       on Exception catch(ex){
     if(kDebugMode){

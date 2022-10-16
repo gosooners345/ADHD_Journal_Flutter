@@ -123,7 +123,6 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
       }, child: Row(children: const [Icon(Icons.add_to_drive),Text("Sign in to Drive")],));
       stuff = TextEditingController();
     });
-
   }
 
 
@@ -141,9 +140,7 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
     prefs = await SharedPreferences.getInstance();
 
     greeting = prefs.getString("greeting") ?? '';
-    loginGreeting = await Future.sync(() => getGreeting());/*"Welcome $greeting !"
-        " Please sign in below to get started!";*/
-   // userPassword = '';
+    loginGreeting = await Future.sync(() => getGreeting());
     userPassword = await encryptedSharedPrefs.getString('loginPassword');
     try{
       dbPassword = await encryptedSharedPrefs.getString('dbPassword');}
@@ -171,6 +168,7 @@ if(userPassword != dbPassword){
     setState(() {
       resetLoginFieldState();
     });
+await Future.delayed(Duration(seconds: 3),() => googleDrive.googleSignIn?.signOut());
   }
 
   Future<String> getGreeting() async {
@@ -322,6 +320,7 @@ if(userPassword != dbPassword){
         });
       }
     });
+
   }
 
 
@@ -632,7 +631,10 @@ setState(() {
               height: 50, child:  ElevatedButton(
               onPressed: () {
                try{
+                  googleSignIn();
                  checkFileAge();
+                 if(googleDrive.googleSignIn?.isSignedIn()==true){
+                 googleDrive.googleSignIn?.signOut();}
                } on Exception catch(ex){
                  restoreDBFiles();
                  updateValues();
@@ -651,6 +653,11 @@ setState(() {
         }
         );
   }
+
+  void googleSignIn() async{
+    googleDrive.client = await googleDrive.getHttpClientSilently();
+  }
+
 }
 
 String driveStoreDirectory = "Journals";

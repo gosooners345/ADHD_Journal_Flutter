@@ -68,7 +68,8 @@ appStatus.value= "Getting preferences now";
     encryptedSharedPrefs = EncryptedSharedPreferences();
     userPassword = await encryptedSharedPrefs.getString('loginPassword');
     try{
-dbPassword = await encryptedSharedPrefs.getString('dbPassword');}
+dbPassword = await encryptedSharedPrefs.getString('dbPassword');
+    }
     on Exception catch(ex){
       print(ex);
       try {
@@ -90,14 +91,12 @@ passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
     userActiveBackup = prefs.getBool('testBackup') ?? false;
     swapper = ThemeSwap();
     swapper?.themeColor = prefs.getInt("apptheme") ?? AppColors.mainAppColor.value;
-//var testConnection = await _checkConnState();
+
 
     if(userActiveBackup){
       try{
         appStatus.value = "You have backup and sync enabled! Checking for new files";
-//if(testConnection) {
   googleDrive = GoogleDrive();
-  //oogleDrive.init();
         appStatus.value = "Signing into Google Drive!";
   googleDrive.client = await Future.delayed(Duration(seconds: 3),()=>googleDrive.getHttpClientSilently().whenComplete(()
   {
@@ -108,16 +107,11 @@ passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
       isDataSame = true;
     }
   }));
-  if (googleDrive.account?.authHeaders == null? true : false)  {
-    userActiveBackup = false;
-    appStatus.value = "To protect your data, we are going to have you re-enable drive backup when you go to log in";
+  if (googleDrive.clientActive == false)  {
+  userActiveBackup = false;
+  appStatus.value = "To protect your data, we are going to have you re-enable drive backup when you go to log in";
   }
 
-//}
-/*else {
-  appStatus.value = "You need to be connected to Mobile Data or Wifi to sync your journal";
-  userActiveBackup = false;
-}*/
       }on Exception catch(ex){
         appStatus.value = "To protect your data, we are going to have you re-enable drive backup when you go to log in";
         userActiveBackup = false;
