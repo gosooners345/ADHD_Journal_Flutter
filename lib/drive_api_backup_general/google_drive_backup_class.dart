@@ -5,8 +5,9 @@ import 'package:flutter/foundation.dart';
 import 'package:googleapis/drive/v3.dart' as ga;
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
-import 'package:google_sign_in/google_sign_in.dart' as signIn;
-
+import 'package:google_sign_in/google_sign_in.dart' ;
+import 'authextension.dart';
+import 'package:googleapis_auth/googleapis_auth.dart' as auth show AuthClient;
 
 
 class GoogleDrive {
@@ -15,12 +16,14 @@ class GoogleDrive {
   late ga.DriveApi drive;
 bool firstUse = false;
  http.Client? client;
-  signIn.GoogleSignInAccount? account;
-  signIn.GoogleSignIn? googleSignIn;
+  GoogleSignInAccount? account;
   bool clientActive = false;
+GoogleSignIn  googleSignIn = GoogleSignIn(signInOption: SignInOption.standard,
+  scopes: [
+  ga.DriveApi.driveAppdataScope,ga.DriveApi.driveFileScope]);
 
   //Get Authenticated Http Client
-  Future<http.Client> getHttpClient([String? exceptionThrown]) async {
+/*  Future<http.Client> getHttpClient([String? exceptionThrown]) async {
     userActiveBackup = true;
     prefs.setBool('testBackup', userActiveBackup);
     prefs.reload();
@@ -181,11 +184,43 @@ try {
   var authenticateClient = await getHttpClient(ex.toString());
   return authenticateClient;
     }
-  }
+  }*/
 
   // check if the directory folder is already available in drive , if available return its id
   // if not available create a folder in drive and return id
   //   if not able to create id then it means user authentication has failed
+  Future<auth.AuthClient?> getHttpClient() async{
+    userActiveBackup = true;
+    prefs.setBool('testBackup', userActiveBackup);
+    prefs.reload();
+    userActiveBackup = prefs.getBool("testBackup") ?? false;
+    firstUse = true;
+    prefs.setBool("authenticated", firstUse);
+    account = await googleSignIn.signIn();
+    clientActive = true;
+    var authenticateClient = googleSignIn.authenticatedClient();
+    return authenticateClient;
+
+  }
+  Future<auth.AuthClient?> getHttpClientSilently() async{
+    userActiveBackup = true;
+    prefs.setBool('testBackup', userActiveBackup);
+    prefs.reload();
+    userActiveBackup = prefs.getBool("testBackup") ?? false;
+    try {
+              account = await Future.sync(() => googleSignIn.signInSilently(reAuthenticate: true));
+      clientActive = true;
+      var authenticateClient = await getHttpClient();
+      return authenticateClient;
+    }
+    on Exception catch(ex){
+      print(ex);
+      clientActive = true;
+      var authenticateClient = await getHttpClient();
+      return authenticateClient;
+    }
+  }
+
   Future<String?> _getFolderId(ga.DriveApi driveApi) async {
    client ??= await  getHttpClientSilently();
 
