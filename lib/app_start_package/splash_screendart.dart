@@ -25,9 +25,9 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-late  Database testDB;
-ConnectivityResult? _connectivityResult;
-late StreamSubscription _connectivitySubscription;
+  late Database testDB;
+  ConnectivityResult? _connectivityResult;
+  late StreamSubscription _connectivitySubscription;
   static const platform =
   MethodChannel('com.activitylogger.release1/ADHDJournal');
 
@@ -40,7 +40,8 @@ late StreamSubscription _connectivitySubscription;
   bool checkTransferred = false;
 
   Text statusUpdateWidget = Text('');
-ValueNotifier<String> appStatus = ValueNotifier("");
+  ValueNotifier<String> appStatus = ValueNotifier("");
+
   @override
   Widget build(BuildContext context) {
     return initScreen(context);
@@ -55,210 +56,239 @@ ValueNotifier<String> appStatus = ValueNotifier("");
     } else {
       backArrowIcon = Icon(Icons.arrow_back_ios);
     }
-    appStatus.value= "Welcome to ADHD Journal! We're getting your stuff ready!";
+    appStatus.value =
+    "Welcome to ADHD Journal! We're getting your stuff ready!";
     finishTimer();
-
   }
 
 
   void loadPreferences() async {
-
-appStatus.value= "Getting preferences now";
+    bool isClientActive = true;
+    appStatus.value = "Getting preferences now";
     prefs = await SharedPreferences.getInstance();
     encryptedSharedPrefs = EncryptedSharedPreferences();
     userPassword = await encryptedSharedPrefs.getString('loginPassword');
-    try{
-dbPassword = await encryptedSharedPrefs.getString('dbPassword');
+    try {
+      dbPassword = await encryptedSharedPrefs.getString('dbPassword');
     }
-    on Exception catch(ex){
+    on Exception catch (ex) {
       print(ex);
       try {
         await encryptedSharedPrefs.remove('dbPassword');
-      } on Exception catch(ex){
+      } on Exception catch (ex) {
         print(ex);
       }
       dbPassword = userPassword;
       await encryptedSharedPrefs.setString('dbPassword', dbPassword);
     }
-if(userPassword != dbPassword){
-  dbPassword = userPassword;
-}
-passwordHint = await encryptedSharedPrefs.getString('passwordHint')??'';
-greeting = prefs.getString('greeting') ?? '';
-colorSeed = prefs.getInt("apptheme") ?? AppColors.mainAppColor.value;
-passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
+    if (userPassword != dbPassword) {
+      dbPassword = userPassword;
+    }
+    passwordHint = await encryptedSharedPrefs.getString('passwordHint') ?? '';
+    greeting = prefs.getString('greeting') ?? '';
+    colorSeed = prefs.getInt("apptheme") ?? AppColors.mainAppColor.value;
+    passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
     isPasswordChecked = passwordEnabled;
     userActiveBackup = prefs.getBool('testBackup') ?? false;
     swapper = ThemeSwap();
-    swapper?.themeColor = prefs.getInt("apptheme") ?? AppColors.mainAppColor.value;
+    swapper?.themeColor =
+        prefs.getInt("apptheme") ?? AppColors.mainAppColor.value;
+    if (userActiveBackup) {
+      // try{
+      appStatus.value =
+      "You have backup and sync enabled! Checking for new files";
+      googleDrive = GoogleDrive();
+      appStatus.value = "Signing into Google Drive!";
+      googleDrive.client =
+      await Future.sync(() => googleDrive.getHttpClient()).onError((e, s) {
+        if (kDebugMode) {
+          print(e);
+        }
+        isClientActive = false;
+        appStatus.value =
+        "Backup and sync temporarily disabled until you sign into Google Drive";
+        return null;
+      }); //.whenComplete(()
+      if (isClientActive == true || googleDrive.client != null) {
+        if (userActiveBackup) {
+          checkFileAge();
 
-
-    if(userActiveBackup){
-      try{
-        appStatus.value = "You have backup and sync enabled! Checking for new files";
-  googleDrive = GoogleDrive();
-        appStatus.value = "Signing into Google Drive!";
-  googleDrive.client = await Future.delayed(Duration(seconds: 3),()=>googleDrive.getHttpClientSilently().whenComplete(()
-  {
-  if (userActiveBackup) {
-      checkFileAge();
+        }
+        else { //Failsafe
+          isDataSame = true;
+        }
       }
-    else { //Failsafe
-      isDataSame = true;
-    }
-  }));
-  if (googleDrive.clientActive == false)  {
-  userActiveBackup = false;
-  appStatus.value = "To protect your data, we are going to have you re-enable drive backup when you go to log in";
-  }
-
-      }on Exception catch(ex){
-        appStatus.value = "To protect your data, we are going to have you re-enable drive backup when you go to log in";
+      else {
         userActiveBackup = false;
+        appStatus.value =
+        "To protect your data, you'll need to sign into Google Drive and approve application access to backup your stuff!";
       }
-    } else{
-     appStatus.value = "You have backup and sync disabled! You can enable this on Login "
+    }
+    else {
+      appStatus.value =
+      "You have backup and sync disabled! You can enable this on Login "
           "by hitting Add to Drive! You can disable this feature in Settings ";
     }
-   appStatus.value = 'Loading up your journal now...';
+    appStatus.value = 'Loading up your journal now...';
   }
 
   finishTimer() async {
-  var duration = const Duration(seconds: 12);
-  getPackageInfo();
-  loadPreferences();
+    var duration = const Duration(seconds: 12);
+    getPackageInfo();
+    loadPreferences();
     return Timer(duration, route);
   }
+
   void getPackageInfo() async {
-   appStatus.value= "Getting Build and App Version info";
-     packInfo = await PackageInfo.fromPlatform();
-     buildInfo = packInfo.version;
+    appStatus.value = "Getting Build and App Version info";
+    packInfo = await PackageInfo.fromPlatform();
+    buildInfo = packInfo.version;
     String docDirectory = await Future.sync(() => getDatabasesPath());
-     dbLocation = path.join(docDirectory,'activitylogger_db.db');
- docsLocation = path.join(docDirectory,'journalStuff.txt');
- keyLocation = docDirectory;
+    dbLocation = path.join(docDirectory, 'activitylogger_db.db');
+    docsLocation = path.join(docDirectory, 'journalStuff.txt');
+    keyLocation = docDirectory;
   }
 
-  void checkFileAge() async{
-    appStatus.value = "Checking for updated files... \r\nThanks for your patience";
+  void checkFileAge() async {
 
+    appStatus.value =
+    "Checking for updated files... \r\nThanks for your patience";
+readyButton.boolSink.add(true);
     File dbFile = File(dbLocation);
-    File privateKeyFile = File(path.join(keyLocation,"journ_privkey.pem"));
+    File privateKeyFile = File(path.join(keyLocation, "journ_privkey.pem"));
     File prefsFile = File(docsLocation);
-    String dataForEncryption = '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
-      bool fileCheckAge = false;
+    String dataForEncryption = '$userPassword,$dbPassword,$passwordHint,${passwordEnabled
+        .toString()},$greeting,$colorSeed';
+    bool fileCheckAge = false;
 
-        fileCheckAge = await Future.sync(()=>googleDrive.checkDBFileAge(dbName));
+    fileCheckAge = await Future.sync(() => googleDrive.checkDBFileAge(dbName));
 
-      bool checkOnlineKeys = await Future.sync(()=>googleDrive.checkForFile('journ_privkey.pem'));
-      if(!privateKeyFile.existsSync() && checkOnlineKeys){
-        await preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
-      }
-      else if(!privateKeyFile.existsSync() && !checkOnlineKeys){
-        preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
-      }
-      else{
-        preferenceBackupAndEncrypt.assignRSAKeys(googleDrive);
-      }
-      bool checkPrefsEncryptedFile = await googleDrive.checkForFile(prefsTransportName);
-      bool txtFileChange = false;
-      if(checkPrefsEncryptedFile){
-        txtFileChange = await googleDrive.checkCSVFileAge(prefsTransportName);
-        if(txtFileChange){
-          preferenceBackupAndEncrypt.encryptData(dataForEncryption, googleDrive);
-        }
-        else{
-         await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
-          if(dataForEncryption == decipheredData){
-            isDataSame = true;
-            appStatus.value = "Don't worry about waiting when things are done loading!";
-          } else{
-            isDataSame = false;
-            appStatus.value = "Your data will need to be synced before you login";
-          }
-        }
-      } else{
-      try{
-        appStatus.value= "Syncing preferences with Google Drive for your other devices to sync up when they connect!";
-        if(prefsFile.existsSync()){
-          prefsFile.deleteSync();
+    bool checkOnlineKeys = await Future.sync(() =>
+        googleDrive.checkForFile('journ_privkey.pem'));
+    if (!privateKeyFile.existsSync() && checkOnlineKeys) {
+      await preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
+    }
+    else if (!privateKeyFile.existsSync() && !checkOnlineKeys) {
+      preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
+    }
+    else {
+      preferenceBackupAndEncrypt.assignRSAKeys(googleDrive);
+    }
+    bool checkPrefsEncryptedFile = await googleDrive.checkForFile(
+        prefsTransportName);
+    bool txtFileChange = false;
+    if (checkPrefsEncryptedFile) {
+      txtFileChange = await googleDrive.checkCSVFileAge(prefsTransportName);
+      if (txtFileChange) {
         preferenceBackupAndEncrypt.encryptData(dataForEncryption, googleDrive);
+      }
+      else {
+        await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
+        if (dataForEncryption == decipheredData) {
+          isDataSame = true;
+          appStatus.value =
+          "Don't worry about waiting when things are done loading!";
+        } else {
+          isDataSame = false;
+          appStatus.value = "Your data will need to be synced before you login";
         }
       }
-       on Exception catch(ex){
-         await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
-          if(dataForEncryption == decipheredData){
-            isDataSame = true;
-          }          else{
-            isDataSame = false;
-          }
-
-        }
-        prefs.setBool('isDataSame', isDataSame);
-      }
-      bool checkDBFile1 = await googleDrive.checkForFile(dbName);
-      bool checkDBFile2 = await googleDrive.checkForFile(dbWal);
-      if(checkDBFile1 || checkDBFile2){
-        if(!dbFile.existsSync()|| !fileCheckAge){
- await Future.sync(() =>  restoreDBFiles().whenComplete(() => {
-   if(kDebugMode){
-     print("Download done"),
-   },
-appStatus.value = "Your Journal is synced on device now",
- }));
-        }
-        else{
-          await Future.sync(() => uploadDBFiles().whenComplete(() =>{
-            if(kDebugMode){
-              print("Upload done"),
-            },
-            appStatus.value = "Your Journal is synced online now",
-          }));
-
+    } else {
+      try {
+        appStatus.value =
+        "Syncing preferences with Google Drive for your other devices to sync up when they connect!";
+        if (prefsFile.existsSync()) {
+          prefsFile.deleteSync();
+          preferenceBackupAndEncrypt.encryptData(
+              dataForEncryption, googleDrive);
         }
       }
-      else if(dbFile.existsSync()){
-        await uploadDBFiles();
+      on Exception catch (ex) {
+        await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
+        if (dataForEncryption == decipheredData) {
+          isDataSame = true;
+        } else {
+          isDataSame = false;
+        }
       }
-      else{
-        showMessage("You need to create a database for use in this application");
+      prefs.setBool('isDataSame', isDataSame);
+    }
+    bool checkDBFile1 = await googleDrive.checkForFile(dbName);
+    bool checkDBFile2 = await googleDrive.checkForFile(dbWal);
+    if (checkDBFile1 || checkDBFile2) {
+      if (!dbFile.existsSync() || !fileCheckAge) {
+        await Future.sync(() =>
+            restoreDBFiles().whenComplete(() =>
+            {
+              if(kDebugMode){
+                print("Download done"),
+              },
+              appStatus.value = "Your Journal is synced on device now",
+            readyButton.boolSink.add(false)
+            }));
+      }
+      else {
+        await Future.sync(() =>
+            uploadDBFiles().whenComplete(() =>
+            {
+              if(kDebugMode){
+                print("Upload done"),
+              },
+              appStatus.value = "Your Journal is synced online now",
+            readyButton.boolSink.add(false)
+            }));
       }
     }
-Future<void> restoreDBFiles() async {
-  try {
-    appStatus.value = "Downloading updated journal files";
-  await Future.sync(()=>googleDrive.syncBackupFiles("activitylogger_db.db"));
-  } on Exception catch (ex) {
-showMessage(ex.toString());
+    else if (dbFile.existsSync()) {
+      await uploadDBFiles();
+      readyButton.boolSink.add(false);
+    }
+    else {
+      showMessage("You need to create a database for use in this application");
+    }
+
+
   }
-}
-Future<void> uploadDBFiles() async {
+
+  Future<void> restoreDBFiles() async {
+    try {
+      appStatus.value = "Downloading updated journal files";
+      await Future.sync(() =>
+          googleDrive.syncBackupFiles("activitylogger_db.db")).whenComplete(() => readyButton.boolSink.add(false));
+    } on Exception catch (ex) {
+      showMessage(ex.toString());
+    }
+  }
+
+  Future<void> uploadDBFiles() async {
     appStatus.value = "Uploading updated journal files";
-  try {
-    googleDrive.deleteOutdatedBackups("activitylogger_db.db");
-    googleDrive.uploadFileToGoogleDrive(File(dbLocation));
-    googleDrive.uploadFileToGoogleDrive(File("$dbLocation-wal"));
-    googleDrive.uploadFileToGoogleDrive(File("$dbLocation-shm"));
-  } on Exception catch(ex){
-    print(ex);
+    try {
+      readyButton.boolSink.add(true);
+      googleDrive.deleteOutdatedBackups("activitylogger_db.db");
+      googleDrive.uploadFileToGoogleDrive(File(dbLocation));
+      googleDrive.uploadFileToGoogleDrive(File("$dbLocation-wal"));
+      googleDrive.uploadFileToGoogleDrive(File("$dbLocation-shm"));
+      await Future.delayed(Duration(seconds: 3),()=>readyButton.boolSink.add(false));
+    } on Exception catch (ex) {
+      print(ex);
+    }
   }
-}
-  void showMessage(String message){
+
+  void showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content:Text(message),
+          content: Text(message),
         ));
   }
 
   void route() {
-
     var firstVisit = prefs.getBool('firstVisit') ?? true;
     if (firstVisit) {
-      appStatus.value= "This is your first time using this application. "
+      appStatus.value = "This is your first time using this application. "
           "\r\nLet's get you started!";
       Navigator.pushReplacementNamed((context), '/onboarding');
     } else {
-      appStatus.value ="Loading Login Screen Now!";
+      appStatus.value = "Loading Login Screen Now!";
       Navigator.pushReplacementNamed(context, '/login');
     }
   }
@@ -270,13 +300,13 @@ Future<void> uploadDBFiles() async {
           const SizedBox(
             height: 35,
           ),
-         Expanded(child:Image.asset('images/appicon_appstore.png'),),
-         Padding(
+          Expanded(child: Image.asset('images/appicon_appstore.png'),),
+          Padding(
             padding: EdgeInsets.all(20.0),
-            child:ValueListenableBuilder( valueListenable: appStatus,
-        builder:(BuildContext builder,String value,Widget? child){
-              return Text(value);
-        }),
+            child: ValueListenableBuilder(valueListenable: appStatus,
+                builder: (BuildContext builder, String value, Widget? child) {
+                  return Text(value);
+                }),
 
           ),
         ],
@@ -301,6 +331,7 @@ String keyLocation ="";
 String dbName = "activitylogger_db.db";
 String dbWal = "activitylogger_db.db-wal";
 String prefsTransportName = "journalStuff.txt";
+String movieName = "Try2.mp4";
 bool userActiveBackup = false;
 GoogleDrive googleDrive = GoogleDrive();
 bool isDataSame = true;

@@ -131,7 +131,9 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
   }
 
   void encryptData() async{
-    await Future.sync((){ preferenceBackupAndEncrypt.encryptData(userPassword+','+dbPassword+','+passwordHint+','+passwordEnabled.toString()+","+greeting+','+colorSeed.toString(), googleDrive);
+    await Future.sync((){
+      preferenceBackupAndEncrypt.encryptData(userPassword+','+dbPassword+','+passwordHint+','+passwordEnabled.toString()+
+          ","+greeting+','+colorSeed.toString(), googleDrive);
 
     });
 
