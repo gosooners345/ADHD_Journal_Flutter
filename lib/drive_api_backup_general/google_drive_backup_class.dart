@@ -34,16 +34,12 @@ GoogleSignIn  googleSignIn = GoogleSignIn(signInOption: SignInOption.standard,
     firstUse = true;
     prefs.setBool("authenticated", firstUse);
     account = await googleSignIn.signIn();
-
     var authenticateClient = googleSignIn.authenticatedClient();
     return authenticateClient;
-
   }
  
 
   Future<String?> _getFolderId(ga.DriveApi driveApi) async {
-   //client ??= await  getHttpClient();
-
     const mimeType = "application/vnd.google-apps.folder";
     try {
       final found = await driveApi.files.list(
@@ -79,9 +75,6 @@ GoogleSignIn  googleSignIn = GoogleSignIn(signInOption: SignInOption.standard,
     }
   }
   uploadFileToGoogleDriveString(String fileName) async {
- //   client ??= await  getHttpClient();
-
-
   File file = File(fileName);
     drive = ga.DriveApi(client!);
     String? folderId = await _getFolderId(drive);
@@ -98,9 +91,7 @@ GoogleSignIn  googleSignIn = GoogleSignIn(signInOption: SignInOption.standard,
         fileToUpload,
         uploadMedia: ga.Media(file.openRead(), file.lengthSync()),
       );
-
       return 1;
-
       }
       on Exception catch(ex){
         if(kDebugMode){
@@ -108,13 +99,9 @@ GoogleSignIn  googleSignIn = GoogleSignIn(signInOption: SignInOption.standard,
         }
         return 0;
       }
-
-
     }
   }
    uploadFileToGoogleDrive(File file) async {
-  //   client ??= await  getHttpClient();
-
     drive = ga.DriveApi(client!);
     String? folderId = await _getFolderId(drive);
     if (folderId == null) {
@@ -130,17 +117,14 @@ GoogleSignIn  googleSignIn = GoogleSignIn(signInOption: SignInOption.standard,
         fileToUpload,
         uploadMedia: ga.Media(file.openRead(), file.lengthSync()),
       );
-
       return 1;
      }
      on Exception catch(ex){
        if(kDebugMode){
          print(ex);
        }
-
        return 0;
      }
-
     }
   }
 
@@ -149,7 +133,6 @@ GoogleSignIn  googleSignIn = GoogleSignIn(signInOption: SignInOption.standard,
 
     drive = ga.DriveApi(client!);
     File file = File(dbLocation);
-
 
       var modifiedTime =  file.lastModifiedSync();
       //Query for files on Drive to test against device
@@ -160,27 +143,17 @@ GoogleSignIn  googleSignIn = GoogleSignIn(signInOption: SignInOption.standard,
       var files = queryDrive.files;
       // Need for repeating until query is loaded or no file exists
       var i = 0;
-      while (files!.isEmpty) {
+      if (files!.isEmpty) {
         var queryDrive = await drive.files.list(
           q: "name contains '$fileName'",
           $fields: "files(id, name,createdTime,modifiedTime)",
-        );
+        );}
+      if(files!.isNotEmpty){
         files = queryDrive.files;
-        i++;
-        if(files!.isNotEmpty) {
-          break;
-        }
-        if(i==5){
-          break;
-        }
-        if (kDebugMode) {
-          print(i);
-        }
-      }
-      if(files.isNotEmpty)
-      {var checkFile = files.first;
+      var checkFile = files!.first;
       var checkTime = checkFile.createdTime;
-     return (checkTime!.isBefore(modifiedTime));}
+     return (checkTime!.isBefore(modifiedTime));
+      }
       else if(files.isEmpty){
         return true;}
       else{
@@ -188,9 +161,8 @@ GoogleSignIn  googleSignIn = GoogleSignIn(signInOption: SignInOption.standard,
       }
     }
     Future<bool> checkForFile(String fileName) async{
-  //    client ??= await  getHttpClient();
+    drive = ga.DriveApi(client!);
 
-      drive = ga.DriveApi(client!);
       try{
         var queryDrive = await drive.files.list(
           q: "name contains '$fileName'",
@@ -198,31 +170,22 @@ GoogleSignIn  googleSignIn = GoogleSignIn(signInOption: SignInOption.standard,
         );
         var files = queryDrive.files;
         var i = 0;
-        while (files!.isEmpty) {
+        if (files!.isEmpty) {
           var queryDrive = await drive.files.list(
             q: "name contains '$fileName'",
             $fields: "files(id, name,createdTime,modifiedTime)",
           );
           files = queryDrive.files;
-          i++;
-
-          if(files!.isNotEmpty) {
-            break;
-          }
-          if(i==5){
-            break;
-          }
-          if (kDebugMode) {
-            print(i);
-          }
         }
-        if(files.isNotEmpty) {
+        if(files!.isNotEmpty) {
           return true;
         } else {
           throw Exception("File not found");
         }
       } on Exception catch(ex) {
-        print(ex);
+        if (kDebugMode) {
+          print(ex);
+        }
         return false;
       }
     }
@@ -240,29 +203,20 @@ GoogleSignIn  googleSignIn = GoogleSignIn(signInOption: SignInOption.standard,
       $fields: "files(id, name,createdTime,modifiedTime)",
     );
     var files = queryDrive.files;
-    // Need for repeating until query is loaded or no file exists
-    var i = 0;
-    while (files!.isEmpty) {
-      var queryDrive = await drive.files.list(
+
+      if(files!.isEmpty){
+       queryDrive = await drive.files.list(
         q: "name contains '$fileName'",
         $fields: "files(id, name,createdTime,modifiedTime)",
       );
-      files = queryDrive.files;
-      i++;
+      }
+      if(queryDrive.files!.isNotEmpty==true) {
+        files = queryDrive.files;
+      }
 
-      if(files!.isNotEmpty) {
-        break;
-      }
-      if(i==5){
-        break;
-      }
-      if (kDebugMode) {
-        print(i);
-      }
-    }
+
     var checkFile = files?.first;
     var checkTime = checkFile?.modifiedTime;
-
     return (checkTime!.isBefore(modifiedTime));}
       on Exception catch(ex){
     if(kDebugMode){

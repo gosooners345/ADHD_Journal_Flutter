@@ -211,7 +211,7 @@ readyButton.boolSink.add(true);
           isDataSame = false;
         }
       }
-      prefs.setBool('isDataSame', isDataSame);
+
     }
     bool checkDBFile1 = await googleDrive.checkForFile(dbName);
     bool checkDBFile2 = await googleDrive.checkForFile(dbWal);

@@ -109,7 +109,7 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
         resetLoginFieldState();
         setState(() {
           Future.sync(() => getSyncStateStatus());
-        //  getUpdateStateStatus();
+
         });
       }, child: Row(children: const [Icon(Icons.add_to_drive),Text("Sign in to Drive")],));
       stuff = TextEditingController();
@@ -124,6 +124,7 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
     greeting = prefs.getString("greeting") ?? '';
     loginGreeting = await Future.sync(() => getGreeting());
     userPassword = await encryptedSharedPrefs.getString('loginPassword');
+    themeSwapper.themeColor = prefs.getInt("apptheme")?? AppColors.mainAppColor.value;
     try{
       dbPassword = await encryptedSharedPrefs.getString('dbPassword');}
     on Exception catch(ex){
@@ -154,7 +155,6 @@ if(userPassword != dbPassword){
   }
 
   Future<String> getGreeting() async {
-    //await Future.delayed(Duration(seconds: 2));
     greeting = prefs.getString('greeting') ?? '';
     String opener = 'Welcome ';
     String closer = '! Sign in with your password below.';
@@ -353,7 +353,7 @@ googleIsDoingSomething(false);
     }
       if(isDataSame == false){
 googleIsDoingSomething(true);
-        updateValues();
+        setState((){updateValues();});
         googleIsDoingSomething(false);
       }
     } on Exception catch (ex){
@@ -363,7 +363,7 @@ googleIsDoingSomething(true);
       await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
       if(isDataSame == false){
 googleIsDoingSomething(true);
-        updateValues();
+setState((){updateValues();});
         googleIsDoingSomething(false);
       }
       else{
@@ -397,8 +397,6 @@ googleIsDoingSomething(true);
     }
   }
   void showMessage(String message){
-
-
     ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(message)
@@ -455,28 +453,26 @@ googleIsDoingSomething(true);
      prefs.setString('greeting', greeting);
    }
    if(colorSeed!=dlColorSeed){
-setState((){
-  colorSeed = dlColorSeed;
- // swapper?.isColorSeed = colorSeed;
-  themeSwapper.newcolorSeed=colorSeed;
-});
+
+     colorSeed = dlColorSeed;
+   setState(() {
+     themeSwapper.themeColor = colorSeed;
+   });
+
 prefs.setInt('apptheme', colorSeed);
    }
-   print("updated Values in array");
+   if (kDebugMode) {
+     print("updated Values in array");
+   }
    isDataSame = true;
    decipheredData = '';
   googleIsDoingSomething(false);
-//   getUpdateStatus.listen((event) {print(event);});
    refreshPrefs();
   }
-  void checkColors(int value){
-setState(() {
-
-});
 
 
 
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -660,7 +656,7 @@ setState(() {
 String driveStoreDirectory = "Journals";
 PreferenceBackupAndEncrypt preferenceBackupAndEncrypt = PreferenceBackupAndEncrypt();
  LoginButtonReady readyButton = LoginButtonReady();
-enum Ready { yes , no}
+
 class LoginButtonReady{
   StreamController<bool> controller = StreamController<bool>.broadcast(sync: true);
   StreamSink<bool> get boolSink => controller.sink;
@@ -684,6 +680,5 @@ LoginButtonReady(){
 dispose(){
   listener?.cancel();
   controller.close();
-
 }
 }

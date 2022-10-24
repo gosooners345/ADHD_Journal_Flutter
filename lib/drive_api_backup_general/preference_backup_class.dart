@@ -53,7 +53,7 @@ class PreferenceBackupAndEncrypt {
       }
     } on Exception catch (tm) {
       var checkKeysOnline = await drive.checkForFile("journ_pubKey.pem");
-      var checkPrivKey = await drive.checkForFile("journ_privKey.pem");
+      var checkPrivKey = await drive.checkForFile('journ_privKey.pem');
       if (checkKeysOnline && checkPrivKey) {
         downloadRSAKeys(drive);
       }
@@ -82,7 +82,7 @@ class PreferenceBackupAndEncrypt {
       }
       io.File csvFile = io.File(docsLocation);
       if(csvFile.existsSync()){
-        await Future.delayed(Duration(seconds: 1),() {
+        await Future.delayed(const Duration(seconds: 1),() {
           decipheredData = CryptoUtils.rsaDecrypt(
               csvFile.readAsStringSync(encoding: Encoding.getByName("utf-8")!),
               privKey!);
@@ -151,7 +151,9 @@ class PreferenceBackupAndEncrypt {
         print("data encrypted");
       }
     } on Exception catch(ex){
-      print("Keys already exist in cloud");
+      if (kriss.kDebugMode) {
+        print("Keys already exist in cloud");
+      }
     }
   }
   //Replace RSA Keys with new keys
