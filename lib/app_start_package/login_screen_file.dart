@@ -77,9 +77,57 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
 
     setState(() {
       driveButton = ElevatedButton(onPressed: () async{
-        googleDrive.client = await Future.sync(()=>googleDrive.getHttpClient());
+        var firstUse = prefs.getBool("authenticated") ?? false;
+        if(firstUse == false){
+          showDialog(context: context,barrierDismissible: false,builder: (BuildContext context){
+            return AlertDialog(title: const Text("Backup and Sync Feature "),content: Text("Thank you for choosing to use backup and sync. When the dialog box shows up, you'll want to approve this feature. "
+                "Backups will use your Google Drive account for storage. Whenever you turn on this feature on another device, all changes made to the database will backup to your Drive account and sync on other devices linked with the gmail account you choose. "
+                "You can turn this off anytime in settings. Hit Yes to continue!"),
+              actions: <Widget> [ TextButton(child: const Text("Yes"),onPressed: () async{
+                googleDrive.client = await Future.sync(()=>googleDrive.getHttpClient());
+                var checkDB = File(dbLocation);
+                var checkKeys = File(path.join(keyLocation,"journ_privkey.pem"));
+                var checkPrefs = File(docsLocation);
+                var checkDBOnline = await Future.sync(()=>googleDrive.checkForFile(dbName));
+                var checkPrefsOnline = await Future.sync(() => googleDrive.checkForFile(prefsTransportName));
+                var checkKeysOnline = await Future.sync(() => googleDrive.checkForFile("journ_privKey.pem"));
+                if(checkDB.existsSync()&&checkPrefs.existsSync()&&checkKeys.existsSync()){
+                  if(checkDBOnline&&checkPrefsOnline&&checkKeysOnline){
+                    checkFileAge();}
+                  else{
+                    String dataForEncryption ='$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
+                    preferenceBackupAndEncrypt.encryptData(dataForEncryption, googleDrive);
+                    await Future.sync(() => uploadDBFiles());
+                  }
+                } else {
+                  if(checkDBOnline&&checkPrefsOnline&&checkKeysOnline){
+                    readyButton.boolSink.add(false);
+                    await preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
+                    await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
+                    await Future.sync(() => restoreDBFiles()).whenComplete(() => updateValues());
+                  }
+                  else{
+                    showMessage("You need to open up the journal for the first time!");
+                    preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
+                  }
+                }
+                resetLoginFieldState();
+                setState(() {
+                  Future.sync(() => getSyncStateStatus());
 
+                });
+                Navigator.of(context).pop();
+              },), TextButton(onPressed: (){
+                userActiveBackup = false;
+                prefs.setBool("testBackup", userActiveBackup);
+                showMessage("To turn Backup & Sync on, simply hit Add to Drive and hit Yes next time!");
+                Navigator.of(context).pop();
+              }, child: Text("No"))   ],
 
+            );
+          });
+        }
+       else{ googleDrive.client = await Future.sync(()=>googleDrive.getHttpClient());
         var checkDB = File(dbLocation);
         var checkKeys = File(path.join(keyLocation,"journ_privkey.pem"));
         var checkPrefs = File(docsLocation);
@@ -111,6 +159,7 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
           Future.sync(() => getSyncStateStatus());
 
         });
+       }
       }, child: Row(children: const [Icon(Icons.add_to_drive),Text("Sign in to Drive")],));
       stuff = TextEditingController();
     });
