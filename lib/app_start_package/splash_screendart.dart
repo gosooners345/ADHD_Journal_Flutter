@@ -93,6 +93,16 @@ class _SplashScreenState extends State<SplashScreen> {
     swapper = ThemeSwap();
     swapper?.themeColor =
         prefs.getInt("apptheme") ?? AppColors.mainAppColor.value;
+  //Network Status check here:
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if(userActiveBackup == true){
+    if(connectivityResult == ConnectivityResult.none){
+      userActiveBackup = false;
+    }
+    else if( connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi){
+      userActiveBackup = true;
+    }}
+
     if (userActiveBackup) {
       // try{
       appStatus.value =
@@ -165,10 +175,13 @@ readyButton.boolSink.add(true);
 
     bool checkOnlineKeys = await Future.sync(() =>
         googleDrive.checkForFile('journ_privkey.pem'));
-    if (!privateKeyFile.existsSync() && checkOnlineKeys) {
+    bool checkKeyAge = await Future.sync(() => googleDrive.checkCSVFileAge("journ_privkey.pem"));
+    if (!privateKeyFile.existsSync() && checkOnlineKeys || checkKeyAge == true) {
       await preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
+      preferenceBackupAndEncrypt.assignRSAKeys(googleDrive);
+      
     }
-    else if (!privateKeyFile.existsSync() && !checkOnlineKeys) {
+    else if (!privateKeyFile.existsSync() && !checkOnlineKeys ) {
       preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
     }
     else {
@@ -186,8 +199,10 @@ readyButton.boolSink.add(true);
         await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
         if (dataForEncryption == decipheredData) {
           isDataSame = true;
-          appStatus.value =
-          "Don't worry about waiting when things are done loading!";
+
+            appStatus.value =
+            "Don't worry about waiting when things are done loading!";
+        //  });
         } else {
           isDataSame = false;
           appStatus.value = "Your data will need to be synced before you login";
@@ -195,8 +210,10 @@ readyButton.boolSink.add(true);
       }
     } else {
       try {
-        appStatus.value =
-        "Syncing preferences with Google Drive for your other devices to sync up when they connect!";
+
+          appStatus.value =
+          "Syncing preferences with Google Drive for your other devices to sync up when they connect!";
+
         if (prefsFile.existsSync()) {
           prefsFile.deleteSync();
           preferenceBackupAndEncrypt.encryptData(
@@ -223,7 +240,10 @@ readyButton.boolSink.add(true);
               if(kDebugMode){
                 print("Download done"),
               },
-              appStatus.value = "Your Journal is synced on device now",
+
+            appStatus.value = "Your Journal is synced on device now",
+
+
             readyButton.boolSink.add(false)
             }));
       }
@@ -234,7 +254,10 @@ readyButton.boolSink.add(true);
               if(kDebugMode){
                 print("Upload done"),
               },
-              appStatus.value = "Your Journal is synced online now",
+
+            appStatus.value = "Your Journal is synced online now",
+
+
             readyButton.boolSink.add(false)
             }));
       }

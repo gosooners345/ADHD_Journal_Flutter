@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'dart:io';
+import 'package:adhd_journal_flutter/settings_tutorials/backup_and_sync_help.dart';
 import 'package:adhd_journal_flutter/ui/dashboard_stats_display_widget.dart';
 import 'package:adhd_journal_flutter/record_data_package/record_list_class.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
@@ -72,6 +73,7 @@ class MyApp extends StatelessWidget {
             '/dashboardhelp': (context) => DashboardHelp(),
             '/searchhelp': (context) => SortHelp(),
             '/resources' : (context) => HelpfulLinksWidget(),
+            '/backuphelp' : (context) =>BackupAndSyncdHelp(),
           },
         );
       },

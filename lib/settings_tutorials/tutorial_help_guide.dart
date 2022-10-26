@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class TutorialHelpScreen extends StatelessWidget {
+  const TutorialHelpScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(
@@ -46,6 +48,16 @@ class TutorialHelpScreen extends StatelessWidget {
             title: Text('How to use sorting and filtering features'),
             onTap: () {
               Navigator.pushNamed(context, '/searchhelp');
+            },
+          ),Divider(
+            height: 1.0,
+            thickness: 0.5,
+            color: Color(swapper.isColorSeed),
+          ),
+          ListTile(
+            title: Text('How Backup and sync works'),
+            onTap: () {
+              Navigator.pushNamed(context, '/backuphelp');
             },
           ),
         ],

@@ -78,6 +78,13 @@ const String password_hint_needed = 'The app now features the ability to add a p
     'Enter a password hint below and hit save to continue.'
     '';
 
+const String backup_and_sync_intro_paragraph_string =
+'You can backup and sync your journal across multiple devices. At this time, only Google Drive integration is supported. Other services will be added later. To activate, hit Sign into Google Drive. You can turn this off in settings by toggling the backup and sync switch.';
+const String backup_and_sync_2nd_paragraph_string ='When you update one journal, any updates you make will be uploaded on loading, exiting settings, and exiting to the login screen. Make sure to close the app to the login screen if you want to upload it right away. '
+    'When you open the app and the app detects any updated files online, the app will automatically download the files onto your device when loading. The app will update the values in the application if you changed your app\'s password or any other values. See the help page for more info.';
+
+
+
 const String link_how_to_ADHD_YT = 'https://www.youtube.com/c/HowtoADHD';
 const String link_chadd_website = 'https://www.chadd.org';
 const String link_additudemag_website = 'https://www.additudemag.com/';

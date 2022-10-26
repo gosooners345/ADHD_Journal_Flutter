@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:path/path.dart' as path;
 
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
@@ -115,6 +116,26 @@ if(passwordHint ==" "){
       colorSeed = color.value;
       currentColor = color;
     });
+  }
+  // USE ONLY IF YOU NEED TO RESET KEYS ON DEVICE. A FILE WILL BE ON THE DRIVE WARNING OF OLD KEYS
+
+  void resetRSAKeys() async{
+  googleDrive.deleteOutdatedBackups("tuff");
+
+  googleDrive.deleteOutdatedBackups("NewKEYS.txt");
+  String newKeyFileNeeded = "New Key NEEDED";
+  File newKeyFile = File(path.join(keyLocation,"NewKEYS.txt"));
+newKeyFile.writeAsStringSync(newKeyFileNeeded);
+  await Future.sync(()=> googleDrive.deleteOutdatedBackups(".pem")).whenComplete(() => {
+  googleDrive.uploadFileToGoogleDrive(newKeyFile),
+  preferenceBackupAndEncrypt.generateRSAKeys(),
+  });
+await Future.delayed(Duration(seconds:2), (){  preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);});
+await Future.delayed(Duration(seconds: 5),(){
+preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
+});
+
+
   }
 
 
@@ -245,6 +266,12 @@ showDialog(context: context, builder: (BuildContext builder){
             ),
           ),
           spacer,
+
+
+
+            //Password tile
+
+
           Divider(
             height: 1.0,
             thickness: 0.5,
@@ -309,12 +336,45 @@ showDialog(context: context, builder: (BuildContext builder){
             color: Color(swapper.isColorSeed),
           ),
           //Sync
-          spacer,
+
+          ListTile(
+            title: Text("Advanced Settings - Click here if you need to reset RSA Keys"),
+            onTap: (){ showDialog(context: context, builder: (BuildContext builder){
+              return AlertDialog(title: ListTile(
+                title:const Text("Reset RSA Keys for backup and sync.",),
+                onTap: (){
+                  showDialog(context: context, builder: (BuildContext builder){
+                    return AlertDialog(
+                      title: const Text("Reset RSA Keys "),
+                      content:
+                      const Text("If you have Backup and sync enabled, this will replace your existing RSA Keys in the cloud. Use with caution.\r\n"
+                          "I can\'t predict the results of this action in advance apart from your device getting new keys to encrypt and decrypt values from Google Drive.\r\n"
+                          "Hit Yes to continue.Hit exit when done."),
+                      actions: [
+                        ElevatedButton(onPressed: () async{
+
+                          if(userActiveBackup == true){
+                            await Future.sync(()=>resetRSAKeys()).whenComplete(() {showMessage("You can hit exit now, your keys have been reset");});
+
+
+                          }
+                          else{Navigator.of(context).pop();}
+
+
+
+                        }, child: Text("Yes - Hit Exit to leave after resetting the keys.")),
+                        ElevatedButton(onPressed: (){Navigator.of(context).pop();}, child: Text("Exit"))
+                      ],
+                    );
+                  });
+                },
+              ),
+                actions: [ElevatedButton(onPressed: (){Navigator.of(context).pop();}, child: Text("Exit"))],);},);},),spacer,
           Divider(
             height: 1.0,
             thickness: 0.5,
             color: Color(swapper.isColorSeed),
-          ),
+          ),spacer,
           SwitchListTile(
             value: userActiveBackup,
             onChanged: (bool value) {
@@ -477,4 +537,13 @@ showDialog(context: context, builder: (BuildContext builder){
         isHTML: false);
     await FlutterEmailSender.send(email);
   }
+
+  void showMessage(String message){
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(message)
+        ));
+  }
+
+
 }

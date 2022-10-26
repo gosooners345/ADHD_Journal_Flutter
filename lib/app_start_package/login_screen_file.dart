@@ -80,10 +80,10 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
         var firstUse = prefs.getBool("authenticated") ?? false;
         if(firstUse == false){
           showDialog(context: context,barrierDismissible: false,builder: (BuildContext context){
-            return AlertDialog(title: const Text("Backup and Sync Feature "),content: Text("Thank you for choosing to use backup and sync. When the dialog box shows up, you'll want to approve this feature. "
-                "Backups will use your Google Drive account for storage. Whenever you turn on this feature on another device, all changes made to the database will backup to your Drive account and sync on other devices linked with the gmail account you choose. "
-                "You can turn this off anytime in settings. Hit Yes to continue!"),
+            return AlertDialog(title: const Text("Backup and Sync Feature "),content: Text("You're about to turn on Backup and Sync for ADHD Journal. The service uses your Google Drive account to store your Journal and related files with it. "
+                "All encrypted. Your journal, passwords, and preferences sync between all devices linked with your gmail and this app. For more information, check out the help page in settings."),
               actions: <Widget> [ TextButton(child: const Text("Yes"),onPressed: () async{
+                Navigator.of(context).pop();
                 googleDrive.client = await Future.sync(()=>googleDrive.getHttpClient());
                 var checkDB = File(dbLocation);
                 var checkKeys = File(path.join(keyLocation,"journ_privkey.pem"));
@@ -116,7 +116,7 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
                   Future.sync(() => getSyncStateStatus());
 
                 });
-                Navigator.of(context).pop();
+
               },), TextButton(onPressed: (){
                 userActiveBackup = false;
                 prefs.setBool("testBackup", userActiveBackup);
@@ -236,6 +236,7 @@ if(userPassword != dbPassword){
   }
 
   void resetLoginFieldState() {
+
     if (userActiveBackup) {
       if(isThisReturning== true){
         checkFileAge();
@@ -245,7 +246,6 @@ if(userPassword != dbPassword){
         updateValues();
         googleIsDoingSomething(false);
       }
-
     }
     else{
       googleIsDoingSomething(false);
@@ -671,6 +671,7 @@ prefs.setInt('apptheme', colorSeed);
                             }
                           }),),
                   ),
+                  SizedBox(height: 40,),
                   SizedBox(
                     height: 50, child: ElevatedButton(
                     onPressed: () {
@@ -684,7 +685,7 @@ prefs.setInt('apptheme', colorSeed);
                     },
                     child: Text(
                       'Update Files',
-                      style: TextStyle(color: Colors.white, fontSize: 25),
+                      style: TextStyle( fontSize: 25),
                     ),
                   ),
                   ),

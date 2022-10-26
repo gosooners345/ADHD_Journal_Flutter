@@ -33,14 +33,12 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     //color: Colors.black,
   );
   var pageInfoStyle = const TextStyle(
-    //  color: Colors.black,
     letterSpacing: 0.7,
     height: 1.5,
   );
 
   late Material materialButton;
   late int index;
-  // Color background = Colors.white;
 
   @override
   void initState() {
@@ -354,6 +352,66 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
               ),
             ),
           ),
+          //Backup And Sync Page
+          PageModel(
+              widget: DecoratedBox(
+                decoration: BoxDecoration(
+                    border: Border.all(
+                      width: 0.0,
+                    )),
+                child: SingleChildScrollView(
+                  controller: ScrollController(),
+                  child: Column(
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 45.0,
+                          vertical: 90.0,
+                        ),
+                        child: Icon(
+                          Icons.sync,
+                          // color: Colors.black,
+                          size: 60.0,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Backup and Sync Functionality',
+                            style: pageTitleStyle,
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(backup_and_sync_intro_paragraph_string,
+                            style: pageInfoStyle,
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(backup_and_sync_2nd_paragraph_string,
+                            style: pageInfoStyle,
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                      )
+
+                    ],
+                  ),
+                ),
+              )),
           //Last page
           PageModel(
             widget: DecoratedBox(
