@@ -19,6 +19,12 @@ class RecordsBloc {
   RecordsBloc() {
     getRecords();
   }
+  RecordsBloc.changePasswords(String newPassword){
+    getRecords();
+    changeDBPasswords(newPassword);
+getRecords();
+
+  }
 
   RecordsBloc.searchedList(String query) {
     getSearchedRecords(query);
@@ -61,12 +67,19 @@ class RecordsBloc {
     getRecords();
   }
 
-  void changeDBPasswords() {
-    _recordsRepo.changePassword();
+ changeDBPasswords(String newPassword) {
+    _recordsRepo.changePassword(newPassword);
+    getRecords();
+  }
+
+  void writeCheckpoint(){
+    _recordsRepo.writeCheckpoint();
   }
 
   dispose() {
     _recordsController.close();
+    _recordsRepo.writeCheckpoint();
+    _recordsRepo.close();
   }
 
   int getMaxID() {

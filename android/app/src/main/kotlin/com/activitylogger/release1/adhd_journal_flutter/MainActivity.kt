@@ -38,7 +38,6 @@ class MainActivity: FlutterActivity(){
             when (call.method) {
                 "changeDBPasswords" -> {
                     try {
-                        // sharePreferences =  getSharedPreferences(BuildConfig.APPLICATION_ID, MODE_PRIVATE)
 var arg1 = call.argument("oldDBPassword") as String?
 var arg2 = call.argument("newDBPassword") as String?
 var oldDBPassword = SQLiteDatabase.getBytes(arg1?.toCharArray())
@@ -89,11 +88,6 @@ val dbPasswordGet = appPreferences.getString("dbPassword","")
                 }
                     result.success(testPath)
                 }
-         /*       "checkFirstVisit"->{
-                    val firstVisit = appPreferences.getBoolean("firstUse",true)
-result.success(firstVisit)
-
-                }*/
 
             }
         }

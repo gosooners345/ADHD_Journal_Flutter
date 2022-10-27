@@ -69,7 +69,7 @@ passwordTimer();
   /// Stream widget testing here
   Widget getRecordsDisplay() {
     return Consumer<ThemeSwap>(
-        builder: (context, ThemeSwap themeNotifier, child) { return StreamBuilder(
+        builder: (context, swapper, child) { return StreamBuilder(
       stream: recordsBloc.recordStuffs,
       builder: (BuildContext context, AsyncSnapshot<List<Records>> snapshot) {
         return getRecordCards(snapshot);
@@ -80,7 +80,7 @@ passwordTimer();
   Widget getRecordCards(AsyncSnapshot<List<Records>> snapshot) {
     if (snapshot.hasData) {
       return Consumer<ThemeSwap>(
-          builder: (context, ThemeSwap themeNotifier, child) {
+          builder: (context, swapper, child) {
       return snapshot.data!.isNotEmpty
           ? ListView.builder(
               itemBuilder: (context, index) {
@@ -90,7 +90,7 @@ passwordTimer();
                   background: Card(
                     shape: RoundedRectangleBorder(
                         side: BorderSide(
-                            color: Color(themeNotifier.isColorSeed), width: 1.0),
+                            color: Color(swapper.isColorSeed), width: 1.0),
                         borderRadius: BorderRadius.circular(10)),
                     elevation: 2.0,
                     child: const Padding(
@@ -103,13 +103,13 @@ passwordTimer();
                         ),
                       ),
                     ),
-                    color: Color(themeNotifier.isColorSeed),
+                    color: Color(swapper.isColorSeed),
                   ),
                   key: ObjectKey(record),
                   child: Card(
                       shape: RoundedRectangleBorder(
                           side: BorderSide(
-                              color: Color(themeNotifier.isColorSeed), width: 1.0),
+                              color: Color(swapper.isColorSeed), width: 1.0),
                           borderRadius: BorderRadius.circular(10)),
                       child: ListTile(
                         onTap: () {
@@ -133,7 +133,7 @@ passwordTimer();
                                       Navigator.pop(context);
                                       recordsBloc.deleteRecordByID(record.id);
                                      _showAlert(context, "Entry Deleted");
-                                      //print('Deleted Record');
+                                   recordsBloc.writeCheckpoint();
                                     },
                                     child: const Text('Yes')),
                                 TextButton(
@@ -200,7 +200,9 @@ passwordTimer();
                         id: 1,
                         title: 'Edit Entry',
                       )))
-          .then((value) => _showAlert(context,'Record Saved'),
+          .then((value) { _showAlert(context,'Record Saved');
+      recordsBloc.writeCheckpoint();
+      _showAlert(context, "Changes to DB Saved");}
               );
     });
   }
@@ -268,12 +270,13 @@ passwordTimer();
   void saveSettings(String value, String key) async {
     encryptedSharedPrefs.setString(key, value);
     await   encryptedSharedPrefs.setString(key, value);
+
   }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(
-        builder: (context, ThemeSwap themeNotifier, child) {
+        builder: (context, swapper, child) {
     return Column(
       children: <Widget>[
         const SizedBox(height: 20),

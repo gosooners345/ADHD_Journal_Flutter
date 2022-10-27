@@ -9,7 +9,7 @@ class DashboardHelp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(
-        builder: (context, ThemeSwap themeNotifier, child) {
+        builder: (context, swapper, child) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard Guide'),
@@ -19,7 +19,7 @@ class DashboardHelp extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           const ListTile(
             title: Text(
@@ -28,7 +28,7 @@ class DashboardHelp extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           const ListTile(
             title: Text(
@@ -40,7 +40,7 @@ class DashboardHelp extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           const ListTile(
             title: Text('The graphing cards'),
@@ -52,7 +52,7 @@ class DashboardHelp extends StatelessWidget {
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           const ListTile(
             title: Text('How to zoom in on each card'),

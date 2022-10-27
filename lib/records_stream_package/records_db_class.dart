@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:adhd_journal_flutter/app_start_package/login_screen_file.dart';
 import 'package:flutter/foundation.dart';
@@ -12,10 +11,7 @@ class RecordsDB {
   static const platform =
       MethodChannel('com.activitylogger.release1/ADHDJournal');
 
-  /// Remains here because it can be called from other methods
-  void changePasswords() async {
-    _changeDBPassword(dbPassword, userPassword);
-  }
+
 
   static final RecordsDB recordDB = RecordsDB();
 
@@ -41,18 +37,7 @@ class RecordsDB {
     );
   }
 
-  Future<void> _changeDBPassword(String oldPassword, String newPassword) async {
-    try {
 
-      await platform.invokeMethod('changeDBPasswords',
-          {'oldDBPassword': oldPassword, 'newDBPassword': newPassword});
-      dbPassword = newPassword;
-      await encryptedSharedPrefs.setString('dbPassword', newPassword);
-    } on Exception catch (ex) {
-      if (kDebugMode) {
-        print(ex);
-      }
-    }
-  }
+
 }
 

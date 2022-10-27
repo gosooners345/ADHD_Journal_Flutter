@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../app_start_package/splash_screendart.dart';
 
+import '../drive_api_backup_general/google_drive_backup_class.dart';
 import '../project_resources/project_strings_file.dart';
 
 class OnBoardingWidget extends StatefulWidget {
@@ -22,7 +23,8 @@ bool callingCard = false;
 
 class _OnBoardingWidgetState extends State<OnBoardingWidget> {
   bool isSaved = false;
-
+  GoogleDrive googleDrive = GoogleDrive();
+  late  ElevatedButton driveButton;
   var pageTitleStyle = const TextStyle(
     fontSize: 23.0,
     wordSpacing: 1,
@@ -31,20 +33,22 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     //color: Colors.black,
   );
   var pageInfoStyle = const TextStyle(
-    //  color: Colors.black,
     letterSpacing: 0.7,
     height: 1.5,
   );
 
   late Material materialButton;
   late int index;
-  // Color background = Colors.white;
 
   @override
   void initState() {
     super.initState();
     encryptedSharedPrefs = EncryptedSharedPreferences();
     index = 0;
+    driveButton = ElevatedButton(onPressed: (){
+      googleDrive.getHttpClient();
+
+    }, child: Row(children: [Icon(Icons.add_to_drive),Text("Sign in to Drive")],));
   }
 
 // Onboarding pages location
@@ -348,6 +352,66 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
               ),
             ),
           ),
+          //Backup And Sync Page
+          PageModel(
+              widget: DecoratedBox(
+                decoration: BoxDecoration(
+                    border: Border.all(
+                      width: 0.0,
+                    )),
+                child: SingleChildScrollView(
+                  controller: ScrollController(),
+                  child: Column(
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 45.0,
+                          vertical: 90.0,
+                        ),
+                        child: Icon(
+                          Icons.sync,
+                          // color: Colors.black,
+                          size: 60.0,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Backup and Sync Functionality',
+                            style: pageTitleStyle,
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(backup_and_sync_intro_paragraph_string,
+                            style: pageInfoStyle,
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(backup_and_sync_2nd_paragraph_string,
+                            style: pageInfoStyle,
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                      )
+
+                    ],
+                  ),
+                ),
+              )),
           //Last page
           PageModel(
             widget: DecoratedBox(
@@ -443,6 +507,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                           });
                         }),
                   ),
+
                   ElevatedButton(
 
                     onPressed: () async {

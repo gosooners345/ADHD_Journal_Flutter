@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:path/path.dart' as path;
 
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
@@ -31,11 +32,14 @@ class _SettingsPage extends State<SettingsPage> {
  String passwordHintValue = passwordHint;
   String greetingValue = '';
   Text passwordLabelWidget = const Text('');
-  bool passwordEnabled = false;
+  //bool passwordEnabled = false;
+  Text syncTextWidget = const Text('');
   late SwitchListTile passwordEnabledTile;
   //Visual changes based on parameter values
   String passwordLabelText = 'Password Enabled';
+  String  syncTextLabelText = "Turn backup on/off";
   late Icon lockIcon;
+  Icon syncIcon=Icon(Icons.sync,color: Color(colorSeed),);
   // Convenience Widget for spacing and alignment
   SizedBox spacer = const SizedBox(height: 16, width: 8);
   //Text Controllers
@@ -46,9 +50,6 @@ class _SettingsPage extends State<SettingsPage> {
   Color currentColor = AppColors.mainAppColor;
   Color pickerColor = AppColors.mainAppColor;
   void changeColor(ThemeSwap swapper,int value) {
-    setState(() {
-
-    });
     colorSeed=value;
     saveColorSettings(swapper,value);
   }
@@ -62,6 +63,7 @@ class _SettingsPage extends State<SettingsPage> {
 if(passwordHint ==" "){
   passwordHint = '';
 }
+
     setState(() {
       greetingController = TextEditingController(text: greeting);
       passwordController = TextEditingController(text: userPassword);
@@ -72,18 +74,26 @@ if(passwordHint ==" "){
           color: Color(colorSeed),
         );
         passwordLabelText = "Password Enabled";
-        passwordLabelWidget = Text(passwordLabelText);
+
       } else {
         lockIcon = Icon(
           Icons.lock_open,
           color: Color(colorSeed),
         );
         passwordLabelText = "Password Disabled";
-        passwordLabelWidget = Text(passwordLabelText);
       }
+      passwordLabelWidget = Text(passwordLabelText);
+      if(userActiveBackup){
+        syncIcon =Icon(Icons.sync,color: Color(colorSeed),);
+        syncTextLabelText = "Backup and Sync to Drive Enabled";
+      }
+      else{
+        syncIcon=Icon(Icons.sync_disabled,color: Color(colorSeed),);
+        syncTextLabelText = "Backup and Sync to Drive Disabled";
+      }
+      syncTextWidget = Text(syncTextLabelText);
     });
   }
-
   ///Save string values into the preferences
   void saveSettings(String value, String key) async {
     encryptedSharedPrefs.setString(key, value);
@@ -94,11 +104,10 @@ if(passwordHint ==" "){
   void saveSettings2(bool value, String key) async {
     prefs.setBool(key, value);
   }
-  void saveColorSettings(ThemeSwap swapper,int colorValue) async{
 
+  void saveColorSettings(ThemeSwap swapper,int colorValue) async{
     setState(() {
       swapper.themeColor = colorValue;
-    //  swapper.notifyListeners();
     });
 
   }
@@ -108,13 +117,33 @@ if(passwordHint ==" "){
       currentColor = color;
     });
   }
+  // USE ONLY IF YOU NEED TO RESET KEYS ON DEVICE. A FILE WILL BE ON THE DRIVE WARNING OF OLD KEYS
+
+  void resetRSAKeys() async{
+  googleDrive.deleteOutdatedBackups("tuff");
+
+  googleDrive.deleteOutdatedBackups("NewKEYS.txt");
+  String newKeyFileNeeded = "New Key NEEDED";
+  File newKeyFile = File(path.join(keyLocation,"NewKEYS.txt"));
+newKeyFile.writeAsStringSync(newKeyFileNeeded);
+  await Future.sync(()=> googleDrive.deleteOutdatedBackups(".pem")).whenComplete(() => {
+  googleDrive.uploadFileToGoogleDrive(newKeyFile),
+  preferenceBackupAndEncrypt.generateRSAKeys(),
+  });
+await Future.delayed(Duration(seconds:2), (){  preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);});
+await Future.delayed(Duration(seconds: 5),(){
+preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
+});
+
+
+  }
 
 
   /// The display for the screen
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(
-        builder: (context, ThemeSwap themeNotifier, child) {
+        builder: (context, swapper, child) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
@@ -124,6 +153,7 @@ if(passwordHint ==" "){
               if(passwordHint == ''){
                 passwordHint = ' ';
               }
+              passwordEnabled = isPasswordChecked;
               saveSettings(passwordHint, 'passwordHint');
               saveSettings(userPassword, 'loginPassword');
               prefs.setString('greeting', greeting);
@@ -138,7 +168,7 @@ if(passwordHint ==" "){
       body: ListView(
         children: <Widget>[
           ListTile(
-            iconColor: Color(themeNotifier.isColorSeed),
+            iconColor: Color(swapper.isColorSeed),
             leading: const Icon(Icons.display_settings),
             title: const Text(
               'Customization Settings',
@@ -148,7 +178,7 @@ if(passwordHint ==" "){
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           spacer,
           ListTile(
@@ -168,11 +198,11 @@ if(passwordHint ==" "){
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(colorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           spacer,
           ListTile(
-            title:Text("Application Theme Colors",),
+            title:const Text("Application Theme Colors",),
             onTap: (){
 showDialog(context: context, builder: (BuildContext builder){
   return AlertDialog(
@@ -188,7 +218,7 @@ showDialog(context: context, builder: (BuildContext builder){
       ElevatedButton(onPressed: (){
         setState(() {
           currentColor = pickerColor;
-        changeColor(themeNotifier,colorSeed );
+        changeColor(swapper,colorSeed );
 
         });
         Navigator.of(context).pop();
@@ -203,10 +233,10 @@ showDialog(context: context, builder: (BuildContext builder){
           Divider(
             height: 2.0,
             thickness: 2.0,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
-            iconColor: Color(themeNotifier.isColorSeed),
+            iconColor: Color(swapper.isColorSeed),
             leading: const Icon(Icons.security),
             title: const Text(
               'Security Settings',
@@ -216,7 +246,7 @@ showDialog(context: context, builder: (BuildContext builder){
           Divider(
             height: 1.0,
             thickness: .5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           spacer,
           //Password tile
@@ -236,10 +266,16 @@ showDialog(context: context, builder: (BuildContext builder){
             ),
           ),
           spacer,
+
+
+
+            //Password tile
+
+
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),spacer,
           ListTile(
             title: TextField(
@@ -262,7 +298,7 @@ showDialog(context: context, builder: (BuildContext builder){
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           SwitchListTile(
             value: isPasswordChecked,
@@ -273,7 +309,7 @@ showDialog(context: context, builder: (BuildContext builder){
                 if (value) {
                   lockIcon = Icon(
                     Icons.lock,
-                    color: Color(themeNotifier.isColorSeed),
+                    color: Color(swapper.isColorSeed),
                   );
                   passwordLabelText = "Password Enabled";
                   prefs.setBool('passwordEnabled', value);
@@ -281,7 +317,7 @@ showDialog(context: context, builder: (BuildContext builder){
                 } else if (!value) {
                   lockIcon = Icon(
                     Icons.lock_open,
-                    color: Color(themeNotifier.isColorSeed),
+                    color: Color(swapper.isColorSeed),
                   );
                   passwordLabelText = "Password Disabled";
                   prefs.setBool('passwordEnabled', value);
@@ -297,10 +333,81 @@ showDialog(context: context, builder: (BuildContext builder){
           Divider(
             height: 2.0,
             thickness: 2.0,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
+          ),
+          //Sync
+
+          ListTile(
+            title: Text("Advanced Settings - Click here if you need to reset RSA Keys"),
+            onTap: (){ showDialog(context: context, builder: (BuildContext builder){
+              return AlertDialog(title: ListTile(
+                title:const Text("Reset RSA Keys for backup and sync.",),
+                onTap: (){
+                  showDialog(context: context, builder: (BuildContext builder){
+                    return AlertDialog(
+                      title: const Text("Reset RSA Keys "),
+                      content:
+                      const Text("If you have Backup and sync enabled, this will replace your existing RSA Keys in the cloud. Use with caution.\r\n"
+                          "I can\'t predict the results of this action in advance apart from your device getting new keys to encrypt and decrypt values from Google Drive.\r\n"
+                          "Hit Yes to continue.Hit exit when done."),
+                      actions: [
+                        ElevatedButton(onPressed: () async{
+                          if(userActiveBackup == true){
+                            await Future.sync(()=>resetRSAKeys()).whenComplete(() {showMessage("You can hit exit now, your keys have been reset");});
+                          }
+                          else{Navigator.of(context).pop();}
+                        }, child: Text("Yes - Hit Exit to leave after resetting the keys.")),
+                        ElevatedButton(onPressed: (){Navigator.of(context).pop();}, child: Text("Exit"))
+                      ],
+                    );
+                  });
+                },
+              ),
+                actions: [ElevatedButton(onPressed: (){Navigator.of(context).pop();}, child: Text("Exit"))],);},);},),spacer,
+          Divider(
+            height: 1.0,
+            thickness: 0.5,
+            color: Color(swapper.isColorSeed),
+          ),spacer,
+          SwitchListTile(
+            value: userActiveBackup,
+            onChanged: (bool value) {
+              userActiveBackup = value;
+              userActiveBackup = value;
+              setState(() {
+                if (value==true) {
+                  syncIcon = Icon(Icons.sync,
+                    color: Color(swapper.isColorSeed),
+                  );
+                  syncTextLabelText = "Backup and Sync to Drive Enabled";
+                  prefs.setBool('testBackup', value);
+                  if (kDebugMode) {
+                    print("Backup and sync is $value");
+                  }
+                  getDriveAgent();
+                } else if (value==false) {
+                  syncIcon = Icon(Icons.sync_disabled,
+                    color: Color(swapper.isColorSeed),
+                  );
+                  syncTextLabelText = "Backup and Sync to Drive Disabled";
+                  prefs.setBool('testBackup', value);
+                  print("Backup and Sync is $value");
+                }
+                syncTextWidget = Text(syncTextLabelText);
+              });
+
+            },
+            title: syncTextWidget,
+            secondary: syncIcon,
+          ),
+          spacer,
+          Divider(
+            height: 2.0,
+            thickness: 2.0,
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
-            iconColor: Color(themeNotifier.isColorSeed),
+            iconColor: Color(swapper.isColorSeed),
             leading: const Icon(Icons.info_outline),
             title: const Text(
               'Application info',
@@ -310,10 +417,11 @@ showDialog(context: context, builder: (BuildContext builder){
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
+
           ListTile(
-            iconColor: Color(themeNotifier.isColorSeed),
+            iconColor: Color(swapper.isColorSeed),
             leading: const Icon(Icons.info_outline),
             title: Text(
               'You are running version $buildInfo',
@@ -323,7 +431,7 @@ showDialog(context: context, builder: (BuildContext builder){
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
             leading: const Icon(Icons.email_outlined),
@@ -348,7 +456,7 @@ showDialog(context: context, builder: (BuildContext builder){
                 );
               }
             },
-            iconColor: Color(themeNotifier.isColorSeed),
+            iconColor: Color(swapper.isColorSeed),
             title: const Text('Contact Me'),
             subtitle: Row(
               children: const [
@@ -365,7 +473,7 @@ showDialog(context: context, builder: (BuildContext builder){
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
             onTap: () {
@@ -377,16 +485,16 @@ showDialog(context: context, builder: (BuildContext builder){
               }
             },
             title: const Text('Rate my app'),
-            iconColor: Color(themeNotifier.isColorSeed),
+            iconColor: Color(swapper.isColorSeed),
             leading: const Icon(Icons.star),
           ),
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
-            iconColor: Color(themeNotifier.isColorSeed),
+            iconColor: Color(swapper.isColorSeed),
             leading: const Icon(Icons.help),
             title: const Text("How to use app?"),
             subtitle: const Text(
@@ -398,10 +506,10 @@ showDialog(context: context, builder: (BuildContext builder){
           Divider(
             height: 1.0,
             thickness: 0.5,
-            color: Color(themeNotifier.isColorSeed),
+            color: Color(swapper.isColorSeed),
           ),
           ListTile(
-            iconColor: Color(themeNotifier.isColorSeed),
+            iconColor: Color(swapper.isColorSeed),
             leading: const Icon(Icons.book),
             title: const Text('Resources'),
             subtitle: const Text(
@@ -425,4 +533,19 @@ showDialog(context: context, builder: (BuildContext builder){
         isHTML: false);
     await FlutterEmailSender.send(email);
   }
+
+  void getDriveAgent() async{
+    googleDrive.client = await googleDrive.getHttpClient();
+  }
+
+
+
+  void showMessage(String message){
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(message)
+        ));
+  }
+
+
 }

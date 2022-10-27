@@ -59,13 +59,13 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(
-        builder: (context, ThemeSwap themeNotifier, child) {
+        builder: (context, swapper, child) {
     return ListView(
       padding: const EdgeInsets.all(8.0),
       children: [
         Card(
           shape: RoundedRectangleBorder(
-              side: BorderSide(color: Color(themeNotifier.isColorSeed), width: 1.0),
+              side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
               borderRadius: BorderRadius.circular(10)),
           elevation: 2.0,
           child: SizedBox(
@@ -97,7 +97,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                       xValueMapper: (RecordRatingStats recLbl, _) =>
                           DateFormat("MM/dd/yyyy hh:mm:ss aa")
                               .format(recLbl.date),
-                      color: Color(themeNotifier.isColorSeed),
+                      color: Color(swapper.isColorSeed),
                       yValueMapper: (RecordRatingStats recLbl, _) =>
                           recLbl.value,
                       dataLabelSettings:
@@ -124,13 +124,13 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
             ],
           ),
           shape: RoundedRectangleBorder(
-              side: BorderSide(color: Color(themeNotifier.isColorSeed), width: 1.0),
+              side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
               borderRadius: BorderRadius.circular(10)),
         ),
         // Success/Fail Chart
         Card(
           shape: RoundedRectangleBorder(
-              side: BorderSide(color: Color(themeNotifier.isColorSeed), width: 1.0),
+              side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
               borderRadius: BorderRadius.circular(10)),
           elevation: 2.0,
           child: Padding(
@@ -158,7 +158,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
 //Emotions Chart
         Card(
             shape: RoundedRectangleBorder(
-                side: BorderSide(color: Color(themeNotifier.isColorSeed), width: 1.0),
+                side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
                 borderRadius: BorderRadius.circular(10)),
             elevation: 2.0,
             child:Column(
@@ -178,7 +178,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                         xValueMapper: (RecordDataStats rec, _) => rec.key,
                         yValueMapper: (RecordDataStats rec, _) => rec.value,
                         name: 'Emotion Data from Journal Entries',
-                        color: Color(themeNotifier.isColorSeed),
+                        color: Color(swapper.isColorSeed),
                         xAxisName: 'Emotions',
                         spacing:0,
                         dataLabelSettings: const DataLabelSettings(
@@ -206,7 +206,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
         //Symptoms Chart
         Card(
           shape: RoundedRectangleBorder(
-              side: BorderSide(color: Color(themeNotifier.isColorSeed), width: 1.0),
+              side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
               borderRadius: BorderRadius.circular(10)),
           elevation: 2.0,
           //child: //SizedBox(
@@ -228,7 +228,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                         xValueMapper: (RecordDataStats rec, _) => rec.key,
                         yValueMapper: (RecordDataStats rec, _) => rec.value,
                         name: 'Symptom Data from Journal Entries',
-                        color: Color(themeNotifier.isColorSeed),
+                        color: Color(swapper.isColorSeed),
                         xAxisName: 'Symptoms',
                         yAxisName: 'Counts',
                         spacing: 0.5,

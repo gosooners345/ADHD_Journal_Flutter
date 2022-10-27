@@ -1,6 +1,9 @@
 // ignore_for_file: prefer_const_constructors, prefer_final_fields
 
 import 'dart:async';
+
+import 'dart:io';
+import 'package:adhd_journal_flutter/settings_tutorials/backup_and_sync_help.dart';
 import 'package:adhd_journal_flutter/ui/dashboard_stats_display_widget.dart';
 import 'package:adhd_journal_flutter/record_data_package/record_list_class.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
@@ -20,6 +23,7 @@ import 'project_resources/project_colors.dart';
 import 'record_data_package/records_data_class_db.dart';
 import 'app_start_package/login_screen_file.dart';
 import 'records_compose_components/compose_records_screen.dart';
+import 'package:adhd_journal_flutter/drive_api_backup_general/preference_backup_class.dart';
 
 List<Records> recordHolder = [];
 int id = 0;
@@ -42,17 +46,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(create: (_)=>ThemeSwap(),
     child: Consumer<ThemeSwap>(
-      builder: (context, ThemeSwap themeSwap, child){
+      builder: (context, swapper, child){
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           debugShowMaterialGrid: false,
           title: 'ADHD Journal',
           theme: ThemeData(
-              colorSchemeSeed: Color(themeSwap.isColorSeed), // This will be replaced with a shared preferences item,
+              colorSchemeSeed: Color(swapper.isColorSeed), // This will be replaced with a shared preferences item,
               useMaterial3: true,
               brightness: Brightness.light),
           darkTheme: ThemeData(
-              colorSchemeSeed: Color(themeSwap.isColorSeed), //This will be replaced with a shared preferences item,
+              colorSchemeSeed: Color(swapper.isColorSeed), //This will be replaced with a shared preferences item,
               useMaterial3: true,
               brightness: Brightness.dark),
           themeMode: ThemeMode.system,
@@ -69,6 +73,7 @@ class MyApp extends StatelessWidget {
             '/dashboardhelp': (context) => DashboardHelp(),
             '/searchhelp': (context) => SortHelp(),
             '/resources' : (context) => HelpfulLinksWidget(),
+            '/backuphelp' : (context) =>BackupAndSyncdHelp(),
           },
         );
       },
@@ -127,12 +132,23 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
     return const [RecordDisplayWidget(), DashboardViewWidget()];
   }
 
+  void encryptData() async{
+    await Future.sync((){
+      preferenceBackupAndEncrypt.encryptData(userPassword+','+dbPassword+','+passwordHint+','+passwordEnabled.toString()+
+          ","+greeting+','+colorSeed.toString(), googleDrive);
+
+    });
+
+
+  }
+
   List<AppBar> appBars() {
     return [
       AppBar(
         title: Text("Home"),
         leading: IconButton(
             onPressed: () {
+              isThisReturning = true;
               recordsBloc.dispose();
               Navigator.pop(context);
             },
@@ -259,11 +275,17 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                   MaterialPageRoute(
                       builder: (_) =>
 
-                      /// Change password upon exit if the password has changed.
-                      /// Tested and Passed: 05/09/2022
                       SettingsPage())).then((value) => {
-                if (userPassword != dbPassword) {
-                  verifyPasswordChanged(),
+                                        if (userPassword != dbPassword) {
+
+
+recordsBloc.changeDBPasswords(userPassword),
+                                          recordsBloc = RecordsBloc()
+
+                                        },
+                userActiveBackup = prefs.getBool("testBackup") ?? false,
+                if(userActiveBackup){
+                  encryptData()
                 },
               });
             },
@@ -293,8 +315,14 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                       greeting = prefs.getString('greeting')!;
                     }),
                     if (userPassword != dbPassword) {
-                        verifyPasswordChanged(),
+                        recordsBloc.changeDBPasswords(userPassword),//,}
+                      recordsBloc = RecordsBloc(),
+                      recordsBloc.getRecords()
                       },
+                userActiveBackup = prefs.getBool("testBackup") ?? false,
+                if(userActiveBackup){
+encryptData()
+                },
                   });
             },
           ),
@@ -346,7 +374,8 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                   id: 0,
                   title: 'Compose New Entry'))).then((value) => {
             _showAlert(context,"Journal Entry Saved"),
-            executeRefresh(),
+recordsBloc.writeCheckpoint()
+
           });
     } on Exception catch (ex) {
       if (kDebugMode) {
@@ -371,21 +400,8 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
   final homeButtonItem =
       BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home');
 
-  quickTimer() async {
-    try{
-    return Timer(Duration(milliseconds: 1), executeRefresh);
-    }
-    on Exception catch(ex){
-      _showAlert(context, ex.toString());
-    }
-  }
 
-  void executeRefresh() async {
-    RecordList.loadLists();
-    if (kDebugMode) {
-      print('Executed');
-    }
-  }
+
 
   BottomNavigationBar bottomBar() {
     List<BottomNavigationBarItem> navBar = [
@@ -421,7 +437,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
 
   int getPasswordChangeResults() {
     try {
-      recordsBloc.changeDBPasswords();
+      recordsBloc.changeDBPasswords(userPassword);
       return 0;
     } on Exception {
       return 1;
@@ -432,7 +448,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(
-      builder:(context,ThemeSwap themeSwapper, child){
+      builder:(context,swapper, child){
         return Scaffold(
           appBar: appBars()[_selectedIndex],
           body: Center(child: screens().elementAt(_selectedIndex)),
