@@ -352,16 +352,10 @@ showDialog(context: context, builder: (BuildContext builder){
                           "Hit Yes to continue.Hit exit when done."),
                       actions: [
                         ElevatedButton(onPressed: () async{
-
                           if(userActiveBackup == true){
                             await Future.sync(()=>resetRSAKeys()).whenComplete(() {showMessage("You can hit exit now, your keys have been reset");});
-
-
                           }
                           else{Navigator.of(context).pop();}
-
-
-
                         }, child: Text("Yes - Hit Exit to leave after resetting the keys.")),
                         ElevatedButton(onPressed: (){Navigator.of(context).pop();}, child: Text("Exit"))
                       ],
@@ -381,7 +375,7 @@ showDialog(context: context, builder: (BuildContext builder){
               userActiveBackup = value;
               userActiveBackup = value;
               setState(() {
-                if (value) {
+                if (value==true) {
                   syncIcon = Icon(Icons.sync,
                     color: Color(swapper.isColorSeed),
                   );
@@ -390,16 +384,18 @@ showDialog(context: context, builder: (BuildContext builder){
                   if (kDebugMode) {
                     print("Backup and sync is $value");
                   }
-                } else if (!value) {
+                  getDriveAgent();
+                } else if (value==false) {
                   syncIcon = Icon(Icons.sync_disabled,
                     color: Color(swapper.isColorSeed),
                   );
-                  syncTextLabelText = "Backup and Sync for Drive Disabled";
+                  syncTextLabelText = "Backup and Sync to Drive Disabled";
                   prefs.setBool('testBackup', value);
                   print("Backup and Sync is $value");
                 }
                 syncTextWidget = Text(syncTextLabelText);
               });
+
             },
             title: syncTextWidget,
             secondary: syncIcon,
@@ -537,6 +533,12 @@ showDialog(context: context, builder: (BuildContext builder){
         isHTML: false);
     await FlutterEmailSender.send(email);
   }
+
+  void getDriveAgent() async{
+    googleDrive.client = await googleDrive.getHttpClient();
+  }
+
+
 
   void showMessage(String message){
     ScaffoldMessenger.of(context).showSnackBar(
