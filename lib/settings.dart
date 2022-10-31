@@ -121,7 +121,6 @@ if(passwordHint ==" "){
 
   void resetRSAKeys() async{
   googleDrive.deleteOutdatedBackups("tuff");
-
   await Future.sync(()=> googleDrive.deleteOutdatedBackups(".pem")).whenComplete(() => {
   preferenceBackupAndEncrypt.generateRSAKeys(),
   });
