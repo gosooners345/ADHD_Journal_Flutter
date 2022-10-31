@@ -121,10 +121,6 @@ if(passwordHint ==" "){
 
   void resetRSAKeys() async{
   googleDrive.deleteOutdatedBackups("tuff");
-
-  googleDrive.deleteOutdatedBackups("NewKEYS.txt");
-  String newKeyFileNeeded = "New Key NEEDED";
-  File newKeyFile = File(path.join(keyLocation,"NewKEYS.txt"));
 newKeyFile.writeAsStringSync(newKeyFileNeeded);
   await Future.sync(()=> googleDrive.deleteOutdatedBackups(".pem")).whenComplete(() => {
   googleDrive.uploadFileToGoogleDrive(newKeyFile),
