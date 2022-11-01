@@ -37,11 +37,12 @@ getPrefs() async{
 class ThemePrefs {
   static const PREF_KEY = "apptheme";
 
-  setTheme(int seedValue) async{
+  setTheme(int seedValue) async {
     SharedPreferences getPrefs = await SharedPreferences.getInstance();
     getPrefs.setInt(PREF_KEY,seedValue);
     getPrefs.reload();
 getTheme();
+
   }
   getTheme() async{
     SharedPreferences getPrefs = await SharedPreferences.getInstance();

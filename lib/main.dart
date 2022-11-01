@@ -16,6 +16,7 @@ import 'package:adhd_journal_flutter/settings_tutorials/tutorial_help_guide.dart
 import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'app_start_package/onboarding_widget_class.dart';
 import 'ui/record_display_widget.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +29,11 @@ import 'package:adhd_journal_flutter/drive_api_backup_general/preference_backup_
 List<Records> recordHolder = [];
 int id = 0;
 void main() {
-  runApp(MyApp());
+ runApp( ChangeNotifierProvider<ThemeSwap>(
+    create: (_)=>ThemeSwap(),child: MyApp(),
+  ));
+    //      runApp(MyApp());
+
 }
 
 //late PackageInfo packInfo;
@@ -41,12 +46,11 @@ class MyApp extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(create: (_)=>ThemeSwap(),
-    child: Consumer<ThemeSwap>(
-      builder: (context, swapper, child){
+final swapper = Provider.of<ThemeSwap>(context);
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           debugShowMaterialGrid: false,
@@ -64,10 +68,10 @@ class MyApp extends StatelessWidget {
           routes: {
             '/': (context) => SplashScreen(),
             '/onboarding': (context) => OnBoardingWidget(),
-            '/savePassword': (context) => LoginScreen(),
-            '/login': (context) => LoginScreen(),
+            '/savePassword': (context) => LoginScreen(swapper: swapper,),
+            '/login': (context) => LoginScreen(swapper: swapper,),
             '/success': (context) => ADHDJournalApp(),
-            '/fail': (context) => LoginScreen(),
+            '/fail': (context) => LoginScreen(swapper: swapper,),
             '/composehelp': (context) => ComposeHelpWidget(),
             '/tutorials': (context) => TutorialHelpScreen(),
             '/dashboardhelp': (context) => DashboardHelp(),
@@ -76,10 +80,6 @@ class MyApp extends StatelessWidget {
             '/backuphelp' : (context) =>BackupAndSyncdHelp(),
           },
         );
-      },
-    ),
-    );
-
   }
 }
 

@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
 import 'package:flutter/foundation.dart';
+import 'package:googleapis/admob/v1.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 import '../drive_api_backup_general/CryptoUtils.dart';
@@ -22,10 +23,10 @@ import 'splash_screendart.dart';
 /// Required to open the application , simple login form to start
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({
-    Key? key,
+   LoginScreen({
+    Key? key, required this.swapper,
   }) : super(key: key);
-
+final ThemeSwap? swapper;
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -56,16 +57,13 @@ class _LoginScreenState extends State<LoginScreen> {
   Row greetingField = Row(children: [],);
   String hintText = '';
   String hintPrompt = '';
-  ThemeSwap themeSwapper = ThemeSwap();
  ConnectivityResult? _connectivityResult;
  late StreamSubscription _connectivitySubscription;
  late  ElevatedButton driveButton;
 
-ValueNotifier<bool> updateState = ValueNotifier(false);
   @override
   void initState() {
     super.initState();
-    readyButton = LoginButtonReady();
     loadStateStuff();
     if (passwordHint == '') {
       hintText = 'Enter secure password';
@@ -85,6 +83,8 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
               actions: <Widget> [ TextButton(child: const Text("Yes"),onPressed: () async{
                 Navigator.of(context).pop();
                 googleDrive.client = await Future.sync(()=>googleDrive.getHttpClient());
+                readyButton.boolSink.add(true);
+                googleIsDoingSomething(true);
                 var checkDB = File(dbLocation);
                 var checkKeys = File(path.join(keyLocation,"journ_privkey.pem"));
                 var checkPrefs = File(docsLocation);
@@ -93,18 +93,21 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
                 var checkKeysOnline = await Future.sync(() => googleDrive.checkForFile("journ_privKey.pem"));
                 if(checkDB.existsSync()&&checkPrefs.existsSync()&&checkKeys.existsSync()){
                   if(checkDBOnline&&checkPrefsOnline&&checkKeysOnline){
-                    checkFileAge();}
+                    checkFileAge();
+                  }
                   else{
                     String dataForEncryption ='$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
                     preferenceBackupAndEncrypt.encryptData(dataForEncryption, googleDrive);
                     await Future.sync(() => uploadDBFiles());
+                    googleIsDoingSomething(false);
                   }
                 } else {
                   if(checkDBOnline&&checkPrefsOnline&&checkKeysOnline){
-                    readyButton.boolSink.add(false);
+                    //readyButton.boolSink.add(false);
                     await preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
                     await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
-                    await Future.sync(() => restoreDBFiles()).whenComplete(() => updateValues());
+                    await Future.sync(() => restoreDBFiles()).whenComplete(() async=> { await Future.delayed(Duration(seconds: 1),updateValues), });
+                    googleIsDoingSomething(false);
                   }
                   else{
                     showMessage("You need to open up the journal for the first time!");
@@ -173,7 +176,6 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
     greeting = prefs.getString("greeting") ?? '';
     loginGreeting = await Future.sync(() => getGreeting());
     userPassword = await encryptedSharedPrefs.getString('loginPassword');
-    themeSwapper.themeColor = prefs.getInt("apptheme")?? AppColors.mainAppColor.value;
     try{
       dbPassword = await encryptedSharedPrefs.getString('dbPassword');}
     on Exception catch(ex){
@@ -191,7 +193,6 @@ hintPrompt = 'The app now allows you to store a hint so it\'s easier to remember
     passwordHint =await getPasswordHint();
     passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
     isPasswordChecked = passwordEnabled;
-    swapper?.themeColor=prefs.getInt('apptheme') ?? AppColors.mainAppColor.value;
 if(userPassword != dbPassword){
   dbPassword = userPassword;
 }
@@ -241,6 +242,7 @@ if(userPassword != dbPassword){
       if(isThisReturning== true){
         checkFileAge();
       }
+
       if (isDataSame == false) {
         googleIsDoingSomething(true);
         updateValues();
@@ -458,9 +460,11 @@ googleIsDoingSomething(true);
 /// Testing after 15 successful tries of simply moving between devices
   void updateValues() async{
 googleIsDoingSomething(true);
+readyButton.boolSink.add(true);
     showMessage("Updating preferences");
     if(decipheredData ==''){
    File prefsFile = File(docsLocation);
+   googleIsDoingSomething(true);
    if(prefsFile.existsSync()){
      decipheredData = CryptoUtils.rsaDecrypt(prefsFile.readAsStringSync(encoding: Encoding.getByName("utf-8")!),preferenceBackupAndEncrypt.privKey!);
    }
@@ -502,13 +506,11 @@ googleIsDoingSomething(true);
      prefs.setString('greeting', greeting);
    }
    if(colorSeed!=dlColorSeed){
-
      colorSeed = dlColorSeed;
-   setState(() {
-     themeSwapper.themeColor = colorSeed;
-   });
-
 prefs.setInt('apptheme', colorSeed);
+setState(() {
+super.widget.swapper?.themeColor = colorSeed;
+});
    }
    if (kDebugMode) {
      print("updated Values in array");
@@ -516,18 +518,15 @@ prefs.setInt('apptheme', colorSeed);
    isDataSame = true;
    decipheredData = '';
   googleIsDoingSomething(false);
+readyButton.boolSink.add(false);
    refreshPrefs();
   }
 
-
-
-
-
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeSwap>(
-        builder: (context, swapper, child) {
 
+    return Consumer<ThemeSwap>(
+        builder: (context,swapper, child) {
           return Scaffold(
             appBar: AppBar(
               title: Text("ADHD Journal"),
@@ -572,6 +571,7 @@ prefs.setInt('apptheme', colorSeed);
                                         return Text(
                                             'Error returning password  information');
                                       } else if (snapshot.hasData) {
+
                                         return ElevatedButton(
                                           onPressed: () {
                                             callingCard = true;
@@ -579,7 +579,6 @@ prefs.setInt('apptheme', colorSeed);
                                                 passwordEnabled) {
                                               loginPassword = '';
                                               recordsBloc = RecordsBloc();
-
                                               Navigator.pushNamed(
                                                   context, '/success')
                                                   .then((value) =>

@@ -65,7 +65,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void loadPreferences() async {
     bool isClientActive = true;
     appStatus.value = "Getting preferences now";
-    prefs = await SharedPreferences.getInstance();
+prefs = await SharedPreferences.getInstance();
     encryptedSharedPrefs = EncryptedSharedPreferences();
     userPassword = await encryptedSharedPrefs.getString('loginPassword');
     try {
@@ -90,9 +90,6 @@ class _SplashScreenState extends State<SplashScreen> {
     passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
     isPasswordChecked = passwordEnabled;
     userActiveBackup = prefs.getBool('testBackup') ?? false;
-    swapper = ThemeSwap();
-    swapper?.themeColor =
-        prefs.getInt("apptheme") ?? AppColors.mainAppColor.value;
   //Network Status check here:
     var connectivityResult = await (Connectivity().checkConnectivity());
     if(userActiveBackup == true){
@@ -104,11 +101,12 @@ class _SplashScreenState extends State<SplashScreen> {
     }}
 
     if (userActiveBackup) {
-      // try{
+
       appStatus.value =
       "You have backup and sync enabled! Checking for new files";
       googleDrive = GoogleDrive();
       appStatus.value = "Signing into Google Drive!";
+      readyButton.boolSink.add(true);
       googleDrive.client =
       await Future.sync(() => googleDrive.getHttpClient()).onError((e, s) {
         if (kDebugMode) {
@@ -118,13 +116,12 @@ class _SplashScreenState extends State<SplashScreen> {
         appStatus.value =
         "Backup and sync temporarily disabled until you sign into Google Drive";
         return null;
-      }); //.whenComplete(()
+      });
       if (isClientActive == true || googleDrive.client != null) {
         if (userActiveBackup) {
           checkFileAge();
-
         }
-        else { //Failsafe
+        else {
           isDataSame = true;
         }
       }
@@ -141,9 +138,11 @@ class _SplashScreenState extends State<SplashScreen> {
     }
     appStatus.value = 'Loading up your journal now...';
   }
-
+  void googleIsDoingSomething(bool value){
+    readyButton.boolSink.add(value);
+  }
   finishTimer() async {
-    var duration = const Duration(seconds: 12);
+    var duration = const Duration(seconds:7);
     getPackageInfo();
     loadPreferences();
     return Timer(duration, route);
@@ -177,6 +176,7 @@ readyButton.boolSink.add(true);
         googleDrive.checkForFile('journ_privkey.pem'));
     bool checkKeyAge = await Future.sync(() => googleDrive.checkCSVFileAge("journ_privkey.pem"));
     if (!privateKeyFile.existsSync() && checkOnlineKeys || checkKeyAge == true) {
+      readyButton.boolSink.add(true);
       await preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
       preferenceBackupAndEncrypt.assignRSAKeys(googleDrive);
       
@@ -196,24 +196,23 @@ readyButton.boolSink.add(true);
         preferenceBackupAndEncrypt.encryptData(dataForEncryption, googleDrive);
       }
       else {
+        readyButton.boolSink.add(true);
         await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
         if (dataForEncryption == decipheredData) {
           isDataSame = true;
-
             appStatus.value =
             "Don't worry about waiting when things are done loading!";
         //  });
         } else {
+          readyButton.boolSink.add(true);
           isDataSame = false;
           appStatus.value = "Your data will need to be synced before you login";
         }
       }
     } else {
       try {
-
           appStatus.value =
           "Syncing preferences with Google Drive for your other devices to sync up when they connect!";
-
         if (prefsFile.existsSync()) {
           prefsFile.deleteSync();
           preferenceBackupAndEncrypt.encryptData(
@@ -221,6 +220,7 @@ readyButton.boolSink.add(true);
         }
       }
       on Exception catch (ex) {
+        readyButton.boolSink.add(true);
         await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
         if (dataForEncryption == decipheredData) {
           isDataSame = true;
@@ -234,20 +234,19 @@ readyButton.boolSink.add(true);
     bool checkDBFile2 = await googleDrive.checkForFile(dbWal);
     if (checkDBFile1 || checkDBFile2) {
       if (!dbFile.existsSync() || !fileCheckAge) {
+        readyButton.boolSink.add(true);
         await Future.sync(() =>
             restoreDBFiles().whenComplete(() =>
             {
               if(kDebugMode){
                 print("Download done"),
               },
-
             appStatus.value = "Your Journal is synced on device now",
-
-
             readyButton.boolSink.add(false)
             }));
       }
       else {
+        readyButton.boolSink.add(true);
         await Future.sync(() =>
             uploadDBFiles().whenComplete(() =>
             {
@@ -256,6 +255,7 @@ readyButton.boolSink.add(true);
               },
 
             appStatus.value = "Your Journal is synced online now",
+            readyButton.boolSink.add(false),
 
 
             readyButton.boolSink.add(false)
@@ -263,11 +263,12 @@ readyButton.boolSink.add(true);
       }
     }
     else if (dbFile.existsSync()) {
-      await uploadDBFiles();
+    readyButton.boolSink.add(true);
+    await uploadDBFiles();
       readyButton.boolSink.add(false);
     }
     else {
-      showMessage("You need to create a database for use in this application");
+      appStatus.value="You need to create a database for use in this application";
     }
 
 
@@ -275,9 +276,10 @@ readyButton.boolSink.add(true);
 
   Future<void> restoreDBFiles() async {
     try {
+      readyButton.boolSink.add(true);
       appStatus.value = "Downloading updated journal files";
       await Future.sync(() =>
-          googleDrive.syncBackupFiles("activitylogger_db.db")).whenComplete(() => readyButton.boolSink.add(false));
+          googleDrive.syncBackupFiles("activitylogger_db.db"));//.whenComplete(() => readyButton.boolSink.add(false));
     } on Exception catch (ex) {
       showMessage(ex.toString());
     }
@@ -291,9 +293,11 @@ readyButton.boolSink.add(true);
       googleDrive.uploadFileToGoogleDrive(File(dbLocation));
       googleDrive.uploadFileToGoogleDrive(File("$dbLocation-wal"));
       googleDrive.uploadFileToGoogleDrive(File("$dbLocation-shm"));
-      await Future.delayed(Duration(seconds: 3),()=>readyButton.boolSink.add(false));
+      await Future.delayed(const Duration(seconds: 1),()=>readyButton.boolSink.add(false));
     } on Exception catch (ex) {
-      print(ex);
+      if (kDebugMode) {
+        print(ex);
+      }
     }
   }
 
@@ -358,4 +362,3 @@ String movieName = "Try2.mp4";
 bool userActiveBackup = false;
 GoogleDrive googleDrive = GoogleDrive();
 bool isDataSame = true;
-ThemeSwap? swapper;
