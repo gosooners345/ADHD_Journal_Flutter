@@ -74,7 +74,10 @@ class Records implements Comparable {
   }
 
   int compareTitles(String title) {
-    return title.trimLeft().toUpperCase().compareTo(title.trimLeft().toUpperCase());
+    return title
+        .trimLeft()
+        .toUpperCase()
+        .compareTo(title.trimLeft().toUpperCase());
   }
 
   int compareTags(String tags) {

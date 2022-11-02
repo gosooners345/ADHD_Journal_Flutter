@@ -29,11 +29,11 @@ import 'package:adhd_journal_flutter/drive_api_backup_general/preference_backup_
 List<Records> recordHolder = [];
 int id = 0;
 void main() {
- runApp( ChangeNotifierProvider<ThemeSwap>(
-    create: (_)=>ThemeSwap(),child: MyApp(),
+  runApp(ChangeNotifierProvider<ThemeSwap>(
+    create: (_) => ThemeSwap(),
+    child: MyApp(),
   ));
-    //      runApp(MyApp());
-
+  //      runApp(MyApp());
 }
 
 //late PackageInfo packInfo;
@@ -46,40 +46,47 @@ class MyApp extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-final swapper = Provider.of<ThemeSwap>(context);
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          debugShowMaterialGrid: false,
-          title: 'ADHD Journal',
-          theme: ThemeData(
-              colorSchemeSeed: Color(swapper.isColorSeed), // This will be replaced with a shared preferences item,
-              useMaterial3: true,
-              brightness: Brightness.light),
-          darkTheme: ThemeData(
-              colorSchemeSeed: Color(swapper.isColorSeed), //This will be replaced with a shared preferences item,
-              useMaterial3: true,
-              brightness: Brightness.dark),
-          themeMode: ThemeMode.system,
-          initialRoute: '/',
-          routes: {
-            '/': (context) => SplashScreen(),
-            '/onboarding': (context) => OnBoardingWidget(),
-            '/savePassword': (context) => LoginScreen(swapper: swapper,),
-            '/login': (context) => LoginScreen(swapper: swapper,),
-            '/success': (context) => ADHDJournalApp(),
-            '/fail': (context) => LoginScreen(swapper: swapper,),
-            '/composehelp': (context) => ComposeHelpWidget(),
-            '/tutorials': (context) => TutorialHelpScreen(),
-            '/dashboardhelp': (context) => DashboardHelp(),
-            '/searchhelp': (context) => SortHelp(),
-            '/resources' : (context) => HelpfulLinksWidget(),
-            '/backuphelp' : (context) =>BackupAndSyncdHelp(),
-          },
-        );
+    final swapper = Provider.of<ThemeSwap>(context);
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      debugShowMaterialGrid: false,
+      title: 'ADHD Journal',
+      theme: ThemeData(
+          colorSchemeSeed: Color(swapper
+              .isColorSeed), // This will be replaced with a shared preferences item,
+          useMaterial3: true,
+          brightness: Brightness.light),
+      darkTheme: ThemeData(
+          colorSchemeSeed: Color(swapper
+              .isColorSeed), //This will be replaced with a shared preferences item,
+          useMaterial3: true,
+          brightness: Brightness.dark),
+      themeMode: ThemeMode.system,
+      initialRoute: '/',
+      routes: {
+        '/': (context) => SplashScreen(),
+        '/onboarding': (context) => OnBoardingWidget(),
+        '/savePassword': (context) => LoginScreen(
+              swapper: swapper,
+            ),
+        '/login': (context) => LoginScreen(
+              swapper: swapper,
+            ),
+        '/success': (context) => ADHDJournalApp(),
+        '/fail': (context) => LoginScreen(
+              swapper: swapper,
+            ),
+        '/composehelp': (context) => ComposeHelpWidget(),
+        '/tutorials': (context) => TutorialHelpScreen(),
+        '/dashboardhelp': (context) => DashboardHelp(),
+        '/searchhelp': (context) => SortHelp(),
+        '/resources': (context) => HelpfulLinksWidget(),
+        '/backuphelp': (context) => BackupAndSyncdHelp(),
+      },
+    );
   }
 }
 
@@ -108,7 +115,6 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
     try {
       recordsBloc = RecordsBloc();
       buildInfo = packInfo.version;
-
     } on Exception catch (e, s) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -132,14 +138,22 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
     return const [RecordDisplayWidget(), DashboardViewWidget()];
   }
 
-  void encryptData() async{
-    await Future.sync((){
-      preferenceBackupAndEncrypt.encryptData(userPassword+','+dbPassword+','+passwordHint+','+passwordEnabled.toString()+
-          ","+greeting+','+colorSeed.toString(), googleDrive);
-
+  void encryptData() async {
+    await Future.sync(() {
+      preferenceBackupAndEncrypt.encryptData(
+          userPassword +
+              ',' +
+              dbPassword +
+              ',' +
+              passwordHint +
+              ',' +
+              passwordEnabled.toString() +
+              "," +
+              greeting +
+              ',' +
+              colorSeed.toString(),
+          googleDrive);
     });
-
-
   }
 
   List<AppBar> appBars() {
@@ -255,7 +269,9 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                   child: Row(
                     children: const [
                       Icon(Icons.stars),
-                      SizedBox(width: 10,),
+                      SizedBox(
+                        width: 10,
+                      ),
                       Text('Rating')
                     ],
                   ),
@@ -270,24 +286,17 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) =>
-
-                      SettingsPage())).then((value) => {
-                                        if (userPassword != dbPassword) {
-
-
-recordsBloc.changeDBPasswords(userPassword),
-                                          recordsBloc = RecordsBloc()
-
-                                        },
-                userActiveBackup = prefs.getBool("testBackup") ?? false,
-                if(userActiveBackup){
-                  encryptData()
-                },
-              });
+              Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => SettingsPage()))
+                  .then((value) => {
+                        if (userPassword != dbPassword)
+                          {
+                            recordsBloc.changeDBPasswords(userPassword),
+                            recordsBloc = RecordsBloc()
+                          },
+                        userActiveBackup = prefs.getBool("testBackup") ?? false,
+                        if (userActiveBackup) {encryptData()},
+                      });
             },
           ),
         ],
@@ -297,7 +306,7 @@ recordsBloc.changeDBPasswords(userPassword),
         leading: IconButton(
             onPressed: () {
               recordsBloc.dispose();
-                Navigator.pop(context);
+              Navigator.pop(context);
             },
             icon: backArrowIcon),
         actions: <Widget>[
@@ -308,21 +317,21 @@ recordsBloc.changeDBPasswords(userPassword),
                   context,
                   MaterialPageRoute(
                       builder: (_) =>
+
                           /// Change password upon exit if the password has changed.
                           /// Tested and Passed: 05/09/2022
                           SettingsPage())).then((value) => {
                     setState(() {
                       greeting = prefs.getString('greeting')!;
                     }),
-                    if (userPassword != dbPassword) {
-                        recordsBloc.changeDBPasswords(userPassword),//,}
-                      recordsBloc = RecordsBloc(),
-                      recordsBloc.getRecords()
+                    if (userPassword != dbPassword)
+                      {
+                        recordsBloc.changeDBPasswords(userPassword), //,}
+                        recordsBloc = RecordsBloc(),
+                        recordsBloc.getRecords()
                       },
-                userActiveBackup = prefs.getBool("testBackup") ?? false,
-                if(userActiveBackup){
-encryptData()
-                },
+                    userActiveBackup = prefs.getBool("testBackup") ?? false,
+                    if (userActiveBackup) {encryptData()},
                   });
             },
           ),
@@ -342,10 +351,9 @@ encryptData()
           title = 'Dashboard';
           RecordList.loadLists();
         }
-      }  else {
+      } else {
         _selectedIndex = 0;
       }
-
     });
   }
 
@@ -373,9 +381,8 @@ encryptData()
                       timeUpdated: DateTime.now()),
                   id: 0,
                   title: 'Compose New Entry'))).then((value) => {
-            _showAlert(context,"Journal Entry Saved"),
-recordsBloc.writeCheckpoint()
-
+            _showAlert(context, "Journal Entry Saved"),
+            recordsBloc.writeCheckpoint()
           });
     } on Exception catch (ex) {
       if (kDebugMode) {
@@ -383,14 +390,16 @@ recordsBloc.writeCheckpoint()
       }
     }
   }
+
   /// This alert is a non intrusive way to show alerts to the user.
-  void _showAlert(BuildContext context,String title){
+  void _showAlert(BuildContext context, String title) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(title),
       ),
     );
   }
+
   /// This method allows users to access an existing record to edit. The future implementations will prevent timestamps from being edited
   /// Checked and Passed : true
   ///
@@ -399,9 +408,6 @@ recordsBloc.writeCheckpoint()
       BottomNavigationBarItem(label: 'Dashboard', icon: Icon(Icons.dashboard));
   final homeButtonItem =
       BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home');
-
-
-
 
   BottomNavigationBar bottomBar() {
     List<BottomNavigationBarItem> navBar = [
@@ -419,12 +425,12 @@ recordsBloc.writeCheckpoint()
     try {
       int results = getPasswordChangeResults();
       if (results == 0) {
-       _showAlert(context, "Password Change Successful!");
+        _showAlert(context, "Password Change Successful!");
       } else {
         throw Exception("Password Change Failed");
       }
     } on Exception {
-     _showAlert(context, "Password Change failed");
+      _showAlert(context, "Password Change failed");
     }
   }
 
@@ -448,7 +454,7 @@ recordsBloc.writeCheckpoint()
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(
-      builder:(context,swapper, child){
+      builder: (context, swapper, child) {
         return Scaffold(
           appBar: appBars()[_selectedIndex],
           body: Center(child: screens().elementAt(_selectedIndex)),
@@ -470,7 +476,6 @@ recordsBloc.writeCheckpoint()
         );
       },
     );
-
   }
 }
 

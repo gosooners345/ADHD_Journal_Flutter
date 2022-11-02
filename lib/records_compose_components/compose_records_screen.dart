@@ -142,216 +142,223 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeSwap>(
-        builder: (context, swapper, child) {
-    return Scaffold(
-
-      appBar: AppBar(
-        leading:  IconButton(icon: backArrowIcon,onPressed: (){
-          saveRecord(super.widget.record);
-        },),
-        title: Text(super.widget.title),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/composehelp');
-              },
-              icon: const Icon(Icons.help))
-        ],
-      ),
-      key: _formKey,
-      body: Center(
-        child: ListView(
-          padding:
-              const EdgeInsets.only(left: 8, top: 40, right: 8, bottom: 40),
-          children: <Widget>[
-            //Title Field
-            TextField(
-              decoration: InputDecoration(
+    return Consumer<ThemeSwap>(builder: (context, swapper, child) {
+      return Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: backArrowIcon,
+            onPressed: () {
+              saveRecord(super.widget.record);
+            },
+          ),
+          title: Text(super.widget.title),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/composehelp');
+                },
+                icon: const Icon(Icons.help))
+          ],
+        ),
+        key: _formKey,
+        body: Center(
+          child: ListView(
+            padding:
+                const EdgeInsets.only(left: 8, top: 40, right: 8, bottom: 40),
+            children: <Widget>[
+              //Title Field
+              TextField(
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(4),
+                        borderSide: BorderSide(
+                            color: Color(swapper.isColorSeed).withOpacity(1.0),
+                            width: 1)),
+                    labelText: 'What do you want to call this?'),
+                textCapitalization: TextCapitalization.sentences,
+                controller: titleController,
+                onChanged: (text) {
+                  super.widget.record.title = text;
+                },
+              ),
+              space,
+              //Content Field
+              TextField(
+                decoration: InputDecoration(
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(4),
                       borderSide: BorderSide(
                           color: Color(swapper.isColorSeed).withOpacity(1.0),
                           width: 1)),
-                  labelText: 'What do you want to call this?'),
-              textCapitalization: TextCapitalization.sentences,
-              controller: titleController,
-              onChanged: (text) {
-                super.widget.record.title = text;
-              },
-            ),
-            space,
-            //Content Field
-            TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4),
-                    borderSide: BorderSide(
-                        color: Color(swapper.isColorSeed).withOpacity(1.0),
-                        width: 1)),
-                labelText: 'What\'s on your mind? ',
+                  labelText: 'What\'s on your mind? ',
+                ),
+                keyboardType: TextInputType.multiline,
+                minLines: 1,
+                maxLines: null,
+                textCapitalization: TextCapitalization.sentences,
+                controller: contentController,
+                onChanged: (text) {
+                  super.widget.record.content = text;
+                },
               ),
-              keyboardType: TextInputType.multiline,
-              minLines: 1,
-              maxLines: null,
-              textCapitalization: TextCapitalization.sentences,
-              controller: contentController,
-              onChanged: (text) {
-                super.widget.record.content = text;
-              },
-            ),
-            space,
-            //Emotions Field
-            TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4),
-                    borderSide: BorderSide(
-                        color: Color(swapper.isColorSeed).withOpacity(1.0),
-                        width: 1)),
-                labelText: 'How do you feel today?',
-              ),
-              controller: emotionsController,
-              onChanged: (text) {
-                super.widget.record.emotions = text;
-              },
-            ),
-            space,
-            //Source Field
-            TextField(
-              decoration: InputDecoration(
+              space,
+              //Emotions Field
+              TextField(
+                decoration: InputDecoration(
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(4),
                       borderSide: BorderSide(
-                          color: AppColors.mainAppColor.withOpacity(1.0),
+                          color: Color(swapper.isColorSeed).withOpacity(1.0),
                           width: 1)),
-                  labelText: 'Do you have anything to add to this?',
-                  hintText:
-                      'Add your thoughts or what you think could\'ve triggered this here'),
-              keyboardType: TextInputType.multiline,
-              minLines: 1,
-              maxLines: null,
-              textCapitalization: TextCapitalization.sentences,
-              controller: sourceController,
-              onChanged: (text) {
-                super.widget.record.sources = text;
-              },
-            ),
-            space,
-            //Symptom Field,
-            Card(
-              borderOnForeground: true,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4), // if you need this
-                side: BorderSide(
-                  color: Color(swapper.isColorSeed).withOpacity(1.0),
-                  width: 1,
+                  labelText: 'How do you feel today?',
+                ),
+                controller: emotionsController,
+                onChanged: (text) {
+                  super.widget.record.emotions = text;
+                },
+              ),
+              space,
+              //Source Field
+              TextField(
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(4),
+                        borderSide: BorderSide(
+                            color: AppColors.mainAppColor.withOpacity(1.0),
+                            width: 1)),
+                    labelText: 'Do you have anything to add to this?',
+                    hintText:
+                        'Add your thoughts or what you think could\'ve triggered this here'),
+                keyboardType: TextInputType.multiline,
+                minLines: 1,
+                maxLines: null,
+                textCapitalization: TextCapitalization.sentences,
+                controller: sourceController,
+                onChanged: (text) {
+                  super.widget.record.sources = text;
+                },
+              ),
+              space,
+              //Symptom Field,
+              Card(
+                borderOnForeground: true,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4), // if you need this
+                  side: BorderSide(
+                    color: Color(swapper.isColorSeed).withOpacity(1.0),
+                    width: 1,
+                  ),
+                ),
+                child: ListTile(
+                  title: Text(
+                      'Related ADHD Symptoms: \r\n${super.widget.record.symptoms}'),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => SymptomSelectorScreen(
+                                  symptoms: super.widget.record.symptoms,
+                                ))).then((value) {
+                      setState(() {
+                        super.widget.record.symptoms = value as String;
+                      });
+                    });
+                  },
                 ),
               ),
-              child: ListTile(
-                title: Text(
-                    'Related ADHD Symptoms: \r\n${super.widget.record.symptoms}'),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => SymptomSelectorScreen(
-                                symptoms: super.widget.record.symptoms,
-                              ))).then((value) {
+              space,
+              TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: BorderSide(
+                          color: Color(swapper.isColorSeed).withOpacity(1.0),
+                          width: 1)),
+                  hintText: 'Add event tags here.',
+                  labelText: 'What categories does this fall under?',
+                ),
+                controller: tagsController,
+                onChanged: (text) {
+                  super.widget.record.tags = text;
+                },
+              ),
+              space,
+              ratingSliderWidget,
+              space2,
+              Slider(
+                  value: super.widget.record.rating,
+                  onChanged: (double value) {
                     setState(() {
-                      super.widget.record.symptoms = value as String;
-                    });
-                  });
-                },
-              ),
-            ),
-            space,
-            TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4),
-                    borderSide: BorderSide(
-                        color: Color(swapper.isColorSeed).withOpacity(1.0),
-                        width: 1)),
-                hintText: 'Add event tags here.',
-                labelText: 'What categories does this fall under?',
-              ),
-              controller: tagsController,
-              onChanged: (text) {
-                super.widget.record.tags = text;
-              },
-            ),
-            space,
-            ratingSliderWidget,
-            space2,
-            Slider(
-                value: super.widget.record.rating,
-                onChanged: (double value) {
-                  setState(() {
-                    super.widget.record.rating = value;
+                      super.widget.record.rating = value;
 
-                    if (super.widget.record.rating == 100.0) {
-                      ratingInfo = "Rating : Perfect ";
-                    } else if (super.widget.record.rating >= 85.0 &&
-                        super.widget.record.rating < 100.0) {
-                      ratingInfo = 'Rating : Great';
-                    } else if (super.widget.record.rating >= 70.0 &&
-                        super.widget.record.rating < 85.0) {
-                      ratingInfo = 'Rating : Good';
-                    } else if (super.widget.record.rating >= 55.0 &&
-                        super.widget.record.rating < 70.0) {
-                      ratingInfo = 'Rating : Okay';
-                    } else if (super.widget.record.rating >= 40.0 &&
-                        super.widget.record.rating < 55.0) {
-                      ratingInfo = 'Rating : Could be better';
-                    } else if (super.widget.record.rating >= 25.0 &&
-                        super.widget.record.rating < 40.0) {
-                      ratingInfo = 'Rating : Not going well';
-                    } else if (super.widget.record.rating < 25.0) {
-                      ratingInfo = 'Rating : It\'s a mess';
+                      if (super.widget.record.rating == 100.0) {
+                        ratingInfo = "Rating : Perfect ";
+                      } else if (super.widget.record.rating >= 85.0 &&
+                          super.widget.record.rating < 100.0) {
+                        ratingInfo = 'Rating : Great';
+                      } else if (super.widget.record.rating >= 70.0 &&
+                          super.widget.record.rating < 85.0) {
+                        ratingInfo = 'Rating : Good';
+                      } else if (super.widget.record.rating >= 55.0 &&
+                          super.widget.record.rating < 70.0) {
+                        ratingInfo = 'Rating : Okay';
+                      } else if (super.widget.record.rating >= 40.0 &&
+                          super.widget.record.rating < 55.0) {
+                        ratingInfo = 'Rating : Could be better';
+                      } else if (super.widget.record.rating >= 25.0 &&
+                          super.widget.record.rating < 40.0) {
+                        ratingInfo = 'Rating : Not going well';
+                      } else if (super.widget.record.rating < 25.0) {
+                        ratingInfo = 'Rating : It\'s a mess';
+                      }
+                      ratingSliderWidget = Text(ratingInfo);
+                    });
+                  },
+                  max: 100.0,
+                  min: 0.0,
+                  divisions: 100,
+                  label: super.widget.record.rating.toString()),
+              space,
+              SwitchListTile(
+                value: isChecked,
+                onChanged: (bool value) {
+                  super.widget.record.success = value;
+                  isChecked = value;
+                  setState(() {
+                    if (value) {
+                      successLabelText = 'Success';
+                      successStateWidget = Text(successLabelText);
+                    } else {
+                      successLabelText = 'Fail';
+                      successStateWidget = Text(successLabelText);
                     }
-                    ratingSliderWidget = Text(ratingInfo);
                   });
                 },
-                max: 100.0,
-                min: 0.0,
-                divisions: 100,
-                label: super.widget.record.rating.toString()),
-            space,
-            SwitchListTile(
-              value: isChecked,
-              onChanged: (bool value) {
-                super.widget.record.success = value;
-                isChecked = value;
-                setState(() {
-                  if (value) {
-                    successLabelText = 'Success';
-                    successStateWidget = Text(successLabelText);
-                  } else {
-                    successLabelText = 'Fail';
-                    successStateWidget = Text(successLabelText);
-                  }
-                });
-              },
-              title: successStateWidget,
-              activeColor: Color(swapper.isColorSeed),
-            ),
-            SizedBox(height: 20,)
-          ],
+                title: successStateWidget,
+                activeColor: Color(swapper.isColorSeed),
+              ),
+              SizedBox(
+                height: 20,
+              )
+            ],
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(onPressed: (){
-        try{
-          saveRecord(super.widget.record);
-        }
-        on Exception {
-        _showAlert(context, "Save failed");
-        }
-      }, label: Text("Save"),
-      icon: Icon(Icons.save),),
-    );});
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () {
+            try {
+              saveRecord(super.widget.record);
+            } on Exception {
+              _showAlert(context, "Save failed");
+            }
+          },
+          label: Text("Save"),
+          icon: Icon(Icons.save),
+        ),
+      );
+    });
   }
-  void _showAlert(BuildContext context,String title){
+
+  void _showAlert(BuildContext context, String title) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(title),

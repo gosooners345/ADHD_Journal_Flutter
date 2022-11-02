@@ -63,8 +63,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '639171720797',
     projectId: 'adhd-journal-flutter',
     storageBucket: 'adhd-journal-flutter.appspot.com',
-    androidClientId: '639171720797-1t83e6st47g8q6gui5mm1j5k4692vlpd.apps.googleusercontent.com',
-    iosClientId: '639171720797-1947q85ikvusptoul5tdhjffodrlhlrh.apps.googleusercontent.com',
+    androidClientId:
+        '639171720797-1t83e6st47g8q6gui5mm1j5k4692vlpd.apps.googleusercontent.com',
+    iosClientId:
+        '639171720797-1947q85ikvusptoul5tdhjffodrlhlrh.apps.googleusercontent.com',
     iosBundleId: 'com.reformeddeveloper.adhdJournal.test1',
   );
 }

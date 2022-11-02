@@ -19,145 +19,147 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
   SizedBox space2 = const SizedBox(width: 8);
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeSwap>(
-        builder: (context, swapper, child) {
-    return Theme(
-      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-      child: Column(
-        children: <Widget>[
-          // Title Field
+    return Consumer<ThemeSwap>(builder: (context, swapper, child) {
+      return Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: Column(
+          children: <Widget>[
+            // Title Field
 
-          ExpansionTile(
-            tilePadding: EdgeInsets.only(left: 0, right: 0, top: 2, bottom: 0),
-            expandedAlignment: Alignment.topLeft,
+            ExpansionTile(
+              tilePadding:
+                  EdgeInsets.only(left: 0, right: 0, top: 2, bottom: 0),
+              expandedAlignment: Alignment.topLeft,
 
-            title: Column(
-              children: [
-                Row(
-                  children: [
+              title: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                          child: Text(
+                        super.widget.record.title,
+                        style: TextStyle(overflow: TextOverflow.ellipsis),
+                        textAlign: TextAlign.left,
+                      )),
+                      SizedBox(
+                        width: 16,
+                      ),
+                      Text('Rating: ' + super.widget.record.rating.toString()),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 2,
+                  ),
+                  Row(children: [
                     Expanded(
-                        child: Text(
-                      super.widget.record.title,
-                      style: TextStyle(overflow: TextOverflow.ellipsis),
-                      textAlign: TextAlign.left,
-                    )),
-                    SizedBox(
-                      width: 16,
-                    ),
-                    Text('Rating: ' + super.widget.record.rating.toString()),
-                  ],
+                        child: Text(super.widget.record.content,
+                            maxLines: 3,
+                            style: TextStyle(overflow: TextOverflow.ellipsis)))
+                  ]),
+                ],
+              ),
+              // Content field
+              children: [
+                Divider(
+                  height: 1,
+                  color: Color(swapper.isColorSeed),
                 ),
                 SizedBox(
                   height: 2,
                 ),
+                //Feelings
                 Row(children: [
                   Expanded(
-                      child: Text(super.widget.record.content,
-                          maxLines: 3,
-                          style: TextStyle(overflow: TextOverflow.ellipsis)))
+                      child: Text(
+                    'I felt ' + super.widget.record.emotions.toLowerCase(),
+                    style: TextStyle(
+                        overflow: TextOverflow.ellipsis,
+                        fontStyle: FontStyle.italic),
+                    maxLines: 2,
+                  ))
                 ]),
+                Divider(
+                  height: 1,
+                  color: Color(swapper.isColorSeed),
+                ),
+                SizedBox(
+                  height: 2,
+                ),
+                //Sources Field
+                Row(children: [
+                  Expanded(
+                      child: Text(
+                    'My thoughts were: ' + super.widget.record.sources,
+                    maxLines: 2,
+                    style: TextStyle(
+                        overflow: TextOverflow.ellipsis,
+                        fontStyle: FontStyle.italic),
+                  )),
+                ]),
+                Divider(
+                  height: 1,
+                  color: Color(swapper.isColorSeed),
+                ),
+                SizedBox(
+                  height: 2,
+                ),
+                // Symptom field
+                Row(children: [
+                  Expanded(
+                      child: Text(
+                    'Related ADHD Symptoms are: ' +
+                        super.widget.record.symptoms,
+                    maxLines: 2,
+                    style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        overflow: TextOverflow.ellipsis),
+                  )),
+                ]),
+                Divider(
+                  height: 1,
+                  color: Color(swapper.isColorSeed),
+                ),
+                SizedBox(
+                  height: 2,
+                ),
+                // Success state
+                Row(children: [
+                  Text(
+                      'This was a ${(super.widget.record.success ? "success" : "failure")}'),
+                ]),
+                Divider(
+                  height: 1,
+                  color: Color(swapper.isColorSeed),
+                ),
               ],
             ),
-            // Content field
-            children: [
-              Divider(
-                height: 1,
-                color: Color(swapper.isColorSeed),
-              ),
-              SizedBox(
-                height: 2,
-              ),
-              //Feelings
-              Row(children: [
+            SizedBox(
+              height: 2,
+            ),
+            // This is for timestamp collection
+            Row(
+              children: [
                 Expanded(
                     child: Text(
-                  'I felt ' + super.widget.record.emotions.toLowerCase(),
-                  style: TextStyle(
-                      overflow: TextOverflow.ellipsis,
-                      fontStyle: FontStyle.italic),
-                  maxLines: 2,
-                ))
-              ]),
-              Divider(
-                height: 1,
-                color: Color(swapper.isColorSeed),
-              ),
-              SizedBox(
-                height: 2,
-              ),
-              //Sources Field
-              Row(children: [
-                Expanded(
-                    child: Text(
-                  'My thoughts were: ' + super.widget.record.sources,
-                  maxLines: 2,
-                  style: TextStyle(
-                      overflow: TextOverflow.ellipsis,
-                      fontStyle: FontStyle.italic),
+                  'Time created: ' +
+                      DateFormat("MM/dd/yyyy hh:mm:ss aa")
+                          .format(super.widget.record.timeCreated),
+                  style: TextStyle(fontStyle: FontStyle.italic),
                 )),
-              ]),
-              Divider(
-                height: 1,
-                color: Color(swapper.isColorSeed),
-              ),
-              SizedBox(
-                height: 2,
-              ),
-              // Symptom field
-              Row(children: [
+                space2,
                 Expanded(
                     child: Text(
-                  'Related ADHD Symptoms are: ' + super.widget.record.symptoms,
-                  maxLines: 2,
-                  style: TextStyle(
-                      fontStyle: FontStyle.italic,
-                      overflow: TextOverflow.ellipsis),
+                  'Time updated: ' +
+                      DateFormat("MM/dd/yyyy hh:mm:ss aa")
+                          .format(super.widget.record.timeUpdated),
+                  style: TextStyle(fontStyle: FontStyle.italic),
                 )),
-              ]),
-              Divider(
-                height: 1,
-                color: Color(swapper.isColorSeed),
-              ),
-              SizedBox(
-                height: 2,
-              ),
-              // Success state
-              Row(children: [
-                Text(
-                    'This was a ${(super.widget.record.success ? "success" : "failure")}'),
-              ]),
-              Divider(
-                height: 1,
-                color: Color(swapper.isColorSeed),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 2,
-          ),
-          // This is for timestamp collection
-          Row(
-            children: [
-              Expanded(
-                  child: Text(
-                'Time created: ' +
-                    DateFormat("MM/dd/yyyy hh:mm:ss aa")
-                        .format(super.widget.record.timeCreated),
-                style: TextStyle(fontStyle: FontStyle.italic),
-              )),
-              space2,
-              Expanded(
-                  child: Text(
-                'Time updated: ' +
-                    DateFormat("MM/dd/yyyy hh:mm:ss aa")
-                        .format(super.widget.record.timeUpdated),
-                style: TextStyle(fontStyle: FontStyle.italic),
-              )),
-            ],
-          ),
-        ],
-      ),
-      // )
-    );});
+              ],
+            ),
+          ],
+        ),
+        // )
+      );
+    });
   }
 }

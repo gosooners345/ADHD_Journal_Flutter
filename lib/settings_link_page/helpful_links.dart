@@ -11,64 +11,117 @@ import '../project_resources/project_colors.dart';
 class HelpfulLinksWidget extends StatelessWidget {
   //final Divider Divider(
 
-
   HelpfulLinksWidget({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeSwap>(
-        builder: (context, swapper, child) {
-   return Scaffold(appBar: AppBar(title: const Text("Resources"),leading:IconButton(icon: backArrowIcon,onPressed: (){Navigator.pop(context);},),),
-     body:
-         // General resources
-         CustomScrollView(
-           slivers: [
-             SliverList(delegate: SliverChildListDelegate([
-                ListTile(title: const Text("Helpful Websites",style: TextStyle(fontWeight: FontWeight.bold),),leading: Icon(Icons.web_asset,color: Color(swapper.isColorSeed),),),
-          Divider(
-          height: 2.0,
-          thickness: 1.5,
-          color: Color(swapper.isColorSeed),
-          )
-             ]),
-             ),
+    return Consumer<ThemeSwap>(builder: (context, swapper, child) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text("Resources"),
+          leading: IconButton(
+            icon: backArrowIcon,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
+        body:
+            // General resources
+            CustomScrollView(
+          slivers: [
+            SliverList(
+              delegate: SliverChildListDelegate([
+                ListTile(
+                  title: const Text(
+                    "Helpful Websites",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  leading: Icon(
+                    Icons.web_asset,
+                    color: Color(swapper.isColorSeed),
+                  ),
+                ),
+                Divider(
+                  height: 2.0,
+                  thickness: 1.5,
+                  color: Color(swapper.isColorSeed),
+                )
+              ]),
+            ),
 
-             SliverList(delegate: SliverChildBuilderDelegate((BuildContext context,int index){
-               return Card(elevation: 2.0,borderOnForeground: true,
-                 shape: RoundedRectangleBorder(
-                     side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
-                     borderRadius: BorderRadius.circular(10)),child:ListTile(style:ListTileStyle.list,title: linkArray[index].title,onTap: (){
-                 _launchURL(linkArray[index].url);
-               },enableFeedback: true,),);
-             },childCount: linkArray.length,
-             ),
-             ),
-             // Youtube links
-             SliverList(delegate: SliverChildListDelegate([
-               Divider(
-    height: 2.0,
-    thickness: 1.5,
-    color: Color(swapper.isColorSeed),
-  ),
-              ListTile(title: const Text("Video resources",style: TextStyle(fontWeight: FontWeight.bold),),leading: Icon(Icons.play_circle_outlined,color: Color(swapper.isColorSeed),),),
-               Divider(
-    height: 2.0,
-    thickness: 1.5,
-    color: Color(swapper.isColorSeed),
-  ),
-             ]),
-             ),
-             SliverList(delegate: SliverChildBuilderDelegate((BuildContext context,int index){
-               return Card(elevation: 2.0,borderOnForeground: true,
-    shape: RoundedRectangleBorder(
-    side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
-    borderRadius: BorderRadius.circular(10)),child:ListTile(style:ListTileStyle.list,title: youtube_LinksArray[index].title,onTap: (){
-    _launchURL(youtube_LinksArray[index].url);
-    },enableFeedback: true,),);
-    },childCount: youtube_LinksArray.length,
-             ),
-             ),
-             //Podcasts
-       /*      SliverList(delegate: SliverChildListDelegate([Divider(
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (BuildContext context, int index) {
+                  return Card(
+                    elevation: 2.0,
+                    borderOnForeground: true,
+                    shape: RoundedRectangleBorder(
+                        side: BorderSide(
+                            color: Color(swapper.isColorSeed), width: 1.0),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: ListTile(
+                      style: ListTileStyle.list,
+                      title: linkArray[index].title,
+                      onTap: () {
+                        _launchURL(linkArray[index].url);
+                      },
+                      enableFeedback: true,
+                    ),
+                  );
+                },
+                childCount: linkArray.length,
+              ),
+            ),
+            // Youtube links
+            SliverList(
+              delegate: SliverChildListDelegate([
+                Divider(
+                  height: 2.0,
+                  thickness: 1.5,
+                  color: Color(swapper.isColorSeed),
+                ),
+                ListTile(
+                  title: const Text(
+                    "Video resources",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  leading: Icon(
+                    Icons.play_circle_outlined,
+                    color: Color(swapper.isColorSeed),
+                  ),
+                ),
+                Divider(
+                  height: 2.0,
+                  thickness: 1.5,
+                  color: Color(swapper.isColorSeed),
+                ),
+              ]),
+            ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (BuildContext context, int index) {
+                  return Card(
+                    elevation: 2.0,
+                    borderOnForeground: true,
+                    shape: RoundedRectangleBorder(
+                        side: BorderSide(
+                            color: Color(swapper.isColorSeed), width: 1.0),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: ListTile(
+                      style: ListTileStyle.list,
+                      title: youtube_LinksArray[index].title,
+                      onTap: () {
+                        _launchURL(youtube_LinksArray[index].url);
+                      },
+                      enableFeedback: true,
+                    ),
+                  );
+                },
+                childCount: youtube_LinksArray.length,
+              ),
+            ),
+            //Podcasts
+            /*      SliverList(delegate: SliverChildListDelegate([Divider(
     height: 2.0,
     thickness: 1.5,
     color: Color(swapper.isColorSeed),
@@ -88,23 +141,19 @@ class HelpfulLinksWidget extends StatelessWidget {
             );
 
            }),)*/
-
-           ],
-         ),
-   );});
-
+          ],
+        ),
+      );
+    });
   }
-
 
   //This launches the URL Links in the application.
-  void _launchURL(Uri url) async{
-    if(Platform.isIOS){
-    if(!await launchUrl(url,mode:LaunchMode.inAppWebView)) throw 'Failed to launch $url';
-    }
-    else{
-      if(!await launchUrl(url)) throw 'Failed to launch $url';
+  void _launchURL(Uri url) async {
+    if (Platform.isIOS) {
+      if (!await launchUrl(url, mode: LaunchMode.inAppWebView))
+        throw 'Failed to launch $url';
+    } else {
+      if (!await launchUrl(url)) throw 'Failed to launch $url';
     }
   }
-
-
 }

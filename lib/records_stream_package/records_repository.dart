@@ -16,10 +16,10 @@ class RecordsRepository {
   void changePassword(String newPassword) {
     recordsDao.changePasswords(newPassword);
   }
-  void writeCheckpoint(){
+
+  void writeCheckpoint() {
     recordsDao.writemoreCheckpoint();
   }
-void close(){
 
-}
+  void close() {}
 }

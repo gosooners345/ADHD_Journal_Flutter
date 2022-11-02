@@ -11,8 +11,6 @@ class RecordsDB {
   static const platform =
       MethodChannel('com.activitylogger.release1/ADHDJournal');
 
-
-
   static final RecordsDB recordDB = RecordsDB();
 
   Future<Database> get database async {
@@ -20,7 +18,6 @@ class RecordsDB {
   }
 
   openOrCreateDatabase() async {
-
     return await openDatabase(
       join(await getDatabasesPath(), 'activitylogger_db.db'),
       password: dbPassword,
@@ -36,8 +33,4 @@ class RecordsDB {
       version: 5,
     );
   }
-
-
-
 }
-

@@ -19,11 +19,10 @@ class RecordsBloc {
   RecordsBloc() {
     getRecords();
   }
-  RecordsBloc.changePasswords(String newPassword){
+  RecordsBloc.changePasswords(String newPassword) {
     getRecords();
     changeDBPasswords(newPassword);
-getRecords();
-
+    getRecords();
   }
 
   RecordsBloc.searchedList(String query) {
@@ -67,12 +66,12 @@ getRecords();
     getRecords();
   }
 
- changeDBPasswords(String newPassword) {
+  changeDBPasswords(String newPassword) {
     _recordsRepo.changePassword(newPassword);
     getRecords();
   }
 
-  void writeCheckpoint(){
+  void writeCheckpoint() {
     _recordsRepo.writeCheckpoint();
   }
 

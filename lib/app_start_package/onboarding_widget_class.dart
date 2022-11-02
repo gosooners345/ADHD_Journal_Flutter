@@ -24,7 +24,7 @@ bool callingCard = false;
 class _OnBoardingWidgetState extends State<OnBoardingWidget> {
   bool isSaved = false;
   GoogleDrive googleDrive = GoogleDrive();
-  late  ElevatedButton driveButton;
+  late ElevatedButton driveButton;
   var pageTitleStyle = const TextStyle(
     fontSize: 23.0,
     wordSpacing: 1,
@@ -45,10 +45,13 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     super.initState();
     encryptedSharedPrefs = EncryptedSharedPreferences();
     index = 0;
-    driveButton = ElevatedButton(onPressed: (){
-      googleDrive.getHttpClient();
-
-    }, child: Row(children: [Icon(Icons.add_to_drive),Text("Sign in to Drive")],));
+    driveButton = ElevatedButton(
+        onPressed: () {
+          googleDrive.getHttpClient();
+        },
+        child: Row(
+          children: [Icon(Icons.add_to_drive), Text("Sign in to Drive")],
+        ));
   }
 
 // Onboarding pages location
@@ -57,12 +60,60 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(
         builder: (context, ThemeSwap themeNotifier, child) {
-    return Scaffold(
-      body: Onboarding(
-        pages: <PageModel>[
-          //Introduction page
-          PageModel(
-            widget: DecoratedBox(
+      return Scaffold(
+        body: Onboarding(
+          pages: <PageModel>[
+            //Introduction page
+            PageModel(
+              widget: DecoratedBox(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    width: 0.0,
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  controller: ScrollController(),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 45.0,
+                          vertical: 90.0,
+                        ),
+                        child: Image.asset(
+                          'images/appicon-76x76.png',
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Welcome to the ADHD Journal!',
+                            style: pageTitleStyle,
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            first_intro_paragraph_string,
+                            style: pageInfoStyle,
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            //Security page
+            PageModel(
+                widget: DecoratedBox(
               decoration: BoxDecoration(
                 border: Border.all(
                   width: 0.0,
@@ -72,13 +123,15 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                 controller: ScrollController(),
                 child: Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
+                    const Padding(
+                      padding: EdgeInsets.symmetric(
                         horizontal: 45.0,
                         vertical: 90.0,
                       ),
-                      child: Image.asset(
-                        'images/appicon-76x76.png',
+                      child: Icon(
+                        Icons.security_sharp,
+                        // color: Colors.black,
+                        size: 60.0,
                       ),
                     ),
                     Padding(
@@ -86,7 +139,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          'Welcome to the ADHD Journal!',
+                          'Security',
                           style: pageTitleStyle,
                           textAlign: TextAlign.left,
                         ),
@@ -97,7 +150,202 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          first_intro_paragraph_string,
+                          security_paragraph_intro_string,
+                          style: pageInfoStyle,
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )),
+            //Home Page
+            PageModel(
+                widget: DecoratedBox(
+              decoration: BoxDecoration(
+                  border: Border.all(
+                width: 0.0,
+              )),
+              child: SingleChildScrollView(
+                controller: ScrollController(),
+                child: Column(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 45.0,
+                        vertical: 90.0,
+                      ),
+                      child: Icon(
+                        Icons.home,
+                        // color: Colors.black,
+                        size: 60.0,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Home Page',
+                          style: pageTitleStyle,
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          home_page_intro_paragraph_string,
+                          style: pageInfoStyle,
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            )),
+            // Dashboard
+            PageModel(
+                widget: DecoratedBox(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 0.0,
+                ),
+              ),
+              child: SingleChildScrollView(
+                controller: ScrollController(),
+                child: Column(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 45.0,
+                        vertical: 90.0,
+                      ),
+                      child: Icon(
+                        Icons.dashboard,
+                        //  color: Colors.black,
+                        size: 60.0,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Dashboard',
+                          style: pageTitleStyle,
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          dashboard_paragraph_intro_string,
+                          style: pageInfoStyle,
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            )),
+            // Record Entry page
+            PageModel(
+                widget: DecoratedBox(
+              decoration: BoxDecoration(
+                  border: Border.all(
+                width: 0.0,
+              )),
+              child: SingleChildScrollView(
+                controller: ScrollController(),
+                child: Column(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 45.0,
+                        vertical: 90.0,
+                      ),
+                      child: Icon(
+                        Icons.edit,
+                        //   color: Colors.black,
+                        size: 60.0,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Composing Entries',
+                          style: pageTitleStyle,
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          records_intro_paragraph_string,
+                          style: pageInfoStyle,
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            )),
+            // Settings Page
+            PageModel(
+              widget: DecoratedBox(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    width: 0.0,
+                  ),
+                ),
+                child: ListView(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 45.0,
+                        vertical: 90.0,
+                      ),
+                      child: Icon(
+                        Icons.settings,
+                        size: 60.0,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 45.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Settings',
+                          style: pageTitleStyle,
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          settings_paragraph_intro_string,
                           style: pageInfoStyle,
                           textAlign: TextAlign.left,
                         ),
@@ -107,492 +355,248 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                 ),
               ),
             ),
-          ),
-          //Security page
-          PageModel(
-              widget: DecoratedBox(
-            decoration: BoxDecoration(
-              border: Border.all(
-                width: 0.0,
-              ),
-            ),
-            child: SingleChildScrollView(
-              controller: ScrollController(),
-              child: Column(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 45.0,
-                      vertical: 90.0,
-                    ),
-                    child: Icon(
-                      Icons.security_sharp,
-                      // color: Colors.black,
-                      size: 60.0,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 45.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Security',
-                        style: pageTitleStyle,
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 45.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        security_paragraph_intro_string,
-                        style: pageInfoStyle,
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          )),
-          //Home Page
-          PageModel(
-              widget: DecoratedBox(
-            decoration: BoxDecoration(
-                border: Border.all(
-              width: 0.0,
-            )),
-            child: SingleChildScrollView(
-              controller: ScrollController(),
-              child: Column(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 45.0,
-                      vertical: 90.0,
-                    ),
-                    child: Icon(
-                      Icons.home,
-                      // color: Colors.black,
-                      size: 60.0,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 45.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Home Page',
-                        style: pageTitleStyle,
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        home_page_intro_paragraph_string,
-                        style: pageInfoStyle,
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          )),
-          // Dashboard
-          PageModel(
-              widget: DecoratedBox(
-            decoration: BoxDecoration(
-              border: Border.all(
-                width: 0.0,
-              ),
-            ),
-            child: SingleChildScrollView(
-              controller: ScrollController(),
-              child: Column(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 45.0,
-                      vertical: 90.0,
-                    ),
-                    child: Icon(
-                      Icons.dashboard,
-                      //  color: Colors.black,
-                      size: 60.0,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 45.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Dashboard',
-                        style: pageTitleStyle,
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        dashboard_paragraph_intro_string,
-                        style: pageInfoStyle,
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          )),
-          // Record Entry page
-          PageModel(
-              widget: DecoratedBox(
-            decoration: BoxDecoration(
-                border: Border.all(
-              width: 0.0,
-            )),
-            child: SingleChildScrollView(
-              controller: ScrollController(),
-              child: Column(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 45.0,
-                      vertical: 90.0,
-                    ),
-                    child: Icon(
-                      Icons.edit,
-                      //   color: Colors.black,
-                      size: 60.0,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 45.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Composing Entries',
-                        style: pageTitleStyle,
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        records_intro_paragraph_string,
-                        style: pageInfoStyle,
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          )),
-          // Settings Page
-          PageModel(
-            widget: DecoratedBox(
+            //Backup And Sync Page
+            PageModel(
+                widget: DecoratedBox(
               decoration: BoxDecoration(
-                border: Border.all(
-                  width: 0.0,
-                ),
-              ),
-              child: ListView(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 45.0,
-                      vertical: 90.0,
-                    ),
-                    child: Icon(
-                      Icons.settings,
-                      size: 60.0,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 45.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Settings',
-                        style: pageTitleStyle,
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        settings_paragraph_intro_string,
-                        style: pageInfoStyle,
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          //Backup And Sync Page
-          PageModel(
-              widget: DecoratedBox(
-                decoration: BoxDecoration(
-                    border: Border.all(
-                      width: 0.0,
-                    )),
-                child: SingleChildScrollView(
-                  controller: ScrollController(),
-                  child: Column(
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 45.0,
-                          vertical: 90.0,
-                        ),
-                        child: Icon(
-                          Icons.sync,
-                          // color: Colors.black,
-                          size: 60.0,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 45.0),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Backup and Sync Functionality',
-                            style: pageTitleStyle,
-                            textAlign: TextAlign.left,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(backup_and_sync_intro_paragraph_string,
-                            style: pageInfoStyle,
-                            textAlign: TextAlign.left,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(backup_and_sync_2nd_paragraph_string,
-                            style: pageInfoStyle,
-                            textAlign: TextAlign.left,
-                          ),
-                        ),
-                      )
-
-                    ],
-                  ),
-                ),
+                  border: Border.all(
+                width: 0.0,
               )),
-          //Last page
-          PageModel(
-            widget: DecoratedBox(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  width: 0.0,
-                ),
-              ),
-              child: ListView(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 45.0,
-                      vertical: 90.0,
-                    ),
-                    child: Icon(
-                      Icons.done,
-                      size: 60.0,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 45.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'One more thing...',
-                        style: pageTitleStyle,
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        sixth_paragraph_intro_string,
-                        style: pageInfoStyle,
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 15, bottom: 0),
-                    child: TextField(
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Enter your name here',
-                          hintText: 'Enter your name here'),
-                      onChanged: (text) {
-                        greetingValueSaved = text;
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 15, bottom: 0),
-                    child: TextField(
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'New Password for diary',
-                          hintText: 'Enter a secure Password'),
-                      onChanged: (text) {
-
-                        savedPasswordValue = text;
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 15, bottom: 0),
-                    child: TextField(
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Password Hint',
-                          hintText: 'Enter a hint to help you remember your password easier here'),
-                      onChanged: (text) {
-                        passwordHint = text;
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: CheckboxListTile(
-                        title: const Text("Password enabled?"),
-                        activeColor: Color(themeNotifier.isColorSeed),
-                        value: isSaved,
-                        onChanged: (bool? changed) {
-                          setState(() {
-                            isSaved = changed!;
-                          });
-                        }),
-                  ),
-
-                  ElevatedButton(
-
-                    onPressed: () async {
-                      if (savedPasswordValue != '') {
-                        await encryptedSharedPrefs.setString('passwordHint', passwordHint);
-                        await encryptedSharedPrefs.setString(
-                            'loginPassword', savedPasswordValue);
-                        await encryptedSharedPrefs.setString(
-                            'passwordHint', passwordHintValueSaved);
-                        await encryptedSharedPrefs.setString(
-                            'dbPassword', savedPasswordValue);
-                       prefs.setBool('passwordEnabled', isSaved);
-                        prefs.setString('greeting', greetingValueSaved);
-                        prefs.setBool('firstVisit', false);
-                        dbPassword = savedPasswordValue;
-                        userPassword = savedPasswordValue;
-                        Navigator.pushReplacementNamed(context, '/login');
-                      } else {
-                        try {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                    title: const Text('Password Required!'),
-                                    content: const Text(
-                                        password_Required_Message_String),
-                                    actions: [
-                                      TextButton(
-                                          onPressed: () async {
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text('OK')),
-                                    ],
-                                  ));
-                        } catch (e, s) {
-                          print(s);
-                        }
-                      }
-                    },
-                    child: const Text('Save'),
-                  )
-                ],
-              ),
-            ),
-          )
-        ],
-        onPageChange: (int pageIndex) {
-          index = pageIndex;
-        },
-        startPageIndex: 0,
-        footerBuilder: (context, dragDistance, pagesLength, setIndex) {
-          return DecoratedBox(
-            decoration: BoxDecoration(
-              border: Border.all(
-                width: 0.0,
-              ),
-            ),
-            child: ColoredBox(
-              color: background,
-              child: Padding(
-                padding: const EdgeInsets.all(45.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: SingleChildScrollView(
+                controller: ScrollController(),
+                child: Column(
                   children: [
-                    CustomIndicator(
-                      netDragPercent: dragDistance,
-                      pagesLength: pagesLength,
-                      indicator: Indicator(
-                        activeIndicator:
-                            ActiveIndicator(color: Color(themeNotifier.isColorSeed)),
-                        closedIndicator:
-                            const ClosedIndicator(color: Colors.white),
-                        indicatorDesign: IndicatorDesign.line(
-                          lineDesign: LineDesign(
-                            lineType: DesignType.line_uniform,
-                          ),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 45.0,
+                        vertical: 90.0,
+                      ),
+                      child: Icon(
+                        Icons.sync,
+                        // color: Colors.black,
+                        size: 60.0,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Backup and Sync Functionality',
+                          style: pageTitleStyle,
+                          textAlign: TextAlign.left,
                         ),
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          backup_and_sync_intro_paragraph_string,
+                          style: pageInfoStyle,
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          backup_and_sync_2nd_paragraph_string,
+                          style: pageInfoStyle,
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ),
-            ),
-          );
-        },
-      ),
-    );});
+            )),
+            //Last page
+            PageModel(
+              widget: DecoratedBox(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    width: 0.0,
+                  ),
+                ),
+                child: ListView(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 45.0,
+                        vertical: 90.0,
+                      ),
+                      child: Icon(
+                        Icons.done,
+                        size: 60.0,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'One more thing...',
+                          style: pageTitleStyle,
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          sixth_paragraph_intro_string,
+                          style: pageInfoStyle,
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 15.0, right: 15.0, top: 15, bottom: 0),
+                      child: TextField(
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Enter your name here',
+                            hintText: 'Enter your name here'),
+                        onChanged: (text) {
+                          greetingValueSaved = text;
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 15.0, right: 15.0, top: 15, bottom: 0),
+                      child: TextField(
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'New Password for diary',
+                            hintText: 'Enter a secure Password'),
+                        onChanged: (text) {
+                          savedPasswordValue = text;
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 15.0, right: 15.0, top: 15, bottom: 0),
+                      child: TextField(
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Password Hint',
+                            hintText:
+                                'Enter a hint to help you remember your password easier here'),
+                        onChanged: (text) {
+                          passwordHint = text;
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: CheckboxListTile(
+                          title: const Text("Password enabled?"),
+                          activeColor: Color(themeNotifier.isColorSeed),
+                          value: isSaved,
+                          onChanged: (bool? changed) {
+                            setState(() {
+                              isSaved = changed!;
+                            });
+                          }),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (savedPasswordValue != '') {
+                          await encryptedSharedPrefs.setString(
+                              'passwordHint', passwordHint);
+                          await encryptedSharedPrefs.setString(
+                              'loginPassword', savedPasswordValue);
+                          await encryptedSharedPrefs.setString(
+                              'passwordHint', passwordHintValueSaved);
+                          await encryptedSharedPrefs.setString(
+                              'dbPassword', savedPasswordValue);
+                          prefs.setBool('passwordEnabled', isSaved);
+                          prefs.setString('greeting', greetingValueSaved);
+                          prefs.setBool('firstVisit', false);
+                          dbPassword = savedPasswordValue;
+                          userPassword = savedPasswordValue;
+                          Navigator.pushReplacementNamed(context, '/login');
+                        } else {
+                          try {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                      title: const Text('Password Required!'),
+                                      content: const Text(
+                                          password_Required_Message_String),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () async {
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text('OK')),
+                                      ],
+                                    ));
+                          } catch (e, s) {
+                            print(s);
+                          }
+                        }
+                      },
+                      child: const Text('Save'),
+                    )
+                  ],
+                ),
+              ),
+            )
+          ],
+          onPageChange: (int pageIndex) {
+            index = pageIndex;
+          },
+          startPageIndex: 0,
+          footerBuilder: (context, dragDistance, pagesLength, setIndex) {
+            return DecoratedBox(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 0.0,
+                ),
+              ),
+              child: ColoredBox(
+                color: background,
+                child: Padding(
+                  padding: const EdgeInsets.all(45.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      CustomIndicator(
+                        netDragPercent: dragDistance,
+                        pagesLength: pagesLength,
+                        indicator: Indicator(
+                          activeIndicator: ActiveIndicator(
+                              color: Color(themeNotifier.isColorSeed)),
+                          closedIndicator:
+                              const ClosedIndicator(color: Colors.white),
+                          indicatorDesign: IndicatorDesign.line(
+                            lineDesign: LineDesign(
+                              lineType: DesignType.line_uniform,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      );
+    });
   }
 }
