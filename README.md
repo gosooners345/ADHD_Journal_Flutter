@@ -1,6 +1,6 @@
 # adhd_journal_flutter
 
-ADHD Journal app for iOS 
+ADHD Journal app for iOS and Android
 
 This application is a port of the ADHD Journal Android App. It is developed using Flutter and Swift.
 
