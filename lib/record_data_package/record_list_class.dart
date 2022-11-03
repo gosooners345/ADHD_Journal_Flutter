@@ -10,6 +10,12 @@ import 'package:intl/intl.dart';
 import '../ui/dashboard_stats_display_widget.dart';
 import '../main.dart';
 
+// Look into combining lists to help reduce memory usage if possible.
+// This won't be easy because there are 5 metrics being collected and sorting them isn't easy
+/// 1. make 1 or 2 lists from the record block data instead of 5 lists
+/// 2. load them in the application.
+/// 3.
+///
 class RecordList {
   static const platform =
       MethodChannel('com.activitylogger.release1/ADHDJournal');
