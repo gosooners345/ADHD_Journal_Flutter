@@ -659,10 +659,10 @@ Widget _customIndicator(
               child: ColoredBox(
                 color: background,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 45.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 45.0,vertical: 45.0),
                 child:
                  Row(
-                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       SizedBox(width: 2.0,),
                    index >0 ? _previousButton(setIndex: setIndex):SizedBox(width:2.0,),//,flex: 8,),
