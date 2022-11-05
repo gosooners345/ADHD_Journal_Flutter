@@ -1,9 +1,11 @@
 import 'package:adhd_journal_flutter/app_start_package/login_screen_file.dart';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
+import 'package:flutter/foundation.dart';
 import 'package:onboarding/onboarding.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:adhd_journal_flutter/project_resources/project_utils.dart';
 import '../app_start_package/splash_screendart.dart';
 
 import '../drive_api_backup_general/google_drive_backup_class.dart';
@@ -30,7 +32,6 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     wordSpacing: 1,
     letterSpacing: 1.2,
     fontWeight: FontWeight.bold,
-    //color: Colors.black,
   );
   var pageInfoStyle = const TextStyle(
     letterSpacing: 0.7,
@@ -54,8 +55,103 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
         ));
   }
 
-// Onboarding pages location
+ void storePrefs() async{
+   await encryptedSharedPrefs.setString(
+       'passwordHint', passwordHint);
+   await encryptedSharedPrefs.setString(
+       'loginPassword', savedPasswordValue);
+   await encryptedSharedPrefs.setString(
+       'passwordHint', passwordHintValueSaved);
+   await encryptedSharedPrefs.setString(
+       'dbPassword', savedPasswordValue);
+   prefs.setBool('passwordEnabled', isSaved);
+   prefs.setString('greeting', greetingValueSaved);
+   prefs.setBool('firstVisit', false);
+ }
 
+ Widget _previousButton({void Function(int)? setIndex}){
+    return /*Padding( padding:EdgeInsets.symmetric(horizontal: 5.0),
+    child: *///Align(
+      //alignment: Alignment.centerLeft,
+      //child:
+   IconButton(
+        onPressed: (){
+          if(setIndex!=null){
+            if(index>0){
+              int prevIndex = index -1;
+              index = prevIndex;
+              setIndex(index);
+            }
+            else{
+              index =0;
+              setIndex(index);
+            }
+          }
+        },
+       icon:backArrowIcon
+        //Row(children: [backArrowIcon,const SizedBox(width: 2.0,), const Text("Previous"),],)),
+      );
+
+ }
+  Widget _nextButton({void Function(int)? setIndex,required int pageLength}){
+    return /*Padding( padding: EdgeInsets.symmetric(horizontal: 5.0),
+        child: *//*Align(
+          alignment: Alignment.centerRight,
+          child: */IconButton(
+        onPressed: (){
+          if(setIndex!=null){
+            if(index!= pageLength-1){
+              int nextIndex = index +1;
+              index = nextIndex;
+              setIndex(index);
+            }
+            else{
+            index = pageLength-1;
+            setIndex(index);}
+          }
+        },
+            icon:nextArrowIcon
+        //child: Row(children:[nextArrowIcon,const SizedBox(width:2.0,),Text("Next"),],
+
+        );
+  }
+ Widget _skipButton({void Function(int)? setIndex, required int pageLength}){
+    return /*Padding(padding: EdgeInsets.only(left: 5.0),
+    child:*/ Align(alignment: Alignment.centerRight,child: ElevatedButton(
+      onPressed: (){
+        if(setIndex!=null){
+          index = pageLength-1;
+          setIndex(index);
+        }
+      },child:Text('Skip') ,
+    ),
+
+    );
+}
+Widget _customIndicator(
+  {
+  required int pagesLength,
+    required double dragDistance,
+    required ThemeSwap themeNotifier
+}
+    ){
+   return
+    /* Align(alignment: Alignment.center,child:*/ CustomIndicator(
+      netDragPercent: dragDistance,
+      pagesLength: pagesLength,
+      indicator: Indicator(
+        activeIndicator: ActiveIndicator(
+            color: Color(themeNotifier.isColorSeed)),
+        closedIndicator:
+        const ClosedIndicator(),
+        indicatorDesign: IndicatorDesign.line(
+          lineDesign: LineDesign(
+            lineType: DesignType.line_uniform,
+          ),
+        ),
+      ),
+     );
+}
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(
@@ -514,20 +610,11 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     ElevatedButton(
                       onPressed: () async {
                         if (savedPasswordValue != '') {
-                          await encryptedSharedPrefs.setString(
-                              'passwordHint', passwordHint);
-                          await encryptedSharedPrefs.setString(
-                              'loginPassword', savedPasswordValue);
-                          await encryptedSharedPrefs.setString(
-                              'passwordHint', passwordHintValueSaved);
-                          await encryptedSharedPrefs.setString(
-                              'dbPassword', savedPasswordValue);
-                          prefs.setBool('passwordEnabled', isSaved);
-                          prefs.setString('greeting', greetingValueSaved);
-                          prefs.setBool('firstVisit', false);
-                          dbPassword = savedPasswordValue;
-                          userPassword = savedPasswordValue;
-                          Navigator.pushReplacementNamed(context, '/login');
+                          await Future.sync(() => storePrefs()).whenComplete(() => {
+                          dbPassword = savedPasswordValue,
+                              userPassword = savedPasswordValue,
+                              Navigator.pushReplacementNamed(context, '/login')
+                          });
                         } else {
                           try {
                             showDialog(
@@ -545,7 +632,9 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                                       ],
                                     ));
                           } catch (e, s) {
-                            print(s);
+                            if (kDebugMode) {
+                              print(s);
+                            }
                           }
                         }
                       },
@@ -570,29 +659,25 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
               child: ColoredBox(
                 color: background,
                 child: Padding(
-                  padding: const EdgeInsets.all(45.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 45.0),
+                child:
+                 Row(
+                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      CustomIndicator(
-                        netDragPercent: dragDistance,
-                        pagesLength: pagesLength,
-                        indicator: Indicator(
-                          activeIndicator: ActiveIndicator(
-                              color: Color(themeNotifier.isColorSeed)),
-                          closedIndicator:
-                              const ClosedIndicator(color: Colors.white),
-                          indicatorDesign: IndicatorDesign.line(
-                            lineDesign: LineDesign(
-                              lineType: DesignType.line_uniform,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                      SizedBox(width: 2.0,),
+                   index >0 ? _previousButton(setIndex: setIndex):SizedBox(width:2.0,),//,flex: 8,),
+
+
+
+                Expanded(child: _customIndicator(pagesLength: pagesLength, dragDistance: dragDistance,themeNotifier: themeNotifier),flex: 2,),
+                 Padding(padding: EdgeInsets.only(left: 8.0),child:
+                      index<pagesLength-1 ? _nextButton(setIndex: setIndex,pageLength: pagesLength):SizedBox(width: 2.0,),),
+                  index == pagesLength -1 ? SizedBox(width: 2.0,):_skipButton(setIndex: setIndex,pageLength: pagesLength),
+
+                    ].withSpaceBetween(width: 5),),
                   ),
                 ),
-              ),
+
             );
           },
         ),

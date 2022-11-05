@@ -48,8 +48,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (Platform.isAndroid) {
       backArrowIcon = Icon(Icons.arrow_back);
+      nextArrowIcon = Icon(Icons.arrow_forward);
     } else {
       backArrowIcon = Icon(Icons.arrow_back_ios);
+      nextArrowIcon = Icon(Icons.arrow_forward_ios);
     }
     appStatus.value =
         "Welcome to ADHD Journal! We're getting your stuff ready!";
@@ -328,6 +330,7 @@ late ThemeMode deviceTheme;
 late PackageInfo packInfo;
 late String buildInfo;
 late Icon backArrowIcon;
+late Icon nextArrowIcon;
 String passwordHint = '';
 int colorSeed = AppColors.mainAppColor.value;
 late ThemeData lightTheme;

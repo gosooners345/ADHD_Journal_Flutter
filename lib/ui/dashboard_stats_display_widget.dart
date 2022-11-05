@@ -270,25 +270,3 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
     });
   }
 }
-
-// This allows for us to put the categories into their own lists so its easy to track and implement
-class RecordDataStats extends Comparable {
-  String key = '';
-  double value = 0.0;
-  int altValue = 0;
-  RecordDataStats(this.key, this.value);
-
-  Map<String, Object> toMap() {
-    return {"key": key, "value": value};
-  }
-
-  @override
-  int compareTo(other) {
-    final otherRecord = other as RecordDataStats;
-    if (value.compareTo(otherRecord.value) == 0) {
-      return key.toUpperCase().compareTo(otherRecord.key.toUpperCase());
-    } else {
-      return value.compareTo(otherRecord.value);
-    }
-  }
-}
