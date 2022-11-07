@@ -670,7 +670,7 @@ Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).s
                   child:
                   Row(
                       children: [
-                         index > 0 ?_previousButton(setIndex: setIndex) :const Text("           "),SizedBox(width:MediaQuery.of(context).size.width*0.0123 ,),
+                         index > 0 ?_previousButton(setIndex: setIndex) :const Text("           "),SizedBox(width:MediaQuery.of(context).size.width*0.0118 ,),
 Expanded(flex:0 ,child: Align(alignment:Alignment.center,child: _customIndicator(pagesLength: pagesLength,
                                 dragDistance: dragDistance,
                                 themeNotifier: themeNotifier)),)
