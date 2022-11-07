@@ -70,10 +70,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
  }
 
  Widget _previousButton({void Function(int)? setIndex}){
-    return /*Padding( padding:EdgeInsets.symmetric(horizontal: 5.0),
-    child: *///Align(
-      //alignment: Alignment.centerLeft,
-      //child:
+    return
    IconButton(
         onPressed: (){
           if(setIndex!=null){
@@ -88,16 +85,15 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
             }
           }
         },
-       icon:backArrowIcon
-        //Row(children: [backArrowIcon,const SizedBox(width: 2.0,), const Text("Previous"),],)),
-      );
+
+       icon:onboardingBackIcon
+
+
+   );
 
  }
   Widget _nextButton({void Function(int)? setIndex,required int pageLength}){
-    return /*Padding( padding: EdgeInsets.symmetric(horizontal: 5.0),
-        child: *//*Align(
-          alignment: Alignment.centerRight,
-          child: */IconButton(
+    return IconButton(
         onPressed: (){
           if(setIndex!=null){
             if(index!= pageLength-1){
@@ -111,20 +107,17 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
           }
         },
             icon:nextArrowIcon
-        //child: Row(children:[nextArrowIcon,const SizedBox(width:2.0,),Text("Next"),],
-
-        );
+                );
   }
  Widget _skipButton({void Function(int)? setIndex, required int pageLength}){
-    return /*Padding(padding: EdgeInsets.only(left: 5.0),
-    child:*/ Align(alignment: Alignment.centerRight,child: ElevatedButton(
+    return      ElevatedButton(
       onPressed: (){
         if(setIndex!=null){
           index = pageLength-1;
           setIndex(index);
         }
       },child:Text('Skip') ,
-    ),
+   // ),
 
     );
 }
@@ -135,8 +128,10 @@ Widget _customIndicator(
     required ThemeSwap themeNotifier
 }
     ){
+    var width =MediaQuery.of(context).size.width;
+    var widgetWidth = width*0.040;
    return
-    /* Align(alignment: Alignment.center,child:*/ CustomIndicator(
+     CustomIndicator(
       netDragPercent: dragDistance,
       pagesLength: pagesLength,
       indicator: Indicator(
@@ -147,9 +142,12 @@ Widget _customIndicator(
         indicatorDesign: IndicatorDesign.line(
           lineDesign: LineDesign(
             lineType: DesignType.line_uniform,
+            lineWidth: widgetWidth
           ),
         ),
       ),
+    // ),
+     //),
      );
 }
   @override
@@ -202,6 +200,7 @@ Widget _customIndicator(
                           ),
                         ),
                       ),
+Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).size.height ,),)
                     ],
                   ),
                 ),
@@ -252,6 +251,7 @@ Widget _customIndicator(
                         ),
                       ),
                     ),
+                    Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).size.height ,),)
                   ],
                 ),
               ),
@@ -300,7 +300,9 @@ Widget _customIndicator(
                           textAlign: TextAlign.left,
                         ),
                       ),
-                    )
+                    ),Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).size.height ,),)
+
+
                   ],
                 ),
               ),
@@ -350,7 +352,8 @@ Widget _customIndicator(
                           textAlign: TextAlign.left,
                         ),
                       ),
-                    )
+                    ),
+                    Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).size.height ,),)
                   ],
                 ),
               ),
@@ -399,7 +402,8 @@ Widget _customIndicator(
                           textAlign: TextAlign.left,
                         ),
                       ),
-                    )
+                    ),
+                    Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).size.height ,),)
                   ],
                 ),
               ),
@@ -447,6 +451,7 @@ Widget _customIndicator(
                         ),
                       ),
                     ),
+                    Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).size.height ,),)
                   ],
                 ),
               ),
@@ -507,7 +512,8 @@ Widget _customIndicator(
                           textAlign: TextAlign.left,
                         ),
                       ),
-                    )
+                    ),
+                    Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).size.height ,),)
                   ],
                 ),
               ),
@@ -659,24 +665,25 @@ Widget _customIndicator(
               child: ColoredBox(
                 color: background,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 45.0,vertical: 45.0),
-                child:
-                 Row(
-                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      SizedBox(width: 2.0,),
-                   index >0 ? _previousButton(setIndex: setIndex):SizedBox(width:2.0,),//,flex: 8,),
-
-
-
-                Expanded(child: _customIndicator(pagesLength: pagesLength, dragDistance: dragDistance,themeNotifier: themeNotifier),flex: 2,),
-                 Padding(padding: EdgeInsets.only(left: 8.0),child:
-                      index<pagesLength-1 ? _nextButton(setIndex: setIndex,pageLength: pagesLength):SizedBox(width: 2.0,),),
-                  index == pagesLength -1 ? SizedBox(width: 2.0,):_skipButton(setIndex: setIndex,pageLength: pagesLength),
-
-                    ].withSpaceBetween(width: 5),),
-                  ),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0, vertical: 25.0),
+                  child:
+                  Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                         index > 0 ?_previousButton(setIndex: setIndex) :Text(''),
+Expanded(child: Align(alignment:Alignment.center,child: _customIndicator(pagesLength: pagesLength,
+                                dragDistance: dragDistance,
+                                themeNotifier: themeNotifier)),flex:0 ,)
+                        ,SizedBox(width: 3.0,),Spacer(flex: 4,),
+                        index < pagesLength - 1 ? _nextButton(
+                            setIndex: setIndex, pageLength: pagesLength) : Text(
+                            ''),
+                        SizedBox(width: 3.0,),
+                        index == pagesLength - 1 ? SizedBox(width: 2.0,) : _skipButton(
+                            setIndex: setIndex, pageLength: pagesLength),
+                      ].withSpaceBetween(width: 2.0)),
                 ),
+              ),
 
             );
           },

@@ -48,10 +48,12 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (Platform.isAndroid) {
       backArrowIcon = Icon(Icons.arrow_back);
-      nextArrowIcon = Icon(Icons.arrow_forward);
+      nextArrowIcon = Icon(Icons.arrow_forward,color: AppColors.mainAppColor,);
+      onboardingBackIcon = Icon(Icons.arrow_back,color: AppColors.mainAppColor);
     } else {
       backArrowIcon = Icon(Icons.arrow_back_ios);
-      nextArrowIcon = Icon(Icons.arrow_forward_ios);
+      onboardingBackIcon = Icon(Icons.arrow_back_ios,color: AppColors.mainAppColor);
+      nextArrowIcon = Icon(Icons.arrow_forward_ios,color: AppColors.mainAppColor,);
     }
     appStatus.value =
         "Welcome to ADHD Journal! We're getting your stuff ready!";
@@ -345,3 +347,4 @@ String movieName = "Try2.mp4";
 bool userActiveBackup = false;
 GoogleDrive googleDrive = GoogleDrive();
 bool isDataSame = true;
+late Icon onboardingBackIcon;
