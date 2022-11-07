@@ -668,12 +668,12 @@ Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).s
                   padding: const EdgeInsets.symmetric(
                       horizontal: 20.0, vertical: 25.0),
                   child:
-                  Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  Row(
                       children: [
-                         index > 0 ?_previousButton(setIndex: setIndex) :Text(''),
-Expanded(child: Align(alignment:Alignment.center,child: _customIndicator(pagesLength: pagesLength,
+                         index > 0 ?_previousButton(setIndex: setIndex) :Text("           "),SizedBox(width:MediaQuery.of(context).size.width*0.0123 ,),
+Expanded(flex:0 ,child: Align(alignment:Alignment.center,child: _customIndicator(pagesLength: pagesLength,
                                 dragDistance: dragDistance,
-                                themeNotifier: themeNotifier)),flex:0 ,)
+                                themeNotifier: themeNotifier)),)
                         ,SizedBox(width: 3.0,),Spacer(flex: 4,),
                         index < pagesLength - 1 ? _nextButton(
                             setIndex: setIndex, pageLength: pagesLength) : Text(
