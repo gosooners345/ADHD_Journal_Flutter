@@ -97,15 +97,16 @@ print(i);
 }
     if(connected==true){
       userActiveBackup = prefs.getBool('testBackup')??false;
-      googleDrive = GoogleDrive();
-      googleDrive.client =
-      await Future.sync(() =>  googleDrive.getHttpClient());
+
     }
     if (userActiveBackup) {
       appStatus.value =
       "You have backup and sync enabled! Checking for new files";
-
       appStatus.value = "Signing into Google Drive!";
+      googleDrive = GoogleDrive();
+      googleDrive.client =
+      await Future.sync(() =>  googleDrive.getHttpClient());
+
       readyButton.boolSink.add(true);
 
       if(isClientActive==true|| googleDrive.client!=null){
