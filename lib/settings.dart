@@ -133,15 +133,10 @@ class _SettingsPage extends State<SettingsPage> {
   // USE ONLY IF YOU NEED TO RESET KEYS ON DEVICE. A FILE WILL BE ON THE DRIVE WARNING OF OLD KEYS
 
   void resetRSAKeys() async {
-    googleDrive.deleteOutdatedBackups("tuff");
+    await Future.sync(()=>googleDrive.deleteOutdatedBackups(prefsName));
 
-    googleDrive.deleteOutdatedBackups("NewKEYS.txt");
-    String newKeyFileNeeded = "New Key NEEDED";
-    File newKeyFile = File(path.join(keyLocation, "NewKEYS.txt"));
-    newKeyFile.writeAsStringSync(newKeyFileNeeded);
     await Future.sync(() => googleDrive.deleteOutdatedBackups(".pem"))
         .whenComplete(() => {
-              googleDrive.uploadFileToGoogleDrive(newKeyFile),
               preferenceBackupAndEncrypt.generateRSAKeys(),
             });
     await Future.delayed(Duration(seconds: 2), () {
@@ -216,7 +211,7 @@ class _SettingsPage extends State<SettingsPage> {
             spacer,
             ListTile(
               title: const Text(
-                "Application Theme Colors",
+                "Click here to change the application theme color",
               ),
               onTap: () {
                 showDialog(
@@ -352,59 +347,39 @@ class _SettingsPage extends State<SettingsPage> {
 
             ListTile(
               title: Text(
-                  "Advanced Settings - Click here if you need to reset RSA Keys"),
+                  "Advanced Settings - Click here if you need to reset your RSA encryption keys for backup and sync"),
               onTap: () {
                 showDialog(
                   context: context,
                   builder: (BuildContext builder) {
                     return AlertDialog(
-                      title: ListTile(
-                        title: const Text(
+                      title: Text(
                           "Reset RSA Keys for backup and sync.",
                         ),
-                        onTap: () {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext builder) {
-                                return AlertDialog(
-                                  title: const Text("Reset RSA Keys "),
-                                  content: const Text(
-                                      "If you have Backup and sync enabled, this will replace your existing RSA Keys in the cloud. Use with caution.\r\n"
-                                      "Your encryption keys will be replaced with new encryption keys. Click here to continue.\r\n"
-                                      "Hit Yes to continue.Hit exit when done."),
-                                  actions: [
-                                    ElevatedButton(
-                                        onPressed: () async {
-                                          if (userActiveBackup == true) {
-                                            await Future.sync(
-                                                    () => resetRSAKeys())
-                                                .whenComplete(() {
-                                              showMessage(
-                                                  "You can hit exit now, your keys have been reset");
-                                              Navigator.of(context).pop();
-                                            });
-                                          } else {
-                                            Navigator.of(context).pop();
-                                          }
-                                        },
-                                        child: Text(
-                                            "Yes - Hit Exit to leave after resetting the keys.")),
-                                    ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text("Exit"))
-                                  ],
-                                );
-                              });
-                        },
-                      ),
+      content: const Text(reset_RSA_Key_Dialog_Message_String
+      ),
                       actions: [
+      ElevatedButton(
+      onPressed: () async {
+      if (userActiveBackup == true) {
+      Navigator.of(context).pop();
+      await Future.sync(
+      () => resetRSAKeys())
+          .whenComplete(() {
+      showMessage(
+      "Your keys have been reset");
+      });
+      } else {
+      Navigator.of(context).pop();
+      }
+      },
+      child: Text(
+      "Yes")),
                         ElevatedButton(
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
-                            child: Text("Exit"))
+                            child: Text("No"),)
                       ],
                     );
                   },

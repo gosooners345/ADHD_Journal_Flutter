@@ -70,8 +70,8 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
  }
 
  Widget _previousButton({void Function(int)? setIndex}){
-    return
-   IconButton(
+
+    return   IconButton(
         onPressed: (){
           if(setIndex!=null){
             if(index>0){
@@ -139,12 +139,9 @@ Widget _customIndicator(
             color: Color(themeNotifier.isColorSeed)),
         closedIndicator:
         const ClosedIndicator(),
-        indicatorDesign: IndicatorDesign.line(
-          lineDesign: LineDesign(
-            lineType: DesignType.line_uniform,
-            lineWidth: widgetWidth
-          ),
-        ),
+        indicatorDesign: IndicatorDesign.polygon(polygonDesign:
+        PolygonDesign(polygon: DesignType.polygon_diamond,
+            polygonRadius: 2.0,polygonSpacer: widgetWidth))
       ),
     // ),
      //),

@@ -21,9 +21,7 @@ class GoogleDrive {
       signInOption: SignInOption.standard,
       scopes: [ga.DriveApi.driveAppdataScope, ga.DriveApi.driveFileScope]);
 
-  // check if the directory folder is already available in drive , if available return its id
-  // if not available create a folder in drive and return id
-  //   if not able to create id then it means user authentication has failed
+  // Have the user sign into Google Drive with their Google Account
   Future<auth.AuthClient?> getHttpClient() async {
     userActiveBackup = true;
     prefs.setBool('testBackup', userActiveBackup);
@@ -35,7 +33,7 @@ class GoogleDrive {
     var authenticateClient = googleSignIn.authenticatedClient();
     return authenticateClient;
   }
-
+  // Check to see if the folder used for storing app data exists in Drive
   Future<String?> _getFolderId(ga.DriveApi driveApi) async {
     const mimeType = "application/vnd.google-apps.folder";
     try {
@@ -62,7 +60,6 @@ class GoogleDrive {
       if (kDebugMode) {
         print("Folder ID: ${folderCreation.id}");
       }
-
       return folderCreation.id;
     } catch (e) {
       if (kDebugMode) {
@@ -72,6 +69,7 @@ class GoogleDrive {
     }
   }
 
+  //This is an alternate method in case I didn't feel like passing the file Variable in
   uploadFileToGoogleDriveString(String fileName) async {
     File file = File(fileName);
     drive = ga.DriveApi(client!);
@@ -98,7 +96,7 @@ class GoogleDrive {
       }
     }
   }
-
+  // Original method
   uploadFileToGoogleDrive(File file) async {
     drive = ga.DriveApi(client!);
     String? folderId = await _getFolderId(drive);
@@ -124,12 +122,11 @@ class GoogleDrive {
       }
     }
   }
-
-  Future<bool> checkDBFileAge(String fileName) async {
-    //  client ??= await  getHttpClient();
+  Future<bool> checkFileAge(String fileName,String directoryName) async {
+      client ??= await  getHttpClient();
 
     drive = ga.DriveApi(client!);
-    File file = File(dbLocation);
+    File file = File(directoryName);
 
     var modifiedTime = file.lastModifiedSync();
     //Query for files on Drive to test against device
@@ -157,6 +154,38 @@ class GoogleDrive {
       return false;
     }
   }
+  /// Check file age on device. If the file on the Google Drive is newer, it returns false,
+  /// if not, it returns true. This is used to sync the db and prefs files.
+  ///
+  /*Future<bool> checkFileAge(String fileName,String directoryName) async {
+       drive = ga.DriveApi(client!);
+    File file = File(directoryName);
+
+    var modifiedTime = file.lastModifiedSync();
+    //Query for files on Drive to test against device
+    var queryDrive = await drive.files.list(
+      q: "name contains '$fileName'",
+      $fields: "files(id, name,createdTime,modifiedTime)",
+    );
+    var files = queryDrive.files;
+    // Need for repeating until query is loaded or no file exists
+    if (files!.isEmpty) {
+       queryDrive = await drive.files.list(
+        q: "name contains '$fileName'",
+        $fields: "files(id, name,createdTime,modifiedTime)",
+      );
+    }
+    if (files!.isNotEmpty) {
+      files = queryDrive.files;
+      var checkFile = files!.first;
+      var checkTime = checkFile.createdTime;
+      return (checkTime!.isBefore(modifiedTime));
+    } else if (files.isEmpty) {
+      return true;
+    } else {
+      return false;
+    }
+  }*/
 
   Future<bool> checkForFile(String fileName) async {
     drive = ga.DriveApi(client!);
@@ -178,7 +207,8 @@ class GoogleDrive {
       if (files!.isNotEmpty) {
         return true;
       } else {
-        throw Exception("File not found");
+        throw Exception("File not found"
+            );
       }
     } on Exception catch (ex) {
       if (kDebugMode) {
@@ -188,45 +218,8 @@ class GoogleDrive {
     }
   }
 
-  Future<bool> checkCSVFileAge(String fileName) async {
-    //   client ??= await  getHttpClient();
-
-    drive = ga.DriveApi(client!);
-    File file = File(docsLocation);
-    try {
-      var modifiedTime = file.lastModifiedSync();
-      //Query for files on Drive to test against device
-      var queryDrive = await drive.files.list(
-        q: "name contains '$fileName'",
-        $fields: "files(id, name,createdTime,modifiedTime)",
-      );
-      var files = queryDrive.files;
-
-      if (files!.isEmpty) {
-        queryDrive = await drive.files.list(
-          q: "name contains '$fileName'",
-          $fields: "files(id, name,createdTime,modifiedTime)",
-        );
-      }
-      if (queryDrive.files!.isNotEmpty == true) {
-        files = queryDrive.files;
-      }
-
-      var checkFile = files?.first;
-      var checkTime = checkFile?.modifiedTime;
-      return (checkTime!.isBefore(modifiedTime));
-    } on Exception catch (ex) {
-      if (kDebugMode) {
-        print("File doesn't exist");
-      }
-      return false;
-    }
-  }
-
   deleteOutdatedBackups(String fileName) async {
-    //   client ??= await  getHttpClient();
     drive = ga.DriveApi(client!);
-
     final queryDrive = await drive.files.list(
       q: "name contains '$fileName'",
       $fields: "files(id, name,createdTime,modifiedTime)",
@@ -246,7 +239,6 @@ class GoogleDrive {
   }
 
   Future<void> syncBackupFiles(String fileName) async {
-    // client ??= await  getHttpClient();
     isDoingSomething = true;
     drive = ga.DriveApi(client!);
     String fileLocation = keyLocation;

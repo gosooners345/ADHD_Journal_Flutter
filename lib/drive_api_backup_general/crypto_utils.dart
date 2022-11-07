@@ -8,7 +8,7 @@ import 'package:pointycastle/pointycastle.dart';
 import 'package:pointycastle/src/utils.dart';
 import 'package:pointycastle/ecc/ecc_fp.dart' as ecc_fp;
 
-import 'StringUtils.dart';
+import 'string_utils.dart';
 
 ///
 /// Helper class for cryptographic operations

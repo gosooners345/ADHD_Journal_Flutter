@@ -29,11 +29,11 @@ import 'package:adhd_journal_flutter/drive_api_backup_general/preference_backup_
 List<Records> recordHolder = [];
 int id = 0;
 void main() {
+
   runApp(ChangeNotifierProvider<ThemeSwap>(
     create: (_) => ThemeSwap(),
     child: MyApp(),
   ));
-  //      runApp(MyApp());
 }
 
 //late PackageInfo packInfo;

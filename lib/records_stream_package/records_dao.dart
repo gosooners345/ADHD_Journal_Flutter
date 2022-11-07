@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:adhd_journal_flutter/app_start_package/login_screen_file.dart';
 import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
+import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 
@@ -186,7 +187,7 @@ class RecordsDao {
       File walfile = File("$dbLocation-wal");
       File shmFile = File("$dbLocation-shm");
 
-      googleDrive.deleteOutdatedBackups(dbName);
+      googleDrive.deleteOutdatedBackups(databaseName);
       googleDrive.uploadFileToGoogleDrive(File(dbLocation));
 
       if (walfile.existsSync()) {

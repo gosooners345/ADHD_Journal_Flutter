@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'dart:io';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
+import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
@@ -10,7 +11,7 @@ import 'package:package_info/package_info.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
-
+import '../project_resources/network_connectivity_checker.dart';
 import '../drive_api_backup_general/google_drive_backup_class.dart';
 import 'login_screen_file.dart';
 
@@ -23,8 +24,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   late Database testDB;
-  ConnectivityResult? _connectivityResult;
-  late StreamSubscription _connectivitySubscription;
+
 
   bool checkVisitState = false;
   bool transferred = false;
@@ -56,7 +56,9 @@ class _SplashScreenState extends State<SplashScreen> {
       nextArrowIcon = Icon(Icons.arrow_forward_ios,color: AppColors.mainAppColor,);
     }
     appStatus.value =
-        "Welcome to ADHD Journal! We're getting your stuff ready!";
+    "Welcome to ADHD Journal! We're getting your stuff ready!";
+    networkConnectivityChecker.initialise();
+    getNetStatus();
     finishTimer();
   }
 
@@ -86,50 +88,47 @@ class _SplashScreenState extends State<SplashScreen> {
     colorSeed = prefs.getInt("apptheme") ?? AppColors.mainAppColor.value;
     passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
     isPasswordChecked = passwordEnabled;
-    userActiveBackup = prefs.getBool('testBackup') ?? false;
-    //Network Status check here:
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if (userActiveBackup == true) {
-      if (connectivityResult == ConnectivityResult.none) {
-        userActiveBackup = false;
-      } else if (connectivityResult == ConnectivityResult.mobile ||
-          connectivityResult == ConnectivityResult.wifi) {
-        userActiveBackup = true;
-      }
+    var i =0;
+    getNetStatus();
+while(connected==false && i<10){
+await Future.delayed(Duration(milliseconds: 100));
+i++;
+print(i);
+}
+    if(connected==true){
+      userActiveBackup = prefs.getBool('testBackup')??false;
+      googleDrive = GoogleDrive();
+      googleDrive.client =
+      await Future.sync(() =>  googleDrive.getHttpClient());
     }
-
     if (userActiveBackup) {
       appStatus.value =
-          "You have backup and sync enabled! Checking for new files";
-      googleDrive = GoogleDrive();
+      "You have backup and sync enabled! Checking for new files";
+
       appStatus.value = "Signing into Google Drive!";
       readyButton.boolSink.add(true);
-      googleDrive.client =
-          await Future.sync(() => googleDrive.getHttpClient()).onError((e, s) {
-        if (kDebugMode) {
-          print(e);
-        }
-        isClientActive = false;
-        appStatus.value =
-            "Backup and sync temporarily disabled until you sign into Google Drive";
-        return null;
-      });
-      if (isClientActive == true || googleDrive.client != null) {
-        if (userActiveBackup) {
+
+      if(isClientActive==true|| googleDrive.client!=null){
+        if(userActiveBackup){
           checkFileAge();
-        } else {
+        }
+        else{
           isDataSame = true;
         }
-      } else {
+      }else{
         userActiveBackup = false;
         appStatus.value =
-            "To protect your data, you'll need to sign into Google Drive and approve application access to backup your stuff!";
+        "To protect your data, you'll need to sign into Google Drive and approve application access to backup your stuff!";
       }
+
     } else {
       appStatus.value =
-          "You have backup and sync disabled! You can enable this on Login "
+      "You have backup and sync disabled! You can enable this on Login "
           "by hitting Add to Drive! You can disable this feature in Settings ";
     }
+
+
+
     appStatus.value = 'Loading up your journal now...';
   }
 
@@ -144,34 +143,53 @@ class _SplashScreenState extends State<SplashScreen> {
     return Timer(duration, route);
   }
 
+  void getNetStatus(){
+    networkConnectivityChecker.myStream.listen((source) {
+      if(source==true){
+        connected =true;
+      }
+    }).onData((data)   {
+      if(data==false){
+        userActiveBackup = false;
+        connected = false;
+      }
+      else{
+
+        appStatus.value = "You're connected to a network, we can backup and sync your files if you turned backup and sync on.";
+        connected = true;
+      }
+    });
+
+  }
   void getPackageInfo() async {
     appStatus.value = "Getting Build and App Version info";
     packInfo = await PackageInfo.fromPlatform();
     buildInfo = packInfo.version;
     String docDirectory = await Future.sync(() => getDatabasesPath());
-    dbLocation = path.join(docDirectory, 'activitylogger_db.db');
-    docsLocation = path.join(docDirectory, 'journalStuff.txt');
+    dbLocation = path.join(docDirectory, databaseName);
+    docsLocation = path.join(docDirectory, prefsName);
     keyLocation = docDirectory;
   }
 
   void checkFileAge() async {
     appStatus.value =
         "Checking for updated files... \r\nThanks for your patience";
+    print("Splashscreen Check File Age Called");
     readyButton.boolSink.add(true);
     File dbFile = File(dbLocation);
-    File privateKeyFile = File(path.join(keyLocation, "journ_privkey.pem"));
+    File privateKeyFile = File(path.join(keyLocation, privateKeyFileName));
     File prefsFile = File(docsLocation);
     String dataForEncryption =
         '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
     bool fileCheckAge = false;
 
-    fileCheckAge = await Future.sync(() => googleDrive.checkDBFileAge(dbName));
+    fileCheckAge = await Future.sync(() => googleDrive.checkFileAge(databaseName,dbLocation));
 
     bool checkOnlineKeys =
-        await Future.sync(() => googleDrive.checkForFile('journ_privkey.pem'));
+        await Future.sync(() => googleDrive.checkForFile(privateKeyFileName));
     bool checkKeyAge = await Future.sync(
-        () => googleDrive.checkCSVFileAge("journ_privkey.pem"));
-    if (!privateKeyFile.existsSync() && checkOnlineKeys ||
+        () => googleDrive.checkFileAge(privateKeyFileName,privateKeyFile.path));
+    if ( checkOnlineKeys ||
         checkKeyAge == true) {
       readyButton.boolSink.add(true);
       await preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
@@ -182,10 +200,10 @@ class _SplashScreenState extends State<SplashScreen> {
       preferenceBackupAndEncrypt.assignRSAKeys(googleDrive);
     }
     bool checkPrefsEncryptedFile =
-        await googleDrive.checkForFile(prefsTransportName);
+        await googleDrive.checkForFile(prefsName);
     bool txtFileChange = false;
     if (checkPrefsEncryptedFile) {
-      txtFileChange = await googleDrive.checkCSVFileAge(prefsTransportName);
+      txtFileChange = await googleDrive.checkFileAge(prefsName,docsLocation);
       if (txtFileChange) {
         preferenceBackupAndEncrypt.encryptData(dataForEncryption, googleDrive);
       } else {
@@ -221,7 +239,7 @@ class _SplashScreenState extends State<SplashScreen> {
         }
       }
     }
-    bool checkDBFile1 = await googleDrive.checkForFile(dbName);
+    bool checkDBFile1 = await googleDrive.checkForFile(databaseName);
     bool checkDBFile2 = await googleDrive.checkForFile(dbWal);
     if (checkDBFile1 || checkDBFile2) {
       if (!dbFile.existsSync() || !fileCheckAge) {
@@ -259,9 +277,9 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> restoreDBFiles() async {
     try {
       readyButton.boolSink.add(true);
-      appStatus.value = "Downloading updated journal files";
+      appStatus.value = downloading_journal_files_message_string;
       await Future.sync(() => googleDrive.syncBackupFiles(
-          "activitylogger_db.db")); //.whenComplete(() => readyButton.boolSink.add(false));
+         databaseName));
     } on Exception catch (ex) {
       showMessage(ex.toString());
     }
@@ -271,7 +289,7 @@ class _SplashScreenState extends State<SplashScreen> {
     appStatus.value = "Uploading updated journal files";
     try {
       readyButton.boolSink.add(true);
-      googleDrive.deleteOutdatedBackups("activitylogger_db.db");
+      googleDrive.deleteOutdatedBackups(databaseName);
       googleDrive.uploadFileToGoogleDrive(File(dbLocation));
       googleDrive.uploadFileToGoogleDrive(File("$dbLocation-wal"));
       googleDrive.uploadFileToGoogleDrive(File("$dbLocation-shm"));
@@ -293,8 +311,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void route() {
     var firstVisit = prefs.getBool('firstVisit') ?? true;
     if (firstVisit) {
-      appStatus.value = "This is your first time using this application. "
-          "\r\nLet's get you started!";
+      appStatus.value = first_time_user_intro_string;
       Navigator.pushReplacementNamed((context), '/onboarding');
     } else {
       appStatus.value = "Loading Login Screen Now!";
@@ -340,11 +357,13 @@ late ThemeData darkTheme;
 String dbLocation = "";
 String docsLocation = "";
 String keyLocation = "";
-String dbName = "activitylogger_db.db";
-String dbWal = "activitylogger_db.db-wal";
-String prefsTransportName = "journalStuff.txt";
-String movieName = "Try2.mp4";
+
+
+
 bool userActiveBackup = false;
 GoogleDrive googleDrive = GoogleDrive();
 bool isDataSame = true;
 late Icon onboardingBackIcon;
+NetworkConnectivity networkConnectivityChecker = NetworkConnectivity.instance;
+
+bool connected = false;

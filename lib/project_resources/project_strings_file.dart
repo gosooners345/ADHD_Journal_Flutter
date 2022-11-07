@@ -46,8 +46,19 @@ final stressorSymptomList = [
   'Anxiety',
   'Depression',
 ];
+const String reset_RSA_Key_Dialog_Message_String = "Do you want to reset your encryption keys for your preferences? "
+    "Doing so will replace them in the cloud if you have backup and sync turned on."
+    "When you load this app on another device connected to your Google Drive account, the keys and the encrypted data file associated with your data will download with it replacing the old set."
+"Do this often to keep things secure. ";
+const String connection_Error_Message_String = "You need to be connected to a Wifi or Mobile network to use backup and sync.";
+const String downloading_journal_files_message_string ="Downloading updated journal files";
 const String password_Required_Message_String =
     "Please enter a password below to continue.";
+const String prefsName = 'journalStuff.txt';
+const String databaseName = "activitylogger_db.db";
+const String privateKeyFileName = "journ_privkey.pem";
+const String pubKeyFileName = "journ_pubKey.pem";
+const String dbWal = "activitylogger_db.db-wal";
 const String first_intro_paragraph_string =
     'Welcome to the ADHD Journal! This journal serves you like a personal diary would. It intends to help people with ADHD track their symptoms better, track emotional state,'
     'and more. This app hopefully will make ADHD treatment better as more people use it.';
@@ -76,7 +87,8 @@ const String password_hint_needed =
     'The app now features the ability to add a password hint so you can remember your password easier. '
     'Enter a password hint below and hit save to continue.'
     '';
-
+const String first_time_user_intro_string = "This is your first time using this application. "
+    "\r\nLet's get you started!";
 const String backup_and_sync_intro_paragraph_string =
     'You can backup and sync your journal across multiple devices. At this time, only Google Drive integration is supported. Other services will be added later. To activate, hit Sign into Google Drive. You can turn this off in settings by toggling the backup and sync switch.';
 const String backup_and_sync_2nd_paragraph_string =
