@@ -670,16 +670,16 @@ Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).s
                   child:
                   Row(
                       children: [
-                         index > 0 ?_previousButton(setIndex: setIndex) :Text("           "),SizedBox(width:MediaQuery.of(context).size.width*0.0123 ,),
+                         index > 0 ?_previousButton(setIndex: setIndex) :const Text("           "),SizedBox(width:MediaQuery.of(context).size.width*0.0123 ,),
 Expanded(flex:0 ,child: Align(alignment:Alignment.center,child: _customIndicator(pagesLength: pagesLength,
                                 dragDistance: dragDistance,
                                 themeNotifier: themeNotifier)),)
-                        ,SizedBox(width: 3.0,),Spacer(flex: 4,),
+                        ,const SizedBox(width: 3.0,),const Spacer(flex: 4,),
                         index < pagesLength - 1 ? _nextButton(
                             setIndex: setIndex, pageLength: pagesLength) : Text(
                             ''),
-                        SizedBox(width: 3.0,),
-                        index == pagesLength - 1 ? SizedBox(width: 2.0,) : _skipButton(
+                        const SizedBox(width: 3.0,),
+                        index == pagesLength - 1 ? const SizedBox(width: 2.0,) : _skipButton(
                             setIndex: setIndex, pageLength: pagesLength),
                       ].withSpaceBetween(width: 2.0)),
                 ),
