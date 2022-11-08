@@ -1,6 +1,7 @@
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../project_resources/project_strings_file.dart';
 
@@ -81,6 +82,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return Consumer<ThemeSwap>(builder: (context, swapper, child) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('ADHD Symptom Selection'),
@@ -107,11 +109,11 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
               SliverChildBuilderDelegate((BuildContext context, int index) {
             return Card(
               shape: RoundedRectangleBorder(
-                  side: BorderSide(color: AppColors.mainAppColor, width: 1.0),
+                  side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
                   borderRadius: BorderRadius.circular(10)),
               elevation: 2.0,
               child: CheckboxListTile(
-                  activeColor: AppColors.mainAppColor,
+                  activeColor: Color(swapper.isColorSeed),
                   value: positiveSymptomListSelection[index].isChecked,
                   onChanged: (bool? changed) {
                     setState(() {
@@ -144,11 +146,11 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
               SliverChildBuilderDelegate((BuildContext context, int index) {
             return Card(
               shape: RoundedRectangleBorder(
-                  side: BorderSide(color: AppColors.mainAppColor, width: 1.0),
+                  side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
                   borderRadius: BorderRadius.circular(10)),
               elevation: 2.0,
               child: CheckboxListTile(
-                  activeColor: AppColors.mainAppColor,
+                  activeColor: Color(swapper.isColorSeed),
                   value: inattentiveSymptomListSelection[index].isChecked,
                   onChanged: (bool? changed) {
                     setState(() {
@@ -182,11 +184,11 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
               SliverChildBuilderDelegate((BuildContext context, int index) {
             return Card(
               shape: RoundedRectangleBorder(
-                  side: BorderSide(color: AppColors.mainAppColor, width: 1.0),
+                  side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
                   borderRadius: BorderRadius.circular(10)),
               elevation: 2.0,
               child: CheckboxListTile(
-                  activeColor: AppColors.mainAppColor,
+                  activeColor: Color(swapper.isColorSeed),
                   value: executiveDysfunctionSelection[index].isChecked,
                   onChanged: (bool? changed) {
                     setState(() {
@@ -219,11 +221,11 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
               SliverChildBuilderDelegate((BuildContext context, int index) {
             return Card(
               shape: RoundedRectangleBorder(
-                  side: BorderSide(color: AppColors.mainAppColor, width: 1.0),
+                  side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
                   borderRadius: BorderRadius.circular(10)),
               elevation: 2.0,
               child: CheckboxListTile(
-                  activeColor: AppColors.mainAppColor,
+                  activeColor: Color(swapper.isColorSeed),
                   value: emotionalListSelection[index].isChecked,
                   onChanged: (bool? changed) {
                     setState(() {
@@ -256,11 +258,11 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
               SliverChildBuilderDelegate((BuildContext context, int index) {
             return Card(
               shape: RoundedRectangleBorder(
-                  side: BorderSide(color: AppColors.mainAppColor, width: 1.0),
+                  side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
                   borderRadius: BorderRadius.circular(10)),
               elevation: 2.0,
               child: CheckboxListTile(
-                  activeColor: AppColors.mainAppColor,
+                  activeColor: Color(swapper.isColorSeed),
                   value: stressorSymptomsSelection[index].isChecked,
                   onChanged: (bool? changed) {
                     setState(() {
@@ -286,7 +288,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
           Navigator.pop(context, super.widget.symptoms);
         },
       ),
-    );
+    );});
   }
 }
 

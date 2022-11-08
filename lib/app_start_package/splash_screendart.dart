@@ -111,10 +111,9 @@ print(i);
 
       if(isClientActive==true|| googleDrive.client!=null){
         if(userActiveBackup){
-          checkFileAge();
-        }
-        else{
-          isDataSame = true;
+     if(Platform.isAndroid){
+            checkFileAge();
+          }
         }
       }else{
         userActiveBackup = false;
@@ -127,9 +126,6 @@ print(i);
       "You have backup and sync disabled! You can enable this on Login "
           "by hitting Add to Drive! You can disable this feature in Settings ";
     }
-
-
-
     appStatus.value = 'Loading up your journal now...';
   }
 
@@ -302,7 +298,6 @@ print(i);
       }
     }
   }
-
   void showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(message),

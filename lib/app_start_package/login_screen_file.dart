@@ -266,6 +266,36 @@ else{
     setState(() {
       resetLoginFieldState();
     });
+    googleIsDoingSomething(true);
+    await Future.delayed(Duration(seconds: 2),checkDataFiles);
+    googleIsDoingSomething(false);
+  }
+
+  void checkDataFiles() async{
+    if (userActiveBackup) {
+      if (isThisReturning == true || Platform.isIOS ) {
+        if(Platform.isIOS){
+          while(googleDrive.client==null){
+            googleIsDoingSomething(true);
+          }
+          if(googleDrive.client!=null){
+            checkFileAge();
+          }
+        }
+      }
+
+      if (isDataSame == false) {
+        googleIsDoingSomething(true);
+        updateValues();
+        googleIsDoingSomething(false);
+      }
+      if (Platform.isAndroid){
+        googleIsDoingSomething(false);
+      }
+
+    } else {
+      googleIsDoingSomething(false);
+    }
   }
 
   Future<String> getGreeting() async {
@@ -292,22 +322,11 @@ else{
     prefs.reload();
     await Future.sync(() => encryptedSharedPrefs.reload());
     await Future.delayed(Duration(seconds: 1), loadStateStuff);
+
   }
 
-  void resetLoginFieldState() {
-    if (userActiveBackup) {
-      if (isThisReturning == true) {
-        if(googleDrive.client!=null){
-        checkFileAge();}
-      }
-      if (isDataSame == false) {
-        googleIsDoingSomething(true);
-        updateValues();
-        googleIsDoingSomething(false);
-      }
-    } else {
-      googleIsDoingSomething(false);
-    }
+  void resetLoginFieldState() async {
+
     setState(() {
       if (passwordHint == '' || passwordHint == ' ') {
         hintText = 'Enter secure password';
@@ -384,6 +403,8 @@ else{
       }
     });
     googleIsDoingSomething(false);
+
+
   }
 
 

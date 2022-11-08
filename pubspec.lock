@@ -7,7 +7,7 @@ packages:
       name: _discoveryapis_commons
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.3"
+    version: "1.0.4"
   _flutterfire_internals:
     dependency: transitive
     description:
@@ -168,7 +168,7 @@ packages:
       name: crypto_keys
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.0"
+    version: "0.3.0+1"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -491,7 +491,7 @@ packages:
       name: jose
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.2"
+    version: "0.3.3"
   js:
     dependency: transitive
     description:
@@ -827,14 +827,14 @@ packages:
       name: syncfusion_flutter_charts
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "20.3.52"
+    version: "20.3.56"
   syncfusion_flutter_core:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "20.3.52"
+    version: "20.3.56"
   synchronized:
     dependency: transitive
     description:
@@ -946,7 +946,7 @@ packages:
       name: win32
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.1"
+    version: "3.1.1"
   x509:
     dependency: transitive
     description:
