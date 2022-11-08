@@ -95,6 +95,7 @@ await Future.delayed(Duration(milliseconds: 100));
 i++;
 print(i);
 }
+// Give option to work around if user doesn't want to use Google Drive before publishing update
     if(connected==true){
       userActiveBackup = prefs.getBool('testBackup')??false;
 
