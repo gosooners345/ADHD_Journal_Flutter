@@ -278,9 +278,9 @@ else{
           while(googleDrive.client==null){
             googleIsDoingSomething(true);
           }
-          if(googleDrive.client!=null){
-            checkFileAge();
-          }
+        }
+        if(googleDrive.client!=null){
+          checkFileAge();
         }
       }
 
