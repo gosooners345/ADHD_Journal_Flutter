@@ -180,9 +180,14 @@ print(i);
     String dataForEncryption =
         '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
     bool fileCheckAge = false;
-
-    fileCheckAge = await Future.sync(() => googleDrive.checkFileAge(databaseName,dbLocation));
-
+fileCheckAge = await Future.sync(() => googleDrive.checkForFile(databaseName));
+if(fileCheckAge == true) {
+  fileCheckAge =
+  await Future.sync(() => googleDrive.checkFileAge(databaseName, dbLocation));
+ if(fileCheckAge == false){
+   restoreDBFiles();
+ }
+}
     bool checkOnlineKeys =
         await Future.sync(() => googleDrive.checkForFile(privateKeyFileName));
     bool checkKeyAge = await Future.sync(
@@ -239,6 +244,8 @@ print(i);
     }
     bool checkDBFile1 = await googleDrive.checkForFile(databaseName);
     bool checkDBFile2 = await googleDrive.checkForFile(dbWal);
+    print("This is checking for DB Files It is here = $checkDBFile1");
+    print(checkDBFile1);
     if (checkDBFile1 || checkDBFile2) {
       if (!dbFile.existsSync() || !fileCheckAge) {
         readyButton.boolSink.add(true);

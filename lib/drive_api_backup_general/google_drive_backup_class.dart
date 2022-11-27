@@ -19,7 +19,7 @@ class GoogleDrive {
   bool isDoingSomething = false;
   GoogleSignIn googleSignIn = GoogleSignIn(
       signInOption: SignInOption.standard,
-      scopes: [ga.DriveApi.driveAppdataScope, ga.DriveApi.driveFileScope]);
+      scopes: [ga.DriveApi.driveAppdataScope, ga.DriveApi.driveFileScope,ga.DriveApi.driveScope]);
 
   // Have the user sign into Google Drive with their Google Account
   Future<auth.AuthClient?> getHttpClient() async {
@@ -48,6 +48,7 @@ class GoogleDrive {
         }
         return null;
       }
+      print(files.length);
       // The folder already exists
       if (files.isNotEmpty) {
         return files.first.id;
@@ -124,11 +125,12 @@ class GoogleDrive {
   }
   Future<bool> checkFileAge(String fileName,String directoryName) async {
       client ??= await  getHttpClient();
-
+try{
     drive = ga.DriveApi(client!);
     File file = File(directoryName);
-
+if(file.existsSync()==true){
     var modifiedTime = file.lastModifiedSync();
+
     //Query for files on Drive to test against device
     var queryDrive = await drive.files.list(
       q: "name contains '$fileName'",
@@ -142,6 +144,7 @@ class GoogleDrive {
         q: "name contains '$fileName'",
         $fields: "files(id, name,createdTime,modifiedTime)",
       );
+      print(queryDrive.files);
     }
     if (files!.isNotEmpty) {
       files = queryDrive.files;
@@ -152,6 +155,13 @@ class GoogleDrive {
       return true;
     } else {
       return false;
+    }}
+else{throw Exception("File not found $fileName");}
+}
+on Exception catch(ex){
+  print(ex);
+  return false;
+
     }
   }
   /// Check file age on device. If the file on the Google Drive is newer, it returns false,
@@ -199,7 +209,7 @@ class GoogleDrive {
       var i = 0;
       if (files!.isEmpty) {
         var queryDrive = await drive.files.list(
-          q: "name contains '$fileName'",
+          q: "name contains '$driveStoreDirectory/$fileName'",
           $fields: "files(id, name,createdTime,modifiedTime)",
         );
         files = queryDrive.files;
@@ -207,7 +217,7 @@ class GoogleDrive {
       if (files!.isNotEmpty) {
         return true;
       } else {
-        throw Exception("File not found"
+        throw Exception("File not found $fileName"
             );
       }
     } on Exception catch (ex) {
@@ -256,8 +266,10 @@ class GoogleDrive {
         nameList.add(files?[i].name);
       }
       for (int i = 0; i < idList.length; i++) {
+       // ga.File file = await drive.files.get(idList[i],downloadOptions: ga.DownloadOptions.fullMedia) as ga.File;
         ga.Media file = await drive.files.get(idList[i],
             downloadOptions: ga.DownloadOptions.fullMedia) as ga.Media;
+
         final saveFile = File(p.join(fileLocation, nameList[i]));
         List<int> dataStore = [];
         file.stream.listen((data) {

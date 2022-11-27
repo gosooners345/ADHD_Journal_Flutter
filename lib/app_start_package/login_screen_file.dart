@@ -204,15 +204,26 @@ String connectionState= "";
                     await Future.sync(() => uploadDBFiles());
                   }
                 } else {
-                  if (checkDBOnline && checkPrefsOnline && checkKeysOnline) {
+                  if(checkKeysOnline) {
+                    await Future.sync(() => preferenceBackupAndEncrypt.downloadRSAKeys(
+                        googleDrive));
+                  }
+
+                  if(checkPrefsOnline) {
+                    await Future.sync(() => preferenceBackupAndEncrypt
+                        .downloadPrefsCSVFile(googleDrive));
+                  }
+                  if (checkDBOnline){// && checkPrefsOnline && checkKeysOnline) {
                     readyButton.boolSink.add(false);
-                    await preferenceBackupAndEncrypt.downloadRSAKeys(
-                        googleDrive);
-                    await preferenceBackupAndEncrypt
-                        .downloadPrefsCSVFile(googleDrive);
-                    await Future.sync(() => restoreDBFiles())
-                        .whenComplete(() => updateValues());
-                  } else {
+                    await Future.sync(() => restoreDBFiles()).whenComplete(() => updateValues());
+                  }
+
+                    //await preferenceBackupAndEncrypt
+                      //  .downloadPrefsCSVFile(googleDrive);
+                  //  await Future.sync(() => restoreDBFiles())
+                     //   .whenComplete(() => updateValues());
+
+                   else {
                     showMessage(
                         "You need to open up the journal for the first time!");
                     preferenceBackupAndEncrypt
@@ -473,7 +484,7 @@ String connectionState= "";
       bool isDBOnline = await googleDrive.checkForFile(databaseName);
 
 //Last DB
-      if (!fileCheckAge || !file.existsSync()) {
+      if (fileCheckAge == false || file.existsSync() == false) {
         if (isDBOnline) {
           await Future.sync(() => restoreDBFiles());
         } else {
@@ -493,7 +504,7 @@ String connectionState= "";
       }
     } on Exception catch (ex) {
       showMessage(ex.toString());
-      await (restoreDBFiles());
+      await Future.sync(()=> restoreDBFiles());
       preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
       await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
       if (isDataSame == false) {
