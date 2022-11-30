@@ -541,7 +541,22 @@ class _SettingsPage extends State<SettingsPage> {
               onTap: () {
                 Navigator.pushNamed(context, '/resources');
               },
-            )
+            ),
+            Divider(
+              height: 1.0,
+              thickness: 0.5,
+              color: Color(swapper.isColorSeed),
+            ),
+            ListTile(
+
+              leading: Image.asset('images/GoogleDriveLogo.png'),
+              title: const Text(''),
+              subtitle: const Text('Google Drive is a trademark of Google Inc. Use of this trademark is subject to Google Permissions.'),
+              onTap: () {
+
+              },
+            ),
+            
           ],
         ),
       );

@@ -3,6 +3,7 @@ import 'package:adhd_journal_flutter/app_start_package/login_screen_file.dart';
 import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:googleapis/drive/v3.dart' as ga;
+
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:google_sign_in/google_sign_in.dart';
@@ -127,6 +128,7 @@ class GoogleDrive {
       client ??= await  getHttpClient();
 try{
     drive = ga.DriveApi(client!);
+    
     File file = File(directoryName);
 if(file.existsSync()==true){
     var modifiedTime = file.lastModifiedSync();

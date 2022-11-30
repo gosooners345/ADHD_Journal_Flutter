@@ -241,9 +241,10 @@ String connectionState= "";
             }
           },
           child: Row(
-            children: const [
-              Icon(Icons.add_to_drive),
-              Text("Sign in to Drive")
+            children:  [
+              Image.asset('images/GoogleDriveLogo.png',height: 35,),
+            SizedBox(width: 40,),
+            Text("Backup with Google Drive")
             ],
           ));
       stuff = TextEditingController();
