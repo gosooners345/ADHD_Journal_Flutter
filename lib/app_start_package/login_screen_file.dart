@@ -5,24 +5,18 @@ import 'dart:convert';
 import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
 import 'package:flutter/foundation.dart';
-import 'package:googleapis/admob/v1.dart';
+import 'package:googleapis/drive/v3.dart' as ga;
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 import '../drive_api_backup_general/crypto_utils.dart';
 import '../project_resources/project_colors.dart';
-import '../project_resources/network_connectivity_checker.dart';
 import 'splash_screendart.dart';
 import 'onboarding_widget_class.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:adhd_journal_flutter/drive_api_backup_general/preference_backup_class.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
-
 import '../main.dart';
 import 'dart:io';
-
-import 'splash_screendart.dart';
-
 /// Required to open the application , simple login form to start
 
 class LoginScreen extends StatefulWidget {
@@ -78,7 +72,6 @@ String connectionState= "";
     } else {
       hintText = 'Password Hint is : $passwordHint';
     }
-
     setState(() {
       driveButton = ElevatedButton(
           onPressed: () async {
@@ -97,70 +90,26 @@ String connectionState= "";
                         TextButton(
                           child: const Text("Yes"),
                           onPressed: () async {
-                            Navigator.of(context).pop();
+
                             if (connected == true) {
                               googleDrive.client = await Future.sync(
                                       () => googleDrive.getHttpClient());
                               googleIsDoingSomething(true);
-                              googleIsDoingSomething(true);
-                              var checkDB = File(dbLocation);
-                              var checkKeys = File(
-                                  path.join(keyLocation, privateKeyFileName));
-                              var checkPrefs = File(docsLocation);
-                              var checkDBOnline = await Future.sync(
-                                      () =>
-                                      googleDrive.checkForFile(databaseName));
-                              var checkPrefsOnline = await Future.sync(() =>
-                                  googleDrive.checkForFile(prefsName));
-                              var checkKeysOnline = await Future.sync(() =>
-                                  googleDrive.checkForFile(privateKeyFileName));
-                              if (checkDB.existsSync() &&
-                                  checkPrefs.existsSync() &&
-                                  checkKeys.existsSync()) {
-                                if (checkDBOnline &&
-                                    checkPrefsOnline &&
-                                    checkKeysOnline) {
-                                  checkFileAge();
-                                } else {
-                                  String dataForEncryption =
-                                      '$userPassword,$dbPassword,$passwordHint,${passwordEnabled
-                                      .toString()},$greeting,$colorSeed';
-                                  preferenceBackupAndEncrypt.encryptData(
-                                      dataForEncryption, googleDrive);
-                                  await Future.sync(() => uploadDBFiles());
-                                  googleIsDoingSomething(false);
-                                }
-                              } else {
-                                if (checkDBOnline &&
-                                    checkPrefsOnline &&
-                                    checkKeysOnline) {
-                                  await preferenceBackupAndEncrypt
-                                      .downloadRSAKeys(googleDrive);
-                                  await preferenceBackupAndEncrypt
-                                      .downloadPrefsCSVFile(googleDrive);
-                                  await Future.sync(() => restoreDBFiles())
-                                      .whenComplete(() async =>
-                                  {
-                                    await Future.delayed(
-                                        Duration(seconds: 1),
-                                        updateValues),
-                                  });
-                                  googleIsDoingSomething(false);
-                                } else {
-                                  showMessage(
-                                      "You need to open up the journal for the first time!");
-                                  preferenceBackupAndEncrypt
-                                      .encryptRsaKeysAndUpload(googleDrive);
-                                }
-                              }
-                              resetLoginFieldState();
-                              setState(() {
-                                Future.sync(() => getSyncStateStatus());
+                              //Check for DB on device
+                              await Future.sync(() => checkForAllFiles("Drive"))
+                                  .whenComplete(() =>
+                              {
+                                resetLoginFieldState(),
+                                setState(() {
+                                  Future.sync(() => getSyncStateStatus());
+                                }),
+                              Navigator.of(context).pop()
                               });
                             }
                             else {
                               showMessage(connection_Error_Message_String);
                             }
+
                           },
                         ),
                         TextButton(
@@ -168,7 +117,7 @@ String connectionState= "";
                               userActiveBackup = false;
                               prefs.setBool("testBackup", userActiveBackup);
                               showMessage(
-                                  "To turn Backup & Sync on, simply hit Add to Drive and hit Yes next time!");
+                                  "To turn Backup & Sync on, simply hit Backup to Google Drive and hit Yes next time!");
                               Navigator.of(context).pop();
                             },
                             child: Text("No"))
@@ -180,60 +129,14 @@ String connectionState= "";
               if (connected == true) {
                 googleDrive.client =
                 await Future.sync(() => googleDrive.getHttpClient());
-                var checkDB = File(dbLocation);
-                var checkKeys = File(
-                    path.join(keyLocation, privateKeyFileName));
-                var checkPrefs = File(docsLocation);
-                var checkDBOnline =
-                await Future.sync(() => googleDrive.checkForFile(databaseName));
-                var checkPrefsOnline = await Future.sync(
-                        () => googleDrive.checkForFile(prefsName));
-                var checkKeysOnline = await Future.sync(
-                        () => googleDrive.checkForFile(privateKeyFileName));
-                if (checkDB.existsSync() &&
-                    checkPrefs.existsSync() &&
-                    checkKeys.existsSync()) {
-                  if (checkDBOnline && checkPrefsOnline && checkKeysOnline) {
-                    checkFileAge();
-                  } else {
-                    String dataForEncryption =
-                        '$userPassword,$dbPassword,$passwordHint,${passwordEnabled
-                        .toString()},$greeting,$colorSeed';
-                    preferenceBackupAndEncrypt.encryptData(
-                        dataForEncryption, googleDrive);
-                    await Future.sync(() => uploadDBFiles());
-                  }
-                } else {
-                  if(checkKeysOnline) {
-                    await Future.sync(() => preferenceBackupAndEncrypt.downloadRSAKeys(
-                        googleDrive));
-                  }
-
-                  if(checkPrefsOnline) {
-                    await Future.sync(() => preferenceBackupAndEncrypt
-                        .downloadPrefsCSVFile(googleDrive));
-                  }
-                  if (checkDBOnline){// && checkPrefsOnline && checkKeysOnline) {
-                    readyButton.boolSink.add(false);
-                    await Future.sync(() => restoreDBFiles()).whenComplete(() => updateValues());
-                  }
-
-                    //await preferenceBackupAndEncrypt
-                      //  .downloadPrefsCSVFile(googleDrive);
-                  //  await Future.sync(() => restoreDBFiles())
-                     //   .whenComplete(() => updateValues());
-
-                   else {
-                    showMessage(
-                        "You need to open up the journal for the first time!");
-                    preferenceBackupAndEncrypt
-                        .encryptRsaKeysAndUpload(googleDrive);
-                  }
+                await Future.sync(() => checkForAllFiles("Drive")).whenComplete(() =>
+                {
+                  resetLoginFieldState(),
+                  setState(() {
+                    Future.sync(() => getSyncStateStatus());
+                  })
                 }
-                resetLoginFieldState();
-                setState(() {
-                  Future.sync(() => getSyncStateStatus());
-                });
+                );
               }
               else {
                 showMessage(connection_Error_Message_String);
@@ -250,6 +153,191 @@ String connectionState= "";
       stuff = TextEditingController();
     });
   }
+  Future<void> checkForAllFiles(String callBack) async{
+    print("Check all files called");
+    //Check for DB on device
+    var checkDB = File(dbLocation);
+    //Check for Keys on device
+    var checkPrivateKeys = File(
+        path.join(keyLocation, privateKeyFileName));
+    var checkPublicKeys =  File(path.join(keyLocation, pubKeyFileName));
+    //Check for preferences on device
+    var checkPrefs = File(docsLocation);
+    //Check for Journals file on Google Drive
+    var checkJournalFileExist = await Future.sync(() =>googleDrive.checkForFile(driveStoreDirectory));
+    if(checkJournalFileExist){
+      var checkPrivateKeyOnline = await Future.sync(() =>
+          googleDrive.checkForFile(privateKeyFileName));
+      var checkPublicKeyOnline= await Future.sync(() =>
+          googleDrive.checkForFile(pubKeyFileName));
+      //Check for preferences file online
+      var checkPrefsOnline = await Future.sync(() =>
+          googleDrive.checkForFile(prefsName));
+      //Check for DB online
+      var checkDBOnline = await Future.sync(
+              () =>
+              googleDrive.checkForFile(databaseName));
+//Condition statements here
+      if(callBack == "Drive"||callBack ==""){
+        if (checkDBOnline &&
+            checkPrefsOnline &&
+            checkPrivateKeyOnline&& checkPublicKeyOnline) {
+          if (checkDB.existsSync() ||
+              checkPrefs.existsSync() ||
+              checkPrivateKeys.existsSync() || checkPublicKeys.existsSync()  ) {
+          switch(callBack){
+            case "Drive":showDialog(context: context, builder: (BuildContext context){
+              return AlertDialog(
+              title: Text("Data exists online already"),
+              content: Text("It appears you have data online from another device, do you want to download it to this device and overwrite what's already on here?"),
+              actions: [ TextButton(
+                child: const Text("Yes"),
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  if(checkPublicKeys.existsSync()) {
+                    checkPublicKeys.deleteSync();
+                  }
+                  if(checkPrivateKeys.existsSync()) {
+                    checkPrivateKeys.deleteSync();
+                  }
+                  await Future.sync(() => preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive));
+                  if(checkPrefs.existsSync()){
+                    checkPrefs.deleteSync();
+                    await Future.sync(() => preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive));
+                  }
+                  if(checkDB.existsSync()){
+                    checkDB.deleteSync();
+                    await Future.sync(() => restoreDBFiles());
+                  }
+
+                },
+              ),
+                TextButton(onPressed: () async{
+                  if(checkPrivateKeys.existsSync() && checkPublicKeys.existsSync()){
+                    preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
+                  }
+                  if(checkPrefs.existsSync()){
+                    String dataForEncryption =
+                        '$userPassword,$dbPassword,$passwordHint,${passwordEnabled
+                        .toString()},$greeting,$colorSeed';
+                    print(
+                        "Data is being encrypted and uploaded");
+                    googleIsDoingSomething(true);
+                    preferenceBackupAndEncrypt.encryptData(
+                        dataForEncryption, googleDrive);
+                    googleIsDoingSomething(true);
+                  }
+                  if(checkDB.existsSync()){
+                    uploadDBFiles();
+                  }
+                }, child: Text("No"))
+              ],
+            );}); break;
+// Trying to get the files to sync to device
+            default:  checkFileAge(); break;
+          }}
+          else if (!checkDB.existsSync() ||
+              !checkPrefs.existsSync() ||
+              !checkPrivateKeys.existsSync() || !checkPublicKeys.existsSync()  ){
+            if(!checkPrivateKeys.existsSync() || !checkPublicKeys.existsSync()) {
+              await Future.sync(() => preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive));
+            }
+            if(!checkPrivateKeys.existsSync() ) {
+              await Future.sync(() => preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive));
+              String dataForEncryption =
+                  '$userPassword,$dbPassword,$passwordHint,${passwordEnabled
+                  .toString()},$greeting,$colorSeed';
+              if(dataForEncryption != decipheredData){
+                isDataSame = false;
+              }
+            }
+            if(!checkDB.existsSync()) {
+              await Future.sync(() => restoreDBFiles());
+            }
+            if(isDataSame==false){
+              updateValues();
+            }
+          }
+        }
+
+     else{
+       print("Keys are not online");
+        preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
+        googleIsDoingSomething(true);
+          print("Prefs are not online");
+          String dataForEncryption =
+              '$userPassword,$dbPassword,$passwordHint,${passwordEnabled
+              .toString()},$greeting,$colorSeed';
+          print(
+              "Data is being encrypted and uploaded");
+          googleIsDoingSomething(true);
+          preferenceBackupAndEncrypt.encryptData(
+              dataForEncryption, googleDrive);
+          googleIsDoingSomething(true);
+          showMessage("Preferences Uploaded");
+      }
+    }
+    }else{
+      print("Creating Journals folder");
+      ga.File journalFile = ga.File();
+      journalFile.name = driveStoreDirectory;
+      var mimetype = "application/vnd.google-apps.folder";
+      journalFile.mimeType = mimetype;
+      await Future.sync(()=>googleDrive.drive.files.create(journalFile));
+      if (checkDB.existsSync() == true ||
+          checkPrefs.existsSync() == true ||
+          checkPublicKeys.existsSync() == true && checkPrivateKeys.existsSync()==true) {
+        googleIsDoingSomething(true);
+        if (kDebugMode) {
+          print("Uploading keys");
+        }
+        preferenceBackupAndEncrypt
+            .encryptRsaKeysAndUpload(googleDrive);
+        if (kDebugMode) {
+          print(
+              "Data is being encrypted and uploaded");
+        }
+        String dataForEncryption =
+            '$userPassword,$dbPassword,$passwordHint,${passwordEnabled
+            .toString()},$greeting,$colorSeed';
+        preferenceBackupAndEncrypt.encryptData(
+            dataForEncryption, googleDrive);
+        if(checkDB.existsSync()==true){
+        await Future.sync(() => uploadDBFiles())
+            .whenComplete(() =>
+            googleIsDoingSomething(false));
+      }}
+      else {
+        if (checkPublicKeys.existsSync() == false || checkPrivateKeys.existsSync()==false) {
+          print("Keys aren't online");
+          googleIsDoingSomething(true);
+          preferenceBackupAndEncrypt
+              .encryptRsaKeysAndUpload(googleDrive);
+          googleIsDoingSomething(true);
+          showMessage("Encryption keys Uploaded");
+        }
+        if (checkPrefs.existsSync() == false) {
+          print("Prefs are not online");
+          String dataForEncryption =
+              '$userPassword,$dbPassword,$passwordHint,${passwordEnabled
+              .toString()},$greeting,$colorSeed';
+          print(
+              "Data is being encrypted and uploaded");
+          googleIsDoingSomething(true);
+          preferenceBackupAndEncrypt.encryptData(
+              dataForEncryption, googleDrive);
+          googleIsDoingSomething(true);
+          showMessage("Preferences Uploaded");
+        }
+        if (checkDB.existsSync() == false) {
+          showMessage(
+              "You need to open the journal up once to create the DB file for backup & sync");
+          googleIsDoingSomething(false);
+        }
+      }
+
+    }
+  }
   Future<bool> getNetStatus() async{
    if(connected){
      userActiveBackup = prefs.getBool('testBackup')??false;
@@ -261,7 +349,9 @@ String connectionState= "";
     passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
     greeting = prefs.getString("greeting") ?? '';
     loginGreeting = await Future.sync(() => getGreeting());
+
     userPassword = await encryptedSharedPrefs.getString('loginPassword');
+    //Dumb bug flutter imposed on shared prefs with index out of range exceptions
     try {
       dbPassword = await encryptedSharedPrefs.getString('dbPassword');
     } on Exception catch (ex) {
@@ -292,16 +382,17 @@ String connectionState= "";
   void checkDataFiles() async{
     if (userActiveBackup) {
       if (isThisReturning == true || Platform.isIOS ) {
+      // if the app is Running on iOS, the app will run this
         if(Platform.isIOS){
           while(googleDrive.client==null){
             googleIsDoingSomething(true);
           }
         }
+        // This is simply checking all files
         if(googleDrive.client!=null){
-          checkFileAge();
+          await Future.sync(() => checkForAllFiles(""));
         }
       }
-
       if (isDataSame == false) {
         googleIsDoingSomething(true);
         updateValues();
@@ -807,14 +898,8 @@ String connectionState= "";
               SizedBox(
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: () {
-                    try {
-                      googleSignIn();
-                      checkFileAge();
-                    } on Exception catch (ex) {
-                      restoreDBFiles();
-                      updateValues();
-                    }
+                  onPressed: () async{
+  await Future.sync(() => checkForAllFiles(""));
                   },
                   child: Text(
                     'Update Files',

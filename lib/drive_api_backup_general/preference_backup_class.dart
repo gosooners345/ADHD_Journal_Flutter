@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart' as kriss;
 import 'package:path/path.dart';
 import 'package:pointycastle/export.dart';
 import 'package:pointycastle/src/platform_check/platform_check.dart';
-import 'package:sqflite_sqlcipher/sqflite.dart';
 import '../app_start_package/login_screen_file.dart';
 import 'google_drive_backup_class.dart';
 import 'crypto_utils.dart';
@@ -138,19 +137,21 @@ class PreferenceBackupAndEncrypt {
       io.File privateKeyStorage =
           io.File(join(keyLocation, privateKeyFileName));
       io.File publicKeyStorage = io.File(join(keyLocation, pubKeyFileName));
-      if (privateKeyStorage.existsSync() == false) {
+      if (privateKeyStorage.existsSync() == false || publicKeyStorage.existsSync()==false) {
         generateRSAKeys();
       }
       bool checkPubKey = await drive.checkForFile(pubKeyFileName);
-      if (checkPubKey) {
+      bool checkPrivKey = await drive.checkForFile(privateKeyFileName);
+      if (checkPubKey && checkPrivKey) {
         throw Exception("We have keys in the cloud already");
       }
+      else{
       drive.uploadFileToGoogleDrive(privateKeyStorage);
       drive.uploadFileToGoogleDrive(publicKeyStorage);
       print("RSA Keys Generated and uploaded");
       if (kriss.kDebugMode) {
         print("data encrypted");
-      }
+      }}
     } on Exception catch (ex) {
       if (kriss.kDebugMode) {
         print("Keys already exist in cloud");
