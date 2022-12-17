@@ -38,10 +38,10 @@ class GoogleDrive {
   Future<String?> _getFolderId(ga.DriveApi driveApi) async {
     const mimeType = "application/vnd.google-apps.folder";
     try {
-      final found = await driveApi.files.list(
+      final found = await Future.sync(()=>driveApi.files.list(
         q: "mimeType = '$mimeType' and name = '$driveStoreDirectory'",
         $fields: "files(id, name)",
-      );
+      ));
       final files = found.files;
       if (files == null) {
         if (kDebugMode) {
@@ -202,7 +202,7 @@ on Exception catch(ex){
   Future<bool> checkForFile(String fileName) async {
     drive = ga.DriveApi(client!);
 
-    try {
+
       var queryDrive = await drive.files.list(
         q: "name contains '$fileName'",
         $fields: "files(id, name,createdTime,modifiedTime)",
@@ -219,15 +219,9 @@ on Exception catch(ex){
       if (files!.isNotEmpty) {
         return true;
       } else {
-        throw Exception("File not found $fileName"
-            );
+       return false;
       }
-    } on Exception catch (ex) {
-      if (kDebugMode) {
-        print(ex);
-      }
-      return false;
-    }
+
   }
 
   deleteOutdatedBackups(String fileName) async {
