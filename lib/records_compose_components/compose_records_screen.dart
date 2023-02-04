@@ -140,6 +140,9 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
     });
   }
 
+
+
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(builder: (context, swapper, child) {
@@ -366,3 +369,5 @@ class _ComposeRecordsWidgetState extends State<ComposeRecordsWidget> {
     );
   }
 }
+
+
