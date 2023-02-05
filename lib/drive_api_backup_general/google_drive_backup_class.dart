@@ -125,79 +125,52 @@ class GoogleDrive {
     }
   }
   Future<bool> checkFileAge(String fileName,String directoryName) async {
-      client ??= await  getHttpClient();
-try{
-    drive = ga.DriveApi(client!);
-    
-    File file = File(directoryName);
-if(file.existsSync()==true){
-    var modifiedTime = file.lastModifiedSync();
+    client ??= await getHttpClient();
+    try {
+      drive = ga.DriveApi(client!);
 
-    //Query for files on Drive to test against device
-    var queryDrive = await drive.files.list(
-      q: "name contains '$fileName'",
-      $fields: "files(id, name,createdTime,modifiedTime)",
-    );
-    var files = queryDrive.files;
-    // Need for repeating until query is loaded or no file exists
-    var i = 0;
-    if (files!.isEmpty) {
-      var queryDrive = await drive.files.list(
-        q: "name contains '$fileName'",
-        $fields: "files(id, name,createdTime,modifiedTime)",
-      );
-      print(queryDrive.files);
+      File file = File(directoryName);
+      if (file.existsSync() == true) {
+        var modifiedTime = file.lastModifiedSync();
+
+        //Query for files on Drive to test against device
+        var queryDrive = await drive.files.list(
+          q: "name contains '$fileName'",
+          $fields: "files(id, name,createdTime,modifiedTime)",
+        );
+        var files = queryDrive.files;
+        // Need for repeating until query is loaded or no file exists
+        var i = 0;
+        if (files!.isEmpty) {
+          var queryDrive = await drive.files.list(
+            q: "name contains '$fileName'",
+            $fields: "files(id, name,createdTime,modifiedTime)",
+          );
+          print(queryDrive.files);
+        }
+        if (files!.isNotEmpty) {
+          files = queryDrive.files;
+          var checkFile = files!.first;
+          var checkTime = checkFile.createdTime;
+          return (checkTime!.isBefore(modifiedTime));
+        } else if (files.isEmpty) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+      else {
+        throw Exception("File not found $fileName");
+      }
     }
-    if (files!.isNotEmpty) {
-      files = queryDrive.files;
-      var checkFile = files!.first;
-      var checkTime = checkFile.createdTime;
-      return (checkTime!.isBefore(modifiedTime));
-    } else if (files.isEmpty) {
-      return true;
-    } else {
+    on Exception catch (ex) {
+      print(ex);
       return false;
-    }}
-else{throw Exception("File not found $fileName");}
-}
-on Exception catch(ex){
-  print(ex);
-  return false;
-
     }
   }
   /// Check file age on device. If the file on the Google Drive is newer, it returns false,
   /// if not, it returns true. This is used to sync the db and prefs files.
-  ///
-  /*Future<bool> checkFileAge(String fileName,String directoryName) async {
-       drive = ga.DriveApi(client!);
-    File file = File(directoryName);
 
-    var modifiedTime = file.lastModifiedSync();
-    //Query for files on Drive to test against device
-    var queryDrive = await drive.files.list(
-      q: "name contains '$fileName'",
-      $fields: "files(id, name,createdTime,modifiedTime)",
-    );
-    var files = queryDrive.files;
-    // Need for repeating until query is loaded or no file exists
-    if (files!.isEmpty) {
-       queryDrive = await drive.files.list(
-        q: "name contains '$fileName'",
-        $fields: "files(id, name,createdTime,modifiedTime)",
-      );
-    }
-    if (files!.isNotEmpty) {
-      files = queryDrive.files;
-      var checkFile = files!.first;
-      var checkTime = checkFile.createdTime;
-      return (checkTime!.isBefore(modifiedTime));
-    } else if (files.isEmpty) {
-      return true;
-    } else {
-      return false;
-    }
-  }*/
 
   Future<bool> checkForFile(String fileName) async {
     drive = ga.DriveApi(client!);

@@ -1,8 +1,11 @@
+import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:intro_screen_onboarding_flutter/circle_progress_bar.dart';
+import 'package:provider/provider.dart';
 
+import '../project_resources/project_colors.dart';
 import 'introduction_modified.dart';
 
 /// A IntroScreen Class.
@@ -36,6 +39,7 @@ class _IntroScreenOnboardingState extends State<IntroScreenOnboarding> {
 
   @override
   Widget build(BuildContext context) {
+    return Consumer<ThemeSwap>(builder: (context, swapper, child) {
     return Material(
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
@@ -73,93 +77,18 @@ class _IntroScreenOnboardingState extends State<IntroScreenOnboarding> {
                     ),
                   ),
                 ),
-                //                Row(
-                //                  mainAxisAlignment: MainAxisAlignment.center,
-                //                  children: _buildPageIndicator(),
-                //                ),
+
                 _customProgress(),
-                //_buildNextButton(),
+
               ],
             ),
           ),
         ),
       ),
     );
+  });
   }
 
-//  Widget _buildNextButton() {
-//    return (_currentPage != widget.introductionList.length - 1
-//        ? Expanded(
-//      child: Align(
-//        alignment: FractionalOffset.bottomRight,
-//        child: FlatButton(
-//          onPressed: () {
-//            _pageController.nextPage(
-//              duration: Duration(milliseconds: 500),
-//              curve: Curves.ease,
-//            );
-//          },
-//          child: Row(
-//            mainAxisAlignment: MainAxisAlignment.center,
-//            mainAxisSize: MainAxisSize.min,
-//            children: <Widget>[
-////                    Text(
-////                      'Next',
-////                      style: TextStyle(
-////                        color: Colors.black,
-////                        fontSize: 22.0,
-////                      ),
-////                    ),
-//            ],
-//          ),
-//        ),
-//      ),
-//    )
-//        : Expanded(
-//      child: Align(
-//        alignment: FractionalOffset.bottomRight,
-//        child: FlatButton(
-//          onPressed: () {
-//            print('Start');
-//          },
-//          child: Row(
-//            mainAxisAlignment: MainAxisAlignment.center,
-//            mainAxisSize: MainAxisSize.min,
-//            children: <Widget>[
-////                    Text(
-////                      'Start',
-////                      style: TextStyle(
-////                        color: Colors.black,
-////                        fontSize: 22.0,
-////                      ),
-////                    ),
-//            ],
-//          ),
-//        ),
-//      ),
-//    ));
-//  }
-
-//  Widget _indicator(bool isActive) {
-//    return AnimatedContainer(
-//      duration: Duration(milliseconds: 150),
-//      margin: EdgeInsets.symmetric(horizontal: 8.0),
-//      height: 8.0,
-//      width: isActive ? 24 : 16,
-//      decoration: BoxDecoration(
-//        color: isActive ? Color(0xFF7B51D3) : Colors.grey,
-//        borderRadius: BorderRadius.all(Radius.circular(10)),
-//      ),
-//    );
-//  }
-
-//  List<Widget> _buildPageIndicator() {
-//    List<Widget> list = [];
-//    for (int i = 0; i < widget.introductionList.length; i++) {
-//      list.add(i == _currentPage ? _indicator(true) : _indicator(false));
-//    }
-//    return list;
-//  }
 
   Widget _customProgress() {
     return Stack(
@@ -192,10 +121,10 @@ class _IntroScreenOnboardingState extends State<IntroScreenOnboarding> {
               )
                   : widget.onTapSkipButton!();
             },
-            icon: Icon(
+            icon: nextArrowIcon/*con(
               Icons.arrow_forward_ios,
               color: Colors.white,
-            ),
+            )*/,
             iconSize: 15,
           ),
         )
