@@ -193,15 +193,17 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
           ),
         )),
           Intro.Introduction(childWidget:
-          Card(child: ListTile(title: Text("What\'s on your mind?",style: TextStyle(fontSize: 20)),subtitle:
-          TextField(
+          Expanded(child:  Card(child:ListView(children: [ Padding(padding: EdgeInsets.all(8.0),child:Text("What\'s on your mind?",style: TextStyle(fontSize: 20) ,),),
+      /*ListTile(title: Text("What\'s on your mind?",style: TextStyle(fontSize: 20))*////,subtitle:
+          space,
+            Padding(padding: EdgeInsets.all(5.0),child:
+            TextField(
             decoration: InputDecoration(
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(4),
                   borderSide: BorderSide(
                       color: Color(swapper.isColorSeed).withOpacity(1.0),
-                      width: 1)),
-              //labelText: 'What\'s on your mind? ',
+                      width: 1)), //labelText: 'What\'s on your mind? ',
             ),
             keyboardType: TextInputType.multiline,
             minLines: 1,
@@ -211,7 +213,12 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
             onChanged: (text) {
               super.widget.record.content = text;
             },
-          ),),),),
+          ),),space,
+          ],)
+            ,)
+            ,)
+            ,
+          ),
           Intro.Introduction(childWidget:
         Card(child: ListTile(title: Text("How do you feel currently?",style: TextStyle(fontSize: 20)),subtitle: TextField(
           decoration: InputDecoration(
@@ -228,31 +235,34 @@ hintText: "Enter how you're feeling here."          ),
           },
         ),),),),
           Intro.Introduction(childWidget:
-          /*Card(child:*/
-          Expanded(child: ListView(children: [Text("Do you have any thoughts about what happened here?",style: TextStyle(fontSize: 20.0),),space,TextField(
-      decoration: InputDecoration(
-      border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(4),
-      borderSide: BorderSide(
-      color: AppColors.mainAppColor.withOpacity(1.0),
-      width: 1)),
-      //  labelText: 'Do you have anything to add to this?',
-      hintText:
-      'Add your thoughts or what you think could\'ve triggered this here'),
-      keyboardType: TextInputType.multiline,
-      minLines: 1,
-      maxLines: null,
-      textCapitalization: TextCapitalization.sentences,
-      controller: sourceController,
-      onChanged: (text) {
-      super.widget.record.sources = text;
-      },
-      )],),)
-
-
-
-
-      , ),//),
+          Expanded(flex:1,child:
+      Card(child:ListView(children:[Padding(padding: EdgeInsets.all(8.0),
+        child:Text("Do you have any thoughts about what happened here?",style: TextStyle(fontSize: 20.0),),), space,
+      Padding(padding: EdgeInsets.all(2.0),
+          child:
+          TextField(
+            decoration: InputDecoration(
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4),
+                    borderSide: BorderSide(
+                        color: AppColors.mainAppColor.withOpacity(1.0),
+                        width: 1)),
+                  labelText: 'Do you have anything to add to this?',
+                hintText:
+                'Add your thoughts or what you think could\'ve triggered this here'),
+            keyboardType: TextInputType.multiline,
+            minLines: 1,scrollController: ScrollController(),
+            maxLines: null,
+            textCapitalization: TextCapitalization.sentences,
+            controller: sourceController,
+            onChanged: (text) {
+              super.widget.record.sources = text;
+            },),
+      ), space],shrinkWrap: true,
+        ),
+      ),
+          ),
+          ),/*ListView, List Tile*/
           Intro.Introduction(childWidget:
           Card(
             borderOnForeground: true,
