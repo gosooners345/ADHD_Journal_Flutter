@@ -193,9 +193,8 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
           ),
         )),
           Intro.Introduction(childWidget:
-          Expanded(child:  Card(child:ListView(children: [ Padding(padding: EdgeInsets.all(8.0),child:Text("What\'s on your mind?",style: TextStyle(fontSize: 20) ,),),
-      /*ListTile(title: Text("What\'s on your mind?",style: TextStyle(fontSize: 20))*////,subtitle:
-          space,
+          Expanded(child:  Card(margin: EdgeInsets.fromLTRB(0, 0, 0, 10),child:ListView(children: [ Padding(padding: EdgeInsets.all(8.0),child:Text("What\'s on your mind?",style: TextStyle(fontSize: 20) ,),),
+
             Padding(padding: EdgeInsets.all(5.0),child:
             TextField(
             decoration: InputDecoration(
@@ -213,8 +212,8 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
             onChanged: (text) {
               super.widget.record.content = text;
             },
-          ),),space,
-          ],)
+          ),),
+            SizedBox(height: 10,),],)
             ,)
             ,)
             ,
@@ -236,9 +235,9 @@ hintText: "Enter how you're feeling here."          ),
         ),),),),
           Intro.Introduction(childWidget:
           Expanded(flex:1,child:
-      Card(child:ListView(children:[Padding(padding: EdgeInsets.all(8.0),
-        child:Text("Do you have any thoughts about what happened here?",style: TextStyle(fontSize: 20.0),),), space,
-      Padding(padding: EdgeInsets.all(2.0),
+      Card(margin:EdgeInsets.fromLTRB(0, 0, 0, 10),child:ListView(children:[Padding(padding: EdgeInsets.all(8.0),
+        child:Text("Do you have any thoughts about what happened here?",style: TextStyle(fontSize: 20.0),),), 
+      Padding(padding: EdgeInsets.all(8.0),
           child:
           TextField(
             decoration: InputDecoration(
@@ -262,7 +261,7 @@ hintText: "Enter how you're feeling here."          ),
         ),
       ),
           ),
-          ),/*ListView, List Tile*/
+          ),
           Intro.Introduction(childWidget:
           Card(
             borderOnForeground: true,
@@ -274,8 +273,9 @@ hintText: "Enter how you're feeling here."          ),
               ),
             ),
             child: ListTile(
-              title: Text(
-                  'Related ADHD Symptoms: \r\n${super.widget.record.symptoms}'),
+              title: Text("Related ADHD Symptoms:"),
+              subtitle: Text(
+                  '${super.widget.record.symptoms}'),
               onTap: () {
                 Navigator.push(
                     context,
@@ -308,7 +308,8 @@ hintText: "Enter how you're feeling here."          ),
               },
             ),),
           ),),
-          Intro.Introduction(childWidget:Column(children: [Text("How would you rate this?",style: TextStyle(fontSize: 20),),ratingSliderWidget,Slider(
+          Intro.Introduction(childWidget:Expanded(child:Card(child: ListView (children: [Text("How would you rate this?",style: TextStyle(fontSize: 20),),
+      ratingSliderWidget,Slider(
       value: super.widget.record.rating,
       onChanged: (double value) {
       setState(() {
@@ -340,9 +341,9 @@ hintText: "Enter how you're feeling here."          ),
       max: 100.0,
       min: 0.0,
       divisions: 100,
-      label: super.widget.record.rating.toString()),],)
-         ),
-          Intro.Introduction(childWidget:Expanded(child:Column(children: [Text("Did you think what happened was successful? ",style: TextStyle(fontSize: 20)),SwitchListTile(
+      label: super.widget.record.rating.toString()),],),),),),
+
+          Intro.Introduction(childWidget:Expanded(child:Card(child:ListView(children: [Text("Did you think what happened was successful? ",style: TextStyle(fontSize: 20)),SwitchListTile(
             value: isChecked,
             onChanged: (bool value) {
               super.widget.record.success = value;
@@ -359,13 +360,14 @@ hintText: "Enter how you're feeling here."          ),
             },
             title: successStateWidget,
             activeColor: Color(swapper.isColorSeed),
-          ) ,],),),),
+          ) ,]),),),),
           Intro.Introduction(childWidget:
           Expanded(child:
           ListView(
             padding:
             const EdgeInsets.only(left: 8, top: 40, right: 8, bottom: 40),
             children: <Widget>[
+              Text("Here's what you entered. Check and see if everything is correct. Once you're done, hit save."),space,
               //Title Field
               TextField(
                 decoration: InputDecoration(
