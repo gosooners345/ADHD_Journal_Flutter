@@ -171,12 +171,13 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
         onTapSkipButton: () { saveRecord(super.widget.record);},
           introductionList:
         
-        [ Intro.Introduction(childWidget:
-        Card( elevation: 2.0, surfaceTintColor: Color(swapper.isColorSeed),
-          child: ListTile(
-            title: Text("What do you want to call this?",style: TextStyle(fontSize: 20)),
-            subtitle: TextField(
-              decoration: InputDecoration(
+        [ Intro.Introduction(childWidget:Expanded(
+        child:Card( surfaceTintColor: Color(swapper.isColorSeed),
+          child: ListView(padding: EdgeInsets.all(10),
+            children:[
+              Center(child:Text("What do you want to call this?",style: TextStyle(fontSize: 20))),
+             space,
+             TextField(decoration: InputDecoration(
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(4),
                       borderSide: BorderSide(
@@ -190,12 +191,12 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
                 super.widget.record.title = text;
               },
             ),
-          ),
-        )),
+          ]),
+        )),),
           Intro.Introduction(childWidget:
-          Expanded(child:  Card(margin: EdgeInsets.fromLTRB(0, 0, 0, 10),child:ListView(children: [ Padding(padding: EdgeInsets.all(8.0),child:Text("What\'s on your mind?",style: TextStyle(fontSize: 20) ,),),
+          Expanded(flex:1,child:  Card(elevation: 2.0,margin: EdgeInsets.all(10),child:ListView(shrinkWrap:true,padding: EdgeInsets.all(8.0),children: [
+            Center(child:Text("What\'s on your mind?",style: TextStyle(fontSize: 20) ,)),space,
 
-            Padding(padding: EdgeInsets.all(5.0),child:
             TextField(
             decoration: InputDecoration(
               border: OutlineInputBorder(
@@ -212,33 +213,32 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
             onChanged: (text) {
               super.widget.record.content = text;
             },
-          ),),
-            SizedBox(height: 10,),],)
+          ),
+            ],)
             ,)
             ,)
             ,
           ),
           Intro.Introduction(childWidget:
-        Card(child: ListTile(title: Text("How do you feel currently?",style: TextStyle(fontSize: 20)),subtitle: TextField(
+        Expanded(flex:1 ,child:Card(margin:EdgeInsets.fromLTRB(10, 10, 10, 10),child: ListView(padding:EdgeInsets.all(8.0),shrinkWrap: true,children: [Center(child:Text("How do you feel currently?",style: TextStyle(fontSize: 20))),space, TextField(
           decoration: InputDecoration(
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(4),
                 borderSide: BorderSide(
                     color: Color(swapper.isColorSeed).withOpacity(1.0),
                     width: 1)),
-           // labelText: 'How do you feel today?',
+           /*labelText: 'How do you feel today?',*/
 hintText: "Enter how you're feeling here."          ),
           controller: emotionsController,
           onChanged: (text) {
             super.widget.record.emotions = text;
           },
-        ),),),),
+        ),],),),),),
           Intro.Introduction(childWidget:
           Expanded(flex:1,child:
-      Card(margin:EdgeInsets.fromLTRB(0, 0, 0, 10),child:ListView(children:[Padding(padding: EdgeInsets.all(8.0),
-        child:Text("Do you have any thoughts about what happened here?",style: TextStyle(fontSize: 20.0),),), 
-      Padding(padding: EdgeInsets.all(8.0),
-          child:
+      Card(margin:EdgeInsets.all(10),child:ListView(padding:EdgeInsets.all(8.0) ,children:[
+        Center(child:Text("Do you have any thoughts about what happened here?",style: TextStyle(fontSize: 20.0))),
+     space,
           TextField(
             decoration: InputDecoration(
                 border: OutlineInputBorder(
@@ -257,7 +257,7 @@ hintText: "Enter how you're feeling here."          ),
             onChanged: (text) {
               super.widget.record.sources = text;
             },),
-      ), space],shrinkWrap: true,
+       space],shrinkWrap: true,
         ),
       ),
           ),
@@ -273,9 +273,9 @@ hintText: "Enter how you're feeling here."          ),
               ),
             ),
             child: ListTile(
-              title: Text("Related ADHD Symptoms:"),
+              title: Text("Related ADHD Symptoms:",style: TextStyle(fontSize: 20),),
               subtitle: Text(
-                  '${super.widget.record.symptoms}'),
+                  '${super.widget.record.symptoms}',),
               onTap: () {
                 Navigator.push(
                     context,
@@ -290,9 +290,11 @@ hintText: "Enter how you're feeling here."          ),
               },
             ),
           ),),
-          Intro.Introduction(childWidget:
+          Intro.Introduction(childWidget:Expanded(child:
           Card(
-            child: ListTile(title: Text("Tags"),subtitle: TextField(
+            child:  ListView(
+              padding: EdgeInsets.all(8),
+              children: [ Center(child: Text("Tags",style: TextStyle(fontSize: 20),),),space, TextField(
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(4),
@@ -306,10 +308,10 @@ hintText: "Enter how you're feeling here."          ),
               onChanged: (text) {
                 super.widget.record.tags = text;
               },
-            ),),
-          ),),
-          Intro.Introduction(childWidget:Expanded(child:Card(child: ListView (children: [Text("How would you rate this?",style: TextStyle(fontSize: 20),),
-      ratingSliderWidget,Slider(
+            ),         ],)),)),
+          Intro.Introduction(childWidget:Expanded(child:Card(child: ListView (padding: EdgeInsets.all(8),children: [
+            Center(child: Text("How would you rate this?",style: TextStyle(fontSize: 20),),),
+      Center(child:ratingSliderWidget),Slider(
       value: super.widget.record.rating,
       onChanged: (double value) {
       setState(() {
@@ -343,7 +345,7 @@ hintText: "Enter how you're feeling here."          ),
       divisions: 100,
       label: super.widget.record.rating.toString()),],),),),),
 
-          Intro.Introduction(childWidget:Expanded(child:Card(child:ListView(children: [Text("Did you think what happened was successful? ",style: TextStyle(fontSize: 20)),SwitchListTile(
+          Intro.Introduction(childWidget:Expanded(child:Card(child:ListView(children: [Center(child:Text("Do you think what happened was successful? ",style: TextStyle(fontSize: 20))),SwitchListTile(
             value: isChecked,
             onChanged: (bool value) {
               super.widget.record.success = value;
@@ -367,7 +369,7 @@ hintText: "Enter how you're feeling here."          ),
             padding:
             const EdgeInsets.only(left: 8, top: 40, right: 8, bottom: 40),
             children: <Widget>[
-              Text("Here's what you entered. Check and see if everything is correct. Once you're done, hit save."),space,
+              Text("Here's what you entered. Check and see if everything is correct. Once you're done, hit save.",style:TextStyle(fontSize: 20)),space,
               //Title Field
               TextField(
                 decoration: InputDecoration(
