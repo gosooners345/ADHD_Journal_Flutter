@@ -18,6 +18,13 @@ final emotionalSymptomList = [
   'Rejection Sensitivity Dysphoria',
   'Emotional Meltdown',
 ];
+
+List<String> emotionalRegDefinitionList = [
+  "This is when your passion and emotions pair up and drive your response, sometimes your brain will not keep these in check when you make a response to something going on",
+  "Your brain\'s emotion regulator inhibitors are overwhelmed with a surge of flooding, it can be any emotion. This is like when you have moments of intense joy or anger. Your brain is likely not going to be in a \'rational\' state. Be careful ",
+  "You are likely feeling the pain of a potential or actual rejection and it\'s driving a fear based response or something related",
+  "Your emotional state is in a red zone, you may want to take a moment to step away and cool down. Don\'t see this as something negative, your loved ones still love you ",
+];
 final inattentiveSymptomsList = [
   'Distractions',
   'Bored',
@@ -40,6 +47,41 @@ final executiveDysfunctionSymptomList = [
   'Having a bad day',
   'Working Memory Issues',
 ];
+final executiveSymptomDefinitionList = [
+  'This is described as an action often made out of impulse or out-of-nowhere',
+  "This is often when you get really restless over waiting for something",
+  "This is when you don't feel like doing something, but you know you should, I think?",
+  "This is for feeling really hyperactive whether it be mental, physical, or both",
+  "I NEED DOPAMINE, MY BRAIN IS HUNGRY",
+  "This is when your day is going wrong in all of the ways and nothing seems to go right",
+  "When your brain is forgetting important stuff in the short term",
+];
+
+List<String> inattentiveSymptomDefinitionList = [
+  'Easily Distracted - Least Severe',
+  ' this stuff doesn\'t intrest you',
+  'Keep putting important things off, or don\'t feel like it today',
+  'Your senses are overwhelmed and you are having trouble with focusing',
+  'You\'re dealing with more than what you can carry',
+  'Focusing is a bit challenging today, it\'s okay  ',
+  'Your mind may be hyperfocusing on something else or your mind won\'t focus on what is at hand due to stress or something',
+  'This stuff isn\'t helping with a dopamine shortage, or you may be wanting to not do this today',
+  'Your mind is foggy and it isn\'t helpful to try and push your way through whatever the task is, you may want to take a break for a little',
+  'You\'re likely wiped out from putting in your best efforts and are exhausted from this task, resting will help you tremendously',
+  'This is probably the most severe of the bunch. You\'re likely not wanting to do anything because you have a writer\'s block like mindset or you don\'t know what to say or do, '
+      'don\'t lose heart, it\'s probably going to be okay'
+
+
+];
+
+List<String> stressDefinitionList = [
+  "This is driven by stress going on in your life. Think of this like your symptoms are magnified by an event.",
+  "Your mind is probably wondering why you exist or there\'s too much going on around you to take in the moment. This may also apply to a situation where the world is crashing around you",
+  "Your mind is panicking about something going on around you or internally, This is here because it can be classified as a symptom of ADHD. But it does take place in everyone\'es lives.",
+  "This is when life just seems meaningless and you don\'t want to exist. This is a catch all for depression symptoms."
+];
+
+
 final stressorSymptomList = [
   'Stress enhanced ADHD Response',
   'Existential crisis',
@@ -183,11 +225,13 @@ final stress_based_emotion_cluster = [
 ];
 final mindful_state_emotion_cluster = [
   'humble',
-  'sobered',
+
   'humbled',
   'informed',
+  'inner peace',
+
 ];
-final conviction_based_emotion_cluster = ['convicted', 'repentant', 'serious'];
+final conviction_based_emotion_cluster = ['convicted', 'repentant', 'serious','sobered',];
 final body_pain_emotion_cluster = ['sore', 'pain', 'sick', 'achy'];
 final fear_emotion_cluster = [
   'terrified',
@@ -236,7 +280,7 @@ final apathetic_emotion_cluster = [
 ];
 final peaceful_emotion_cluster = [
   'content',
-  'peace',
+  'peace','inner peace',
   'peaceful',
   'calm',
   'thankful',
@@ -336,7 +380,8 @@ final love_emotion_cluster = [
   'caring',
   'devoted',
   'affectionate',
-  'aroused'
+  'aroused',
+
 ];
 final surprised_emotion_cluster = [
   'amazed',
@@ -353,7 +398,8 @@ final wanting_emotion_cluster = [
   'jealous',
   'ignored',
   'hungry',
-  'lonely'
+  'lonely',
+
 ];
 final body_exhaustion_cluster = ['tired', 'sleepy', 'exhausted'];
 final weak_emotional_cluster = [

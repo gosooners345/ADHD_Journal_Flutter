@@ -25,7 +25,7 @@ class Introduction extends StatefulWidget {
 class IntroductionState extends State<Introduction> {
   @override
   Widget build(BuildContext context) {
-    return new Container(
+    return Container(
       child: Padding(
         padding: EdgeInsets.all(40),
         child: Column(

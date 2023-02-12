@@ -127,7 +127,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
                       }
                     });
                   },
-                  title: Text(positiveSymptomListSelection[index].symptom)),
+                  title: Text(positiveSymptomListSelection[index].symptom )),
             );
           }, childCount: positiveSymptomListSelection.length),
         ),
@@ -165,7 +165,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
                       }
                     });
                   },
-                  title: Text(inattentiveSymptomListSelection[index].symptom)),
+                  title: Text(inattentiveSymptomListSelection[index].symptom + ' - '+ inattentiveSymptomDefinitionList[index]+'.')),
             );
           }, childCount: inattentiveSymptomListSelection.length),
         ),
@@ -202,7 +202,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
                       }
                     });
                   },
-                  title: Text(executiveDysfunctionSelection[index].symptom)),
+                  title: Text(executiveDysfunctionSelection[index].symptom +" - " +executiveSymptomDefinitionList[index]+"." )),
             );
           }, childCount: executiveDysfunctionSelection.length),
         ),
@@ -239,7 +239,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
                       }
                     });
                   },
-                  title: Text(emotionalListSelection[index].symptom)),
+                  title: Text(emotionalListSelection[index].symptom + ' - '+ emotionalRegDefinitionList[index]+".")),
             );
           }, childCount: emotionalListSelection.length),
         ),
@@ -276,7 +276,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
                       }
                     });
                   },
-                  title: Text(stressorSymptomsSelection[index].symptom)),
+                  title: Text(stressorSymptomsSelection[index].symptom + " - "+ stressDefinitionList[index] )),
             );
           }, childCount: stressorSymptomsSelection.length),
         ),
