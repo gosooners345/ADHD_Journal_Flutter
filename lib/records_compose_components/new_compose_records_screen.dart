@@ -220,7 +220,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
             ,
           ),
           Intro.Introduction(childWidget:
-        Expanded(flex:1 ,child:Card(margin:const EdgeInsets.fromLTRB(10, 10, 10, 10),child: ListView(padding:EdgeInsets.all(8.0),shrinkWrap: true,children: [Center(child:Text("How do you feel currently?",style: TextStyle(fontSize: 20))),space, TextField(
+        Expanded(flex:1 ,child:Card(margin:const EdgeInsets.fromLTRB(10, 10, 10, 10),child: ListView(padding:const EdgeInsets.all(8.0),shrinkWrap: true,children: [const Center(child:Text("How do you feel currently?",style: TextStyle(fontSize: 20))),space, TextField(
           decoration: InputDecoration(
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(4),
