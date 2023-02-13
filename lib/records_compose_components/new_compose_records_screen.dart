@@ -272,10 +272,12 @@ hintText: "Enter how you're feeling here."          ),
                 width: 1,
               ),
             ),
-            child: ListTile(
+            child:Column(crossAxisAlignment:CrossAxisAlignment.center,children: [ Padding(padding: EdgeInsets.all(8.0),child:Text("What ADHD Symptoms affected this event?"+
+                "\r\n Tap here to add symptoms.",style: TextStyle(fontSize: 20),)), ListTile(
+
               title: const Text("Related ADHD Symptoms:",style: TextStyle(fontSize: 20),),
               subtitle: Text(
-                  super.widget.record.symptoms,),
+                  super.widget.record.symptoms,style:TextStyle(fontSize:15),softWrap: true,),
               onTap: () {
                 Navigator.push(
                     context,
@@ -290,7 +292,7 @@ hintText: "Enter how you're feeling here."          ),
 
                    super.widget.record.symptoms='';});
               },
-            ),
+            ),SizedBox(height: 30,)]),
           ),),
           Intro.Introduction(childWidget:Expanded(child:
           Card(
@@ -455,7 +457,8 @@ hintText: "Enter how you're feeling here."          ),
                     width: 1,
                   ),
                 ),
-                child: ListTile(
+                child:
+                  ListTile(
                   title: Text(
                       'Related ADHD Symptoms: \r\n${super.widget.record.symptoms}'),
                   onTap: () {

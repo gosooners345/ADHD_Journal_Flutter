@@ -48,25 +48,14 @@ String nextString = "Next";
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-              /*  Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-                      alignment: Alignment.topRight,
-                      child: TextButton(
-                        onPressed: widget.onTapSkipButton,
-                        child: Text('Skip', style: widget.skipTextStyle),
-                      ),
-                    ),
-                  ],
-                ),*/
+
                 Expanded(
-                  child: Container(
+                  child: SizedBox(
                     height: 550.0,
                     child: PageView(
-                      physics: ClampingScrollPhysics(),
+                      physics: const ClampingScrollPhysics(),
                       controller: _pageController,
                       onPageChanged: (int page) {
                         setState(() {
