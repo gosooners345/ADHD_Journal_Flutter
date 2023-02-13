@@ -36,7 +36,7 @@ class _IntroScreenOnboardingState extends State<IntroScreenOnboarding> {
   final PageController _pageController = PageController(initialPage: 0);
   int _currentPage = 0;
   double progressPercent = 0;
-
+String nextString = "Next";
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(builder: (context, swapper, child) {
@@ -46,11 +46,11 @@ class _IntroScreenOnboardingState extends State<IntroScreenOnboarding> {
         child: Container(
           color: widget.backgroudColor ?? Theme.of(context).backgroundColor,
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 40.0),
+            padding: const EdgeInsets.symmetric(vertical: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Row(
+              /*  Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Container(
@@ -61,7 +61,7 @@ class _IntroScreenOnboardingState extends State<IntroScreenOnboarding> {
                       ),
                     ),
                   ],
-                ),
+                ),*/
                 Expanded(
                   child: Container(
                     height: 550.0,
@@ -78,7 +78,8 @@ class _IntroScreenOnboardingState extends State<IntroScreenOnboarding> {
                   ),
                 ),
 
-                _customProgress(),
+              //  _customProgress(swapper),
+
 
               ],
             ),
@@ -90,45 +91,47 @@ class _IntroScreenOnboardingState extends State<IntroScreenOnboarding> {
   }
 
 
-  Widget _customProgress() {
+  Widget _customProgress(ThemeSwap swapper) {
     return Stack(
-      alignment: Alignment.center,
-      children: [
-        Container(
-          width: 80,
-          height: 80,
-          child: CircleProgressBar(
-            backgroundColor: Colors.white,
-            foregroundColor:
-            widget.foregroundColor ?? Theme.of(context).primaryColor,
-            value: ((_currentPage + 1) * 1.0 / widget.introductionList!.length),
-          ),
-        ),
-        Container(
-          height: 55,
-          width: 55,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: (widget.foregroundColor ?? Theme.of(context).primaryColor)
-                .withOpacity(0.5),
-          ),
-          child: IconButton(
-            onPressed: () {
-              _currentPage != widget.introductionList!.length - 1
-                  ? _pageController.nextPage(
-                duration: Duration(milliseconds: 500),
-                curve: Curves.ease,
-              )
-                  : widget.onTapSkipButton!();
-            },
-            icon: nextArrowIcon/*con(
-              Icons.arrow_forward_ios,
-              color: Colors.white,
-            )*/,
-            iconSize: 15,
-          ),
-        )
-      ],
-    );
+            alignment: Alignment.center,
+            children: [
+              Container(
+                width: 80,
+                height: 80,
+                child: CircleProgressBar(
+                  backgroundColor: Colors.white,
+                  foregroundColor:
+                  Color(swapper.isColorSeed),
+                  value: ((_currentPage + 1) * 1.0 / widget.introductionList!.length),
+                ),
+              ),
+             /* Container(
+                height: 55,
+                width: 55,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: (Colors.white)
+                      .withOpacity(0.5),
+                ),*/
+               /* child: TextButton(
+                  onPressed: () {
+
+                    _currentPage != widget.introductionList!.length - 1
+                        ? _pageController.nextPage(
+                      duration: Duration(milliseconds: 500),
+                      curve: Curves.ease,
+                    )
+                        : {
+
+
+                      setState((){nextString = "Save";}),
+                    };
+                  },
+                  child:Text(nextString)
+                ),*/
+              //),
+            ],
+          );
+
   }
 }

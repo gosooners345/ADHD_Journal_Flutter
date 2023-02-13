@@ -168,7 +168,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
         ),
         key: _formKey,
         body:IntroBoarding.IntroScreenOnboarding(
-        onTapSkipButton: () { saveRecord(super.widget.record);},
+        onTapSkipButton: (){saveRecord(super.widget.record);},
           introductionList:
         
         [ Intro.Introduction(childWidget:Expanded(
@@ -237,7 +237,7 @@ hintText: "Enter how you're feeling here."          ),
           Intro.Introduction(childWidget:
           Expanded(flex:1,child:
       Card(margin:const EdgeInsets.all(10),child:ListView(padding:const EdgeInsets.all(8.0) ,shrinkWrap: true,children:[
-        const Center(child:Text("Do you have any thoughts about what happened here?",style: TextStyle(fontSize: 20.0))),
+        const Center(child:Text("Is there anything that may have contributed to this?",style: TextStyle(fontSize: 20.0))),
      space,
           TextField(
             decoration: InputDecoration(
@@ -246,7 +246,7 @@ hintText: "Enter how you're feeling here."          ),
                     borderSide: BorderSide(
                         color: AppColors.mainAppColor.withOpacity(1.0),
                         width: 1)),
-                  labelText: 'Do you have anything to add to this?',
+                  labelText: 'This is where stuff like preexisting triggers, preliminary events, etc. can go.',
                 hintText:
                 'Add your thoughts or what you think could\'ve triggered this here'),
             keyboardType: TextInputType.multiline,
@@ -347,7 +347,7 @@ hintText: "Enter how you're feeling here."          ),
       divisions: 100,
       label: super.widget.record.rating.toString()),],),),),),
 
-          Intro.Introduction(childWidget:Expanded(child:Card(child:ListView(children: [Center(child:Text("Do you think what happened was successful? ",style: TextStyle(fontSize: 20))),SwitchListTile(
+          Intro.Introduction(childWidget:Expanded(child:Card(child:ListView(children: [const Center(child:Text("Do you think what happened was successful? ",style: TextStyle(fontSize: 20))),SwitchListTile(
             value: isChecked,
             onChanged: (bool value) {
               super.widget.record.success = value;
@@ -371,7 +371,7 @@ hintText: "Enter how you're feeling here."          ),
             padding:
             const EdgeInsets.only(left: 8, top: 40, right: 8, bottom: 40),
             children: <Widget>[
-              Text("Here's what you entered. Check and see if everything is correct. Once you're done, hit save.",style:TextStyle(fontSize: 20)),space,
+              const Text("Here's what you entered. Check and see if everything is correct. Once you're done, hit save.",style:TextStyle(fontSize: 20)),space,
               //Title Field
               TextField(
                 decoration: InputDecoration(
