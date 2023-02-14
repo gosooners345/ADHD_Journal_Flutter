@@ -129,8 +129,9 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
                                       onPressed: () {
                                         Navigator.pop(context);
                                         recordsBloc.deleteRecordByID(record.id);
-                                        _showAlert(context, "Entry Deleted");
+
                                         recordsBloc.writeCheckpoint();
+                                         _showAlert(context, "Entry Deleted");
                                       },
                                       child: const Text('Yes')),
                                   TextButton(

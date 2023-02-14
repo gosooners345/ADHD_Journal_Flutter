@@ -46,7 +46,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
   SizedBox space2 = const SizedBox(height: 8);
   Text ratingSliderWidget = const Text('');
   String ratingInfo = '';
-
+String symptomCoverText = "Tap here to add Symptoms";
   @override
   void initState() {
     super.initState();
@@ -167,13 +167,21 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
           ],
         ),
         key: _formKey,
-        body:IntroBoarding.IntroScreenOnboarding(
+        body: IntroBoarding.IntroScreenOnboarding(
         onTapSkipButton: (){saveRecord(super.widget.record);},
           introductionList:
         
-        [ Intro.Introduction(childWidget:Expanded(
-        child:Card( surfaceTintColor: Color(swapper.isColorSeed),
-          child: ListView(padding: EdgeInsets.all(10),
+        [ Intro.Introduction(childWidget:SizedBox(height: 150,child:/*Expanded(
+        child:*/Card(borderOnForeground: true,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4), // if you need this
+            side: BorderSide(
+              color: Color(colorSeed).withOpacity(1.0),
+              width: 1,
+            ),
+          ),
+          surfaceTintColor: Color(swapper.isColorSeed),
+          child: ListView(shrinkWrap:true,padding: EdgeInsets.all(10),
             children:[
               const Center(child:Text("What do you want to call this?",style: TextStyle(fontSize: 20))),
              space,
@@ -192,11 +200,20 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
               },
             ),
           ]),
-        )),),
+        )),),//),
           Intro.Introduction(childWidget:
-          Expanded(flex:1,child:  Card(elevation: 2.0,margin: const EdgeInsets.all(10),child:ListView(shrinkWrap:true,padding: const EdgeInsets.all(8.0),children: [
-            const Center(child:Text("What\'s on your mind?",style: TextStyle(fontSize: 20) ,)),space,
-
+          SizedBox(height: 150,child:/*Expanded(flex:1,child:*/  Card(
+            borderOnForeground: true,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4), // if you need this
+              side: BorderSide(
+                color: Color(colorSeed).withOpacity(1.0),
+                width: 1,
+              ),
+            ),
+            elevation: 2.0,margin: const EdgeInsets.all(10),child:ListView(padding: const EdgeInsets.all(10.0),children: [
+            const Center(child:Text("What\'s on your mind?",style: TextStyle(fontSize: 20) ,)),
+SizedBox(height: 3,),
             TextField(
             decoration: InputDecoration(
               border: OutlineInputBorder(
@@ -213,14 +230,24 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
             onChanged: (text) {
               super.widget.record.content = text;
             },
-          ),
+          ),space
             ],)
             ,)
             ,)
-            ,
+            ,//)
           ),
           Intro.Introduction(childWidget:
-        Expanded(flex:1 ,child:Card(margin:const EdgeInsets.fromLTRB(10, 10, 10, 10),child: ListView(padding:const EdgeInsets.all(8.0),shrinkWrap: true,children: [const Center(child:Text("How do you feel currently?",style: TextStyle(fontSize: 20))),space, TextField(
+/*        Expanded(flex:1 ,*/SizedBox(height: 150,child:Card(borderOnForeground: true,
+      shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(4), // if you need this
+      side: BorderSide(
+      color: Color(colorSeed).withOpacity(1.0),
+      width: 1,
+      ),
+      ),
+            margin:const EdgeInsets.all(10),child: ListView(padding:const EdgeInsets.all(8.0),shrinkWrap: true,children: [const Center(
+            child:Text("How do you feel currently?",style: TextStyle(fontSize: 20))),space,
+          TextField(
           decoration: InputDecoration(
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(4),
@@ -235,8 +262,17 @@ hintText: "Enter how you're feeling here."          ),
           },
         ),],),),),),
           Intro.Introduction(childWidget:
-          Expanded(flex:1,child:
-      Card(margin:const EdgeInsets.all(10),child:ListView(padding:const EdgeInsets.all(8.0) ,shrinkWrap: true,children:[
+          /*Expanded(flex:1,*/
+      SizedBox( height: 180,child:
+      Card(borderOnForeground: true,
+      shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(4), // if you need this
+      side: BorderSide(
+      color: Color(colorSeed).withOpacity(1.0),
+      width: 1,
+      ),
+      ),
+        margin:const EdgeInsets.all(10),child:ListView(padding:const EdgeInsets.all(8.0) ,children:[
         const Center(child:Text("Is there anything that may have contributed to this?",style: TextStyle(fontSize: 20.0))),
      space,
           TextField(
@@ -272,12 +308,12 @@ hintText: "Enter how you're feeling here."          ),
                 width: 1,
               ),
             ),
-            child:Column(crossAxisAlignment:CrossAxisAlignment.center,children: [ Padding(padding: EdgeInsets.all(8.0),child:Text("What ADHD Symptoms affected this event?"+
-                "\r\n Tap here to add symptoms.",style: TextStyle(fontSize: 20),)), ListTile(
+            child:Column(crossAxisAlignment:CrossAxisAlignment.center,children: [ Padding(padding: EdgeInsets.all(8.0),child:Text("Related ADHD Symptoms:"+
+                "\r\n ",style: TextStyle(fontSize: 20),)),
+              ListTile(
 
-              title: const Text("Related ADHD Symptoms:",style: TextStyle(fontSize: 20),),
-              subtitle: Text(
-                  super.widget.record.symptoms,style:TextStyle(fontSize:15),softWrap: true,),
+              title:super.widget.record.symptoms==""?Text(symptomCoverText): Text(super.widget.record.symptoms,style: TextStyle(fontSize: 15),),
+
               onTap: () {
                 Navigator.push(
                     context,
@@ -292,10 +328,17 @@ hintText: "Enter how you're feeling here."          ),
 
                    super.widget.record.symptoms='';});
               },
-            ),SizedBox(height: 30,)]),
+            ),space]),
           ),),
-          Intro.Introduction(childWidget:Expanded(child:
-          Card(
+          Intro.Introduction(childWidget:SizedBox(height:150,child:
+          Card(borderOnForeground: true,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4), // if you need this
+                side: BorderSide(
+                  color: Color(colorSeed).withOpacity(1.0),
+                  width: 1,
+                ),
+              ),
             child:  ListView(
               padding: const EdgeInsets.all(8),
               children: [ const Center(child: Text("Tags",style: TextStyle(fontSize: 20),),),space, TextField(
@@ -313,7 +356,14 @@ hintText: "Enter how you're feeling here."          ),
                 super.widget.record.tags = text;
               },
             ),         ],)),)),
-          Intro.Introduction(childWidget:Expanded(child:Card(child: ListView (padding: EdgeInsets.all(8),children: [
+          Intro.Introduction(childWidget:SizedBox(height:150,child:Card(borderOnForeground: true,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4), // if you need this
+              side: BorderSide(
+                color: Color(colorSeed).withOpacity(1.0),
+                width: 1,
+              ),
+            ),child: ListView (padding: EdgeInsets.all(8),children: [
             const Center(child: Text("How would you rate this?",style: TextStyle(fontSize: 20),),),
       Center(child:ratingSliderWidget),Slider(
       value: super.widget.record.rating,
@@ -349,7 +399,14 @@ hintText: "Enter how you're feeling here."          ),
       divisions: 100,
       label: super.widget.record.rating.toString()),],),),),),
 
-          Intro.Introduction(childWidget:Expanded(child:Card(child:ListView(children: [const Center(child:Text("Do you think what happened was successful? ",style: TextStyle(fontSize: 20))),SwitchListTile(
+          Intro.Introduction(childWidget:SizedBox(height:150,child:Card(borderOnForeground: true,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4), // if you need this
+                side: BorderSide(
+                  color: Color(colorSeed).withOpacity(1.0),
+                  width: 1,
+                ),
+              ),child:ListView(padding: EdgeInsets.all(8.0),children: [const Center(child:Text("Do you think what happened was successful? ",style: TextStyle(fontSize: 20))),SwitchListTile(
             value: isChecked,
             onChanged: (bool value) {
               super.widget.record.success = value;
@@ -368,10 +425,19 @@ hintText: "Enter how you're feeling here."          ),
             activeColor: Color(swapper.isColorSeed),
           ) ,]),),),),
           Intro.Introduction(childWidget:
-          Expanded(child:
+          Expanded(child:Card(
+            borderOnForeground: true,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4), // if you need this
+              side: BorderSide(
+                color: Color(colorSeed).withOpacity(1.0),
+                width: 1,
+              ),
+            ),
+            child:
           ListView(
             padding:
-            const EdgeInsets.only(left: 8, top: 40, right: 8, bottom: 40),
+            const EdgeInsets.only(left: 8, top: 20, right: 8, bottom: 40),
             children: <Widget>[
               const Text("Here's what you entered. Check and see if everything is correct. Once you're done, hit save.",style:TextStyle(fontSize: 20)),space,
               //Title Field
@@ -460,7 +526,7 @@ hintText: "Enter how you're feeling here."          ),
                 child:
                   ListTile(
                   title: Text(
-                      'Related ADHD Symptoms: \r\n${super.widget.record.symptoms}'),
+                      'Related ADHD Symptoms: \r\n${super.widget.record.symptoms == '' ? symptomCoverText : super.widget.record.symptoms }'),
                   onTap: () {
                     Navigator.push(
                         context,
@@ -546,11 +612,11 @@ hintText: "Enter how you're feeling here."          ),
                 title: successStateWidget,
                 activeColor: Color(swapper.isColorSeed),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               )
             ],
-          ),),),
+          ),),),),
         ],),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {

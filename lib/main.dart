@@ -381,7 +381,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                       timeUpdated: DateTime.now()),
                   id: 0,
                   title: 'Compose New Entry'))).then((value) => {
-            _showAlert(context, "Journal Entry Saved"),
+            //_showAlert(context, "Journal Entry Saved"),
             recordsBloc.writeCheckpoint()
           });
     } on Exception catch (ex) {
