@@ -148,6 +148,8 @@ String symptomCoverText = "Tap here to add Symptoms";
 
   @override
   Widget build(BuildContext context) {
+
+    final PageController controller = PageController();
     return Consumer<ThemeSwap>(builder: (context, swapper, child) {
       return Scaffold(
         appBar: AppBar(
@@ -167,12 +169,455 @@ String symptomCoverText = "Tap here to add Symptoms";
           ],
         ),
         key: _formKey,
-        body: IntroBoarding.IntroScreenOnboarding(
+        body:
+PageView(
+  controller: controller,
+  children: [
+    SizedBox(height: 150,child:/*Expanded(
+        child:*/Card(borderOnForeground: true,
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(4), // if you need this
+    side: BorderSide(
+      color: Color(colorSeed).withOpacity(1.0),
+      width: 1,
+    ),
+  ),
+  surfaceTintColor: Color(swapper.isColorSeed),
+  child: ListView(shrinkWrap:true,padding: EdgeInsets.all(10),
+      children:[
+        const Center(child:Text("What do you want to call this?",style: TextStyle(fontSize: 20))),
+        space,
+        TextField(decoration: InputDecoration(
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(4),
+              borderSide: BorderSide(
+                  color: Color(colorSeed).withOpacity(1.0),
+                  width: 1)),
+          // labelText: 'What do you want to call this?'
+        ),
+          textCapitalization: TextCapitalization.sentences,
+          controller: titleController,
+          onChanged: (text) {
+            super.widget.record.title = text;
+          },
+        ),
+      ]),
+)),//),),
+    SizedBox(height: 150,child:/*Expanded(flex:1,child:*/  Card(
+      borderOnForeground: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4), // if you need this
+        side: BorderSide(
+          color: Color(colorSeed).withOpacity(1.0),
+          width: 1,
+        ),
+      ),
+      elevation: 2.0,margin: const EdgeInsets.all(10),child:ListView(padding: const EdgeInsets.all(10.0),children: [
+      const Center(child:Text("What\'s on your mind?",style: TextStyle(fontSize: 20) ,)),
+      SizedBox(height: 3,),
+      TextField(
+        decoration: InputDecoration(
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(4),
+              borderSide: BorderSide(
+                  color: Color(swapper.isColorSeed).withOpacity(1.0),
+                  width: 1)), //labelText: 'What\'s on your mind? ',
+        ),
+        keyboardType: TextInputType.multiline,
+        minLines: 1,
+        maxLines: null,
+        textCapitalization: TextCapitalization.sentences,
+        controller: contentController,
+        onChanged: (text) {
+          super.widget.record.content = text;
+        },
+      ),space
+    ],)
+      ,)
+      ,),
+    SizedBox(height: 150,child:Card(borderOnForeground: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4), // if you need this
+        side: BorderSide(
+          color: Color(colorSeed).withOpacity(1.0),
+          width: 1,
+        ),
+      ),
+      margin:const EdgeInsets.all(10),child: ListView(padding:const EdgeInsets.all(8.0),shrinkWrap: true,children: [const Center(
+          child:Text("How do you feel currently?",style: TextStyle(fontSize: 20))),space,
+        TextField(
+          decoration: InputDecoration(
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(4),
+                  borderSide: BorderSide(
+                      color: Color(swapper.isColorSeed).withOpacity(1.0),
+                      width: 1)),
+              /*labelText: 'How do you feel today?',*/
+              hintText: "Enter how you're feeling here."          ),
+          controller: emotionsController,
+          onChanged: (text) {
+            super.widget.record.emotions = text;
+          },
+        ),],),),),
+    SizedBox( height: 180,child:
+    Card(borderOnForeground: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4), // if you need this
+        side: BorderSide(
+          color: Color(colorSeed).withOpacity(1.0),
+          width: 1,
+        ),
+      ),
+      margin:const EdgeInsets.all(10),child:ListView(padding:const EdgeInsets.all(8.0) ,children:[
+        const Center(child:Text("Is there anything that may have contributed to this?",style: TextStyle(fontSize: 20.0))),
+        space,
+        TextField(
+          decoration: InputDecoration(
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(4),
+                  borderSide: BorderSide(
+                      color: AppColors.mainAppColor.withOpacity(1.0),
+                      width: 1)),
+              labelText: 'This is where stuff like preexisting triggers, preliminary events, etc. can go.',
+              hintText:
+              'Add your thoughts or what you think could\'ve triggered this here'),
+          keyboardType: TextInputType.multiline,
+          minLines: 1,scrollController: ScrollController(),
+          maxLines: null,
+          textCapitalization: TextCapitalization.sentences,
+          controller: sourceController,
+          onChanged: (text) {
+            super.widget.record.sources = text;
+          },),
+        space],
+      ),
+    ),
+    ),Card(
+      borderOnForeground: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4), // if you need this
+        side: BorderSide(
+          color: Color(colorSeed).withOpacity(1.0),
+          width: 1,
+        ),
+      ),
+      child:Column(crossAxisAlignment:CrossAxisAlignment.center,children: [ Padding(padding: EdgeInsets.all(8.0),child:Text("Related ADHD Symptoms:"+
+          "\r\n ",style: TextStyle(fontSize: 20),)),
+        ListTile(
+
+          title:super.widget.record.symptoms==""?Text(symptomCoverText): Text(super.widget.record.symptoms,style: TextStyle(fontSize: 15),),
+
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => SymptomSelectorScreen(
+                      symptoms: super.widget.record.symptoms,
+                    ))).then((value) {
+              setState(() {
+                super.widget.record.symptoms = value as String;
+              });
+            }).onError((error, stackTrace)  {
+
+              super.widget.record.symptoms='';});
+          },
+        ),space]),
+    ),
+          SizedBox(height:150,child:
+          Card(borderOnForeground: true,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4), // if you need this
+                side: BorderSide(
+                  color: Color(colorSeed).withOpacity(1.0),
+                  width: 1,
+                ),
+              ),
+              child:  ListView(
+                padding: const EdgeInsets.all(8),
+                children: [ const Center(child: Text("Tags",style: TextStyle(fontSize: 20),),),space, TextField(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(4),
+                        borderSide: BorderSide(
+                            color: Color(swapper.isColorSeed).withOpacity(1.0),
+                            width: 1)),
+                    hintText: 'Add event tags here.',
+                    labelText: 'What categories does this fall under?',
+                  ),
+                  controller: tagsController,
+                  onChanged: (text) {
+                    super.widget.record.tags = text;
+                  },
+                ),         ],)),),
+    SizedBox(height:150,child:Card(borderOnForeground: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4), // if you need this
+        side: BorderSide(
+          color: Color(colorSeed).withOpacity(1.0),
+          width: 1,
+        ),
+      ),child: ListView (padding: EdgeInsets.all(8),children: [
+        const Center(child: Text("How would you rate this?",style: TextStyle(fontSize: 20),),),
+        Center(child:ratingSliderWidget),Slider(
+            value: super.widget.record.rating,
+            onChanged: (double value) {
+              setState(() {
+                super.widget.record.rating = value;
+
+                if (super.widget.record.rating == 100.0) {
+                  ratingInfo = "Rating : Perfect ";
+                } else if (super.widget.record.rating >= 85.0 &&
+                    super.widget.record.rating < 100.0) {
+                  ratingInfo = 'Rating : Great';
+                } else if (super.widget.record.rating >= 70.0 &&
+                    super.widget.record.rating < 85.0) {
+                  ratingInfo = 'Rating : Good';
+                } else if (super.widget.record.rating >= 55.0 &&
+                    super.widget.record.rating < 70.0) {
+                  ratingInfo = 'Rating : Okay';
+                } else if (super.widget.record.rating >= 40.0 &&
+                    super.widget.record.rating < 55.0) {
+                  ratingInfo = 'Rating : Could be better';
+                } else if (super.widget.record.rating >= 25.0 &&
+                    super.widget.record.rating < 40.0) {
+                  ratingInfo = 'Rating : Not going well';
+                } else if (super.widget.record.rating < 25.0) {
+                  ratingInfo = 'Rating : It\'s a mess';
+                }
+                ratingSliderWidget = Text(ratingInfo);
+              });
+            },
+            max: 100.0,
+            min: 0.0,
+            divisions: 100,
+            label: super.widget.record.rating.toString()),],),),),
+    SizedBox(height:150,child:Card(borderOnForeground: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4), // if you need this
+        side: BorderSide(
+          color: Color(colorSeed).withOpacity(1.0),
+          width: 1,
+        ),
+      ),child:ListView(padding: EdgeInsets.all(8.0),children: [const Center(child:Text("Do you think what happened was successful? ",style: TextStyle(fontSize: 20))),SwitchListTile(
+        value: isChecked,
+        onChanged: (bool value) {
+          super.widget.record.success = value;
+          isChecked = value;
+          setState(() {
+            if (value) {
+              successLabelText = 'Success';
+              successStateWidget = Text(successLabelText);
+            } else {
+              successLabelText = 'Fail';
+              successStateWidget = Text(successLabelText);
+            }
+          });
+        },
+        title: successStateWidget,
+        activeColor: Color(swapper.isColorSeed),
+      ) ,]),),),
+        Expanded(child:Card(
+          borderOnForeground: true,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4), // if you need this
+            side: BorderSide(
+              color: Color(colorSeed).withOpacity(1.0),
+              width: 1,
+            ),
+          ),
+          child:
+          ListView(
+            padding:
+            const EdgeInsets.only(left: 8, top: 20, right: 8, bottom: 40),
+            children: <Widget>[
+              const Text("Here's what you entered. Check and see if everything is correct. Once you're done, hit save.",style:TextStyle(fontSize: 20)),space,
+              //Title Field
+              TextField(
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(4),
+                        borderSide: BorderSide(
+                            color: Color(swapper.isColorSeed).withOpacity(1.0),
+                            width: 1)),
+                    labelText: 'What do you want to call this?'),
+                textCapitalization: TextCapitalization.sentences,
+                controller: titleController,
+                onChanged: (text) {
+                  super.widget.record.title = text;
+                },
+              ), //x
+              space,
+              //Content Field
+              TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: BorderSide(
+                          color: Color(swapper.isColorSeed).withOpacity(1.0),
+                          width: 1)),
+                  labelText: 'What\'s on your mind? ',
+                ),
+                keyboardType: TextInputType.multiline,
+                minLines: 1,
+                maxLines: null,
+                textCapitalization: TextCapitalization.sentences,
+                controller: contentController,
+                onChanged: (text) {
+                  super.widget.record.content = text;
+                },
+              ),//x
+              space,
+              //Emotions Field
+              TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: BorderSide(
+                          color: Color(swapper.isColorSeed).withOpacity(1.0),
+                          width: 1)),
+                  labelText: 'How do you feel today?',
+                ),
+                controller: emotionsController,
+                onChanged: (text) {
+                  super.widget.record.emotions = text;
+                },
+              ), //x
+              space,
+              //Source Field
+              TextField(
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(4),
+                        borderSide: BorderSide(
+                            color: AppColors.mainAppColor.withOpacity(1.0),
+                            width: 1)),
+                    labelText: 'Do you have anything to add to this?',
+                    hintText:
+                    'Add your thoughts or what you think could\'ve triggered this here'),
+                keyboardType: TextInputType.multiline,
+                minLines: 1,
+                maxLines: null,
+                textCapitalization: TextCapitalization.sentences,
+                controller: sourceController,
+                onChanged: (text) {
+                  super.widget.record.sources = text;
+                },
+              ), //x
+              space,
+              //Symptom Field,
+              Card(
+                borderOnForeground: true,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4), // if you need this
+                  side: BorderSide(
+                    color: Color(swapper.isColorSeed).withOpacity(1.0),
+                    width: 1,
+                  ),
+                ),
+                child:
+                ListTile(
+                  title: Text(
+                      'Related ADHD Symptoms: \r\n${super.widget.record.symptoms == '' ? symptomCoverText : super.widget.record.symptoms }'),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => SymptomSelectorScreen(
+                              symptoms: super.widget.record.symptoms,
+                            ))).then((value) {
+                      setState(() {
+                        super.widget.record.symptoms = value as String;
+                      });
+                    });
+                  },
+                ),
+              ),//x
+              space,
+              TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: BorderSide(
+                          color: Color(swapper.isColorSeed).withOpacity(1.0),
+                          width: 1)),
+                  hintText: 'Add event tags here.',
+                  labelText: 'What categories does this fall under?',
+                ),
+                controller: tagsController,
+                onChanged: (text) {
+                  super.widget.record.tags = text;
+                },
+              ),
+              space,
+              ratingSliderWidget,
+              space2,
+              Slider(
+                  value: super.widget.record.rating,
+                  onChanged: (double value) {
+                    setState(() {
+                      super.widget.record.rating = value;
+
+                      if (super.widget.record.rating == 100.0) {
+                        ratingInfo = "Rating : Perfect ";
+                      } else if (super.widget.record.rating >= 85.0 &&
+                          super.widget.record.rating < 100.0) {
+                        ratingInfo = 'Rating : Great';
+                      } else if (super.widget.record.rating >= 70.0 &&
+                          super.widget.record.rating < 85.0) {
+                        ratingInfo = 'Rating : Good';
+                      } else if (super.widget.record.rating >= 55.0 &&
+                          super.widget.record.rating < 70.0) {
+                        ratingInfo = 'Rating : Okay';
+                      } else if (super.widget.record.rating >= 40.0 &&
+                          super.widget.record.rating < 55.0) {
+                        ratingInfo = 'Rating : Could be better';
+                      } else if (super.widget.record.rating >= 25.0 &&
+                          super.widget.record.rating < 40.0) {
+                        ratingInfo = 'Rating : Not going well';
+                      } else if (super.widget.record.rating < 25.0) {
+                        ratingInfo = 'Rating : It\'s a mess';
+                      }
+                      ratingSliderWidget = Text(ratingInfo);
+                    });
+                  },
+                  max: 100.0,
+                  min: 0.0,
+                  divisions: 100,
+                  label: super.widget.record.rating.toString()),
+              space,
+              SwitchListTile(
+                value: isChecked,
+                onChanged: (bool value) {
+                  super.widget.record.success = value;
+                  isChecked = value;
+                  setState(() {
+                    if (value) {
+                      successLabelText = 'Success';
+                      successStateWidget = Text(successLabelText);
+                    } else {
+                      successLabelText = 'Fail';
+                      successStateWidget = Text(successLabelText);
+                    }
+                  });
+                },
+                title: successStateWidget,
+                activeColor: Color(swapper.isColorSeed),
+              ),
+              const SizedBox(
+                height: 20,
+              )
+            ],
+          ),),),
+      ],
+
+),
+        /*IntroBoarding.IntroScreenOnboarding(
         onTapSkipButton: (){saveRecord(super.widget.record);},
           introductionList:
         
-        [ Intro.Introduction(childWidget:SizedBox(height: 150,child:/*Expanded(
-        child:*/Card(borderOnForeground: true,
+        [
+          Intro.Introduction(childWidget:SizedBox(height: 150,child:*//*Expanded(
+        child:*//*Card(borderOnForeground: true,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(4), // if you need this
             side: BorderSide(
@@ -202,7 +647,7 @@ String symptomCoverText = "Tap here to add Symptoms";
           ]),
         )),),//),
           Intro.Introduction(childWidget:
-          SizedBox(height: 150,child:/*Expanded(flex:1,child:*/  Card(
+          SizedBox(height: 150,child:*//*Expanded(flex:1,child:*//*  Card(
             borderOnForeground: true,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(4), // if you need this
@@ -237,7 +682,7 @@ SizedBox(height: 3,),
             ,//)
           ),
           Intro.Introduction(childWidget:
-/*        Expanded(flex:1 ,*/SizedBox(height: 150,child:Card(borderOnForeground: true,
+*//*        Expanded(flex:1 ,*//*SizedBox(height: 150,child:Card(borderOnForeground: true,
       shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(4), // if you need this
       side: BorderSide(
@@ -254,7 +699,7 @@ SizedBox(height: 3,),
                 borderSide: BorderSide(
                     color: Color(swapper.isColorSeed).withOpacity(1.0),
                     width: 1)),
-           /*labelText: 'How do you feel today?',*/
+           *//*labelText: 'How do you feel today?',*//*
 hintText: "Enter how you're feeling here."          ),
           controller: emotionsController,
           onChanged: (text) {
@@ -262,7 +707,7 @@ hintText: "Enter how you're feeling here."          ),
           },
         ),],),),),),
           Intro.Introduction(childWidget:
-          /*Expanded(flex:1,*/
+          *//*Expanded(flex:1,*//*
       SizedBox( height: 180,child:
       Card(borderOnForeground: true,
       shape: RoundedRectangleBorder(
@@ -330,7 +775,8 @@ hintText: "Enter how you're feeling here."          ),
               },
             ),space]),
           ),),
-          Intro.Introduction(childWidget:SizedBox(height:150,child:
+          Intro.Introduction(childWidget:
+          SizedBox(height:150,child:
           Card(borderOnForeground: true,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4), // if you need this
@@ -399,7 +845,8 @@ hintText: "Enter how you're feeling here."          ),
       divisions: 100,
       label: super.widget.record.rating.toString()),],),),),),
 
-          Intro.Introduction(childWidget:SizedBox(height:150,child:Card(borderOnForeground: true,
+          Intro.Introduction(childWidget:
+          SizedBox(height:150,child:Card(borderOnForeground: true,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4), // if you need this
                 side: BorderSide(
@@ -617,7 +1064,7 @@ hintText: "Enter how you're feeling here."          ),
               )
             ],
           ),),),),
-        ],),
+        ],),*/
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
             try {
