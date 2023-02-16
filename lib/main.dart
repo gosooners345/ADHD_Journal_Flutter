@@ -23,7 +23,7 @@ import 'package:flutter/material.dart';
 import 'project_resources/project_colors.dart';
 import 'record_data_package/records_data_class_db.dart';
 import 'app_start_package/login_screen_file.dart';
-import 'records_compose_components/compose_records_screen.dart';
+import 'records_compose_components/new_compose_records_screen.dart';
 import 'package:adhd_journal_flutter/drive_api_backup_general/preference_backup_class.dart';
 
 List<Records> recordHolder = [];
@@ -366,7 +366,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (_) => ComposeRecordsWidget(
+              builder: (_) => NewComposeRecordsWidget(
                   record: Records(
                       id: recordsBloc.maxID,
                       title: '',
@@ -381,7 +381,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                       timeUpdated: DateTime.now()),
                   id: 0,
                   title: 'Compose New Entry'))).then((value) => {
-            _showAlert(context, "Journal Entry Saved"),
+            //_showAlert(context, "Journal Entry Saved"),
             recordsBloc.writeCheckpoint()
           });
     } on Exception catch (ex) {

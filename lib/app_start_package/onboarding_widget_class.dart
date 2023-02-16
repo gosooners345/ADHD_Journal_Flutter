@@ -13,6 +13,7 @@ import '../project_resources/project_strings_file.dart';
 
 class OnBoardingWidget extends StatefulWidget {
   const OnBoardingWidget({Key? key}) : super(key: key);
+
   @override
   State<OnBoardingWidget> createState() => _OnBoardingWidgetState();
 }
@@ -55,98 +56,87 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
         ));
   }
 
- void storePrefs() async{
-   await encryptedSharedPrefs.setString(
-       'passwordHint', passwordHint);
-   await encryptedSharedPrefs.setString(
-       'loginPassword', savedPasswordValue);
-   await encryptedSharedPrefs.setString(
-       'passwordHint', passwordHintValueSaved);
-   await encryptedSharedPrefs.setString(
-       'dbPassword', savedPasswordValue);
-   prefs.setBool('passwordEnabled', isSaved);
-   prefs.setString('greeting', greetingValueSaved);
-   prefs.setBool('firstVisit', false);
- }
+  void storePrefs() async {
+    await encryptedSharedPrefs.setString('passwordHint', passwordHint);
+    await encryptedSharedPrefs.setString('loginPassword', savedPasswordValue);
+    await encryptedSharedPrefs.setString(
+        'passwordHint', passwordHintValueSaved);
+    await encryptedSharedPrefs.setString('dbPassword', savedPasswordValue);
+    prefs.setBool('passwordEnabled', isSaved);
+    prefs.setString('greeting', greetingValueSaved);
+    prefs.setBool('firstVisit', false);
+  }
 
- Widget _previousButton({void Function(int)? setIndex}){
-
-    return   IconButton(
-        onPressed: (){
-          if(setIndex!=null){
-            if(index>0){
-              int prevIndex = index -1;
+  Widget _previousButton({void Function(int)? setIndex}) {
+    return IconButton(
+        onPressed: () {
+          if (setIndex != null) {
+            if (index > 0) {
+              int prevIndex = index - 1;
               index = prevIndex;
               setIndex(index);
-            }
-            else{
-              index =0;
+            } else {
+              index = 0;
               setIndex(index);
             }
           }
         },
+        icon: onboardingBackIcon);
+  }
 
-       icon:onboardingBackIcon
-
-
-   );
-
- }
-  Widget _nextButton({void Function(int)? setIndex,required int pageLength}){
+  Widget _nextButton({void Function(int)? setIndex, required int pageLength}) {
     return IconButton(
-        onPressed: (){
-          if(setIndex!=null){
-            if(index!= pageLength-1){
-              int nextIndex = index +1;
+        onPressed: () {
+          if (setIndex != null) {
+            if (index != pageLength - 1) {
+              int nextIndex = index + 1;
               index = nextIndex;
               setIndex(index);
+            } else {
+              index = pageLength - 1;
+              setIndex(index);
             }
-            else{
-            index = pageLength-1;
-            setIndex(index);}
           }
         },
-            icon:nextArrowIcon
-                );
+        icon: nextArrowIcon);
   }
- Widget _skipButton({void Function(int)? setIndex, required int pageLength}){
-    return      ElevatedButton(
-      onPressed: (){
-        if(setIndex!=null){
-          index = pageLength-1;
+
+  Widget _skipButton({void Function(int)? setIndex, required int pageLength}) {
+    return ElevatedButton(
+      onPressed: () {
+        if (setIndex != null) {
+          index = pageLength - 1;
           setIndex(index);
         }
-      },child:Text('Skip') ,
-   // ),
-
+      },
+      child: Text('Skip'),
+      // ),
     );
-}
-Widget _customIndicator(
-  {
-  required int pagesLength,
-    required double dragDistance,
-    required ThemeSwap themeNotifier
-}
-    ){
-    var width =MediaQuery.of(context).size.width;
-    var widgetWidth = width*0.040;
-   return
-     CustomIndicator(
+  }
+
+  Widget _customIndicator(
+      {required int pagesLength,
+      required double dragDistance,
+      required ThemeSwap themeNotifier}) {
+    var width = MediaQuery.of(context).size.width;
+    var widgetWidth = width * 0.040;
+    return CustomIndicator(
       netDragPercent: dragDistance,
       pagesLength: pagesLength,
       indicator: Indicator(
-        activeIndicator: ActiveIndicator(
-            color: Color(themeNotifier.isColorSeed)),
-        closedIndicator:
-        const ClosedIndicator(),
-        indicatorDesign: IndicatorDesign.polygon(polygonDesign:
-        PolygonDesign(polygon: DesignType.polygon_diamond,
-            polygonRadius: 2.0,polygonSpacer: widgetWidth))
-      ),
-    // ),
-     //),
-     );
-}
+          activeIndicator:
+              ActiveIndicator(color: Color(themeNotifier.isColorSeed)),
+          closedIndicator: const ClosedIndicator(),
+          indicatorDesign: IndicatorDesign.polygon(
+              polygonDesign: PolygonDesign(
+                  polygon: DesignType.polygon_diamond,
+                  polygonRadius: 2.0,
+                  polygonSpacer: widgetWidth))),
+      // ),
+      //),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(
@@ -197,7 +187,12 @@ Widget _customIndicator(
                           ),
                         ),
                       ),
-Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).size.height ,),)
+                      Padding(
+                        padding: EdgeInsets.zero,
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height,
+                        ),
+                      )
                     ],
                   ),
                 ),
@@ -248,7 +243,12 @@ Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).s
                         ),
                       ),
                     ),
-                    Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).size.height ,),)
+                    Padding(
+                      padding: EdgeInsets.zero,
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height,
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -297,9 +297,13 @@ Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).s
                           textAlign: TextAlign.left,
                         ),
                       ),
-                    ),Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).size.height ,),)
-
-
+                    ),
+                    Padding(
+                      padding: EdgeInsets.zero,
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height,
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -350,7 +354,12 @@ Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).s
                         ),
                       ),
                     ),
-                    Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).size.height ,),)
+                    Padding(
+                      padding: EdgeInsets.zero,
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height,
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -400,7 +409,12 @@ Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).s
                         ),
                       ),
                     ),
-                    Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).size.height ,),)
+                    Padding(
+                      padding: EdgeInsets.zero,
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height,
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -448,7 +462,12 @@ Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).s
                         ),
                       ),
                     ),
-                    Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).size.height ,),)
+                    Padding(
+                      padding: EdgeInsets.zero,
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height,
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -510,7 +529,12 @@ Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).s
                         ),
                       ),
                     ),
-                    Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).size.height ,),)
+                    Padding(
+                      padding: EdgeInsets.zero,
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height,
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -613,11 +637,13 @@ Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).s
                     ElevatedButton(
                       onPressed: () async {
                         if (savedPasswordValue != '') {
-                          await Future.sync(() => storePrefs()).whenComplete(() => {
-                          dbPassword = savedPasswordValue,
-                              userPassword = savedPasswordValue,
-                              Navigator.pushReplacementNamed(context, '/login')
-                          });
+                          await Future.sync(() => storePrefs())
+                              .whenComplete(() => {
+                                    dbPassword = savedPasswordValue,
+                                    userPassword = savedPasswordValue,
+                                    Navigator.pushReplacementNamed(
+                                        context, '/login')
+                                  });
                         } else {
                           try {
                             showDialog(
@@ -664,24 +690,45 @@ Padding(padding: EdgeInsets.zero,child: SizedBox(height:MediaQuery.of(context).s
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 20.0, vertical: 25.0),
-                  child:
-                  Row(
+                  child: Row(
                       children: [
-                         index > 0 ?_previousButton(setIndex: setIndex) :const Text("           "),SizedBox(width:MediaQuery.of(context).size.width*0.0118 ,),
-Expanded(flex:0 ,child: Align(alignment:Alignment.center,child: _customIndicator(pagesLength: pagesLength,
-                                dragDistance: dragDistance,
-                                themeNotifier: themeNotifier)),)
-                        ,const SizedBox(width: 3.0,),const Spacer(flex: 4,),
-                        index < pagesLength - 1 ? _nextButton(
-                            setIndex: setIndex, pageLength: pagesLength) : Text(
-                            ''),
-                        const SizedBox(width: 3.0,),
-                        index == pagesLength - 1 ? const SizedBox(width: 2.0,) : _skipButton(
+                    index > 0
+                        ? _previousButton(setIndex: setIndex)
+                        : const Text("           "),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.0118,
+                    ),
+                    Expanded(
+                      flex: 0,
+                      child: Align(
+                          alignment: Alignment.center,
+                          child: _customIndicator(
+                              pagesLength: pagesLength,
+                              dragDistance: dragDistance,
+                              themeNotifier: themeNotifier)),
+                    ),
+                    const SizedBox(
+                      width: 3.0,
+                    ),
+                    const Spacer(
+                      flex: 4,
+                    ),
+                    index < pagesLength - 1
+                        ? _nextButton(
+                            setIndex: setIndex, pageLength: pagesLength)
+                        : Text(''),
+                    const SizedBox(
+                      width: 3.0,
+                    ),
+                    index == pagesLength - 1
+                        ? const SizedBox(
+                            width: 2.0,
+                          )
+                        : _skipButton(
                             setIndex: setIndex, pageLength: pagesLength),
-                      ].withSpaceBetween(width: 2.0)),
+                  ].withSpaceBetween(width: 2.0)),
                 ),
               ),
-
             );
           },
         ),

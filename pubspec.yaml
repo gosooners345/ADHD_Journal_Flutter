@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 2.5.8+57
 
 environment:
-  sdk: ">=2.16.2 "
+  sdk: ">=2.17.6 "
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -47,9 +47,10 @@ dependencies:
   url_launcher:
   provider:
   flutter_colorpicker:
+  intro_screen_onboarding_flutter: ^1.0.0
   path:
   path_provider:
-  charts_flutter: ^0.12.0
+
   syncfusion_flutter_charts: ^20.1.57
   onboarding: ^3.1.0
   sleek_circular_slider: ^2.0.1
@@ -58,14 +59,14 @@ dependencies:
   flutter_email_sender: ^5.1.0
   flutter_secure_storage:
   package_info:
-  googleapis: ^9.1.0
-  googleapis_auth: ^1.3.0
-  google_sign_in: ^5.4.1
+  googleapis: ^9.2.0
+  googleapis_auth: ^1.3.1
+  google_sign_in: ^5.4.4
   encrypt: ^5.0.1
   aes_crypt: ^0.1.1
   file_cryptor: ^0.0.3
   pointycastle: ^3.6.2
-  connectivity_plus: ^2.3.9
+  connectivity_plus: ^3.0.2
   extension_google_sign_in_as_googleapis_auth:
 flutter_icons:
   image_path_android: "images/appicon_appstore.png"

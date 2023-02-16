@@ -12,7 +12,7 @@ import '../project_resources/project_colors.dart';
 import '../app_start_package/splash_screendart.dart';
 import '../record_data_package/records_data_class_db.dart';
 import '../app_start_package/login_screen_file.dart';
-import '../records_compose_components/compose_records_screen.dart';
+import '../records_compose_components/new_compose_records_screen.dart';
 
 class RecordDisplayWidget extends StatefulWidget {
   const RecordDisplayWidget({Key? key}) : super(key: key);
@@ -129,8 +129,9 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
                                       onPressed: () {
                                         Navigator.pop(context);
                                         recordsBloc.deleteRecordByID(record.id);
-                                        _showAlert(context, "Entry Deleted");
+
                                         recordsBloc.writeCheckpoint();
+                                         _showAlert(context, "Entry Deleted");
                                       },
                                       child: const Text('Yes')),
                                   TextButton(
@@ -192,7 +193,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (_) => ComposeRecordsWidget(
+              builder: (_) => NewComposeRecordsWidget(
                     record: record,
                     id: 1,
                     title: 'Edit Entry',
