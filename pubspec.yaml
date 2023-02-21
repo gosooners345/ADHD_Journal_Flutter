@@ -50,7 +50,7 @@ dependencies:
   intro_screen_onboarding_flutter: ^1.0.0
   path:
   path_provider:
-
+  awesome_notifications:
   syncfusion_flutter_charts: ^20.1.57
   onboarding: ^3.1.0
   sleek_circular_slider: ^2.0.1

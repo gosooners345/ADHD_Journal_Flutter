@@ -16,7 +16,7 @@ import 'package:adhd_journal_flutter/settings_tutorials/tutorial_help_guide.dart
 import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'app_start_package/onboarding_widget_class.dart';
 import 'ui/record_display_widget.dart';
 import 'package:flutter/material.dart';
