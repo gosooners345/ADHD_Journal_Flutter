@@ -18,6 +18,7 @@ import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'app_start_package/onboarding_widget_class.dart';
+import 'notifications_packages/notification_controller.dart';
 import 'ui/record_display_widget.dart';
 import 'package:flutter/material.dart';
 import 'project_resources/project_colors.dart';
@@ -28,8 +29,8 @@ import 'package:adhd_journal_flutter/drive_api_backup_general/preference_backup_
 
 List<Records> recordHolder = [];
 int id = 0;
-void main() {
-
+Future<void> main() async {
+  await NotificationController.initializeLocalNotifications();
   runApp(ChangeNotifierProvider<ThemeSwap>(
     create: (_) => ThemeSwap(),
     child: MyApp(),
@@ -41,10 +42,28 @@ late RecordsBloc recordsBloc;
 
 int listSize = 0;
 
-class MyApp extends StatelessWidget {
-  const MyApp({
+class MyApp extends StatefulWidget{
+  const MyApp({super.key});
+
+  static final GlobalKey<NavigatorState> navigatorKey =
+  GlobalKey<NavigatorState>();
+
+  @override
+  State<MyApp> createState() => MyAppState();
+
+
+}
+
+
+class MyAppState extends State<MyApp> {
+  /* const MyAppState({
     Key? key,
-  }) : super(key: key);
+  }) : super(key: key);*/
+  @override
+  void initState() {
+    NotificationController.startListeningNotificationEvents();
+    super.initState();
+  }
 
   // This widget is the root of your application.
   @override
@@ -70,15 +89,15 @@ class MyApp extends StatelessWidget {
         '/': (context) => SplashScreen(),
         '/onboarding': (context) => OnBoardingWidget(),
         '/savePassword': (context) => LoginScreen(
-              swapper: swapper,
-            ),
+          swapper: swapper,
+        ),
         '/login': (context) => LoginScreen(
-              swapper: swapper,
-            ),
+          swapper: swapper,
+        ),
         '/success': (context) => ADHDJournalApp(),
         '/fail': (context) => LoginScreen(
-              swapper: swapper,
-            ),
+          swapper: swapper,
+        ),
         '/composehelp': (context) => ComposeHelpWidget(),
         '/tutorials': (context) => TutorialHelpScreen(),
         '/dashboardhelp': (context) => DashboardHelp(),
@@ -287,16 +306,16 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
             icon: Icon(Icons.settings),
             onPressed: () {
               Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => SettingsPage()))
+                  MaterialPageRoute(builder: (_) => SettingsPage()))
                   .then((value) => {
-                        if (userPassword != dbPassword)
-                          {
-                            recordsBloc.changeDBPasswords(userPassword),
-                            recordsBloc = RecordsBloc()
-                          },
-                        userActiveBackup = prefs.getBool("testBackup") ?? false,
-                        if (userActiveBackup) {encryptData()},
-                      });
+                if (userPassword != dbPassword)
+                  {
+                    recordsBloc.changeDBPasswords(userPassword),
+                    recordsBloc = RecordsBloc()
+                  },
+                userActiveBackup = prefs.getBool("testBackup") ?? false,
+                if (userActiveBackup) {encryptData()},
+              });
             },
           ),
         ],
@@ -318,21 +337,21 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                   MaterialPageRoute(
                       builder: (_) =>
 
-                          /// Change password upon exit if the password has changed.
-                          /// Tested and Passed: 05/09/2022
-                          SettingsPage())).then((value) => {
-                    setState(() {
-                      greeting = prefs.getString('greeting')!;
-                    }),
-                    if (userPassword != dbPassword)
-                      {
-                        recordsBloc.changeDBPasswords(userPassword), //,}
-                        recordsBloc = RecordsBloc(),
-                        recordsBloc.getRecords()
-                      },
-                    userActiveBackup = prefs.getBool("testBackup") ?? false,
-                    if (userActiveBackup) {encryptData()},
-                  });
+                      /// Change password upon exit if the password has changed.
+                      /// Tested and Passed: 05/09/2022
+                      SettingsPage())).then((value) => {
+                setState(() {
+                  greeting = prefs.getString('greeting')!;
+                }),
+                if (userPassword != dbPassword)
+                  {
+                    recordsBloc.changeDBPasswords(userPassword), //,}
+                    recordsBloc = RecordsBloc(),
+                    recordsBloc.getRecords()
+                  },
+                userActiveBackup = prefs.getBool("testBackup") ?? false,
+                if (userActiveBackup) {encryptData()},
+              });
             },
           ),
         ],
@@ -381,9 +400,9 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                       timeUpdated: DateTime.now()),
                   id: 0,
                   title: 'Compose New Entry'))).then((value) => {
-            //_showAlert(context, "Journal Entry Saved"),
-            recordsBloc.writeCheckpoint()
-          });
+        //_showAlert(context, "Journal Entry Saved"),
+        recordsBloc.writeCheckpoint()
+      });
     } on Exception catch (ex) {
       if (kDebugMode) {
         print(ex);
@@ -405,9 +424,9 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
   ///
 // This is where the Buttons associated with the bottom navigation bar will be located.
   final dashboardButtonItem =
-      BottomNavigationBarItem(label: 'Dashboard', icon: Icon(Icons.dashboard));
+  BottomNavigationBarItem(label: 'Dashboard', icon: Icon(Icons.dashboard));
   final homeButtonItem =
-      BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home');
+  BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home');
 
   BottomNavigationBar bottomBar() {
     List<BottomNavigationBarItem> navBar = [
