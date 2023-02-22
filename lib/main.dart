@@ -56,7 +56,7 @@ class MyApp extends StatefulWidget{
 
 
 class MyAppState extends State<MyApp> {
- /* const MyAppState({
+
     Key? key,
   }) : super(key: key);*/
   @override
@@ -89,15 +89,15 @@ class MyAppState extends State<MyApp> {
         '/': (context) => SplashScreen(),
         '/onboarding': (context) => OnBoardingWidget(),
         '/savePassword': (context) => LoginScreen(
-              swapper: swapper,
-            ),
+          swapper: swapper,
+        ),
         '/login': (context) => LoginScreen(
-              swapper: swapper,
-            ),
+          swapper: swapper,
+        ),
         '/success': (context) => ADHDJournalApp(),
         '/fail': (context) => LoginScreen(
-              swapper: swapper,
-            ),
+          swapper: swapper,
+        ),
         '/composehelp': (context) => ComposeHelpWidget(),
         '/tutorials': (context) => TutorialHelpScreen(),
         '/dashboardhelp': (context) => DashboardHelp(),
@@ -306,16 +306,16 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
             icon: Icon(Icons.settings),
             onPressed: () {
               Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => SettingsPage()))
+                  MaterialPageRoute(builder: (_) => SettingsPage()))
                   .then((value) => {
-                        if (userPassword != dbPassword)
-                          {
-                            recordsBloc.changeDBPasswords(userPassword),
-                            recordsBloc = RecordsBloc()
-                          },
-                        userActiveBackup = prefs.getBool("testBackup") ?? false,
-                        if (userActiveBackup) {encryptData()},
-                      });
+                if (userPassword != dbPassword)
+                  {
+                    recordsBloc.changeDBPasswords(userPassword),
+                    recordsBloc = RecordsBloc()
+                  },
+                userActiveBackup = prefs.getBool("testBackup") ?? false,
+                if (userActiveBackup) {encryptData()},
+              });
             },
           ),
         ],
@@ -337,21 +337,21 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                   MaterialPageRoute(
                       builder: (_) =>
 
-                          /// Change password upon exit if the password has changed.
-                          /// Tested and Passed: 05/09/2022
-                          SettingsPage())).then((value) => {
-                    setState(() {
-                      greeting = prefs.getString('greeting')!;
-                    }),
-                    if (userPassword != dbPassword)
-                      {
-                        recordsBloc.changeDBPasswords(userPassword), //,}
-                        recordsBloc = RecordsBloc(),
-                        recordsBloc.getRecords()
-                      },
-                    userActiveBackup = prefs.getBool("testBackup") ?? false,
-                    if (userActiveBackup) {encryptData()},
-                  });
+                      /// Change password upon exit if the password has changed.
+                      /// Tested and Passed: 05/09/2022
+                      SettingsPage())).then((value) => {
+                setState(() {
+                  greeting = prefs.getString('greeting')!;
+                }),
+                if (userPassword != dbPassword)
+                  {
+                    recordsBloc.changeDBPasswords(userPassword), //,}
+                    recordsBloc = RecordsBloc(),
+                    recordsBloc.getRecords()
+                  },
+                userActiveBackup = prefs.getBool("testBackup") ?? false,
+                if (userActiveBackup) {encryptData()},
+              });
             },
           ),
         ],
@@ -400,9 +400,9 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                       timeUpdated: DateTime.now()),
                   id: 0,
                   title: 'Compose New Entry'))).then((value) => {
-            //_showAlert(context, "Journal Entry Saved"),
-            recordsBloc.writeCheckpoint()
-          });
+        //_showAlert(context, "Journal Entry Saved"),
+        recordsBloc.writeCheckpoint()
+      });
     } on Exception catch (ex) {
       if (kDebugMode) {
         print(ex);
@@ -424,9 +424,9 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
   ///
 // This is where the Buttons associated with the bottom navigation bar will be located.
   final dashboardButtonItem =
-      BottomNavigationBarItem(label: 'Dashboard', icon: Icon(Icons.dashboard));
+  BottomNavigationBarItem(label: 'Dashboard', icon: Icon(Icons.dashboard));
   final homeButtonItem =
-      BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home');
+  BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home');
 
   BottomNavigationBar bottomBar() {
     List<BottomNavigationBarItem> navBar = [

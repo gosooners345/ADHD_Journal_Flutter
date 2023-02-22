@@ -7,6 +7,29 @@ import '../main.dart';
 class NotificationController {
 
   static ReceivedAction? initialAction;
+
+  static Future<void> initializeLocalNotifications() async {
+    await AwesomeNotifications().initialize(null, [
+      NotificationChannel(
+        channelKey: 'ADHD Journal',
+        channelName: "ADHD Journal Reminder",
+        channelDescription: "ADHD Journal Reminder Notification",
+        playSound: true,
+        onlyAlertOnce: false,
+        groupAlertBehavior: GroupAlertBehavior.Children,
+        importance: NotificationImportance.High,
+        defaultPrivacy: NotificationPrivacy.Public,
+        defaultColor: Colors.red,
+        ledColor: Colors.orange,
+        criticalAlerts: true,
+      )
+    ]);
+    initialAction = await AwesomeNotifications().getInitialNotificationAction(
+        removeFromActionEvents: false);
+=======
+class NotificationController {
+
+  static ReceivedAction? initialAction;
   static Future<void> initializeLocalNotifications() async {
     await AwesomeNotifications().initialize(null, [
       NotificationChannel(channelKey: 'ADHD Journal', channelName: "ADHD Journal Reminder", channelDescription: "ADHD Journal Reminder Notification",
@@ -25,6 +48,23 @@ class NotificationController {
     runApp(const MyApp());
   }*/
 
+
+
+  static Future<void> startListeningNotificationEvents() async {
+    AwesomeNotifications().setListeners(
+        onActionReceivedMethod: onActionReceivedMethod);
+  }
+
+  @pragma('vm:entry-point')
+  static Future<void> onActionReceivedMethod(
+      ReceivedAction receivedAction) async {
+    if (
+    receivedAction.actionType == ActionType.SilentAction ||
+        receivedAction.actionType == ActionType.SilentBackgroundAction
+    ) {
+      // For background actions, you must hold the execution until the end
+      print('Message sent via notification input: "${receivedAction
+          .buttonKeyInput}"');
 
   static Future<void> startListeningNotificationEvents() async{
     AwesomeNotifications().setListeners(onActionReceivedMethod: onActionReceivedMethod);
@@ -58,7 +98,13 @@ class NotificationController {
         builder: (BuildContext ctx) {
           return AlertDialog(
             title: Text('Get Notified!',
+
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .titleLarge),
                 style: Theme.of(context).textTheme.titleLarge),
+
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -67,7 +113,14 @@ class NotificationController {
                     Expanded(
                       child: Image.asset(
                         'assets/animated-bell.gif',
+
+                        height: MediaQuery
+                            .of(context)
+                            .size
+                            .height * 0.3,
+
                         height: MediaQuery.of(context).size.height * 0.3,
+
                         fit: BoxFit.fitWidth,
                       ),
                     ),
@@ -85,7 +138,12 @@ class NotificationController {
                   },
                   child: Text(
                     'Deny',
+
+                    style: Theme
+                        .of(context)
+=======
                     style: Theme.of(context)
+
                         .textTheme
                         .titleLarge
                         ?.copyWith(color: Colors.red),
@@ -97,7 +155,10 @@ class NotificationController {
                   },
                   child: Text(
                     'Allow',
+
+           
                     style: Theme.of(context)
+
                         .textTheme
                         .titleLarge
                         ?.copyWith(color: Colors.deepPurple),
@@ -108,6 +169,10 @@ class NotificationController {
     return userAuthorized &&
         await AwesomeNotifications().requestPermissionToSendNotifications();
   }
+
+
+=======
+
   static Future<void> executeLongTaskInBackground() async {
     print("starting long task");
     await Future.delayed(const Duration(seconds: 4));
@@ -124,7 +189,10 @@ class NotificationController {
 
     await AwesomeNotifications().createNotification(
         content: NotificationContent(
-            id: -1, // -1 is replaced by a random number
+
+            id: -1,
+            // -1 is replaced by a random number
+
             channelKey: 'alerts',
             title: 'Huston! The eagle has landed!',
             body:
@@ -157,7 +225,9 @@ class NotificationController {
 
     await AwesomeNotifications().createNotification(
         content: NotificationContent(
+
             id: -1, // -1 is replaced by a random number
+
             channelKey: 'alerts',
             title: "Huston! The eagle has landed!",
             body:
@@ -190,5 +260,5 @@ class NotificationController {
   }
 
 
-
 }
+
