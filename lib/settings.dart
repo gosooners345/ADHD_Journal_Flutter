@@ -131,7 +131,10 @@ class _SettingsPage extends State<SettingsPage> {
   }
 
   //New Code for Scheduling reminders
-  // void scheduleReminders() async {}
+   void scheduleReminders() async {
+
+
+   }
 
   // USE ONLY IF YOU NEED TO RESET KEYS ON DEVICE. A FILE WILL BE ON THE DRIVE WARNING OF OLD KEYS
 
@@ -221,7 +224,7 @@ class _SettingsPage extends State<SettingsPage> {
                     context: context,
                     builder: (BuildContext builder) {
                       return AlertDialog(
-                        title: Text(
+                        title: const Text(
                             "Pick a new color to theme your journal with."),
                         content: SingleChildScrollView(
                           child: MaterialPicker(
@@ -238,10 +241,43 @@ class _SettingsPage extends State<SettingsPage> {
                                 });
                                 Navigator.of(context).pop();
                               },
-                              child: Text("Set theme color")),
+                              child: const Text("Set theme color")),
                         ],
                       );
                     });
+              },
+            ),
+            spacer,
+            ListTile(
+              title: const Text(
+                "Click here to turn on notification reminders",
+              ),
+              onTap: () {
+               /* showDialog(
+                    context: context,
+                    builder: (BuildContext builder) {
+                      return AlertDialog(
+                        title: const Text(
+                            "Pick a new color to theme your journal with."),
+                        content: SingleChildScrollView(
+                          child: MaterialPicker(
+                            pickerColor: pickerColor,
+                            onColorChanged: setColor,
+                          ),
+                        ),
+                        actions: [
+                          ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  currentColor = pickerColor;
+                                  changeColor(swapper, colorSeed);
+                                });
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text("Set theme color")),
+                        ],
+                      );
+                    });*/
               },
             ),
             spacer,
