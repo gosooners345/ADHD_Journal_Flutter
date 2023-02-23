@@ -3,6 +3,8 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../project_resources/project_colors.dart';
+import '../project_resources/project_utils.dart';
+import '../project_resources/project_strings_file.dart';
 import '../main.dart';
 
 class NotificationController {
@@ -10,18 +12,29 @@ class NotificationController {
   static ReceivedAction? initialAction;
 
   static Future<void> initializeLocalNotifications() async {
-    await AwesomeNotifications().initialize(null, [
+    await AwesomeNotifications().initialize('resource://drawable/res_notification_app_icon', [
       NotificationChannel(
-        channelKey: 'ADHD Journal',
+        channelKey: 'adhd_journal',
         channelName: "ADHD Journal Reminder",
         channelDescription: "ADHD Journal Reminder Notification",
+defaultColor: Colors.amberAccent,
         playSound: true,
         onlyAlertOnce: false,
         groupAlertBehavior: GroupAlertBehavior.Children,
         importance: NotificationImportance.High,
         defaultPrivacy: NotificationPrivacy.Public,
-        defaultColor: Colors.red,
-        ledColor: Colors.orange,
+        criticalAlerts: true,
+      ),
+      NotificationChannel(
+        channelKey: 'adhd_journal_scheduled',
+        channelName: "ADHD Journal Reminder",
+        channelDescription: "ADHD Journal Reminder Notification",
+        defaultColor: Colors.amberAccent,
+        playSound: true,
+        onlyAlertOnce: false,
+        groupAlertBehavior: GroupAlertBehavior.Children,
+        importance: NotificationImportance.High,
+        defaultPrivacy: NotificationPrivacy.Public,
         criticalAlerts: true,
       )
     ]);
@@ -35,7 +48,7 @@ class NotificationController {
     runApp(const MyApp());
   }*/
 
-
+//Notifications begin here
   static Future<void> startListeningNotificationEvents() async {
     AwesomeNotifications().setListeners(
         onActionReceivedMethod: onActionReceivedMethod);
@@ -55,9 +68,9 @@ class NotificationController {
     }
     else {
       MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
-          '/notification-page',
+          '/',
               (route) =>
-          (route.settings.name != '/notification-page') || route.isFirst,
+          (route.settings.name != '/') || route.isFirst,
           arguments: receivedAction);
     }
   }
@@ -145,31 +158,17 @@ class NotificationController {
 
     await AwesomeNotifications().createNotification(
         content: NotificationContent(
-            id: -1,
+            id: createUniqueId(),
             // -1 is replaced by a random number
-            channelKey: 'alerts',
-            title: 'Huston! The eagle has landed!',
+            channelKey: 'adhd_journal',
+            title: 'Daily Reminder',
             body:
-            "A small step for a man, but a giant leap to Flutter's community!",
-            bigPicture: 'https://storage.googleapis.com/cms-storage-bucket/d406c736e7c4c57f5f61.png',
-            largeIcon: 'https://storage.googleapis.com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png',
+            "Don't forget to journal today!",
+            //bigPicture: 'https://storage.googleapis.com/cms-storage-bucket/d406c736e7c4c57f5f61.png',
+            //largeIcon: 'https://storage.googleapis.com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png',
             //'asset://assets/images/balloons-in-sky.jpg',
-            notificationLayout: NotificationLayout.BigPicture,
-            payload: {'notificationId': '1234567890'}),
-        actionButtons: [
-          NotificationActionButton(key: 'REDIRECT', label: 'Redirect'),
-          NotificationActionButton(
-              key: 'REPLY',
-              label: 'Reply Message',
-              requireInputText: true,
-              actionType: ActionType.SilentAction
-          ),
-          NotificationActionButton(
-              key: 'DISMISS',
-              label: 'Dismiss',
-              actionType: ActionType.DismissAction,
-              isDangerousOption: true)
-        ]);
+            notificationLayout: NotificationLayout.Default));
+
   }
 
   static Future<void> scheduleNewNotification() async {
@@ -179,27 +178,17 @@ class NotificationController {
 
     await AwesomeNotifications().createNotification(
         content: NotificationContent(
-            id: -1,
+            id: createUniqueId(),
             // -1 is replaced by a random number
-            channelKey: 'alerts',
-            title: "Huston! The eagle has landed!",
+            channelKey: 'adhd_journal_scheduled',
+            title: "Daily Reminder",
             body:
-            "A small step for a man, but a giant leap to Flutter's community!",
-            bigPicture: 'https://storage.googleapis.com/cms-storage-bucket/d406c736e7c4c57f5f61.png',
-            largeIcon: 'https://storage.googleapis.com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png',
+            "Don't forget to Journal today",
+         //   bigPicture: 'https://storage.googleapis.com/cms-storage-bucket/d406c736e7c4c57f5f61.png',
+            //largeIcon: 'https://storage.googleapis.com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png',
             //'asset://assets/images/balloons-in-sky.jpg',
-            notificationLayout: NotificationLayout.BigPicture,
-            payload: {
-              'notificationId': '1234567890'
-            }),
-        actionButtons: [
-          NotificationActionButton(key: 'REDIRECT', label: 'Redirect'),
-          NotificationActionButton(
-              key: 'DISMISS',
-              label: 'Dismiss',
-              actionType: ActionType.DismissAction,
-              isDangerousOption: true)
-        ],
+
+            ),
         schedule: NotificationCalendar.fromDate(
             date: DateTime.now().add(const Duration(seconds: 10))));
   }

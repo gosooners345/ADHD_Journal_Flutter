@@ -130,6 +130,9 @@ class _SettingsPage extends State<SettingsPage> {
     });
   }
 
+  //New Code for Scheduling reminders
+  // void scheduleReminders() async {}
+
   // USE ONLY IF YOU NEED TO RESET KEYS ON DEVICE. A FILE WILL BE ON THE DRIVE WARNING OF OLD KEYS
 
   void resetRSAKeys() async {
