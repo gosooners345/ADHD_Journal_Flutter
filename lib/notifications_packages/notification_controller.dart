@@ -42,11 +42,6 @@ defaultColor: Colors.amberAccent,
         removeFromActionEvents: false);
   }
 
-  /*Future<void> main() async {
-    // Always initialize Awesome Notifications
-    await NotificationController.initializeLocalNotifications();
-    runApp(const MyApp());
-  }*/
 
 //Notifications begin here
   static Future<void> startListeningNotificationEvents() async {
@@ -171,7 +166,7 @@ defaultColor: Colors.amberAccent,
 
   }
 
-  static Future<void> scheduleNewNotification() async {
+  static Future<void> scheduleNewNotification(NotificationWeekAndTime dateTime) async {
     bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
     if (!isAllowed) isAllowed = await displayNotificationRationale();
     if (!isAllowed) return;
@@ -189,8 +184,8 @@ defaultColor: Colors.amberAccent,
             //'asset://assets/images/balloons-in-sky.jpg',
 
             ),
-        schedule: NotificationCalendar.fromDate(
-            date: DateTime.now().add(const Duration(seconds: 10))));
+        schedule: NotificationCalendar.fromDate(date: DateTime.now().add(Duration(hours: 1))));/*NotificationCalendar(weekday:dateTime.dayOfTheWeek,hour: dateTime.timeOfDay.hour,minute: dateTime.timeOfDay.minute,repeats: true));*//*.fromDate(
+            date: dateTime));*/
   }
 
   static Future<void> resetBadgeCounter() async {
