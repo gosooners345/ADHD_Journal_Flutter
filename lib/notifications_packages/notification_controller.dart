@@ -1,5 +1,5 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
-
+import 'package:awesome_notifications/android_foreground_service.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../project_resources/project_colors.dart';
@@ -166,7 +166,7 @@ defaultColor: Colors.amberAccent,
 
   }
 
-  static Future<void> scheduleNewNotification(NotificationWeekAndTime dateTime) async {
+  static Future<void> scheduleNewNotification(TimeOfDay? dateTime) async {
     bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
     if (!isAllowed) isAllowed = await displayNotificationRationale();
     if (!isAllowed) return;
@@ -174,7 +174,7 @@ defaultColor: Colors.amberAccent,
     await AwesomeNotifications().createNotification(
         content: NotificationContent(
             id: createUniqueId(),
-            // -1 is replaced by a random number
+       category: NotificationCategory.Reminder,
             channelKey: 'adhd_journal_scheduled',
             title: "Daily Reminder",
             body:
@@ -182,10 +182,9 @@ defaultColor: Colors.amberAccent,
          //   bigPicture: 'https://storage.googleapis.com/cms-storage-bucket/d406c736e7c4c57f5f61.png',
             //largeIcon: 'https://storage.googleapis.com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png',
             //'asset://assets/images/balloons-in-sky.jpg',
-
+autoDismissible: true
             ),
-        schedule: NotificationCalendar.fromDate(date: DateTime.now().add(Duration(hours: 1))));/*NotificationCalendar(weekday:dateTime.dayOfTheWeek,hour: dateTime.timeOfDay.hour,minute: dateTime.timeOfDay.minute,repeats: true));*//*.fromDate(
-            date: dateTime));*/
+        schedule: NotificationCalendar(hour: dateTime!.hour,minute:dateTime.minute,allowWhileIdle: true,preciseAlarm: true ));
   }
 
   static Future<void> resetBadgeCounter() async {
@@ -193,6 +192,7 @@ defaultColor: Colors.amberAccent,
   }
 
   static Future<void> cancelNotifications() async {
+    print("all notifications cancelled");
     await AwesomeNotifications().cancelAll();
   }
 }

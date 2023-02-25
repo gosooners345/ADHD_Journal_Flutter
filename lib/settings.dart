@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:adhd_journal_flutter/project_resources/project_utils.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:googleapis/cloudsearch/v1.dart';
 import 'package:path/path.dart' as path;
 import 'notifications_packages/notification_controller.dart';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
@@ -29,7 +30,8 @@ class _SettingsPage extends State<SettingsPage> {
 
   //Parameter setting stuff
   bool isChecked = false;
-bool notificationsAllowed = false;
+  late Icon bellIcon;
+
   //Preference Values
   String passwordValue = userPassword;
   String passwordHintValue = passwordHint;
@@ -37,6 +39,7 @@ bool notificationsAllowed = false;
   Text passwordLabelWidget = const Text('');
   Text syncTextWidget = const Text('');
   late SwitchListTile passwordEnabledTile;
+  String notifyText = '';
 
   //Visual changes based on parameter values
   String passwordLabelText = 'Password Enabled';
@@ -72,8 +75,17 @@ bool notificationsAllowed = false;
     if (passwordHint == " ") {
       passwordHint = '';
     }
-notificationsAllowed = prefs.getBool('notifications') ?? false;
+    notificationsAllowed = prefs.getBool('notifications') ?? false;
     setState(() {
+      if (notificationsAllowed) {
+        notifyText =
+        'Notifications Turned on, Click here to change the schedule or turn them off';
+        bellIcon = Icon(Icons.notifications_active, color: Color(colorSeed),);
+      }
+      else {
+        notifyText = 'Click here to turn on notification reminders';
+        bellIcon = Icon(Icons.notifications, color: Color(colorSeed),);
+      }
       greetingController = TextEditingController(text: greeting);
       passwordController = TextEditingController(text: userPassword);
       passwordHintController = TextEditingController(text: passwordHint);
@@ -132,21 +144,18 @@ notificationsAllowed = prefs.getBool('notifications') ?? false;
     });
   }
 
-  //New Code for Scheduling reminders
-   void scheduleReminders() async {
 
-
-   }
 
   // USE ONLY IF YOU NEED TO RESET KEYS ON DEVICE. A FILE WILL BE ON THE DRIVE WARNING OF OLD KEYS
 
   void resetRSAKeys() async {
-    await Future.sync(()=>googleDrive.deleteOutdatedBackups(prefsName));
+    await Future.sync(() => googleDrive.deleteOutdatedBackups(prefsName));
 
     await Future.sync(() => googleDrive.deleteOutdatedBackups(".pem"))
-        .whenComplete(() => {
-              preferenceBackupAndEncrypt.generateRSAKeys(),
-            });
+        .whenComplete(() =>
+    {
+      preferenceBackupAndEncrypt.generateRSAKeys(),
+    });
     await Future.delayed(Duration(seconds: 2), () {
       preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
     });
@@ -176,7 +185,7 @@ notificationsAllowed = prefs.getBool('notifications') ?? false;
                   print(passwordHint);
                 }
                 Future.delayed(const Duration(milliseconds: 50),
-                    () => Navigator.pop(context));
+                        () => Navigator.pop(context));
               },
               icon: backArrowIcon),
         ),
@@ -218,6 +227,8 @@ notificationsAllowed = prefs.getBool('notifications') ?? false;
             ),
             spacer,
             ListTile(
+              leading: Icon(
+                Icons.color_lens, color: Color(swapper.isColorSeed),),
               title: const Text(
                 "Click here to change the application theme color",
               ),
@@ -248,53 +259,100 @@ notificationsAllowed = prefs.getBool('notifications') ?? false;
                       );
                     });
               },
+            ), spacer,
+            Divider(
+              height: 1.0,
+              thickness: 0.5,
+              color: Color(swapper.isColorSeed),
             ),
             spacer,
+
             ListTile(
-              title: notificationsAllowed ? Text(
-                "Click here to turn on notification reminders",
-              ): Text("Notifications Turned on, Click here to change the schedule or turn them off"),
-              onTap: () {
-                AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
-                 if(!isAllowed){
-                   showDialog(context: context, builder: (context) => AlertDialog(
-                     title: const Text("Allow reminder notifications?"),
-                     content: const Text("Would you like to be notified to journal daily? If so, hit allow."),
-                     actions: [
-                      TextButton(onPressed: (){
-                        AwesomeNotifications().requestPermissionToSendNotifications().then((_) async {
-                          NotificationWeekAndTime? pickedSchedule = await pickSchedule(context);
+                leading: bellIcon,
+                title: Text(notifyText),
+                onTap: () {
+                  AwesomeNotifications().isNotificationAllowed().then((
+                      isAllowed) {
+                    if (!isAllowed) {
+                      showDialog(context: context, builder: (context) =>
+                          AlertDialog(
+                            title: const Text("Allow reminder notifications?"),
+                            content: const Text(
+                                "Would you like to be reminded to journal daily? If so, hit allow."),
+                            actions: [
+                              TextButton(onPressed: () {
+                                AwesomeNotifications()
+                                    .requestPermissionToSendNotifications()
+                                    .then((_) async {
+                                  prefs.setBool("notifications", true);
+                                  notifyText =
+                                  'Notifications Turned on, Click here to change the schedule or turn them off';
+                                  setState(() {
+                                    bellIcon = Icon(Icons.notifications_active,
+                                      color: Color(colorSeed),);
+                                  });
+                                },);
+                                Navigator.pop(context);
+                              }, child: Text("Allow")),
+                              TextButton(
+                                onPressed: () {
+                                  prefs.setBool("notifications", false);
+                                  notifyText =
+                                  'Click here to turn on notification reminders';
+                                  setState(() {
+                                    bellIcon = Icon(Icons.notifications,
+                                      color: Color(colorSeed),);
+                                  });
+                                  Navigator.pop(context);
+                                },
+                                child: Text(
+                                  'Don\'t Allow',
+                                ),
+                              ),
+                            ],
+                          ));
+                    }
+                    else {
+                      //Insert Timepicker dialog here, pass values to a NC object and pass it to the method for scheduling notifications.
+                      prefs.setBool("notifications", true);
+                      notificationsAllowed =
+                          prefs.getBool('notifications') ?? true;
+                      NotificationController.cancelNotifications().then((
+                          _) async {
+                        TimeOfDay? scheduleReminder = await showTimePicker(
+                            context: context, initialTime: TimeOfDay.now());
 
-                          if(pickedSchedule !=null){
+                        if (scheduleReminder != null) {
+                          NotificationController.scheduleNewNotification(
+                              scheduleReminder);
+                          setState(() {
+                            bellIcon = Icon(Icons.notifications_active,
+                              color: Color(colorSeed),);
+                            notifyText =
+                            'Notifications Turned on, Click here to change the schedule or turn them off';
+                          });
 
-                            NotificationController.scheduleNewNotification(pickedSchedule!);
+                          print("Notification schedule created");
+                        }
+                        else {
+                          AwesomeNotifications().cancelSchedulesByChannelKey(
+                              'adhd_journal_scheduled');
+                          print("Notification schedule canceled");
+                          prefs.setBool("notifications", false);
+                          notificationsAllowed =
+                              prefs.getBool('notifications') ?? false;
+                          notifyText =
+                          'Click here to turn on notification reminders';
+                          setState(() {
+                            bellIcon = Icon(
+                              Icons.notifications, color: Color(colorSeed),);
+                          });
+                        }
+                      });
+                    }
+                  });
+                }),
 
-                          }
-                          else{
-                            print("Set this up");
-                          }
-                          prefs.setBool("notifications", true);
-
-                        },);Navigator.pop(context);
-                      }, child: Text("Allow")),
-                       TextButton(
-                         onPressed: () {
-                           Navigator.pop(context);
-                         },
-                         child: Text(
-                           'Don\'t Allow',
-                         ),
-                       ),
-                     ],
-                   ));
-                 }
-else{
-      NotificationController.cancelNotifications();
-      print("Notification schedule canceled");
-                 }
-                } );
-              },
-            ),
             spacer,
             Divider(
               height: 2.0,
@@ -408,32 +466,32 @@ else{
                   builder: (BuildContext builder) {
                     return AlertDialog(
                       title: Text(
-                          "Reset RSA Keys for backup and sync.",
-                        ),
-      content: const Text(reset_RSA_Key_Dialog_Message_String
-      ),
+                        "Reset RSA Keys for backup and sync.",
+                      ),
+                      content: const Text(reset_RSA_Key_Dialog_Message_String
+                      ),
                       actions: [
-      ElevatedButton(
-      onPressed: () async {
-      if (userActiveBackup == true) {
-      Navigator.of(context).pop();
-      await Future.sync(
-      () => resetRSAKeys())
-          .whenComplete(() {
-      showMessage(
-      "Your keys have been reset");
-      });
-      } else {
-      Navigator.of(context).pop();
-      }
-      },
-      child: Text(
-      "Yes")),
                         ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
+                            onPressed: () async {
+                              if (userActiveBackup == true) {
+                                Navigator.of(context).pop();
+                                await Future.sync(
+                                        () => resetRSAKeys())
+                                    .whenComplete(() {
+                                  showMessage(
+                                      "Your keys have been reset");
+                                });
+                              } else {
+                                Navigator.of(context).pop();
+                              }
                             },
-                            child: Text("No"),)
+                            child: Text(
+                                "Yes")),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text("No"),)
                       ],
                     );
                   },
@@ -605,12 +663,13 @@ else{
 
               leading: Image.asset('images/GoogleDriveLogo.png'),
               title: const Text(''),
-              subtitle: const Text('Google Drive is a trademark of Google Inc. Use of this trademark is subject to Google Permissions.'),
+              subtitle: const Text(
+                  'Google Drive is a trademark of Google Inc. Use of this trademark is subject to Google Permissions.'),
               onTap: () {
 
               },
             ),
-            
+
           ],
         ),
       );
