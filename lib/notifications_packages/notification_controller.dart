@@ -1,5 +1,6 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:awesome_notifications/android_foreground_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../project_resources/project_colors.dart';
@@ -154,14 +155,10 @@ defaultColor: Colors.amberAccent,
     await AwesomeNotifications().createNotification(
         content: NotificationContent(
             id: createUniqueId(),
-            // -1 is replaced by a random number
             channelKey: 'adhd_journal',
             title: 'Daily Reminder',
             body:
             "Don't forget to journal today!",
-            //bigPicture: 'https://storage.googleapis.com/cms-storage-bucket/d406c736e7c4c57f5f61.png',
-            //largeIcon: 'https://storage.googleapis.com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png',
-            //'asset://assets/images/balloons-in-sky.jpg',
             notificationLayout: NotificationLayout.Default));
 
   }
@@ -178,10 +175,7 @@ defaultColor: Colors.amberAccent,
             channelKey: 'adhd_journal_scheduled',
             title: "Daily Reminder",
             body:
-            "Don't forget to Journal today",
-         //   bigPicture: 'https://storage.googleapis.com/cms-storage-bucket/d406c736e7c4c57f5f61.png',
-            //largeIcon: 'https://storage.googleapis.com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png',
-            //'asset://assets/images/balloons-in-sky.jpg',
+            "Don't forget to journal today!",
 autoDismissible: true
             ),
         schedule: NotificationCalendar(hour: dateTime!.hour,minute:dateTime.minute,allowWhileIdle: true,preciseAlarm: true ));
@@ -192,7 +186,9 @@ autoDismissible: true
   }
 
   static Future<void> cancelNotifications() async {
-    print("all notifications cancelled");
+    if (kDebugMode) {
+      print("all notifications cancelled");
+    }
     await AwesomeNotifications().cancelAll();
   }
 }

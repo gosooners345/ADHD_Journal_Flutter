@@ -79,7 +79,8 @@ class _SettingsPage extends State<SettingsPage> {
     setState(() {
       if (notificationsAllowed) {
         notifyText =
-        'Notifications Turned on, Click here to change the schedule or turn them off';
+        'Notifications Turned on, Click here to change the schedule or turn them off.\r\n'
+      'Hit cancel to turn them off when the time picker pops up.';
         bellIcon = Icon(Icons.notifications_active, color: Color(colorSeed),);
       }
       else {
@@ -286,14 +287,15 @@ class _SettingsPage extends State<SettingsPage> {
                                     .then((_) async {
                                   prefs.setBool("notifications", true);
                                   notifyText =
-                                  'Notifications Turned on, Click here to change the schedule or turn them off';
+                                  'Notifications Turned on, Click here to change the schedule or turn them off.\r\n'
+                                      'Hit cancel to turn them off when the time picker pops up.';
                                   setState(() {
                                     bellIcon = Icon(Icons.notifications_active,
                                       color: Color(colorSeed),);
                                   });
                                 },);
                                 Navigator.pop(context);
-                              }, child: Text("Allow")),
+                              }, child: const Text("Allow")),
                               TextButton(
                                 onPressed: () {
                                   prefs.setBool("notifications", false);
@@ -305,7 +307,7 @@ class _SettingsPage extends State<SettingsPage> {
                                   });
                                   Navigator.pop(context);
                                 },
-                                child: Text(
+                                child: const Text(
                                   'Don\'t Allow',
                                 ),
                               ),
@@ -329,7 +331,8 @@ class _SettingsPage extends State<SettingsPage> {
                             bellIcon = Icon(Icons.notifications_active,
                               color: Color(colorSeed),);
                             notifyText =
-                            'Notifications Turned on, Click here to change the schedule or turn them off';
+                            'Notifications Turned on, Click here to change the schedule or turn them off.\r\n'
+                                'Hit cancel to turn them off when the time picker pops up.';
                           });
 
                           print("Notification schedule created");
