@@ -315,7 +315,7 @@ class _SettingsPage extends State<SettingsPage> {
                           ));
                     }
                     else {
-                      //Insert Timepicker dialog here, pass values to a NC object and pass it to the method for scheduling notifications.
+
                       prefs.setBool("notifications", true);
                       notificationsAllowed =
                           prefs.getBool('notifications') ?? true;
@@ -334,7 +334,7 @@ class _SettingsPage extends State<SettingsPage> {
                             'Notifications Turned on, Click here to change the schedule or turn them off.\r\n'
                                 'Hit cancel to turn them off when the time picker pops up.';
                           });
-
+showMessage("Reminder Created for $scheduleReminder");
                           print("Notification schedule created");
                         }
                         else {

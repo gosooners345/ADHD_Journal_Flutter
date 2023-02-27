@@ -178,7 +178,7 @@ defaultColor: Colors.amberAccent,
             "Don't forget to journal today!",
 autoDismissible: true
             ),
-        schedule: NotificationCalendar(hour: dateTime!.hour,minute:dateTime.minute,allowWhileIdle: true,preciseAlarm: true ));
+        schedule: NotificationCalendar(hour: dateTime!.hour,minute:dateTime.minute,second: 0,allowWhileIdle: true,preciseAlarm: true,repeats: true ));
   }
 
   static Future<void> resetBadgeCounter() async {
