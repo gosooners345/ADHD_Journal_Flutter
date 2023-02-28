@@ -334,13 +334,15 @@ class _SettingsPage extends State<SettingsPage> {
                             'Notifications Turned on, Click here to change the schedule or turn them off.\r\n'
                                 'Hit cancel to turn them off when the time picker pops up.';
                           });
-showMessage("Reminder Created for $scheduleReminder");
+                          String AMPM = scheduleReminder.hour> 12 ? "PM" :"AM";
+showMessage("Reminder Created for "+scheduleReminder.hourOfPeriod.toString() +":"+scheduleReminder.minute.toString() + AMPM);
                           print("Notification schedule created");
                         }
                         else {
                           AwesomeNotifications().cancelSchedulesByChannelKey(
                               'adhd_journal_scheduled');
-                          print("Notification schedule canceled");
+                          showMessage("Notification schedule cancelled");
+                          /*print("Notification schedule canceled");*/
                           prefs.setBool("notifications", false);
                           notificationsAllowed =
                               prefs.getBool('notifications') ?? false;
