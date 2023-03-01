@@ -44,7 +44,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
                       SizedBox(
                         width: 16,
                       ),
-                      Text('Rating: ' + super.widget.record.rating.toString()),
+                      Text('Rating: ' + super.widget.record.rating.round().toString()),
                     ],
                   ),
                   SizedBox(
