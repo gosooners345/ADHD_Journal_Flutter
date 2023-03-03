@@ -1,6 +1,9 @@
 import 'dart:io';
+import 'package:adhd_journal_flutter/project_resources/project_utils.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:googleapis/cloudsearch/v1.dart';
 import 'package:path/path.dart' as path;
-
+import 'notifications_packages/notification_controller.dart';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
 import 'package:flutter/foundation.dart';
@@ -27,6 +30,7 @@ class _SettingsPage extends State<SettingsPage> {
 
   //Parameter setting stuff
   bool isChecked = false;
+  late Icon bellIcon;
 
   //Preference Values
   String passwordValue = userPassword;
@@ -35,6 +39,7 @@ class _SettingsPage extends State<SettingsPage> {
   Text passwordLabelWidget = const Text('');
   Text syncTextWidget = const Text('');
   late SwitchListTile passwordEnabledTile;
+  String notifyText = '';
 
   //Visual changes based on parameter values
   String passwordLabelText = 'Password Enabled';
@@ -70,8 +75,18 @@ class _SettingsPage extends State<SettingsPage> {
     if (passwordHint == " ") {
       passwordHint = '';
     }
-
+    notificationsAllowed = prefs.getBool('notifications') ?? false;
     setState(() {
+      if (notificationsAllowed) {
+        notifyText =
+        'Notifications Turned on, Click here to change the schedule or turn them off.\r\n'
+      'Hit cancel to turn them off when the time picker pops up.';
+        bellIcon = Icon(Icons.notifications_active, color: Color(colorSeed),);
+      }
+      else {
+        notifyText = 'Click here to turn on notification reminders';
+        bellIcon = Icon(Icons.notifications, color: Color(colorSeed),);
+      }
       greetingController = TextEditingController(text: greeting);
       passwordController = TextEditingController(text: userPassword);
       passwordHintController = TextEditingController(text: passwordHint);
@@ -130,15 +145,18 @@ class _SettingsPage extends State<SettingsPage> {
     });
   }
 
+
+
   // USE ONLY IF YOU NEED TO RESET KEYS ON DEVICE. A FILE WILL BE ON THE DRIVE WARNING OF OLD KEYS
 
   void resetRSAKeys() async {
-    await Future.sync(()=>googleDrive.deleteOutdatedBackups(prefsName));
+    await Future.sync(() => googleDrive.deleteOutdatedBackups(prefsName));
 
     await Future.sync(() => googleDrive.deleteOutdatedBackups(".pem"))
-        .whenComplete(() => {
-              preferenceBackupAndEncrypt.generateRSAKeys(),
-            });
+        .whenComplete(() =>
+    {
+      preferenceBackupAndEncrypt.generateRSAKeys(),
+    });
     await Future.delayed(Duration(seconds: 2), () {
       preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
     });
@@ -168,7 +186,7 @@ class _SettingsPage extends State<SettingsPage> {
                   print(passwordHint);
                 }
                 Future.delayed(const Duration(milliseconds: 50),
-                    () => Navigator.pop(context));
+                        () => Navigator.pop(context));
               },
               icon: backArrowIcon),
         ),
@@ -210,6 +228,8 @@ class _SettingsPage extends State<SettingsPage> {
             ),
             spacer,
             ListTile(
+              leading: Icon(
+                Icons.color_lens, color: Color(swapper.isColorSeed),),
               title: const Text(
                 "Click here to change the application theme color",
               ),
@@ -218,7 +238,7 @@ class _SettingsPage extends State<SettingsPage> {
                     context: context,
                     builder: (BuildContext builder) {
                       return AlertDialog(
-                        title: Text(
+                        title: const Text(
                             "Pick a new color to theme your journal with."),
                         content: SingleChildScrollView(
                           child: MaterialPicker(
@@ -235,12 +255,109 @@ class _SettingsPage extends State<SettingsPage> {
                                 });
                                 Navigator.of(context).pop();
                               },
-                              child: Text("Set theme color")),
+                              child: const Text("Set theme color")),
                         ],
                       );
                     });
               },
+            ), spacer,
+            Divider(
+              height: 1.0,
+              thickness: 0.5,
+              color: Color(swapper.isColorSeed),
             ),
+            spacer,
+
+            ListTile(
+                leading: bellIcon,
+                title: Text(notifyText),
+                onTap: () {
+                  AwesomeNotifications().isNotificationAllowed().then((
+                      isAllowed) {
+                    if (!isAllowed) {
+                      showDialog(context: context, builder: (context) =>
+                          AlertDialog(
+                            title: const Text("Allow reminder notifications?"),
+                            content: const Text(
+                                "Would you like to be reminded to journal daily? If so, hit allow."),
+                            actions: [
+                              TextButton(onPressed: () {
+                                AwesomeNotifications()
+                                    .requestPermissionToSendNotifications()
+                                    .then((_) async {
+                                  prefs.setBool("notifications", true);
+                                  notifyText =
+                                  'Notifications Turned on, Click here to change the schedule or turn them off.\r\n'
+                                      'Hit cancel to turn them off when the time picker pops up.';
+                                  setState(() {
+                                    bellIcon = Icon(Icons.notifications_active,
+                                      color: Color(colorSeed),);
+                                  });
+                                },);
+                                Navigator.pop(context);
+                              }, child: const Text("Allow")),
+                              TextButton(
+                                onPressed: () {
+                                  prefs.setBool("notifications", false);
+                                  notifyText =
+                                  'Click here to turn on notification reminders';
+                                  setState(() {
+                                    bellIcon = Icon(Icons.notifications,
+                                      color: Color(colorSeed),);
+                                  });
+                                  Navigator.pop(context);
+                                },
+                                child: const Text(
+                                  'Don\'t Allow',
+                                ),
+                              ),
+                            ],
+                          ));
+                    }
+                    else {
+
+                      prefs.setBool("notifications", true);
+                      notificationsAllowed =
+                          prefs.getBool('notifications') ?? true;
+                      NotificationController.cancelNotifications().then((
+                          _) async {
+                        TimeOfDay? scheduleReminder = await showTimePicker(
+                            context: context, initialTime: TimeOfDay.now());
+
+                        if (scheduleReminder != null) {
+                          NotificationController.scheduleNewNotification(
+                              scheduleReminder);
+                          setState(() {
+                            bellIcon = Icon(Icons.notifications_active,
+                              color: Color(colorSeed),);
+                            notifyText =
+                            'Notifications Turned on, Click here to change the schedule or turn them off.\r\n'
+                                'Hit cancel to turn them off when the time picker pops up.';
+                          });
+                          String AMPM = scheduleReminder.hour> 12 ? "PM" :"AM";
+showMessage("Reminder Created for "+scheduleReminder.hourOfPeriod.toString() +":"+scheduleReminder.minute.toString() + AMPM);
+                          print("Notification schedule created");
+                        }
+                        else {
+                          AwesomeNotifications().cancelSchedulesByChannelKey(
+                              'adhd_journal_scheduled');
+                          showMessage("Notification schedule cancelled");
+                          /*print("Notification schedule canceled");*/
+                          prefs.setBool("notifications", false);
+                          notificationsAllowed =
+                              prefs.getBool('notifications') ?? false;
+                          notifyText =
+                          'Click here to turn on notification reminders';
+                          setState(() {
+                            bellIcon = Icon(
+                              Icons.notifications, color: Color(colorSeed),);
+                          });
+                        }
+                      });
+                    }
+                  });
+                }),
+
             spacer,
             Divider(
               height: 2.0,
@@ -354,32 +471,32 @@ class _SettingsPage extends State<SettingsPage> {
                   builder: (BuildContext builder) {
                     return AlertDialog(
                       title: Text(
-                          "Reset RSA Keys for backup and sync.",
-                        ),
-      content: const Text(reset_RSA_Key_Dialog_Message_String
-      ),
+                        "Reset RSA Keys for backup and sync.",
+                      ),
+                      content: const Text(reset_RSA_Key_Dialog_Message_String
+                      ),
                       actions: [
-      ElevatedButton(
-      onPressed: () async {
-      if (userActiveBackup == true) {
-      Navigator.of(context).pop();
-      await Future.sync(
-      () => resetRSAKeys())
-          .whenComplete(() {
-      showMessage(
-      "Your keys have been reset");
-      });
-      } else {
-      Navigator.of(context).pop();
-      }
-      },
-      child: Text(
-      "Yes")),
                         ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
+                            onPressed: () async {
+                              if (userActiveBackup == true) {
+                                Navigator.of(context).pop();
+                                await Future.sync(
+                                        () => resetRSAKeys())
+                                    .whenComplete(() {
+                                  showMessage(
+                                      "Your keys have been reset");
+                                });
+                              } else {
+                                Navigator.of(context).pop();
+                              }
                             },
-                            child: Text("No"),)
+                            child: Text(
+                                "Yes")),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text("No"),)
                       ],
                     );
                   },
@@ -551,12 +668,13 @@ class _SettingsPage extends State<SettingsPage> {
 
               leading: Image.asset('images/GoogleDriveLogo.png'),
               title: const Text(''),
-              subtitle: const Text('Google Drive is a trademark of Google Inc. Use of this trademark is subject to Google Permissions.'),
+              subtitle: const Text(
+                  'Google Drive is a trademark of Google Inc. Use of this trademark is subject to Google Permissions.'),
               onTap: () {
 
               },
             ),
-            
+
           ],
         ),
       );

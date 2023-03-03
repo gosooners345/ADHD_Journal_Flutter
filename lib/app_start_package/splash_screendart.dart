@@ -87,6 +87,7 @@ class _SplashScreenState extends State<SplashScreen> {
     greeting = prefs.getString('greeting') ?? '';
     colorSeed = prefs.getInt("apptheme") ?? AppColors.mainAppColor.value;
     passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
+    notificationsAllowed = prefs.getBool('notifications') ?? false;
     isPasswordChecked = passwordEnabled;
     var i =0;
     getNetStatus();
@@ -569,7 +570,7 @@ late ThemeData darkTheme;
 String dbLocation = "";
 String docsLocation = "";
 String keyLocation = "";
-
+bool notificationsAllowed = false;
 
 
 bool userActiveBackup = false;

@@ -29,15 +29,19 @@ import 'package:adhd_journal_flutter/drive_api_backup_general/preference_backup_
 
 List<Records> recordHolder = [];
 int id = 0;
+
+
 Future<void> main() async {
+  // This is the element we're testing for reminders
   await NotificationController.initializeLocalNotifications();
+  // This works fine
   runApp(ChangeNotifierProvider<ThemeSwap>(
     create: (_) => ThemeSwap(),
     child: MyApp(),
   ));
 }
 
-//late PackageInfo packInfo;
+
 late RecordsBloc recordsBloc;
 
 int listSize = 0;
@@ -57,8 +61,8 @@ class MyApp extends StatefulWidget{
 
 class MyAppState extends State<MyApp> {
 
-    Key? key,
-  }) : super(key: key);*/
+
+
   @override
   void initState() {
     NotificationController.startListeningNotificationEvents();
@@ -68,25 +72,26 @@ class MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    final swapper = Provider.of<ThemeSwap>(context);
+    final  swapper = Provider.of<ThemeSwap>(context);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       debugShowMaterialGrid: false,
       title: 'ADHD Journal',
       theme: ThemeData(
           colorSchemeSeed: Color(swapper
-              .isColorSeed), // This will be replaced with a shared preferences item,
+              .isColorSeed),
           useMaterial3: true,
           brightness: Brightness.light),
       darkTheme: ThemeData(
           colorSchemeSeed: Color(swapper
-              .isColorSeed), //This will be replaced with a shared preferences item,
+              .isColorSeed),
           useMaterial3: true,
           brightness: Brightness.dark),
       themeMode: ThemeMode.system,
       initialRoute: '/',
       routes: {
         '/': (context) => SplashScreen(),
+        '/notification':(context) => SplashScreen(),
         '/onboarding': (context) => OnBoardingWidget(),
         '/savePassword': (context) => LoginScreen(
           swapper: swapper,

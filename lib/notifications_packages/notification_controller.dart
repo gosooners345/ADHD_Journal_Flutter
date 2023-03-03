@@ -1,7 +1,11 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:awesome_notifications/android_foreground_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../project_resources/project_colors.dart';
+import '../project_resources/project_utils.dart';
+import '../project_resources/project_strings_file.dart';
 import '../main.dart';
 
 class NotificationController {
@@ -9,50 +13,43 @@ class NotificationController {
   static ReceivedAction? initialAction;
 
   static Future<void> initializeLocalNotifications() async {
-    await AwesomeNotifications().initialize(null, [
+    await AwesomeNotifications().initialize('resource://drawable/res_notification_app_icon', [
       NotificationChannel(
-        channelKey: 'ADHD Journal',
+        channelKey: 'adhd_journal',
         channelName: "ADHD Journal Reminder",
         channelDescription: "ADHD Journal Reminder Notification",
+defaultColor: Colors.amberAccent,
         playSound: true,
         onlyAlertOnce: false,
         groupAlertBehavior: GroupAlertBehavior.Children,
         importance: NotificationImportance.High,
         defaultPrivacy: NotificationPrivacy.Public,
-        defaultColor: Colors.red,
-        ledColor: Colors.orange,
+        criticalAlerts: true,
+      ),
+      NotificationChannel(
+        channelKey: 'adhd_journal_scheduled',
+        channelName: "ADHD Journal Reminder",
+        channelDescription: "ADHD Journal Reminder Notification",
+        defaultColor: Colors.amberAccent,
+        playSound: true,
+        onlyAlertOnce: false,
+        groupAlertBehavior: GroupAlertBehavior.Children,
+        importance: NotificationImportance.High,
+        defaultPrivacy: NotificationPrivacy.Public,
         criticalAlerts: true,
       )
     ]);
     initialAction = await AwesomeNotifications().getInitialNotificationAction(
         removeFromActionEvents: false);
-=======
-class NotificationController {
-
-  static ReceivedAction? initialAction;
-  static Future<void> initializeLocalNotifications() async {
-    await AwesomeNotifications().initialize(null, [
-      NotificationChannel(channelKey: 'ADHD Journal', channelName: "ADHD Journal Reminder", channelDescription: "ADHD Journal Reminder Notification",
-      playSound: true, onlyAlertOnce: false, groupAlertBehavior: GroupAlertBehavior.Children, 
-      importance: NotificationImportance.High, defaultPrivacy: NotificationPrivacy.Public,
-        defaultColor: Colors.red,
-        ledColor: Colors.orange,criticalAlerts: true,
-      )
-    ]);
-    initialAction = await AwesomeNotifications().getInitialNotificationAction(removeFromActionEvents: false);
   }
 
-  /*Future<void> main() async {
-    // Always initialize Awesome Notifications
-    await NotificationController.initializeLocalNotifications();
-    runApp(const MyApp());
-  }*/
 
-
-
+ 
+//Notifications begin here
   static Future<void> startListeningNotificationEvents() async {
     AwesomeNotifications().setListeners(
         onActionReceivedMethod: onActionReceivedMethod);
+
   }
 
   @pragma('vm:entry-point')
@@ -65,27 +62,13 @@ class NotificationController {
       // For background actions, you must hold the execution until the end
       print('Message sent via notification input: "${receivedAction
           .buttonKeyInput}"');
-
-  static Future<void> startListeningNotificationEvents() async{
-    AwesomeNotifications().setListeners(onActionReceivedMethod: onActionReceivedMethod);
-  }
-  @pragma('vm:entry-point')
-  static Future<void> onActionReceivedMethod(
-      ReceivedAction receivedAction) async {
-
-    if(
-    receivedAction.actionType == ActionType.SilentAction ||
-        receivedAction.actionType == ActionType.SilentBackgroundAction
-    ){
-      // For background actions, you must hold the execution until the end
-      print('Message sent via notification input: "${receivedAction.buttonKeyInput}"');
       await executeLongTaskInBackground();
     }
     else {
       MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
-          '/notification-page',
+          '/',
               (route) =>
-          (route.settings.name != '/notification-page') || route.isFirst,
+          (route.settings.name != '/') || route.isFirst,
           arguments: receivedAction);
     }
   }
@@ -98,12 +81,10 @@ class NotificationController {
         builder: (BuildContext ctx) {
           return AlertDialog(
             title: Text('Get Notified!',
-
                 style: Theme
                     .of(context)
                     .textTheme
                     .titleLarge),
-                style: Theme.of(context).textTheme.titleLarge),
 
             content: Column(
               mainAxisSize: MainAxisSize.min,
@@ -113,14 +94,7 @@ class NotificationController {
                     Expanded(
                       child: Image.asset(
                         'assets/animated-bell.gif',
-
-                        height: MediaQuery
-                            .of(context)
-                            .size
-                            .height * 0.3,
-
                         height: MediaQuery.of(context).size.height * 0.3,
-
                         fit: BoxFit.fitWidth,
                       ),
                     ),
@@ -138,12 +112,8 @@ class NotificationController {
                   },
                   child: Text(
                     'Deny',
-
                     style: Theme
                         .of(context)
-=======
-                    style: Theme.of(context)
-
                         .textTheme
                         .titleLarge
                         ?.copyWith(color: Colors.red),
@@ -155,10 +125,8 @@ class NotificationController {
                   },
                   child: Text(
                     'Allow',
-
-           
-                    style: Theme.of(context)
-
+                    style: Theme
+                        .of(context)
                         .textTheme
                         .titleLarge
                         ?.copyWith(color: Colors.deepPurple),
@@ -169,9 +137,6 @@ class NotificationController {
     return userAuthorized &&
         await AwesomeNotifications().requestPermissionToSendNotifications();
   }
-
-
-=======
 
   static Future<void> executeLongTaskInBackground() async {
     print("starting long task");
@@ -190,35 +155,16 @@ class NotificationController {
     await AwesomeNotifications().createNotification(
         content: NotificationContent(
 
-            id: -1,
-            // -1 is replaced by a random number
-
-            channelKey: 'alerts',
-            title: 'Huston! The eagle has landed!',
+            id: createUniqueId(),
+            channelKey: 'adhd_journal',
+            title: 'Daily Reminder',
             body:
-            "A small step for a man, but a giant leap to Flutter's community!",
-            bigPicture: 'https://storage.googleapis.com/cms-storage-bucket/d406c736e7c4c57f5f61.png',
-            largeIcon: 'https://storage.googleapis.com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png',
-            //'asset://assets/images/balloons-in-sky.jpg',
-            notificationLayout: NotificationLayout.BigPicture,
-            payload: {'notificationId': '1234567890'}),
-        actionButtons: [
-          NotificationActionButton(key: 'REDIRECT', label: 'Redirect'),
-          NotificationActionButton(
-              key: 'REPLY',
-              label: 'Reply Message',
-              requireInputText: true,
-              actionType: ActionType.SilentAction
-          ),
-          NotificationActionButton(
-              key: 'DISMISS',
-              label: 'Dismiss',
-              actionType: ActionType.DismissAction,
-              isDangerousOption: true)
-        ]);
+            "Don't forget to journal today!",
+            notificationLayout: NotificationLayout.Default));
+
   }
 
-  static Future<void> scheduleNewNotification() async {
+  static Future<void> scheduleNewNotification(TimeOfDay? dateTime) async {
     bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
     if (!isAllowed) isAllowed = await displayNotificationRationale();
     if (!isAllowed) return;
@@ -226,29 +172,15 @@ class NotificationController {
     await AwesomeNotifications().createNotification(
         content: NotificationContent(
 
-            id: -1, // -1 is replaced by a random number
-
-            channelKey: 'alerts',
-            title: "Huston! The eagle has landed!",
+            id: createUniqueId(),
+       category: NotificationCategory.Reminder,
+            channelKey: 'adhd_journal_scheduled',
+            title: "Daily Reminder",
             body:
-            "A small step for a man, but a giant leap to Flutter's community!",
-            bigPicture: 'https://storage.googleapis.com/cms-storage-bucket/d406c736e7c4c57f5f61.png',
-            largeIcon: 'https://storage.googleapis.com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png',
-            //'asset://assets/images/balloons-in-sky.jpg',
-            notificationLayout: NotificationLayout.BigPicture,
-            payload: {
-              'notificationId': '1234567890'
-            }),
-        actionButtons: [
-          NotificationActionButton(key: 'REDIRECT', label: 'Redirect'),
-          NotificationActionButton(
-              key: 'DISMISS',
-              label: 'Dismiss',
-              actionType: ActionType.DismissAction,
-              isDangerousOption: true)
-        ],
-        schedule: NotificationCalendar.fromDate(
-            date: DateTime.now().add(const Duration(seconds: 10))));
+            "Don't forget to journal today!",
+autoDismissible: true
+            ),
+        schedule: NotificationCalendar(hour: dateTime!.hour,minute:dateTime.minute,second: 0,allowWhileIdle: true,preciseAlarm: true,repeats: true ));
   }
 
   static Future<void> resetBadgeCounter() async {
@@ -256,8 +188,14 @@ class NotificationController {
   }
 
   static Future<void> cancelNotifications() async {
+    if (kDebugMode) {
+      print("all notifications cancelled");
+    }
     await AwesomeNotifications().cancelAll();
   }
+
+
+
 
 
 }
