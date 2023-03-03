@@ -164,7 +164,7 @@ String symptomCoverText = "Tap here to add Symptoms";
           ],
         ),
         key: _formKey,
-        body:
+        body: Padding(padding: EdgeInsets.all(8.0),child:
 PageView(
   controller: controller,
 
@@ -614,7 +614,7 @@ Padding(padding: EdgeInsets.all(10),child:           Center(child:ratingSliderWi
           shrinkWrap: true,),),//),
       ],
 
-),
+),),
       
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
