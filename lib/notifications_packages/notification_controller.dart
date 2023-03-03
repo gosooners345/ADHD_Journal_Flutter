@@ -44,10 +44,12 @@ defaultColor: Colors.amberAccent,
   }
 
 
+ 
 //Notifications begin here
   static Future<void> startListeningNotificationEvents() async {
     AwesomeNotifications().setListeners(
         onActionReceivedMethod: onActionReceivedMethod);
+
   }
 
   @pragma('vm:entry-point')
@@ -83,6 +85,7 @@ defaultColor: Colors.amberAccent,
                     .of(context)
                     .textTheme
                     .titleLarge),
+
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -91,10 +94,7 @@ defaultColor: Colors.amberAccent,
                     Expanded(
                       child: Image.asset(
                         'assets/animated-bell.gif',
-                        height: MediaQuery
-                            .of(context)
-                            .size
-                            .height * 0.3,
+                        height: MediaQuery.of(context).size.height * 0.3,
                         fit: BoxFit.fitWidth,
                       ),
                     ),
@@ -154,6 +154,7 @@ defaultColor: Colors.amberAccent,
 
     await AwesomeNotifications().createNotification(
         content: NotificationContent(
+
             id: createUniqueId(),
             channelKey: 'adhd_journal',
             title: 'Daily Reminder',
@@ -170,6 +171,7 @@ defaultColor: Colors.amberAccent,
 
     await AwesomeNotifications().createNotification(
         content: NotificationContent(
+
             id: createUniqueId(),
        category: NotificationCategory.Reminder,
             channelKey: 'adhd_journal_scheduled',
@@ -191,4 +193,10 @@ autoDismissible: true
     }
     await AwesomeNotifications().cancelAll();
   }
+
+
+
+
+
 }
+
