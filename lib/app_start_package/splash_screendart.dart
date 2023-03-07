@@ -6,8 +6,8 @@ import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path/path.dart' as path;
-import 'package:package_info/package_info.dart';
 import 'package:googleapis/drive/v3.dart' as ga;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
@@ -47,13 +47,15 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
 
     if (Platform.isAndroid) {
-      backArrowIcon = Icon(Icons.arrow_back);
-      nextArrowIcon = Icon(Icons.arrow_forward,color: AppColors.mainAppColor,);
+      backArrowIcon = const Icon(Icons.arrow_back);
+      nextArrowIcon = Icon(Icons.arrow_forward);
       onboardingBackIcon = Icon(Icons.arrow_back,color: AppColors.mainAppColor);
+      onboardingForwardIcon = Icon(Icons.arrow_forward,color: AppColors.mainAppColor);
     } else {
-      backArrowIcon = Icon(Icons.arrow_back_ios);
+      backArrowIcon = const Icon(Icons.arrow_back_ios);
+      nextArrowIcon = const Icon(Icons.arrow_forward_ios);
       onboardingBackIcon = Icon(Icons.arrow_back_ios,color: AppColors.mainAppColor);
-      nextArrowIcon = Icon(Icons.arrow_forward_ios,color: AppColors.mainAppColor,);
+      onboardingForwardIcon = Icon(Icons.arrow_forward_ios,color: AppColors.mainAppColor,);
     }
     appStatus.value =
     "Welcome to ADHD Journal! We're getting your stuff ready!";
@@ -71,11 +73,15 @@ class _SplashScreenState extends State<SplashScreen> {
     try {
       dbPassword = await encryptedSharedPrefs.getString('dbPassword');
     } on Exception catch (ex) {
-      print(ex);
+      if (kDebugMode) {
+        print(ex);
+      }
       try {
         await encryptedSharedPrefs.remove('dbPassword');
       } on Exception catch (ex) {
-        print(ex);
+        if (kDebugMode) {
+          print(ex);
+        }
       }
       dbPassword = userPassword;
       await encryptedSharedPrefs.setString('dbPassword', dbPassword);
@@ -83,7 +89,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (userPassword != dbPassword) {
       dbPassword = userPassword;
     }
-    passwordHint = await encryptedSharedPrefs.getString('passwordHint') ?? '';
+    passwordHint = await encryptedSharedPrefs.getString('passwordHint') ;
     greeting = prefs.getString('greeting') ?? '';
     colorSeed = prefs.getInt("apptheme") ?? AppColors.mainAppColor.value;
     passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
@@ -91,10 +97,12 @@ class _SplashScreenState extends State<SplashScreen> {
     isPasswordChecked = passwordEnabled;
     var i =0;
     getNetStatus();
-while(connected==false && i<10){
-await Future.delayed(Duration(milliseconds: 100));
-i++;
-print(i);
+while(connected==false && i<10) {
+  await Future.delayed(const Duration(milliseconds: 100));
+  i++;
+  if (kDebugMode) {
+    print(i);
+  }
 }
 // Give option to work around if user doesn't want to use Google Drive before publishing update
     if(connected==true){
@@ -200,7 +208,8 @@ print(i);
             checkPrefsOnline &&
             checkPrivateKeyOnline&& checkPublicKeyOnline) {
           switch(callBack){
-            case "Drive":showDialog(context: context, builder: (BuildContext context){return AlertDialog(
+            case "Drive":showDialog(context: context, builder: (BuildContext context){
+              return AlertDialog(
               title: Text("Data exists online already"),
               content: Text("It appears you have data online from another device, do you want to download it to this device and overwrite what's already on here?"),
               actions: [ TextButton(
@@ -233,8 +242,10 @@ print(i);
                     String dataForEncryption =
                         '$userPassword,$dbPassword,$passwordHint,${passwordEnabled
                         .toString()},$greeting,$colorSeed';
-                    print(
+                    if (kDebugMode) {
+                      print(
                         "Data is being encrypted and uploaded");
+                    }
                     googleIsDoingSomething(true);
                     preferenceBackupAndEncrypt.encryptData(
                         dataForEncryption, googleDrive);
@@ -441,7 +452,7 @@ if(fileCheckAge == true) {
           preferenceBackupAndEncrypt.encryptData(
               dataForEncryption, googleDrive);
         }
-      } on Exception catch (ex) {
+      } on Exception {
         readyButton.boolSink.add(true);
         await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
         if (dataForEncryption == decipheredData) {
@@ -577,6 +588,8 @@ bool userActiveBackup = false;
 GoogleDrive googleDrive = GoogleDrive();
 bool isDataSame = true;
 late Icon onboardingBackIcon;
+late Icon onboardingForwardIcon;
+
 NetworkConnectivity networkConnectivityChecker = NetworkConnectivity.instance;
 
 bool connected = false;

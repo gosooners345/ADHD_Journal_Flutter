@@ -1,8 +1,5 @@
 import 'dart:io';
-import 'package:adhd_journal_flutter/project_resources/project_utils.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:googleapis/cloudsearch/v1.dart';
-import 'package:path/path.dart' as path;
 import 'notifications_packages/notification_controller.dart';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';

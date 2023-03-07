@@ -32,9 +32,9 @@ int id = 0;
 
 
 Future<void> main() async {
-  // This is the element we're testing for reminders
+
   await NotificationController.initializeLocalNotifications();
-  // This works fine
+
   runApp(ChangeNotifierProvider<ThemeSwap>(
     create: (_) => ThemeSwap(),
     child: MyApp(),
@@ -165,17 +165,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
   void encryptData() async {
     await Future.sync(() {
       preferenceBackupAndEncrypt.encryptData(
-          userPassword +
-              ',' +
-              dbPassword +
-              ',' +
-              passwordHint +
-              ',' +
-              passwordEnabled.toString() +
-              "," +
-              greeting +
-              ',' +
-              colorSeed.toString(),
+         "$userPassword,$dbPassword,$passwordHint,$passwordEnabled,$greeting,$colorSeed",
           googleDrive);
     });
   }
