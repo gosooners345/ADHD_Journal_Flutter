@@ -2,10 +2,8 @@ import 'package:adhd_journal_flutter/app_start_package/login_screen_file.dart';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/foundation.dart';
-import 'package:onboarding/onboarding.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:adhd_journal_flutter/project_resources/project_utils.dart';
 import '../app_start_package/splash_screendart.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../drive_api_backup_general/google_drive_backup_class.dart';
@@ -64,22 +62,6 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     prefs.setBool('firstVisit', false);
   }
 
-  Widget _previousButton({void Function(int)? setIndex}) {
-    return IconButton(
-        onPressed: () {
-          if (setIndex != null) {
-            if (index > 0) {
-              int prevIndex = index - 1;
-              index = prevIndex;
-              setIndex(index);
-            } else {
-              index = 0;
-              setIndex(index);
-            }
-          }
-        },
-        icon: onboardingBackIcon);
-  }
 
   PageView _buildOnboardingCards(ThemeSwap swapper){
     return PageView(controller: _pageController,
@@ -324,8 +306,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
         ],
       ),
     ), swapper),
-// Settings Page
-
+      // Settings Page
       _onboardingCard(ListView(
       children: [
         const Padding(
@@ -370,8 +351,6 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
       ],
     ), swapper),
       //Backup And Sync Page
-
-
       _onboardingCard( SingleChildScrollView(
         controller: ScrollController(),
         child: Column(
@@ -556,70 +535,17 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
           )
         ],
       ), swapper),
-
     ],
     );
   }
-
+  // Useful for Cards
   Widget _onboardingCard(Widget child,ThemeSwap swapper){
    return Card(borderOnForeground: true,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4),
           side: BorderSide(color:Color(swapper.isColorSeed).withOpacity(1.0))
       ),child: child,);
   }
-  Widget _nextButton({void Function(int)? setIndex, required int pageLength}) {
-    return IconButton(
-        onPressed: () {
-          if (setIndex != null) {
-            if (index != pageLength - 1) {
-              int nextIndex = index + 1;
-              index = nextIndex;
-              setIndex(index);
-            } else {
-              index = pageLength - 1;
-              setIndex(index);
-            }
-          }
-        },
-        icon: nextArrowIcon);
-  }
 
-  Widget _skipButton({void Function(int)? setIndex, required int pageLength}){
-    return ElevatedButton(
-      onPressed: () {
-        if (setIndex != null) {
-          index = pageLength - 1;
-          setIndex(index);
-        }
-      },
-      child: const Text('Skip'),
-      // ),
-    );
-  }
-
-  Widget _customIndicator(
-      {
-        required int pagesLength,
-      required double dragDistance,
-      required ThemeSwap themeNotifier}) {
-    var width = MediaQuery.of(context).size.width;
-    var widgetWidth = width * 0.040;
-    return CustomIndicator(
-      netDragPercent: dragDistance,
-      pagesLength: pagesLength,
-      indicator: Indicator(
-          activeIndicator:
-              ActiveIndicator(color: Color(themeNotifier.isColorSeed)),
-          closedIndicator: const ClosedIndicator(),
-          indicatorDesign: IndicatorDesign.polygon(
-              polygonDesign: PolygonDesign(
-                  polygon: DesignType.polygon_diamond,
-                  polygonRadius: 2.0,
-                  polygonSpacer: widgetWidth))),
-      // ),
-      //),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -627,8 +553,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     return Consumer<ThemeSwap>(
         builder: (context, ThemeSwap themeNotifier, child) {
       return Scaffold(
-        body: SafeArea(minimum:EdgeInsets.fromLTRB(8,8,8,80),child:Stack(children: [
-
+        body: SafeArea(minimum:const EdgeInsets.fromLTRB(8,8,8,80),child:Stack(children: [
           currentPage! == 0 ? const Text(""):
           Align(alignment: AlignmentDirectional.centerStart,
               child: IconButton(tooltip:"Previous",onPressed: (){_pageController.previousPage(duration: const Duration(milliseconds:200 ), curve:Curves.easeInExpo ).whenComplete(() =>
@@ -639,7 +564,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
               });
               },
                 icon: backArrowIcon,)) ,
-         Padding(padding: EdgeInsets.fromLTRB(35, 8, 35, 10),child:  _buildOnboardingCards(themeNotifier)),
+         Padding(padding: const EdgeInsets.fromLTRB(35, 8, 35, 10),child:  _buildOnboardingCards(themeNotifier)),
           currentPage! == pageCount-1 ? const Text(""):
           Align(alignment: AlignmentDirectional.centerEnd,
               child: IconButton(tooltip: "Next",onPressed: (){_pageController.nextPage(duration: const Duration(milliseconds:200 ), curve:Curves.easeInExpo ).whenComplete(() => {
@@ -658,15 +583,9 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                       currentPage = value.toDouble();
                       _pageController.jumpToPage(value);
                     });
-
-
                   },)),
           ),
-
-
         ],
-
-
         )),
 
       );

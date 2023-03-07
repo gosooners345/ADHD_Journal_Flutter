@@ -47,12 +47,10 @@ dependencies:
   url_launcher:
   provider:
   flutter_colorpicker:
-  intro_screen_onboarding_flutter: ^1.0.0
   path:
   path_provider:
   awesome_notifications:
-  syncfusion_flutter_charts: ^20.4.52
-  onboarding: ^3.1.0
+  syncfusion_flutter_charts: ^20.4.53
   sleek_circular_slider: ^2.0.1
   rxdart: ^0.27.3
   flutter_launcher_icons: ^0.12.0

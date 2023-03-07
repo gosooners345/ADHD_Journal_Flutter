@@ -273,7 +273,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(builder: (context, swapper, child) {
-      return Column(
+      return SafeArea(minimum:EdgeInsets.all(5.0),child: Column(
         children: <Widget>[
           const SizedBox(height: 20),
           Padding(
@@ -293,7 +293,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
           ),
           Expanded(child: getRecordsDisplay())
         ],
-      );
+      ));
     });
   }
 }

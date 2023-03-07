@@ -56,31 +56,32 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
     return summaryString;
   }
 
+  Widget _dashboardCard(Widget child,ThemeSwap swapper){
+    return Card(borderOnForeground: true, elevation: 2.0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4),
+          side: BorderSide(color:Color(swapper.isColorSeed).withOpacity(1.0))
+      ),child: child,);
+  }
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(builder: (context, swapper, child) {
-      return ListView(
+      return SafeArea(minimum:EdgeInsets.all(5.0),child:
+          ListView(
         padding: const EdgeInsets.all(8.0),
         children: [
-          Card(
-            shape: RoundedRectangleBorder(
-                side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
-                borderRadius: BorderRadius.circular(10)),
-            elevation: 2.0,
-            child: SizedBox(
+          _dashboardCard(
+            SizedBox(
               child: Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: Text(
-                    'Here\'s a summary of your statistics:\r\n ${summaryGen()}',
+                    'Here\'s a summary of your statistics:\r\n${summaryGen()}',
                     style: const TextStyle(
                         fontSize: 16.0, fontStyle: FontStyle.italic)),
               ),
-            ),
+            ),swapper
           ),
           //Ratings Chart
-          Card(
-            elevation: 2.0,
-            child: Column(
+          _dashboardCard( Column(
               children: [
                 Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -124,18 +125,8 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                   ],
                 ),
               ],
-            ),
-            shape: RoundedRectangleBorder(
-                side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
-                borderRadius: BorderRadius.circular(10)),
-          ),
-          // Success/Fail Chart
-          Card(
-            shape: RoundedRectangleBorder(
-                side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
-                borderRadius: BorderRadius.circular(10)),
-            elevation: 2.0,
-            child: Padding(
+            ),swapper),
+_dashboardCard(Padding(
               padding: const EdgeInsets.all(16.0),
               child: SfCircularChart(
                 title:
@@ -156,15 +147,10 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                   ),
                 ],
               ),
-            ),
-          ),
+
+          ),swapper),
 //Emotions Chart
-          Card(
-            shape: RoundedRectangleBorder(
-                side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
-                borderRadius: BorderRadius.circular(10)),
-            elevation: 2.0,
-            child: Column(
+         _dashboardCard( Column(
               children: [
                 Container(
                   height: 400,
@@ -210,16 +196,10 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                   mainAxisAlignment: MainAxisAlignment.start,
                 ),
               ],
-            ),
-          ),
+            ),swapper),
+
           //Symptoms Chart
-          Card(
-            shape: RoundedRectangleBorder(
-                side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
-                borderRadius: BorderRadius.circular(10)),
-            elevation: 2.0,
-            //child: //SizedBox(
-            child: Column(
+          _dashboardCard( Column(
               children: [
                 Container(
                   height: 850,
@@ -263,10 +243,10 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                   ],
                 ),
               ],
-            ),
-          ),
+            ),swapper),
+
         ],
-      );
+      ));
     });
   }
 }
