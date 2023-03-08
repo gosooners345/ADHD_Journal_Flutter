@@ -28,7 +28,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
 
             ExpansionTile(
               tilePadding:
-                  EdgeInsets.only(left: 0, right: 0, top: 2, bottom: 0),
+                  const EdgeInsets.only(left: 0, right: 0, top: 2, bottom: 0),
               expandedAlignment: Alignment.topLeft,
 
               title: Column(
@@ -38,23 +38,23 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
                       Expanded(
                           child: Text(
                         super.widget.record.title,
-                        style: TextStyle(overflow: TextOverflow.ellipsis),
+                        style: const TextStyle(overflow: TextOverflow.ellipsis),
                         textAlign: TextAlign.left,
                       )),
-                      SizedBox(
+                      const SizedBox(
                         width: 16,
                       ),
                       Text('Rating: ' + super.widget.record.rating.round().toString()),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 2,
                   ),
                   Row(children: [
                     Expanded(
                         child: Text(super.widget.record.content,
                             maxLines: 3,
-                            style: TextStyle(overflow: TextOverflow.ellipsis)))
+                            style: const TextStyle(overflow: TextOverflow.ellipsis)))
                   ]),
                 ],
               ),
@@ -64,7 +64,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
                   height: 1,
                   color: Color(swapper.isColorSeed),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 2,
                 ),
                 //Feelings
@@ -72,7 +72,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
                   Expanded(
                       child: Text(
                     'I felt ' + super.widget.record.emotions.toLowerCase(),
-                    style: TextStyle(
+                    style: const TextStyle(
                         overflow: TextOverflow.ellipsis,
                         fontStyle: FontStyle.italic),
                     maxLines: 2,
@@ -82,16 +82,16 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
                   height: 1,
                   color: Color(swapper.isColorSeed),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 2,
                 ),
                 //Sources Field
                 Row(children: [
                   Expanded(
                       child: Text(
-                    'My thoughts were: ' + super.widget.record.sources,
+                    'My thoughts were: ${super.widget.record.sources}',
                     maxLines: 2,
-                    style: TextStyle(
+                    style: const TextStyle(
                         overflow: TextOverflow.ellipsis,
                         fontStyle: FontStyle.italic),
                   )),
@@ -100,7 +100,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
                   height: 1,
                   color: Color(swapper.isColorSeed),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 2,
                 ),
                 // Symptom field
@@ -110,7 +110,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
                     'Related ADHD Symptoms are: ' +
                         super.widget.record.symptoms,
                     maxLines: 2,
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontStyle: FontStyle.italic,
                         overflow: TextOverflow.ellipsis),
                   )),
@@ -119,7 +119,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
                   height: 1,
                   color: Color(swapper.isColorSeed),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 2,
                 ),
                 // Success state
@@ -133,7 +133,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 2,
             ),
             // This is for timestamp collection
@@ -144,7 +144,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
                   'Time created: ' +
                       DateFormat("MM/dd/yyyy hh:mm:ss aa")
                           .format(super.widget.record.timeCreated),
-                  style: TextStyle(fontStyle: FontStyle.italic),
+                  style: const TextStyle(fontStyle: FontStyle.italic),
                 )),
                 space2,
                 Expanded(
@@ -152,7 +152,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
                   'Time updated: ' +
                       DateFormat("MM/dd/yyyy hh:mm:ss aa")
                           .format(super.widget.record.timeUpdated),
-                  style: TextStyle(fontStyle: FontStyle.italic),
+                  style: const TextStyle(fontStyle: FontStyle.italic),
                 )),
               ],
             ),

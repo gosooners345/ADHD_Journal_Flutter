@@ -2,7 +2,6 @@
 
 import 'dart:async';
 
-import 'dart:io';
 import 'package:adhd_journal_flutter/settings_tutorials/backup_and_sync_help.dart';
 import 'package:adhd_journal_flutter/ui/dashboard_stats_display_widget.dart';
 import 'package:adhd_journal_flutter/record_data_package/record_list_class.dart';
@@ -16,7 +15,6 @@ import 'package:adhd_journal_flutter/settings_tutorials/tutorial_help_guide.dart
 import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'app_start_package/onboarding_widget_class.dart';
 import 'notifications_packages/notification_controller.dart';
 import 'ui/record_display_widget.dart';
@@ -25,7 +23,6 @@ import 'project_resources/project_colors.dart';
 import 'record_data_package/records_data_class_db.dart';
 import 'app_start_package/login_screen_file.dart';
 import 'records_compose_components/new_compose_records_screen.dart';
-import 'package:adhd_journal_flutter/drive_api_backup_general/preference_backup_class.dart';
 
 List<Records> recordHolder = [];
 int id = 0;
@@ -235,8 +232,8 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                   },
                 ),
                 PopupMenuItem(
-                  child: Text("Sort by"),
                   enabled: false,
+                  child: Text("Sort by"),
                 ),
                 PopupMenuItem(
                   child: Row(
