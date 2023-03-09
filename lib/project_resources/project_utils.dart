@@ -1,3 +1,4 @@
+import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:flutter/material.dart';
 
 
@@ -97,4 +98,11 @@ Future<NotificationWeekAndTime?> pickSchedule(
     }
   }
   return null;
+}
+
+Widget UICard(Widget child,ThemeSwap swapper){
+  return Card(borderOnForeground: true,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4),
+        side: BorderSide(color:Color(swapper.isColorSeed).withOpacity(1.0))
+    ),child: child,);
 }

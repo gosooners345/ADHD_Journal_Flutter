@@ -4,6 +4,7 @@ import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:adhd_journal_flutter/project_resources/project_utils.dart';
 import '../app_start_package/splash_screendart.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../drive_api_backup_general/google_drive_backup_class.dart';
@@ -47,7 +48,11 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     super.initState();
     encryptedSharedPrefs = EncryptedSharedPreferences();
     index = 0;
-    _pageController.addListener(() {currentPage = _pageController.page;});
+    _pageController.addListener(() {
+      currentPage = _pageController.page;
+      setState(() {
+      currentPage = _pageController.page;
+    });});
 
   }
 
@@ -67,7 +72,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     return PageView(controller: _pageController,
     children: [
    //Introduction
-      _onboardingCard(SingleChildScrollView(
+      UICard(SingleChildScrollView(
       controller: ScrollController(),
       child: Column(
         children: [
@@ -113,7 +118,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     ), swapper),
       //Security page
 
-      _onboardingCard( SingleChildScrollView(
+      UICard( SingleChildScrollView(
       controller: ScrollController(),
       child: Column(
         children: [
@@ -161,7 +166,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     ), swapper),
       //Home Page
 
-      _onboardingCard(SingleChildScrollView(
+      UICard(SingleChildScrollView(
       controller: ScrollController(),
       child: Column(
         children: [
@@ -210,7 +215,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     ), swapper),
       // Dashboard
 
-      _onboardingCard( SingleChildScrollView(
+      UICard( SingleChildScrollView(
       controller: ScrollController(),
       child: Column(
         children: [
@@ -259,7 +264,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     ), swapper),
       // Record Entry page
 
-      _onboardingCard(SingleChildScrollView(
+      UICard(SingleChildScrollView(
       controller: ScrollController(),
       child: Column(
         children: [
@@ -307,7 +312,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
       ),
     ), swapper),
       // Settings Page
-      _onboardingCard(ListView(
+      UICard(ListView(
       children: [
         const Padding(
           padding: EdgeInsets.symmetric(
@@ -351,7 +356,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
       ],
     ), swapper),
       //Backup And Sync Page
-      _onboardingCard( SingleChildScrollView(
+      UICard( SingleChildScrollView(
         controller: ScrollController(),
         child: Column(
           children: [
@@ -411,7 +416,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
         ),
       ), swapper),
       //Last page
-      _onboardingCard( ListView(
+      UICard( ListView(
         children: [
           const Padding(
             padding: EdgeInsets.symmetric(
@@ -539,13 +544,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     );
   }
   // Useful for Cards
-  Widget _onboardingCard(Widget child,ThemeSwap swapper){
-   return Card(borderOnForeground: true,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4),
-          side: BorderSide(color:Color(swapper.isColorSeed).withOpacity(1.0))
-      ),child: child,);
-  }
-
+  
 
   @override
   Widget build(BuildContext context) {

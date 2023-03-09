@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
 import 'package:flutter/foundation.dart';
@@ -25,7 +26,8 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
   final _formKey = GlobalKey<_NewComposeRecordsWidgetState>();
 
   // Text Controllers for views to contain data from loading in the record or storing data
-
+late IconButton nextButton;
+late IconButton prevButton;
   late TextEditingController titleController;
   late TextEditingController contentController;
   late TextEditingController emotionsController;
@@ -49,8 +51,32 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
   void initState() {
     super.initState();
     _pageController.addListener(() {
-      currentPage = _pageController.page;
+      _onPageChanged(_pageController.page);
     });
+    nextButton = IconButton(tooltip: "Next", onPressed: () {
+      _pageController.nextPage(duration: const Duration(
+          milliseconds: 150),
+          curve: Curves.easeInExpo)
+          .whenComplete(() =>
+      {
+        setState(() {
+          currentPage = _pageController.page!;
+        })
+      });
+    },
+      icon: nextArrowIcon,);
+    prevButton = IconButton(tooltip: "Previous", onPressed: () {
+      _pageController.previousPage(duration: const Duration(
+          milliseconds: 150),
+          curve: Curves.easeInExpo)
+          .whenComplete(() =>
+      {
+        setState(() {
+          currentPage = _pageController.page!;
+        })
+      });
+    },
+      icon: backArrowIcon,);
     titleController = TextEditingController();
     contentController = TextEditingController();
     emotionsController = TextEditingController();
@@ -69,6 +95,12 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
     }
   }
 
+  void _onPageChanged(double? pageChange){
+    currentPage = _pageController.page!;
+    setState(() {
+      currentPage = _pageController.page!;
+    });
+  }
 
   //The Journal cards themselves
   PageView _buildJournalCards(ThemeSwap swapper) {
@@ -587,34 +619,14 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
           child: Stack(children: [
             currentPage! == 0 ? const Text("") :
             Align(alignment: AlignmentDirectional.centerStart,
-                child: IconButton(tooltip: "Previous", onPressed: () {
-                  _pageController.previousPage(duration: const Duration(
-                      milliseconds: 200),
-                      curve: Curves.easeInExpo)
-                      .whenComplete(() =>
-                  {
-                    setState(() {
-                      currentPage = _pageController.page!;
-                    })
-                  });
-                },
-                  icon: backArrowIcon,)),
+                child: prevButton
+            ),
             Padding(padding: const EdgeInsets.fromLTRB(35, 8, 35, 15),
                 child: _buildJournalCards(swapper)),
             currentPage! == pageCount - 1 ? const Text("") :
             Align(alignment: AlignmentDirectional.centerEnd,
-                child: IconButton(tooltip: "Next", onPressed: () {
-                  _pageController.nextPage(duration: const Duration(
-                      milliseconds: 200),
-                      curve: Curves.easeInExpo)
-                      .whenComplete(() =>
-                  {
-                    setState(() {
-                      currentPage = _pageController.page!;
-                    })
-                  });
-                },
-                  icon: nextArrowIcon,)),
+                child: nextButton
+             ),
             Align(alignment: Alignment.bottomCenter,
               child: SizedBox(height: 8,
                   child:
