@@ -50,9 +50,11 @@ late IconButton prevButton;
   @override
   void initState() {
     super.initState();
-    _pageController.addListener(() {
-      _onPageChanged(_pageController.page);
-    });
+_pageController.addListener(() {
+  setState(() {
+    currentPage = _pageController.page;
+  });
+});
     nextButton = IconButton(tooltip: "Next", onPressed: () {
       _pageController.nextPage(duration: const Duration(
           milliseconds: 150),
@@ -94,7 +96,14 @@ late IconButton prevButton;
       successStateWidget = Text(successLabelText);
     }
   }
+void _onPageChange(int page){
+    currentPage = _pageController.page;
+setState(() {
 
+  currentPage = _pageController.page;
+});
+
+  }
   void _onPageChanged(double? pageChange){
     currentPage = _pageController.page!;
     setState(() {
@@ -106,7 +115,9 @@ late IconButton prevButton;
   PageView _buildJournalCards(ThemeSwap swapper) {
     return PageView(
       controller: _pageController,
-
+onPageChanged: (page){
+     _pageController.animateToPage(page, duration: Duration(milliseconds: 100), curve: Curves.easeIn);
+},
       children: [
         Card(borderOnForeground: true,
           shape: RoundedRectangleBorder(
