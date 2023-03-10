@@ -1,11 +1,8 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:awesome_notifications/android_foreground_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import '../project_resources/project_colors.dart';
 import '../project_resources/project_utils.dart';
-import '../project_resources/project_strings_file.dart';
 import '../main.dart';
 
 class NotificationController {
@@ -60,8 +57,10 @@ defaultColor: Colors.amberAccent,
         receivedAction.actionType == ActionType.SilentBackgroundAction
     ) {
       // For background actions, you must hold the execution until the end
-      print('Message sent via notification input: "${receivedAction
+      if (kDebugMode) {
+        print('Message sent via notification input: "${receivedAction
           .buttonKeyInput}"');
+      }
       await executeLongTaskInBackground();
     }
     else {
