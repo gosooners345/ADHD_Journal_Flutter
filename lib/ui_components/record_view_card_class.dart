@@ -30,7 +30,6 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
               tilePadding:
                   const EdgeInsets.only(left: 0, right: 0, top: 2, bottom: 0),
               expandedAlignment: Alignment.topLeft,
-
               title: Column(
                 children: [
                   Row(
