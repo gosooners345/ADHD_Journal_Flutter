@@ -548,7 +548,6 @@ onPageChanged: (page){
                   SmoothPageIndicator(controller: _pageController,
                     count: pageCount,
                     effect:  WormEffect(dotHeight: 12, dotWidth: 12, dotColor:Color(swapper.isColorSeed),),
-
                     onDotClicked: (value) {
                       setState(() {
                         currentPage = value.toDouble();
