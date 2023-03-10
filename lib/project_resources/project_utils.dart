@@ -100,9 +100,23 @@ Future<NotificationWeekAndTime?> pickSchedule(
   return null;
 }
 
-Widget UICard(Widget child,ThemeSwap swapper){
+Widget uiCard(Widget child,ThemeSwap swapper){
   return Card(borderOnForeground: true,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4),
         side: BorderSide(color:Color(swapper.isColorSeed).withOpacity(1.0))
     ),child: child,);
+}
+Widget entryCard(Widget child, ThemeSwap swapper){
+ return Card(
+      borderOnForeground: true,
+      shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(4), // if you need this
+  side: BorderSide(
+  color: Color(swapper.isColorSeed).withOpacity(1.0),
+  width: 1,
+  ),
+  ),
+  elevation: 2.0,
+  margin: const EdgeInsets.all(10),
+  child:child);
 }

@@ -72,7 +72,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     return PageView(controller: _pageController,
     children: [
    //Introduction
-      UICard(SingleChildScrollView(
+      uiCard(SingleChildScrollView(
       controller: ScrollController(),
       child: Column(
         children: [
@@ -118,7 +118,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     ), swapper),
       //Security page
 
-      UICard( SingleChildScrollView(
+      uiCard( SingleChildScrollView(
       controller: ScrollController(),
       child: Column(
         children: [
@@ -166,7 +166,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     ), swapper),
       //Home Page
 
-      UICard(SingleChildScrollView(
+      uiCard(SingleChildScrollView(
       controller: ScrollController(),
       child: Column(
         children: [
@@ -215,7 +215,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     ), swapper),
       // Dashboard
 
-      UICard( SingleChildScrollView(
+      uiCard( SingleChildScrollView(
       controller: ScrollController(),
       child: Column(
         children: [
@@ -264,7 +264,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     ), swapper),
       // Record Entry page
 
-      UICard(SingleChildScrollView(
+      uiCard(SingleChildScrollView(
       controller: ScrollController(),
       child: Column(
         children: [
@@ -312,7 +312,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
       ),
     ), swapper),
       // Settings Page
-      UICard(ListView(
+      uiCard(ListView(
       children: [
         const Padding(
           padding: EdgeInsets.symmetric(
@@ -356,7 +356,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
       ],
     ), swapper),
       //Backup And Sync Page
-      UICard( SingleChildScrollView(
+      uiCard( SingleChildScrollView(
         controller: ScrollController(),
         child: Column(
           children: [
@@ -416,7 +416,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
         ),
       ), swapper),
       //Last page
-      UICard( ListView(
+      uiCard( ListView(
         children: [
           const Padding(
             padding: EdgeInsets.symmetric(

@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'dart:ffi';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import '../main.dart';
 import 'package:flutter/material.dart';
+import '../project_resources/project_utils.dart';
 import 'symptom_selector_screen.dart';
 import '../record_data_package/records_data_class_db.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -96,39 +96,16 @@ _pageController.addListener(() {
       successStateWidget = Text(successLabelText);
     }
   }
-void _onPageChange(int page){
-    currentPage = _pageController.page;
-setState(() {
-
-  currentPage = _pageController.page;
-});
-
-  }
-  void _onPageChanged(double? pageChange){
-    currentPage = _pageController.page!;
-    setState(() {
-      currentPage = _pageController.page!;
-    });
-  }
 
   //The Journal cards themselves
   PageView _buildJournalCards(ThemeSwap swapper) {
     return PageView(
       controller: _pageController,
 onPageChanged: (page){
-     _pageController.animateToPage(page, duration: Duration(milliseconds: 100), curve: Curves.easeIn);
+     _pageController.animateToPage(page, duration: const Duration(milliseconds: 100), curve: Curves.easeIn);
 },
       children: [
-        Card(borderOnForeground: true,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4), // if you need this
-            side: BorderSide(
-              color: Color(colorSeed).withOpacity(1.0),
-              width: 1,
-            ),
-          ),
-          surfaceTintColor: Color(swapper.isColorSeed),
-          child: Column(
+        uiCard( Column(
               children: [
                 const Padding(padding: EdgeInsets.all(10),
                     child: Center(child: Text("What do you want to call this?",
@@ -150,20 +127,9 @@ onPageChanged: (page){
                       super.widget.record.title = text;
                     },
                   ),),
-              ]),
+              ]),swapper
         ),
-        Card(
-          borderOnForeground: true,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4), // if you need this
-            side: BorderSide(
-              color: Color(colorSeed).withOpacity(1.0),
-              width: 1,
-            ),
-          ),
-          elevation: 2.0,
-          margin: const EdgeInsets.all(10),
-          child: Column(children: [
+       uiCard( Column(children: [
             const Padding(padding: EdgeInsets.all(10),
                 child: const Center(child: Text(
                   "What\'s on your mind?", style: TextStyle(fontSize: 20),))),
@@ -187,17 +153,8 @@ onPageChanged: (page){
               },
             )), space
           ],)
-          ,),
-
-        Card(borderOnForeground: true,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4), // if you need this
-            side: BorderSide(
-              color: Color(colorSeed).withOpacity(1.0),
-              width: 1,
-            ),
-          ),
-          margin: const EdgeInsets.all(10), child: Column(children: [
+          ,swapper),
+        uiCard( Column(children: [
             Padding(padding: EdgeInsets.all(10), child: const Center(
                 child: Text("How do you feel currently?",
                     style: TextStyle(fontSize: 20)))), space,
@@ -215,16 +172,8 @@ onPageChanged: (page){
                 super.widget.record.emotions = text;
               },
             )),
-          ],),),
-        Card(borderOnForeground: true,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4), // if you need this
-            side: BorderSide(
-              color: Color(colorSeed).withOpacity(1.0),
-              width: 1,
-            ),
-          ),
-          margin: const EdgeInsets.all(10), child: Column(children: [
+          ],),swapper),
+        uiCard( Column(children: [
             Padding(padding: EdgeInsets.all(10),
                 child: const Center(child: Text(
                     "Is there anything that may have contributed to this?",
@@ -250,18 +199,8 @@ onPageChanged: (page){
                 super.widget.record.sources = text;
               },)),
             space],
-          ),
-        ),
-        Card(
-          borderOnForeground: true,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4), // if you need this
-            side: BorderSide(
-              color: Color(colorSeed).withOpacity(1.0),
-              width: 1,
-            ),
-          ),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.center,
+          ),swapper),
+        uiCard(Column(crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Padding(padding: EdgeInsets.all(8.0),
                     child: Text("Related ADHD Symptoms:" +
@@ -289,19 +228,8 @@ onPageChanged: (page){
                   },
                 ),
                 space
-              ]),
-        ),
-
-        Card(borderOnForeground: true,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4), // if you need this
-              side: BorderSide(
-                color: Color(colorSeed).withOpacity(1.0),
-                width: 1,
-              ),
-            ),
-            child: Column(
-              children: [
+              ]),swapper),
+        uiCard(Column(children: [
                 Padding(padding: EdgeInsets.all(10),
                     child: const Center(
                       child: Text("Tags", style: TextStyle(fontSize: 20),),)),
@@ -321,16 +249,8 @@ onPageChanged: (page){
                     super.widget.record.tags = text;
                   },
                 )),
-              ],)),
-        Card(borderOnForeground: true,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4), // if you need this
-            side: BorderSide(
-              color: Color(colorSeed).withOpacity(1.0),
-              width: 1,
-            ),
-          ), child:
-          Column(children: [
+              ],),swapper),
+        uiCard(Column(children: [
             Padding(padding: EdgeInsets.all(10),
                 child: const Center(child: Text("How would you rate this?",
                   style: TextStyle(fontSize: 20),),)),
@@ -370,15 +290,8 @@ onPageChanged: (page){
                 min: 0.0,
                 divisions: 100,
                 label: super.widget.record.rating.toString()),
-          ],),),
-        Card(borderOnForeground: true,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4), // if you need this
-              side: BorderSide(
-                color: Color(colorSeed).withOpacity(1.0),
-                width: 1,
-              ),
-            ), child: Column(children: [
+          ],),swapper),
+        uiCard(Column(children: [
               Padding(padding: EdgeInsets.all(10),
                   child: const Center(child: Text(
                       "Do you think what happened was successful? ",
@@ -401,17 +314,8 @@ onPageChanged: (page){
                 title: successStateWidget,
                 activeColor: Color(swapper.isColorSeed),
               ),)
-            ])),
-        Card(
-          borderOnForeground: true,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4), // if you need this
-            side: BorderSide(
-              color: Color(colorSeed).withOpacity(1.0),
-              width: 1,
-            ),
-          ),
-          child:
+            ]),swapper),
+        uiCard(
           ListView(
             padding:
             const EdgeInsets.only(left: 10, top: 20, right: 10, bottom: 40),
@@ -597,7 +501,7 @@ onPageChanged: (page){
                   )),
               SizedBox(height: 40,)
             ],
-            shrinkWrap: true,),),
+            shrinkWrap: true,),swapper),
       ],
 
     );
@@ -626,7 +530,7 @@ onPageChanged: (page){
           ],
         ),
         key: _formKey,
-        body: SafeArea(minimum: const EdgeInsets.fromLTRB(8, 8, 8, 80),
+        body: SafeArea(minimum: const EdgeInsets.fromLTRB(5, 5, 5, 80),
           child: Stack(children: [
             currentPage! == 0 ? const Text("") :
             Align(alignment: AlignmentDirectional.centerStart,

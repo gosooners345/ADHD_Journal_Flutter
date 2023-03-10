@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../project_resources/project_strings_file.dart';
+import '../project_resources/project_utils.dart';
 
 class SymptomSelectorScreen extends StatefulWidget {
   SymptomSelectorScreen({Key? key, required this.symptoms}) : super(key: key);
@@ -93,7 +94,8 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
             },
             icon: backArrowIcon),
       ),
-      body: CustomScrollView(slivers: [
+      body: SafeArea(minimum: const EdgeInsets.all(8.0),child:
+      CustomScrollView(slivers: [
         SliverList(
           delegate: SliverChildListDelegate([
             const ListTile(
@@ -107,12 +109,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
         SliverList(
           delegate:
               SliverChildBuilderDelegate((BuildContext context, int index) {
-            return Card(
-              shape: RoundedRectangleBorder(
-                  side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
-                  borderRadius: BorderRadius.circular(10)),
-              elevation: 2.0,
-              child: CheckboxListTile(
+            return uiCard(CheckboxListTile(
                   activeColor: Color(swapper.isColorSeed),
                   value: positiveSymptomListSelection[index].isChecked,
                   onChanged: (bool? changed) {
@@ -128,7 +125,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
                     });
                   },
                   title: Text(positiveSymptomListSelection[index].symptom )),
-            );
+            swapper);
           }, childCount: positiveSymptomListSelection.length),
         ),
         SliverList(
@@ -144,12 +141,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
         SliverList(
           delegate:
               SliverChildBuilderDelegate((BuildContext context, int index) {
-            return Card(
-              shape: RoundedRectangleBorder(
-                  side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
-                  borderRadius: BorderRadius.circular(10)),
-              elevation: 2.0,
-              child: CheckboxListTile(
+            return uiCard( CheckboxListTile(
                   activeColor: Color(swapper.isColorSeed),
                   value: inattentiveSymptomListSelection[index].isChecked,
                   onChanged: (bool? changed) {
@@ -165,7 +157,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
                       }
                     });
                   },
-                  title: Text(inattentiveSymptomListSelection[index].symptom + ' - '+ inattentiveSymptomDefinitionList[index]+'.')),
+                  title: Text(inattentiveSymptomListSelection[index].symptom + ' - '+ inattentiveSymptomDefinitionList[index]+'.')),swapper
             );
           }, childCount: inattentiveSymptomListSelection.length),
         ),
@@ -182,12 +174,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
         SliverList(
           delegate:
               SliverChildBuilderDelegate((BuildContext context, int index) {
-            return Card(
-              shape: RoundedRectangleBorder(
-                  side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
-                  borderRadius: BorderRadius.circular(10)),
-              elevation: 2.0,
-              child: CheckboxListTile(
+            return uiCard( CheckboxListTile(
                   activeColor: Color(swapper.isColorSeed),
                   value: executiveDysfunctionSelection[index].isChecked,
                   onChanged: (bool? changed) {
@@ -202,7 +189,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
                       }
                     });
                   },
-                  title: Text(executiveDysfunctionSelection[index].symptom +" - " +executiveSymptomDefinitionList[index]+"." )),
+                  title: Text(executiveDysfunctionSelection[index].symptom +" - " +executiveSymptomDefinitionList[index]+"." )),swapper
             );
           }, childCount: executiveDysfunctionSelection.length),
         ),
@@ -219,12 +206,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
         SliverList(
           delegate:
               SliverChildBuilderDelegate((BuildContext context, int index) {
-            return Card(
-              shape: RoundedRectangleBorder(
-                  side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
-                  borderRadius: BorderRadius.circular(10)),
-              elevation: 2.0,
-              child: CheckboxListTile(
+            return uiCard( CheckboxListTile(
                   activeColor: Color(swapper.isColorSeed),
                   value: emotionalListSelection[index].isChecked,
                   onChanged: (bool? changed) {
@@ -239,7 +221,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
                       }
                     });
                   },
-                  title: Text(emotionalListSelection[index].symptom + ' - '+ emotionalRegDefinitionList[index]+".")),
+                  title: Text(emotionalListSelection[index].symptom + ' - '+ emotionalRegDefinitionList[index]+".")),swapper
             );
           }, childCount: emotionalListSelection.length),
         ),
@@ -256,12 +238,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
         SliverList(
           delegate:
               SliverChildBuilderDelegate((BuildContext context, int index) {
-            return Card(
-              shape: RoundedRectangleBorder(
-                  side: BorderSide(color: Color(swapper.isColorSeed), width: 1.0),
-                  borderRadius: BorderRadius.circular(10)),
-              elevation: 2.0,
-              child: CheckboxListTile(
+            return uiCard( CheckboxListTile(
                   activeColor: Color(swapper.isColorSeed),
                   value: stressorSymptomsSelection[index].isChecked,
                   onChanged: (bool? changed) {
@@ -276,11 +253,11 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
                       }
                     });
                   },
-                  title: Text(stressorSymptomsSelection[index].symptom + " - "+ stressDefinitionList[index] )),
+                  title: Text(stressorSymptomsSelection[index].symptom + " - "+ stressDefinitionList[index] )),swapper
             );
           }, childCount: stressorSymptomsSelection.length),
         ),
-      ]),
+      ]),),
       floatingActionButton: FloatingActionButton.extended(
         label: const Text('Save'),
         onPressed: () {
