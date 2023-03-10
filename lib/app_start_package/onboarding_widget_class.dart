@@ -577,7 +577,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                 child:
                 SmoothPageIndicator(controller: _pageController,
                   count:pageCount,
-                  effect: const WormEffect(dotHeight: 12,dotWidth: 12),onDotClicked: (value){
+                  effect:  WormEffect(dotHeight: 12,dotWidth: 12,dotColor:Color(themeNotifier.isColorSeed)),onDotClicked: (value){
                     setState(() {
                       currentPage = value.toDouble();
                       _pageController.jumpToPage(value);
