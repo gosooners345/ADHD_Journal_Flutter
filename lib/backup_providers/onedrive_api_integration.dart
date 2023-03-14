@@ -5,7 +5,7 @@ import 'package:flutter_onedrive/flutter_onedrive.dart';
 
 class OneDriveSyncClass{
 
-  final oneDriveUtility = OneDrive(clientID: 'abdfccc0-c909-4782-aab7-c6db9400c042', redirectURL: '');
+  final oneDriveUtility = OneDrive(clientID: 'abdfccc0-c909-4782-aab7-c6db9400c042', redirectURL: 'https://login.live.com/oauth20_desktop.srf');
 
 
   void pushFileToCloud(String fileName){
