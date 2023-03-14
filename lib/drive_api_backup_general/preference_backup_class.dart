@@ -48,7 +48,7 @@ class PreferenceBackupAndEncrypt {
       } else {
         throw Exception("No File");
       }
-    } on Exception catch (tm) {
+    } on Exception {
       var checkKeysOnline = await drive.checkForFile(pubKeyFileName);
       var checkPrivKey = await drive.checkForFile(privateKeyFileName);
       if (checkKeysOnline && checkPrivKey) {
@@ -152,7 +152,7 @@ class PreferenceBackupAndEncrypt {
       if (kriss.kDebugMode) {
         print("data encrypted");
       }}
-    } on Exception catch (ex) {
+    } on Exception {
       if (kriss.kDebugMode) {
         print("Keys already exist in cloud");
       }
