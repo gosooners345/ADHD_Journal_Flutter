@@ -137,7 +137,7 @@ while(connected==false && i<10) {
     }
     appStatus.value = 'Loading up your journal now...';
   }
-
+// This will need to be inclusive
   void googleIsDoingSomething(bool value) {
     readyButton.boolSink.add(value);
   }

@@ -142,10 +142,11 @@ class _SettingsPage extends State<SettingsPage> {
     });
   }
 
-
+  // OneDrive activation here
+void oneDriveActivation(){}
 
   // USE ONLY IF YOU NEED TO RESET KEYS ON DEVICE. A FILE WILL BE ON THE DRIVE WARNING OF OLD KEYS
-
+// This will need to be modified to permit multiple services to be used
   void resetRSAKeys() async {
     await Future.sync(() => googleDrive.deleteOutdatedBackups(prefsName));
 
@@ -507,6 +508,7 @@ showMessage("Reminder Created for "+scheduleReminder.hourOfPeriod.toString() +":
               color: Color(swapper.isColorSeed),
             ),
             spacer,
+            // Backup & Sync Section , OneDrive & iCloud will need to be added here
             SwitchListTile(
               value: userActiveBackup,
               onChanged: (bool value) {
@@ -661,6 +663,7 @@ showMessage("Reminder Created for "+scheduleReminder.hourOfPeriod.toString() +":
               thickness: 0.5,
               color: Color(swapper.isColorSeed),
             ),
+            // Add credit for OneDrive integration for API Use
             ListTile(
 
               leading: Image.asset('images/GoogleDriveLogo.png'),
@@ -686,7 +689,7 @@ showMessage("Reminder Created for "+scheduleReminder.hourOfPeriod.toString() +":
         isHTML: false);
     await FlutterEmailSender.send(email);
   }
-
+//Onedrive agent method needed
   void getDriveAgent() async {
     googleDrive.client = await googleDrive.getHttpClient();
   }
