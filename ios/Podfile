@@ -31,6 +31,7 @@ target 'Runner' do
   use_frameworks!
   use_modular_headers!
   #pod 'SQLCipher', '~>4.0'
+  pod 'MSAL'
   pod 'SQLite.swift/SQLCipher', '~> 0.13.3'
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
