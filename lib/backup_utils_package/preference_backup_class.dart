@@ -6,7 +6,7 @@ import 'package:path/path.dart';
 import 'package:pointycastle/export.dart';
 import 'package:pointycastle/src/platform_check/platform_check.dart';
 import '../app_start_package/login_screen_file.dart';
-import 'google_drive_backup_class.dart';
+import '../backup_providers/google_drive_backup_class.dart';
 import 'crypto_utils.dart';
 import 'dart:io' as io;
 

@@ -12,7 +12,7 @@ import 'package:googleapis/drive/v3.dart' as ga;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 import '../project_resources/network_connectivity_checker.dart';
-import '../drive_api_backup_general/google_drive_backup_class.dart';
+import '../backup_providers/google_drive_backup_class.dart';
 import 'login_screen_file.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -47,11 +47,18 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
 
     if (Platform.isAndroid) {
+      if(kDebugMode){
+        redirectOneDriveURL = oneDriveAndroidDebugRedirect;
+      }
+      else{
+        redirectOneDriveURL = oneDriveAndroidProdRedirect;
+      }
       backArrowIcon = const Icon(Icons.arrow_back);
       nextArrowIcon = Icon(Icons.arrow_forward);
       onboardingBackIcon = Icon(Icons.arrow_back,color: AppColors.mainAppColor);
       onboardingForwardIcon = Icon(Icons.arrow_forward,color: AppColors.mainAppColor);
     } else {
+      redirectOneDriveURL = oneDriveiOSRedirect;
       backArrowIcon = const Icon(Icons.arrow_back_ios);
       nextArrowIcon = const Icon(Icons.arrow_forward_ios);
       onboardingBackIcon = Icon(Icons.arrow_back_ios,color: AppColors.mainAppColor);
@@ -589,7 +596,7 @@ GoogleDrive googleDrive = GoogleDrive();
 bool isDataSame = true;
 late Icon onboardingBackIcon;
 late Icon onboardingForwardIcon;
-
+late String redirectOneDriveURL;
 NetworkConnectivity networkConnectivityChecker = NetworkConnectivity.instance;
 
 bool connected = false;

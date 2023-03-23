@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:adhd_journal_flutter/project_resources/project_utils.dart';
 import '../app_start_package/splash_screendart.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import '../drive_api_backup_general/google_drive_backup_class.dart';
+import '../backup_providers/google_drive_backup_class.dart';
 import '../project_resources/project_strings_file.dart';
 
 class OnBoardingWidget extends StatefulWidget {

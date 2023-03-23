@@ -73,7 +73,10 @@ List<String> inattentiveSymptomDefinitionList = [
 
 
 ];
-
+String driveStoreDirectory = "Journals";
+String oneDriveiOSRedirect = "msauth.com.reformeddeveloper.adhdJournal.test1://auth";
+String oneDriveAndroidDebugRedirect = "msauth://com.activitylogger.release1/gYfucgrOlZ3FLWgYctqk1bCxZbo%3D";
+String oneDriveAndroidProdRedirect = "msauth://com.activitylogger.release1/ga0RGNYHvNM5d0SLGQfpQWAPGJ8%3D";
 List<String> stressDefinitionList = [
   "This is driven by stress going on in your life. Think of this like your symptoms are magnified by an event.",
   "Your mind is probably wondering why you exist or there\'s too much going on around you to take in the moment. This may also apply to a situation where the world is crashing around you",
