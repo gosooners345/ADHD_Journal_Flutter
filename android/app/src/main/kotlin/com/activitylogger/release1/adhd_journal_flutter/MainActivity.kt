@@ -25,88 +25,37 @@ class MainActivity: FlutterActivity(){
 //private val appContext = this.context;
     override  fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-    SQLiteDatabase.loadLibs(applicationContext)
+
 
 
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             CHANNEL
-        ).setMethodCallHandler { call, result ->
+        ).setMethodCallHandler { call, result  -> {
             // This is where any list methods should be initialized.
 
 
             when (call.method) {
-                "changeDBPasswords" -> {
-                    try {
-var arg1 = call.argument("oldDBPassword") as String?
-var arg2 = call.argument("newDBPassword") as String?
-var oldDBPassword = SQLiteDatabase.getBytes(arg1?.toCharArray())
-                        var newDBPassCode = SQLiteDatabase.getBytes(arg2?.toCharArray())
-                        val dbName = "activitylogger_db.db"
-                        val dbPath = context.getDatabasePath(dbName)
-                        var db = SQLiteDatabase.openDatabase(
-                            dbPath.absolutePath,oldDBPassword,null,SQLiteDatabase.OPEN_READWRITE,null,null)
-                       db.rawExecSQL("PRAGMA rekey = $newDBPassCode")
-                    } catch (ex: Exception) {
-                        print(ex)
-                        Log.i("EXCEPTION", ex.message.toString())
-                    }
-                }
-                "migrateUserPassword"->{
-                    val appPreferences = getSecretSharedPref(this.context)
-val userPassword = appPreferences.getString("password","")
-                    result.success(userPassword)
+                "PushFile" -> {
+
+var arg1 = call.argument() as String?
+
 
                 }
-                "migrateDBPassword"->{
-                    val appPreferences = getSecretSharedPref(this.context)
-val dbPasswordGet = appPreferences.getString("dbPassword","")
-                    result.success(dbPasswordGet)
-                }
-                "migrateGreeting" ->{
-                    val appPreferences = getSecretSharedPref(this.context)
-                    val greeting = appPreferences.getString("greeting","")
-                    result.success(greeting)
-                }
-                "migratePasswordPrefs" ->{
-                    val appPreferences = getSecretSharedPref(this.context)
-                    val passprefs = appPreferences.getBoolean("enablePassword",true)
-                    result.success(passprefs)
+                "PullFile" -> {
+                    var arg1 = call.argument() as String?
                 }
 
-                "checkForDB" -> {
-                    var testPath = false
-                    val context = applicationContext;
-                    val dbFile = context.getDatabasePath("activitylogger_db.db")
 
-                if(dbFile.exists()) {
-                    val appPreferences = getSecretSharedPref(context)
-                    val testPassword = appPreferences.getString("dbPassword", "")
-
-                    if (testPassword == "")
-                        testPath = true
-                }
-                    result.success(testPath)
                 }
 
-            }
+            }}
         }
-    }
+}
 
 
-    private fun getSecretSharedPref(context: Context): SharedPreferences
-    {
-        val masterKey = MasterKey.Builder(context)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
-        return EncryptedSharedPreferences.create(
-            context,
-            "com.activitylogger.release1_preferences" + "_secured",
-            masterKey,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
-    }
 
-    }
+
+
+
 

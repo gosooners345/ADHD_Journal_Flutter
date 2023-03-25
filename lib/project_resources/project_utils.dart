@@ -1,5 +1,6 @@
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 
 extension ListSpaceBetweenExtension on List<Widget> {
@@ -120,3 +121,4 @@ Widget entryCard(Widget child, ThemeSwap swapper){
   margin: const EdgeInsets.all(10),
   child:child);
 }
+ const platform = MethodChannel('com.activitylogger.release1/ADHDJournal');
