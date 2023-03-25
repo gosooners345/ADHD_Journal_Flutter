@@ -48,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (Platform.isAndroid) {
       if(kDebugMode){
-        redirectOneDriveURL = oneDriveAndroidDebugRedirect;
+        redirectOneDriveURL = oneDriveAndroidProdRedirect;
       }
       else{
         redirectOneDriveURL = oneDriveAndroidProdRedirect;

@@ -34,7 +34,7 @@ class OneDriveSyncClass{
           return const Text("Connected");
         } else {
           // Hasn't connected
-          return MaterialButton(
+          return ElevatedButton(
             child: const Text("Connect"),
             onPressed: () async {
               final success = await oneDriveUtility.connect(context);
