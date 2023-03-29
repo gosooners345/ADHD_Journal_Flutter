@@ -23,7 +23,7 @@ class MainActivity: FlutterActivity(){
 
 
 //private val appContext = this.context;
-    override  fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
+  /*  override  fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
 
@@ -50,7 +50,7 @@ var arg1 = call.argument() as String?
                 }
 
             }}
-        }
+        }*/
 }
 
 
