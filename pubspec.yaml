@@ -63,7 +63,7 @@ dependencies:
   googleapis_auth: ^1.4.0
   google_sign_in: ^6.0.2
   encrypt: ^5.0.1
-
+  chat_gpt_sdk: ^2.0.6
   file_cryptor: ^0.0.3
   pointycastle: ^3.6.2
   connectivity_plus: ^3.0.2
