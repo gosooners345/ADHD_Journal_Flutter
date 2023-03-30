@@ -4,17 +4,18 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
+import '../backup_providers/onedrive_api_integration.dart';
 import 'package:flutter/foundation.dart';
 import 'package:googleapis/drive/v3.dart' as ga;
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
-import '../drive_api_backup_general/crypto_utils.dart';
+import '../backup_utils_package/crypto_utils.dart';
 import '../project_resources/project_colors.dart';
 import 'splash_screendart.dart';
 import 'onboarding_widget_class.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:adhd_journal_flutter/drive_api_backup_general/preference_backup_class.dart';
+import 'package:adhd_journal_flutter/backup_utils_package/preference_backup_class.dart';
 import '../main.dart';
 import 'dart:io';
 /// Required to open the application , simple login form to start
@@ -46,6 +47,7 @@ bool isThisReturning = false;
 
 ///Handles the states of the application.
 class _LoginScreenState extends State<LoginScreen> {
+  OneDriveSyncClass testDrive = OneDriveSyncClass();
   String loginPassword = '';
   String loginGreeting = '';
   var encryptedOrNot = false;
@@ -73,6 +75,7 @@ String connectionState= "";
       hintText = 'Password Hint is : $passwordHint';
     }
     setState(() {
+      // Add buttons for OneDrive integration
       driveButton = ElevatedButton(
           onPressed: () async {
             var authenticated = prefs.getBool("authenticated") ?? false;
@@ -95,7 +98,7 @@ String connectionState= "";
                               googleDrive.client = await Future.sync(
                                       () => googleDrive.getHttpClient());
                               googleIsDoingSomething(true);
-                              //Check for DB on device
+                              //Check for DB on device ,
                               await Future.sync(() => checkForAllFiles("Drive"))
                                   .whenComplete(() =>
                               {
@@ -895,6 +898,7 @@ String connectionState= "";
               SizedBox(
                 height: 40,
               ),
+              Padding(padding: EdgeInsets.all(8),child:testDrive.connectButton() ,),
               SizedBox(
                 height: 50,
                 child: ElevatedButton(
@@ -919,7 +923,7 @@ String connectionState= "";
   }
 }
 
-String driveStoreDirectory = "Journals";
+
 PreferenceBackupAndEncrypt preferenceBackupAndEncrypt =
     PreferenceBackupAndEncrypt();
 LoginButtonReady readyButton = LoginButtonReady();

@@ -1,15 +1,17 @@
 import 'dart:io';
-import 'package:adhd_journal_flutter/app_start_package/login_screen_file.dart';
 import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
+import 'package:adhd_journal_flutter/backup_utils_package/authextension.dart';
 import 'package:flutter/foundation.dart';
 import 'package:googleapis/drive/v3.dart' as ga;
 
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:google_sign_in/google_sign_in.dart';
-import 'authextension.dart';
+
 import 'package:googleapis_auth/googleapis_auth.dart' as auth show AuthClient;
 
+import '../project_resources/project_strings_file.dart';
+// OneDrive class will need to mirror this to succeed
 class GoogleDrive {
   String fileID = "";
   late ga.DriveApi drive;
@@ -49,7 +51,9 @@ class GoogleDrive {
         }
         return null;
       }
-      print(files.length);
+      if (kDebugMode) {
+        print(files.length);
+      }
       // The folder already exists
       if (files.isNotEmpty) {
         return files.first.id;
