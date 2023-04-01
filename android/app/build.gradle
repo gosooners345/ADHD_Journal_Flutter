@@ -31,6 +31,11 @@ if(keystorePropertiesFile.exists()){
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 android {
+    aaptOptions {
+        noCompress 'tflite'
+        noCompress 'lite'
+    }
+
     compileSdkVersion flutter.compileSdkVersion
 
     compileOptions {
@@ -93,4 +98,15 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.9'
     implementation 'com.microsoft.services.msa:msa-auth:0.8.+'
     implementation 'com.microsoft.aad:adal:1.1.+'
+
+        // Import the BoM for the Firebase platform
+        implementation platform('com.google.firebase:firebase-bom:31.4.0')
+
+        // Add the dependency for the Firebase ML model downloader library
+        // When using the BoM, you don't specify versions in Firebase library dependencies
+        implementation 'com.google.firebase:firebase-ml-modeldownloader-ktx'
+
+        // Also add the dependency for the TensorFlow Lite library and specify its version
+        implementation 'org.tensorflow:tensorflow-lite:2.3.0'
+
 }

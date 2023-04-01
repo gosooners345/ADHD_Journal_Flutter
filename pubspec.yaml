@@ -37,6 +37,7 @@ dependencies:
   firebase_core:
   firebase_auth:
   firebase_auth_oauth:
+  firebase_ml_model_downloader:
   firebase_dart:
   material: ^1.0.0+2
   sqflite_sqlcipher: ^2.1.0
