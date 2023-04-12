@@ -44,6 +44,7 @@ dependencies:
   shared_preferences: ^2.0.18
   encrypted_shared_preferences:
   intl:
+  google_ml_kit:
   launch_review:
   url_launcher:
   provider:

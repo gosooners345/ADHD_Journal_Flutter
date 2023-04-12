@@ -133,8 +133,8 @@ onPageChanged: (page){
             const Padding(padding: EdgeInsets.all(10),
                 child: const Center(child: Text(
                   "What\'s on your mind?", style: TextStyle(fontSize: 20),))),
-            SizedBox(height: 13,),
-            Padding(padding: EdgeInsets.all(10), child: TextField(
+            SizedBox(height: 10,),
+            Padding(padding: const EdgeInsets.all(10), child:TextField(
               decoration: InputDecoration(
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(4),
@@ -145,14 +145,14 @@ onPageChanged: (page){
               ),
               keyboardType: TextInputType.multiline,
               minLines: 1,
-              maxLines: null,
+              maxLines: 3,
               textCapitalization: TextCapitalization.sentences,
               controller: contentController,
               onChanged: (text) {
                 super.widget.record.content = text;
               },
             )), space
-          ],)
+       ])
           ,swapper),
         uiCard( Column(children: [
             Padding(padding: EdgeInsets.all(10), child: const Center(
@@ -192,7 +192,7 @@ onPageChanged: (page){
               keyboardType: TextInputType.multiline,
               minLines: 1,
               scrollController: ScrollController(),
-              maxLines: null,
+              maxLines: 3,
               textCapitalization: TextCapitalization.sentences,
               controller: sourceController,
               onChanged: (text) {

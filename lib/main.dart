@@ -2,7 +2,7 @@
 
 import 'dart:async';
 
-import 'package:adhd_journal_flutter/adhd_ml_engine_package/ml_kit_class.dart';
+//import 'package:adhd_journal_flutter/adhd_ml_engine_package/ml_kit_class.dart';
 import 'package:adhd_journal_flutter/settings_tutorials/backup_and_sync_help.dart';
 import 'package:adhd_journal_flutter/ui/dashboard_stats_display_widget.dart';
 import 'package:adhd_journal_flutter/record_data_package/record_list_class.dart';
@@ -107,7 +107,7 @@ class MyAppState extends State<MyApp> {
         '/searchhelp': (context) => SortHelp(),
         '/resources': (context) => HelpfulLinksWidget(),
         '/backuphelp': (context) => BackupAndSyncdHelp(),
-        '/openaitest' : (context) => TranslateScreen()
+        //'/openaitest' : (context) => TranslateScreen()
       },
     );
   }
@@ -312,7 +312,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
               });
             },
           ),
-          IconButton(onPressed: (){Navigator.push(context,MaterialPageRoute(builder: (_)=>TranslateScreen()));}, icon: Icon(Icons.rocket))
+          //IconButton(onPressed: (){Navigator.push(context,MaterialPageRoute(builder: (_)=>TranslateScreen()));}, icon: Icon(Icons.rocket))
         ],
       ),
       AppBar(
