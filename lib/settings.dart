@@ -663,7 +663,7 @@ showMessage("Reminder Created for "+scheduleReminder.hourOfPeriod.toString() +":
               thickness: 0.5,
               color: Color(swapper.isColorSeed),
             ),
-            // Add credit for OneDrive integration for API Use
+
             ListTile(
 
               leading: Image.asset('images/GoogleDriveLogo.png'),

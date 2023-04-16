@@ -312,7 +312,6 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
               });
             },
           ),
-          //IconButton(onPressed: (){Navigator.push(context,MaterialPageRoute(builder: (_)=>TranslateScreen()));}, icon: Icon(Icons.rocket))
         ],
       ),
       AppBar(
