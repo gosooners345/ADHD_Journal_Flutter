@@ -117,31 +117,40 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
                           ),
                           contentPadding: EdgeInsets.all(12),
                         )),
-                    onDismissed: (direction) {
-                      showDialog(
+                    confirmDismiss: (value) async{
+                      return await showDialog(
                           context: context,
-                          builder: (BuildContext context) => AlertDialog(
-                                title: const Text('Delete Entry?'),
-                                content: const Text(
-                                    'Are you sure you want to delete this entry?'),
-                                actions: [
-                                  TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                        recordsBloc.deleteRecordByID(record.id);
+                          builder: (BuildContext context) =>
+                          AlertDialog(
+                            title: const Text('Delete Entry?'),
+                            content: const Text(
+                                'Are you sure you want to delete this entry?'),
+                            actions: [
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop(true);
 
-                                        recordsBloc.writeCheckpoint();
-                                         _showAlert(context, "Entry Deleted");
-                                      },
-                                      child: const Text('Yes')),
-                                  TextButton(
-                                      child: Text('No'),
-                                      onPressed: () {
-                                        recordsBloc.getRecords();
-                                        Navigator.pop(context);
-                                      })
-                                ],
-                              ));
+                                  },
+                                  child: const Text('Yes')),
+                              TextButton(
+                                  child: Text('No'),
+                                  onPressed: () {
+                                   // recordsBloc.getRecords();
+                                    Navigator.of(context).pop(false);
+                                  })
+                            ],
+                          ));
+                    },
+
+                    onDismissed: (direction) {
+                      recordsBloc.deleteRecordByID(record.id);
+
+                      recordsBloc.writeCheckpoint();
+                      _showAlert(context, "Entry Deleted");
+                      /* showDialog(
+                          context: context,
+                          builder: (BuildContext context) =>
+                             );*/
                     },
                     direction: DismissDirection.horizontal,
                   );

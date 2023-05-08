@@ -180,7 +180,8 @@ onPageChanged: (page){
                     style: TextStyle(fontSize: 20.0)))),
             space,
             Padding(padding: EdgeInsets.all(10), child: TextField(
-              decoration: InputDecoration(
+              decoration:
+              InputDecoration(
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(4),
                       borderSide: BorderSide(
