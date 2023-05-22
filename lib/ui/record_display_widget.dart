@@ -107,7 +107,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
                         shape: RoundedRectangleBorder(
                             side: BorderSide(
                                 color: Color(swapper.isColorSeed), width: 1.0),
-                            borderRadius: BorderRadius.circular(10)),
+                            borderRadius: BorderRadius.circular(18)),
                         child: ListTile(
                           onTap: () {
                             _editRecord(record);
@@ -115,7 +115,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
                           title: RecordCardViewWidget(
                             record: record,
                           ),
-                          contentPadding: EdgeInsets.all(12),
+                          contentPadding: EdgeInsets.all(8),
                         )),
                     confirmDismiss: (value) async{
                       return await showDialog(
@@ -147,10 +147,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
 
                       recordsBloc.writeCheckpoint();
                       _showAlert(context, "Entry Deleted");
-                      /* showDialog(
-                          context: context,
-                          builder: (BuildContext context) =>
-                             );*/
+
                     },
                     direction: DismissDirection.horizontal,
                   );
@@ -174,10 +171,10 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
       if (kDebugMode) {
         print(snapshot.connectionState);
       }
-      return Center(
+      return const Center(
         child: Center(
           child: Column(
-            children: const <Widget>[
+            children: <Widget>[
               CircularProgressIndicator(),
               Text('Loading your journal entries.'),
             ],
