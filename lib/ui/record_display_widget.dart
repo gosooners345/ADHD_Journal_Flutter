@@ -94,10 +94,10 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
                         padding: EdgeInsets.only(left: 10),
                         child: Align(
                           alignment: Alignment.centerLeft,
-                          child: Text(
+                          child: Row(mainAxisAlignment:MainAxisAlignment.start,children:[const Icon(Icons.delete,color: Colors.white,),Text(
                             "Deleting",
                             style: TextStyle(color: Colors.white),
-                          ),
+                          ),])
                         ),
                       ),
                       color: Color(swapper.isColorSeed),

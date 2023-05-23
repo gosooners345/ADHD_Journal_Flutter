@@ -28,7 +28,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
 
             ExpansionTile(
               tilePadding:
-                  const EdgeInsets.only(left: 0, right: 0, top: 2, bottom: 0),
+                  const EdgeInsets.only(left: 0, right: 0, top: 2, bottom: 4),
               expandedAlignment: Alignment.topLeft,
               title: Column(
                 children: [
