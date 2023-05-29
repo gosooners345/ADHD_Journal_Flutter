@@ -88,7 +88,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
                       shape: RoundedRectangleBorder(
                           side: BorderSide(
                               color: Color(swapper.isColorSeed), width: 1.0),
-                          borderRadius: BorderRadius.circular(10)),
+                          borderRadius: BorderRadius.circular(18)),
                       elevation: 2.0,
                       child: const Padding(
                         padding: EdgeInsets.only(left: 10),
@@ -100,7 +100,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
                           ),])
                         ),
                       ),
-                      color: Color(swapper.isColorSeed),
+                      color:Color(swapper.isColorSeed),
                     ),
                     key: ObjectKey(record),
                     child: Card(

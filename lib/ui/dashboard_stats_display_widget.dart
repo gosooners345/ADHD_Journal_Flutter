@@ -58,16 +58,16 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
 
   Widget _dashboardCard(Widget child,ThemeSwap swapper){
     return Card(borderOnForeground: true, elevation: 2.0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18),
           side: BorderSide(color:Color(swapper.isColorSeed).withOpacity(1.0))
       ),child: child,);
   }
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(builder: (context, swapper, child) {
-      return SafeArea(minimum:EdgeInsets.all(5.0),child:
+      return SafeArea(minimum:EdgeInsets.all(13.0),child:
           ListView(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(5.0),
         children: [
           _dashboardCard(
             SizedBox(
@@ -140,7 +140,7 @@ _dashboardCard(Padding(
                     xValueMapper: (RecordDataStats recs, _) => recs.key,
                     yValueMapper: (RecordDataStats recs, _) => recs.value,
                     dataLabelMapper: (RecordDataStats recs, _) =>
-                        "${recs.key}: ${(recs.value / recordsBloc.recordHolder.length.toDouble()) * 100.0} % ",
+                        "${recs.key}: ${((recs.value / recordsBloc.recordHolder.length.toDouble()) * 100.0).toStringAsFixed(2)} % ",
                     dataLabelSettings: const DataLabelSettings(
                       isVisible: true,
                     ),
@@ -152,7 +152,7 @@ _dashboardCard(Padding(
 //Emotions Chart
          _dashboardCard( Column(
               children: [
-                Container(
+                SizedBox(
                   height: 400,
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
@@ -201,7 +201,7 @@ _dashboardCard(Padding(
           //Symptoms Chart
           _dashboardCard( Column(
               children: [
-                Container(
+                SizedBox(
                   height: 850,
                   child: Padding(
                     padding: EdgeInsets.all(16.0),
