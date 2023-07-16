@@ -4,7 +4,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
-import '../backup_providers/onedrive_api_integration.dart';
 import 'package:flutter/foundation.dart';
 import 'package:googleapis/drive/v3.dart' as ga;
 import 'package:path/path.dart' as path;
@@ -18,6 +17,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:adhd_journal_flutter/backup_utils_package/preference_backup_class.dart';
 import '../main.dart';
 import 'dart:io';
+
 /// Required to open the application , simple login form to start
 
 class LoginScreen extends StatefulWidget {
@@ -47,7 +47,7 @@ bool isThisReturning = false;
 
 ///Handles the states of the application.
 class _LoginScreenState extends State<LoginScreen> {
-  OneDriveSyncClass testDrive = OneDriveSyncClass();
+  //OneDriveSyncClass testDrive = OneDriveSyncClass();
   String loginPassword = '';
   String loginGreeting = '';
   var encryptedOrNot = false;
@@ -60,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String hintText = '';
   String hintPrompt = '';
   late ElevatedButton driveButton;
-String connectionState= "";
+  String connectionState = "";
   @override
   void initState() {
     super.initState();
@@ -69,7 +69,7 @@ String connectionState= "";
     if (passwordHint == '') {
       hintText = 'Enter secure password';
       hintPrompt =
-      'The app now allows you to store a hint so it\'s easier to remember your password in case you forget. \r\n Set it to something memorable.\r\n This will be encrypted like your password so nobody can read your hint.'
+          'The app now allows you to store a hint so it\'s easier to remember your password in case you forget. \r\n Set it to something memorable.\r\n This will be encrypted like your password so nobody can read your hint.'
           '\r\n You can enter this in settings.';
     } else {
       hintText = 'Password Hint is : $passwordHint';
@@ -88,31 +88,28 @@ String connectionState= "";
                       title: const Text("Backup and Sync Feature "),
                       content: Text(
                           "You're about to turn on Backup and Sync for ADHD Journal. The service uses your Google Drive account to store your Journal and related files with it. "
-                              "All encrypted. Your journal, passwords, and preferences sync between all devices linked with your gmail and this app. For more information, check out the help page in settings."),
+                          "All encrypted. Your journal, passwords, and preferences sync between all devices linked with your gmail and this app. For more information, check out the help page in settings."),
                       actions: <Widget>[
                         TextButton(
                           child: const Text("Yes"),
                           onPressed: () async {
-
                             if (connected == true) {
                               googleDrive.client = await Future.sync(
-                                      () => googleDrive.getHttpClient());
+                                  () => googleDrive.getHttpClient());
                               googleIsDoingSomething(true);
                               //Check for DB on device ,
                               await Future.sync(() => checkForAllFiles("Drive"))
-                                  .whenComplete(() =>
-                              {
-                                resetLoginFieldState(),
-                                setState(() {
-                                  Future.sync(() => getSyncStateStatus());
-                                }),
-                              Navigator.of(context).pop()
-                              });
-                            }
-                            else {
+                                  .whenComplete(() => {
+                                        resetLoginFieldState(),
+                                        setState(() {
+                                          Future.sync(
+                                              () => getSyncStateStatus());
+                                        }),
+                                        Navigator.of(context).pop()
+                                      });
+                            } else {
                               showMessage(connection_Error_Message_String);
                             }
-
                           },
                         ),
                         TextButton(
@@ -127,205 +124,215 @@ String connectionState= "";
                       ],
                     );
                   });
-            }
-            else {
+            } else {
               if (connected == true) {
                 googleDrive.client =
-                await Future.sync(() => googleDrive.getHttpClient());
-                await Future.sync(() => checkForAllFiles("Drive")).whenComplete(() =>
-                {
-                  resetLoginFieldState(),
-                  setState(() {
-                    Future.sync(() => getSyncStateStatus());
-                  })
-                }
-                );
-              }
-              else {
+                    await Future.sync(() => googleDrive.getHttpClient());
+                await Future.sync(() => checkForAllFiles("Drive"))
+                    .whenComplete(() => {
+                          resetLoginFieldState(),
+                          setState(() {
+                            Future.sync(() => getSyncStateStatus());
+                          })
+                        });
+              } else {
                 showMessage(connection_Error_Message_String);
               }
             }
           },
           child: Row(
-            children:  [
-              Image.asset('images/GoogleDriveLogo.png',height: 35,),
-            SizedBox(width: 40,),
-            Text("Backup with Google Drive")
+            children: [
+              Image.asset(
+                'images/GoogleDriveLogo.png',
+                height: 35,
+              ),
+              SizedBox(
+                width: 40,
+              ),
+              Text("Backup with Google Drive")
             ],
           ));
       stuff = TextEditingController();
     });
   }
-  Future<void> checkForAllFiles(String callBack) async{
+
+  Future<void> checkForAllFiles(String callBack) async {
     print("Check all files called");
     //Check for DB on device
     var checkDB = File(dbLocation);
     //Check for Keys on device
-    var checkPrivateKeys = File(
-        path.join(keyLocation, privateKeyFileName));
-    var checkPublicKeys =  File(path.join(keyLocation, pubKeyFileName));
+    var checkPrivateKeys = File(path.join(keyLocation, privateKeyFileName));
+    var checkPublicKeys = File(path.join(keyLocation, pubKeyFileName));
     //Check for preferences on device
     var checkPrefs = File(docsLocation);
     //Check for Journals file on Google Drive
-    var checkJournalFileExist = await Future.sync(() =>googleDrive.checkForFile(driveStoreDirectory));
-    if(checkJournalFileExist){
-      var checkPrivateKeyOnline = await Future.sync(() =>
-          googleDrive.checkForFile(privateKeyFileName));
-      var checkPublicKeyOnline= await Future.sync(() =>
-          googleDrive.checkForFile(pubKeyFileName));
+    var checkJournalFileExist =
+        await Future.sync(() => googleDrive.checkForFile(driveStoreDirectory));
+    if (checkJournalFileExist) {
+      var checkPrivateKeyOnline =
+          await Future.sync(() => googleDrive.checkForFile(privateKeyFileName));
+      var checkPublicKeyOnline =
+          await Future.sync(() => googleDrive.checkForFile(pubKeyFileName));
       //Check for preferences file online
-      var checkPrefsOnline = await Future.sync(() =>
-          googleDrive.checkForFile(prefsName));
+      var checkPrefsOnline =
+          await Future.sync(() => googleDrive.checkForFile(prefsName));
       //Check for DB online
-      var checkDBOnline = await Future.sync(
-              () =>
-              googleDrive.checkForFile(databaseName));
+      var checkDBOnline =
+          await Future.sync(() => googleDrive.checkForFile(databaseName));
 //Condition statements here
-      if(callBack == "Drive"||callBack ==""){
+      if (callBack == "Drive" || callBack == "") {
         if (checkDBOnline &&
             checkPrefsOnline &&
-            checkPrivateKeyOnline&& checkPublicKeyOnline) {
+            checkPrivateKeyOnline &&
+            checkPublicKeyOnline) {
           if (checkDB.existsSync() ||
               checkPrefs.existsSync() ||
-              checkPrivateKeys.existsSync() || checkPublicKeys.existsSync()  ) {
-          switch(callBack){
-            case "Drive":showDialog(context: context, builder: (BuildContext context){
-              return AlertDialog(
-              title: Text("Data exists online already"),
-              content: Text("It appears you have data online from another device, do you want to download it to this device and overwrite what's already on here?"),
-              actions: [ TextButton(
-                child: const Text("Yes"),
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                  if(checkPublicKeys.existsSync()) {
-                    checkPublicKeys.deleteSync();
-                  }
-                  if(checkPrivateKeys.existsSync()) {
-                    checkPrivateKeys.deleteSync();
-                  }
-                  await Future.sync(() => preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive));
-                  if(checkPrefs.existsSync()){
-                    checkPrefs.deleteSync();
-                    await Future.sync(() => preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive));
-                  }
-                  if(checkDB.existsSync()){
-                    checkDB.deleteSync();
-                    await Future.sync(() => restoreDBFiles());
-                  }
-
-                },
-              ),
-                TextButton(onPressed: () async{
-                  if(checkPrivateKeys.existsSync() && checkPublicKeys.existsSync()){
-                    preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
-                  }
-                  if(checkPrefs.existsSync()){
-                    String dataForEncryption =
-                        '$userPassword,$dbPassword,$passwordHint,${passwordEnabled
-                        .toString()},$greeting,$colorSeed';
-                    print(
-                        "Data is being encrypted and uploaded");
-                    googleIsDoingSomething(true);
-                    preferenceBackupAndEncrypt.encryptData(
-                        dataForEncryption, googleDrive);
-                    googleIsDoingSomething(true);
-                  }
-                  if(checkDB.existsSync()){
-                    uploadDBFiles();
-                  }
-                }, child: Text("No"))
-              ],
-            );}); break;
+              checkPrivateKeys.existsSync() ||
+              checkPublicKeys.existsSync()) {
+            switch (callBack) {
+              case "Drive":
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text("Data exists online already"),
+                        content: Text(
+                            "It appears you have data online from another device, do you want to download it to this device and overwrite what's already on here?"),
+                        actions: [
+                          TextButton(
+                            child: const Text("Yes"),
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                              if (checkPublicKeys.existsSync()) {
+                                checkPublicKeys.deleteSync();
+                              }
+                              if (checkPrivateKeys.existsSync()) {
+                                checkPrivateKeys.deleteSync();
+                              }
+                              await Future.sync(() => preferenceBackupAndEncrypt
+                                  .downloadRSAKeys(googleDrive));
+                              if (checkPrefs.existsSync()) {
+                                checkPrefs.deleteSync();
+                                await Future.sync(() =>
+                                    preferenceBackupAndEncrypt
+                                        .downloadPrefsCSVFile(googleDrive));
+                              }
+                              if (checkDB.existsSync()) {
+                                checkDB.deleteSync();
+                                await Future.sync(() => restoreDBFiles());
+                              }
+                            },
+                          ),
+                          TextButton(
+                              onPressed: () async {
+                                if (checkPrivateKeys.existsSync() &&
+                                    checkPublicKeys.existsSync()) {
+                                  preferenceBackupAndEncrypt
+                                      .encryptRsaKeysAndUpload(googleDrive);
+                                }
+                                if (checkPrefs.existsSync()) {
+                                  String dataForEncryption =
+                                      '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
+                                  print("Data is being encrypted and uploaded");
+                                  googleIsDoingSomething(true);
+                                  preferenceBackupAndEncrypt.encryptData(
+                                      dataForEncryption, googleDrive);
+                                  googleIsDoingSomething(true);
+                                }
+                                if (checkDB.existsSync()) {
+                                  uploadDBFiles();
+                                }
+                              },
+                              child: Text("No"))
+                        ],
+                      );
+                    });
+                break;
 // Trying to get the files to sync to device
-            default:  checkFileAge(); break;
-          }}
-          else if (!checkDB.existsSync() ||
-              !checkPrefs.existsSync() ||
-              !checkPrivateKeys.existsSync() || !checkPublicKeys.existsSync()  ){
-            if(!checkPrivateKeys.existsSync() || !checkPublicKeys.existsSync()) {
-              await Future.sync(() => preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive));
+              default:
+                checkFileAge();
+                break;
             }
-            if(!checkPrivateKeys.existsSync() ) {
-              await Future.sync(() => preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive));
+          } else if (!checkDB.existsSync() ||
+              !checkPrefs.existsSync() ||
+              !checkPrivateKeys.existsSync() ||
+              !checkPublicKeys.existsSync()) {
+            if (!checkPrivateKeys.existsSync() ||
+                !checkPublicKeys.existsSync()) {
+              await Future.sync(() =>
+                  preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive));
+            }
+            if (!checkPrivateKeys.existsSync()) {
+              await Future.sync(() =>
+                  preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive));
               String dataForEncryption =
-                  '$userPassword,$dbPassword,$passwordHint,${passwordEnabled
-                  .toString()},$greeting,$colorSeed';
-              if(dataForEncryption != decipheredData){
+                  '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
+              if (dataForEncryption != decipheredData) {
                 isDataSame = false;
               }
             }
-            if(!checkDB.existsSync()) {
+            if (!checkDB.existsSync()) {
               await Future.sync(() => restoreDBFiles());
             }
-            if(isDataSame==false){
+            if (isDataSame == false) {
               updateValues();
             }
           }
-        }
-
-     else{
-       print("Keys are not online");
-        preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
-        googleIsDoingSomething(true);
+        } else {
+          print("Keys are not online");
+          preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
+          googleIsDoingSomething(true);
           print("Prefs are not online");
           String dataForEncryption =
-              '$userPassword,$dbPassword,$passwordHint,${passwordEnabled
-              .toString()},$greeting,$colorSeed';
-          print(
-              "Data is being encrypted and uploaded");
+              '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
+          print("Data is being encrypted and uploaded");
           googleIsDoingSomething(true);
           preferenceBackupAndEncrypt.encryptData(
               dataForEncryption, googleDrive);
           googleIsDoingSomething(true);
           showMessage("Preferences Uploaded");
+        }
       }
-    }
-    }else{
+    } else {
       print("Creating Journals folder");
       ga.File journalFile = ga.File();
       journalFile.name = driveStoreDirectory;
       var mimetype = "application/vnd.google-apps.folder";
       journalFile.mimeType = mimetype;
-      await Future.sync(()=>googleDrive.drive.files.create(journalFile));
+      await Future.sync(() => googleDrive.drive.files.create(journalFile));
       if (checkDB.existsSync() == true ||
           checkPrefs.existsSync() == true ||
-          checkPublicKeys.existsSync() == true && checkPrivateKeys.existsSync()==true) {
+          checkPublicKeys.existsSync() == true &&
+              checkPrivateKeys.existsSync() == true) {
         googleIsDoingSomething(true);
         if (kDebugMode) {
           print("Uploading keys");
         }
-        preferenceBackupAndEncrypt
-            .encryptRsaKeysAndUpload(googleDrive);
+        preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
         if (kDebugMode) {
-          print(
-              "Data is being encrypted and uploaded");
+          print("Data is being encrypted and uploaded");
         }
         String dataForEncryption =
-            '$userPassword,$dbPassword,$passwordHint,${passwordEnabled
-            .toString()},$greeting,$colorSeed';
-        preferenceBackupAndEncrypt.encryptData(
-            dataForEncryption, googleDrive);
-        if(checkDB.existsSync()==true){
-        await Future.sync(() => uploadDBFiles())
-            .whenComplete(() =>
-            googleIsDoingSomething(false));
-      }}
-      else {
-        if (checkPublicKeys.existsSync() == false || checkPrivateKeys.existsSync()==false) {
+            '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
+        preferenceBackupAndEncrypt.encryptData(dataForEncryption, googleDrive);
+        if (checkDB.existsSync() == true) {
+          await Future.sync(() => uploadDBFiles())
+              .whenComplete(() => googleIsDoingSomething(false));
+        }
+      } else {
+        if (checkPublicKeys.existsSync() == false ||
+            checkPrivateKeys.existsSync() == false) {
           print("Keys aren't online");
           googleIsDoingSomething(true);
-          preferenceBackupAndEncrypt
-              .encryptRsaKeysAndUpload(googleDrive);
+          preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
           googleIsDoingSomething(true);
           showMessage("Encryption keys Uploaded");
         }
         if (checkPrefs.existsSync() == false) {
           print("Prefs are not online");
           String dataForEncryption =
-              '$userPassword,$dbPassword,$passwordHint,${passwordEnabled
-              .toString()},$greeting,$colorSeed';
-          print(
-              "Data is being encrypted and uploaded");
+              '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
+          print("Data is being encrypted and uploaded");
           googleIsDoingSomething(true);
           preferenceBackupAndEncrypt.encryptData(
               dataForEncryption, googleDrive);
@@ -338,15 +345,16 @@ String connectionState= "";
           googleIsDoingSomething(false);
         }
       }
-
     }
   }
-  Future<bool> getNetStatus() async{
-   if(connected){
-     userActiveBackup = prefs.getBool('testBackup')??false;
-   }
-   return connected;
+
+  Future<bool> getNetStatus() async {
+    if (connected) {
+      userActiveBackup = prefs.getBool('testBackup') ?? false;
+    }
+    return connected;
   }
+
   void loadStateStuff() async {
     prefs = await SharedPreferences.getInstance();
     passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
@@ -378,21 +386,21 @@ String connectionState= "";
       resetLoginFieldState();
     });
     googleIsDoingSomething(true);
-    await Future.delayed(Duration(seconds: 2),checkDataFiles);
+    await Future.delayed(Duration(seconds: 2), checkDataFiles);
     googleIsDoingSomething(false);
   }
 
-  void checkDataFiles() async{
+  void checkDataFiles() async {
     if (userActiveBackup) {
-      if (isThisReturning == true || Platform.isIOS ) {
-      // if the app is Running on iOS, the app will run this
-        if(Platform.isIOS){
-          while(googleDrive.client==null){
+      if (isThisReturning == true || Platform.isIOS) {
+        // if the app is Running on iOS, the app will run this
+        if (Platform.isIOS) {
+          while (googleDrive.client == null) {
             googleIsDoingSomething(true);
           }
         }
         // This is simply checking all files
-        if(googleDrive.client!=null){
+        if (googleDrive.client != null) {
           await Future.sync(() => checkForAllFiles(""));
         }
       }
@@ -401,10 +409,9 @@ String connectionState= "";
         updateValues();
         googleIsDoingSomething(false);
       }
-      if (Platform.isAndroid){
+      if (Platform.isAndroid) {
         googleIsDoingSomething(false);
       }
-
     } else {
       googleIsDoingSomething(false);
     }
@@ -413,7 +420,9 @@ String connectionState= "";
   Future<String> getGreeting() async {
     greeting = prefs.getString('greeting') ?? '';
     String opener = 'Welcome ';
-    String closer = (passwordEnabled==true) ? '! Sign in with your password below.':"! Hit the Login Button to sign in.";
+    String closer = (passwordEnabled == true)
+        ? '! Sign in with your password below.'
+        : "! Hit the Login Button to sign in.";
 
     return opener + greeting + closer;
   }
@@ -434,11 +443,9 @@ String connectionState= "";
     prefs.reload();
     await Future.sync(() => encryptedSharedPrefs.reload());
     await Future.delayed(Duration(seconds: 1), loadStateStuff);
-
   }
 
   void resetLoginFieldState() async {
-
     setState(() {
       if (passwordHint == '' || passwordHint == ' ') {
         hintText = 'Enter secure password';
@@ -515,11 +522,7 @@ String connectionState= "";
       }
     });
     googleIsDoingSomething(false);
-
-
   }
-
-
 
   /// Check the user's Google Drive for age of file or even if the file exists
   Future<void> checkFileAge() async {
@@ -530,8 +533,8 @@ String connectionState= "";
     File privKeyFile = File(path.join(keyLocation, privateKeyFileName));
     try {
       bool fileCheckAge = false;
-      fileCheckAge =
-          await Future.sync(() => googleDrive.checkFileAge(databaseName,dbLocation));
+      fileCheckAge = await Future.sync(
+          () => googleDrive.checkFileAge(databaseName, dbLocation));
       String dataForEncryption =
           '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
       var onlineKeys = await googleDrive.checkForFile(privateKeyFileName);
@@ -549,7 +552,8 @@ String connectionState= "";
       //Check for file
       if (fileCheckCSV) {
         // If file exists on Google Drive execute
-        txtFileCheckAge = await googleDrive.checkFileAge(prefsName,docsLocation);
+        txtFileCheckAge =
+            await googleDrive.checkFileAge(prefsName, docsLocation);
         if (txtFileCheckAge) {
           // if file is older in the cloud
           preferenceBackupAndEncrypt.encryptData(
@@ -599,7 +603,7 @@ String connectionState= "";
       }
     } on Exception catch (ex) {
       showMessage(ex.toString());
-      await Future.sync(()=> restoreDBFiles());
+      await Future.sync(() => restoreDBFiles());
       preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
       await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
       if (isDataSame == false) {
@@ -741,169 +745,170 @@ String connectionState= "";
               SizedBox(
                 height: 50,
                 width: 250,
-                child:
-                    StreamBuilder<bool>(
-                        stream: readyButton.controller.stream,
-                        builder: (BuildContext context,
-                            AsyncSnapshot<bool> snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Text("Updating Files on device");
+                child: StreamBuilder<bool>(
+                    stream: readyButton.controller.stream,
+                    builder:
+                        (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Text("Updating Files on device");
+                      } else {
+                        if (snapshot.hasError) {
+                          return Text("Error retrieving information");
+                        } else if (snapshot.hasData) {
+                          if (snapshot.data == false) {
+                            return FutureBuilder(
+                                future: getPasswordEnabledState(),
+                                builder: (
+                                  BuildContext context,
+                                  AsyncSnapshot<bool> snapshot,
+                                ) {
+                                  if (snapshot.hasError) {
+                                    return Text(
+                                        'Error returning password  information');
+                                  } else if (snapshot.hasData) {
+                                    return ElevatedButton(
+                                      onPressed: () {
+                                        callingCard = true;
+                                        if (loginPassword == userPassword &&
+                                            passwordEnabled) {
+                                          loginPassword = '';
+                                          recordsBloc = RecordsBloc();
+                                          Navigator.pushNamed(
+                                                  context, '/success')
+                                              .then((value) => {
+                                                    isThisReturning = true,
+                                                    recordsBloc.dispose(),
+                                                    stuff.clear(),
+                                                    recordHolder.clear(),
+                                                    refreshPrefs(),
+                                                  });
+                                        } else if (!passwordEnabled) {
+                                          recordsBloc = RecordsBloc();
+                                          loginPassword = '';
+                                          stuff.clear();
+                                          Navigator.pushNamed(
+                                                  context, '/success')
+                                              .then((value) => {
+                                                    isThisReturning = true,
+                                                    recordsBloc.dispose(),
+                                                    refreshPrefs(),
+                                                    recordHolder.clear(),
+                                                  });
+                                        }
+                                      },
+                                      child: Text(
+                                        'Login',
+                                        style: TextStyle(fontSize: 25),
+                                      ),
+                                    );
+                                  } else if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return ElevatedButton(
+                                      onPressed: () {
+                                        if (loginPassword == userPassword) {
+                                          Navigator.pushNamed(
+                                                  context, '/success')
+                                              .then((value) => {
+                                                    isThisReturning = true,
+                                                    recordHolder.clear(),
+                                                    refreshPrefs(),
+                                                    recordsBloc.dispose(),
+                                                  });
+                                          stuff.clear();
+                                        }
+                                      },
+                                      child: Text(
+                                        'Login',
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 25),
+                                      ),
+                                    );
+                                  } else {
+                                    return Text('Waiting for password info');
+                                  }
+                                });
                           } else {
-                            if (snapshot.hasError) {
-                              return Text("Error retrieving information");
-                            } else if (snapshot.hasData) {
-                              if (snapshot.data == false) {
-                                return FutureBuilder(
-                                    future: getPasswordEnabledState(),
-                                    builder: (
-                                      BuildContext context,
-                                      AsyncSnapshot<bool> snapshot,
-                                    ) {
-                                      if (snapshot.hasError) {
-                                        return Text(
-                                            'Error returning password  information');
-                                      } else if (snapshot.hasData) {
-                                        return ElevatedButton(
-                                          onPressed: () {
-                                            callingCard = true;
-                                            if (loginPassword == userPassword &&
-                                                passwordEnabled) {
-                                              loginPassword = '';
-                                              recordsBloc = RecordsBloc();
-                                              Navigator.pushNamed(
-                                                      context, '/success')
-                                                  .then((value) => {
-                                                        isThisReturning = true,
-                                                        recordsBloc.dispose(),
-                                                        stuff.clear(),
-                                                        recordHolder.clear(),
-                                                        refreshPrefs(),
-                                                      });
-                                            } else if (!passwordEnabled) {
-                                              recordsBloc = RecordsBloc();
-                                              loginPassword = '';
-                                              stuff.clear();
-                                              Navigator.pushNamed(
-                                                      context, '/success')
-                                                  .then((value) => {
-                                                        isThisReturning = true,
-                                                        recordsBloc.dispose(),
-                                                        refreshPrefs(),
-                                                        recordHolder.clear(),
-                                                      });
-                                            }
-                                          },
-                                          child: Text(
-                                            'Login',
-                                            style: TextStyle(fontSize: 25),
-                                          ),
-                                        );
-                                      } else if (snapshot.connectionState ==
-                                          ConnectionState.waiting) {
-                                        return ElevatedButton(
-                                          onPressed: () {
-                                            if (loginPassword == userPassword) {
-                                              Navigator.pushNamed(
-                                                      context, '/success')
-                                                  .then((value) => {
-                                                        isThisReturning = true,
-                                                        recordHolder.clear(),
-                                                        refreshPrefs(),
-                                                        recordsBloc.dispose(),
-                                                      });
-                                              stuff.clear();
-                                            }
-                                          },
-                                          child: Text(
-                                            'Login',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 25),
-                                          ),
-                                        );
-                                      } else {
-                                        return Text(
-                                            'Waiting for password info');
-                                      }
-                                    });
-                              } else {
-                                return Text("Updating Values, Please wait!");
-                              }
-                            } else {
-                              return Text("Something is wrong");
-                            }
+                            return Text("Updating Values, Please wait!");
                           }
-                        }),
+                        } else {
+                          return Text("Something is wrong");
+                        }
+                      }
+                    }),
               ),
               SizedBox(
                 height: 130,
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 60.0),
-                child:FutureBuilder<bool>(future: getNetStatus(),
-                 builder:(BuildContext context, AsyncSnapshot<bool>snapshot) {
-                   if (snapshot.connectionState == ConnectionState.waiting) {
-                     return Text("Getting Connection Status");
-                   }
-                   else {
-                     if (snapshot.hasData) {
-                       if (snapshot.data ==true) {
-                         return Center(
-                           child: FutureBuilder(
-                               future: getSyncStateStatus(),
-                               builder: (BuildContext context,
-                                   AsyncSnapshot<bool> snapshot,) {
-                                 if (snapshot.hasError) {
-                                   return Text("Error");
-                                 } else if (snapshot.hasData) {
-                                   if (snapshot.data! == true) {
-                                     return Text("");
-                                   } else {
-                                     return driveButton;
-                                   }
-                                 } else {
-                                   return Text("Waiting");
-                                 }
-                               }),);
-                       }
-                       else {
-                         return Center(
-                           child: Text(connection_Error_Message_String),);
-                       }
-                     }
-                     else {
-                       return Center(
-                         child: FutureBuilder(
-                             future: getSyncStateStatus(),
-                             builder: (BuildContext context,
-                                 AsyncSnapshot<bool> snapshot,) {
-                               if (snapshot.hasError) {
-                                 return Text("Error");
-                               } else if (snapshot.hasData) {
-                                 if (snapshot.data! == true) {
-                                   return Text("");
-                                 } else {
-                                   return driveButton;
-                                 }
-                               } else {
-                                 return Text("Waiting");
-                               }
-                             }),);
-                     }
-                   }
-                 }
-                ),
+                child: FutureBuilder<bool>(
+                    future: getNetStatus(),
+                    builder:
+                        (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Text("Getting Connection Status");
+                      } else {
+                        if (snapshot.hasData) {
+                          if (snapshot.data == true) {
+                            return Center(
+                              child: FutureBuilder(
+                                  future: getSyncStateStatus(),
+                                  builder: (
+                                    BuildContext context,
+                                    AsyncSnapshot<bool> snapshot,
+                                  ) {
+                                    if (snapshot.hasError) {
+                                      return Text("Error");
+                                    } else if (snapshot.hasData) {
+                                      if (snapshot.data! == true) {
+                                        return Text("");
+                                      } else {
+                                        return driveButton;
+                                      }
+                                    } else {
+                                      return Text("Waiting");
+                                    }
+                                  }),
+                            );
+                          } else {
+                            return Center(
+                              child: Text(connection_Error_Message_String),
+                            );
+                          }
+                        } else {
+                          return Center(
+                            child: FutureBuilder(
+                                future: getSyncStateStatus(),
+                                builder: (
+                                  BuildContext context,
+                                  AsyncSnapshot<bool> snapshot,
+                                ) {
+                                  if (snapshot.hasError) {
+                                    return Text("Error");
+                                  } else if (snapshot.hasData) {
+                                    if (snapshot.data! == true) {
+                                      return Text("");
+                                    } else {
+                                      return driveButton;
+                                    }
+                                  } else {
+                                    return Text("Waiting");
+                                  }
+                                }),
+                          );
+                        }
+                      }
+                    }),
               ),
               SizedBox(
                 height: 40,
               ),
-             // Padding(padding: EdgeInsets.all(8),child:testDrive.connectButton() ,),
+              // Padding(padding: EdgeInsets.all(8),child:testDrive.connectButton() ,),
               SizedBox(
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: () async{
-  await Future.sync(() => checkForAllFiles(""));
+                  onPressed: () async {
+                    await Future.sync(() => checkForAllFiles(""));
                   },
                   child: Text(
                     'Update Files',
@@ -922,7 +927,6 @@ String connectionState= "";
     googleDrive.client = await googleDrive.getHttpClient();
   }
 }
-
 
 PreferenceBackupAndEncrypt preferenceBackupAndEncrypt =
     PreferenceBackupAndEncrypt();
