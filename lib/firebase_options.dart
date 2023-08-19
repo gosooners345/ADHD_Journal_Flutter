@@ -3,7 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
-
+import 'project_resources/env.dart';
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
 /// Example:
@@ -49,16 +49,16 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAl8wCN2pEttwqUjnNl1qJ_uMwsNc77bDQ',
+  static  FirebaseOptions android = FirebaseOptions(
+    apiKey: Env.ANDROID_API_KEY,
     appId: '1:639171720797:android:6c5b28c5a999db9c107fb4',
     messagingSenderId: '639171720797',
     projectId: 'adhd-journal-flutter',
     storageBucket: 'adhd-journal-flutter.appspot.com',
   );
 
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDdP5LCqg9cDIIiY46A2Z2t9j2_OTtD2qQ',
+  static FirebaseOptions ios = FirebaseOptions(
+    apiKey: Env.IOS_API_KEY,
     appId: '1:639171720797:ios:75122e294e519e47107fb4',
     messagingSenderId: '639171720797',
     projectId: 'adhd-journal-flutter',

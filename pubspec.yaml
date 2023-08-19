@@ -55,14 +55,14 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   flutter_email_sender: ^6.0.1
   flutter_secure_storage:
-
+  envied:
   smooth_page_indicator:
   package_info_plus:
   googleapis: ^11.4.0
   googleapis_auth: ^1.4.0
   google_sign_in: ^6.1.4
   encrypt: ^5.0.1
-
+  build_runner:
   file_cryptor: ^0.0.3
   pointycastle: ^3.6.2
   connectivity_plus: ^3.0.6
@@ -74,6 +74,7 @@ flutter_icons:
   ios: true
 dev_dependencies:
 
+  envied_generator: ^0.3.0+3
   flutter_test:
     sdk: flutter
 dependency_overrides:
