@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.6.6+65
+version: 2.6.8+67
 
 environment:
   sdk: ">=2.17.0 "
@@ -38,7 +38,7 @@ dependencies:
   firebase_auth:
   firebase_dart:
   material: ^1.0.0+2
-  sqflite_sqlcipher: ^2.1.0
+  sqflite_sqlcipher: ^2.2.0
   shared_preferences: ^2.0.18
   encrypted_shared_preferences:
   intl:
@@ -49,23 +49,23 @@ dependencies:
   path:
   path_provider:
   awesome_notifications:
-  syncfusion_flutter_charts: ^20.4.53
+  syncfusion_flutter_charts:
   sleek_circular_slider: ^2.0.1
-  rxdart: ^0.27.3
-  flutter_launcher_icons: ^0.12.0
-  flutter_email_sender: ^5.1.0
+  rxdart:
+  flutter_launcher_icons: ^0.13.1
+  flutter_email_sender: ^6.0.1
   flutter_secure_storage:
 
   smooth_page_indicator:
   package_info_plus:
-  googleapis: ^10.1.0
+  googleapis: ^11.4.0
   googleapis_auth: ^1.4.0
-  google_sign_in: ^6.0.2
+  google_sign_in: ^6.1.4
   encrypt: ^5.0.1
-  chat_gpt_sdk: ^2.0.6
+
   file_cryptor: ^0.0.3
   pointycastle: ^3.6.2
-  connectivity_plus: ^3.0.2
+  connectivity_plus: ^3.0.6
   extension_google_sign_in_as_googleapis_auth:
 flutter_icons:
   image_path_android: "images/appicon_appstore.png"

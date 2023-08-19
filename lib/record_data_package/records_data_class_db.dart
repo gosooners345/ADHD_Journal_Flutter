@@ -1,3 +1,11 @@
+
+
+import 'dart:typed_data';
+
+///Adding ability to insert pictures, audio or video.
+///See if compatible with SQLite before starting
+
+
 class Records implements Comparable {
   int id;
   String title;
@@ -10,7 +18,7 @@ class Records implements Comparable {
   bool success;
   DateTime timeCreated;
   DateTime timeUpdated;
-
+ByteData image = ByteData(0);
   Records(
       {required this.id,
       required this.title,
@@ -22,7 +30,8 @@ class Records implements Comparable {
       required this.rating,
       required this.success,
       required this.timeCreated,
-      required this.timeUpdated});
+      required this.timeUpdated,}
+  );
 
   Records.fromMap(Map<String, dynamic> record)
       : id = record['id'],
@@ -34,8 +43,11 @@ class Records implements Comparable {
         tags = record['tags'],
         rating = record['rating'],
         success = record['success'],
+  //audio = record['audioBlob'],
+  //images = record['images'],
         timeCreated = record['time_created'],
         timeUpdated = record['time_updated'];
+
 
   @override
   String toString() {
@@ -55,6 +67,7 @@ class Records implements Comparable {
       'tags': tags,
       'rating': rating,
       'success': success ? 1 : 0,
+      //'audioBlob' : audio
       'time_created': timeCreated.millisecondsSinceEpoch,
       'time_updated': timeUpdated.millisecondsSinceEpoch
     };
@@ -101,4 +114,11 @@ class Records implements Comparable {
   int compareRatings(double other) {
     return rating.compareTo(other);
   }
+
+
+  void addImage(ByteData data){
+   image = data;
+  }
+
+
 }

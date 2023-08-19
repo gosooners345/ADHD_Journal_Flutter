@@ -56,197 +56,213 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
     return summaryString;
   }
 
-  Widget _dashboardCard(Widget child,ThemeSwap swapper){
-    return Card(borderOnForeground: true, elevation: 2.0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18),
-          side: BorderSide(color:Color(swapper.isColorSeed).withOpacity(1.0))
-      ),child: child,);
+  Widget _dashboardCard(Widget child, ThemeSwap swapper) {
+    return Card(
+      borderOnForeground: true,
+      elevation: 2.0,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+          side: BorderSide(color: Color(swapper.isColorSeed).withOpacity(1.0))),
+      child: child,
+    );
   }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(builder: (context, swapper, child) {
-      return SafeArea(minimum:EdgeInsets.all(13.0),child:
-          ListView(
-        padding: const EdgeInsets.all(5.0),
-        children: [
-          _dashboardCard(
-            SizedBox(
-              child: Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Text(
-                    'Here\'s a summary of your statistics:\r\n${summaryGen()}',
-                    style: const TextStyle(
-                        fontSize: 16.0, fontStyle: FontStyle.italic)),
-              ),
-            ),swapper
-          ),
-          //Ratings Chart
-          _dashboardCard( Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: SfCartesianChart(
-                    zoomPanBehavior: zoomPanBehavior,
-                    borderWidth: 2.0,
-                    primaryXAxis: CategoryAxis(),
-                    primaryYAxis: NumericAxis(),
-                    series: <LineSeries<RecordRatingStats, String>>[
-                      LineSeries(
-                        dataSource: RecordList.ratingsList,
-                        width: 1.0,
-                        xValueMapper: (RecordRatingStats recLbl, _) =>
-                            DateFormat("MM/dd/yyyy hh:mm:ss aa")
-                                .format(recLbl.date),
-                        color: Color(swapper.isColorSeed),
-                        yValueMapper: (RecordRatingStats recLbl, _) =>
-                            recLbl.value,
-                        dataLabelSettings:
-                            const DataLabelSettings(isVisible: true),
-                        xAxisName: 'Entry Timestamps',
-                        yAxisName: 'Ratings',
+      return SafeArea(
+          minimum: EdgeInsets.all(13.0),
+          child: ListView(
+            padding: const EdgeInsets.all(5.0),
+            children: [
+              _dashboardCard(
+                  SizedBox(
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Text(
+                          'Here\'s a summary of your statistics:\r\n${summaryGen()}',
+                          style: const TextStyle(
+                              fontSize: 16.0, fontStyle: FontStyle.italic)),
+                    ),
+                  ),
+                  swapper),
+              //Ratings Chart
+              _dashboardCard(
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: SfCartesianChart(
+                          zoomPanBehavior: zoomPanBehavior,
+                          borderWidth: 2.0,
+                          primaryXAxis: CategoryAxis(),
+                          primaryYAxis: NumericAxis(),
+                          series: <LineSeries<RecordRatingStats, String>>[
+                            LineSeries(
+                              dataSource: RecordList.ratingsList,
+                              width: 1.0,
+                              xValueMapper: (RecordRatingStats recLbl, _) =>
+                                  DateFormat("MM/dd/yyyy hh:mm:ss aa")
+                                      .format(recLbl.date),
+                              color: Color(swapper.isColorSeed),
+                              yValueMapper: (RecordRatingStats recLbl, _) =>
+                                  recLbl.value,
+                              dataLabelSettings:
+                                  const DataLabelSettings(isVisible: true),
+                              xAxisName: 'Entry Timestamps',
+                              yAxisName: 'Ratings',
+                            ),
+                          ],
+                          title: ChartTitle(
+                              text: 'Ratings data from journal entries'),
+                          margin: const EdgeInsets.all(8.0),
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 15,
+                          ),
+                          const Text('Reset Zoom'),
+                          IconButton(
+                            icon: const Icon(Icons.refresh),
+                            onPressed: () => zoomPanBehavior.reset(),
+                          )
+                        ],
                       ),
                     ],
-                    title:
-                        ChartTitle(text: 'Ratings data from journal entries'),
-                    margin: const EdgeInsets.all(8.0),
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: 15,
-                    ),
-                    const Text('Reset Zoom'),
-                    IconButton(
-                      icon: const Icon(Icons.refresh),
-                      onPressed: () => zoomPanBehavior.reset(),
-                    )
-                  ],
-                ),
-              ],
-            ),swapper),
-_dashboardCard(Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: SfCircularChart(
-                title:
-                    ChartTitle(text: 'Success/Fail Data from Journal Entries'),
-                legend: Legend(isVisible: true),
-                series: <PieSeries<RecordDataStats, String>>[
-                  PieSeries<RecordDataStats, String>(
-                    explode: true,
-                    explodeIndex: 0,
-                    dataSource: RecordList.successList,
-                    xValueMapper: (RecordDataStats recs, _) => recs.key,
-                    yValueMapper: (RecordDataStats recs, _) => recs.value,
-                    dataLabelMapper: (RecordDataStats recs, _) =>
-                        "${recs.key}: ${((recs.value / recordsBloc.recordHolder.length.toDouble()) * 100.0).toStringAsFixed(2)} % ",
-                    dataLabelSettings: const DataLabelSettings(
-                      isVisible: true,
-                    ),
-                  ),
-                ],
-              ),
-
-          ),swapper),
-//Emotions Chart
-         _dashboardCard( Column(
-              children: [
-                SizedBox(
-                  height: 400,
-                  child: Padding(
+                  swapper),
+              _dashboardCard(
+                  Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: SfCartesianChart(
-                      zoomPanBehavior: zoomPanBehavior1,
-                      trackballBehavior: TrackballBehavior(
-                          activationMode: ActivationMode.doubleTap),
-                      borderWidth: 2.0,
-                      primaryXAxis: CategoryAxis(),
-                      primaryYAxis: NumericAxis(),
-                      series: <BarSeries<RecordDataStats, String>>[
-                        BarSeries(
-                          dataSource: RecordList.emotionsList,
-                          xValueMapper: (RecordDataStats rec, _) => rec.key,
-                          yValueMapper: (RecordDataStats rec, _) => rec.value,
-                          name: 'Emotion Data from Journal Entries',
-                          color: Color(swapper.isColorSeed),
-                          xAxisName: 'Emotions',
-                          spacing: 0,
+                    child: SfCircularChart(
+                      title: ChartTitle(
+                          text: 'Success/Fail Data from Journal Entries'),
+                      legend: Legend(isVisible: true),
+                      series: <PieSeries<RecordDataStats, String>>[
+                        PieSeries<RecordDataStats, String>(
+                          explode: true,
+                          explodeIndex: 0,
+                          dataSource: RecordList.successList,
+                          xValueMapper: (RecordDataStats recs, _) => recs.key,
+                          yValueMapper: (RecordDataStats recs, _) => recs.value,
+                          dataLabelMapper: (RecordDataStats recs, _) =>
+                              "${recs.key}: ${((recs.value / recordsBloc.recordHolder.length.toDouble()) * 100.0).toStringAsFixed(2)} % ",
                           dataLabelSettings: const DataLabelSettings(
                             isVisible: true,
                           ),
-                          yAxisName: 'Counts',
                         ),
                       ],
-                      title:
-                          ChartTitle(text: 'Emotion Data from Journal Entries'),
                     ),
                   ),
-                ),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 15,
-                    ),
-                    const Text('Reset Zoom'),
-                    IconButton(
-                        onPressed: () => zoomPanBehavior1.reset(),
-                        icon: const Icon(Icons.refresh)),
-                  ],
-                  mainAxisAlignment: MainAxisAlignment.start,
-                ),
-              ],
-            ),swapper),
-
-          //Symptoms Chart
-          _dashboardCard( Column(
-              children: [
-                SizedBox(
-                  height: 850,
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: SfCartesianChart(
-                      trackballBehavior: TrackballBehavior(
-                          activationMode: ActivationMode.doubleTap),
-                      zoomPanBehavior: zoomPanBehavior2,
-                      borderWidth: 2.0,
-                      primaryXAxis: CategoryAxis(),
-                      primaryYAxis: NumericAxis(),
-                      series: <BarSeries<RecordDataStats, String>>[
-                        BarSeries(
-                            dataSource: RecordList.symptomList,
-                            xValueMapper: (RecordDataStats rec, _) => rec.key,
-                            yValueMapper: (RecordDataStats rec, _) => rec.value,
-                            name: 'Symptom Data from Journal Entries',
-                            color: Color(swapper.isColorSeed),
-                            xAxisName: 'Symptoms',
-                            yAxisName: 'Counts',
-                            spacing: 0.5,
-                            dataLabelSettings:
-                                const DataLabelSettings(isVisible: true)),
-                      ],
-                      title:
-                          ChartTitle(text: 'Symptom Data from Journal Entries'),
-                    ),
+                  swapper),
+//Emotions Chart
+              _dashboardCard(
+                  Column(
+                    children: [
+                      SizedBox(
+                        height: 400,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: SfCartesianChart(
+                            zoomPanBehavior: zoomPanBehavior1,
+                            trackballBehavior: TrackballBehavior(
+                                activationMode: ActivationMode.doubleTap),
+                            borderWidth: 2.0,
+                            primaryXAxis: CategoryAxis(),
+                            primaryYAxis: NumericAxis(),
+                            series: <BarSeries<RecordDataStats, String>>[
+                              BarSeries(
+                                dataSource: RecordList.emotionsList,
+                                xValueMapper: (RecordDataStats rec, _) =>
+                                    rec.key,
+                                yValueMapper: (RecordDataStats rec, _) =>
+                                    rec.value,
+                                name: 'Emotion Data from Journal Entries',
+                                color: Color(swapper.isColorSeed),
+                                xAxisName: 'Emotions',
+                                spacing: 0,
+                                dataLabelSettings: const DataLabelSettings(
+                                  isVisible: true,
+                                ),
+                                yAxisName: 'Counts',
+                              ),
+                            ],
+                            title: ChartTitle(
+                                text: 'Emotion Data from Journal Entries'),
+                          ),
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: 15,
+                          ),
+                          const Text('Reset Zoom'),
+                          IconButton(
+                              onPressed: () => zoomPanBehavior1.reset(),
+                              icon: const Icon(Icons.refresh)),
+                        ],
+                        mainAxisAlignment: MainAxisAlignment.start,
+                      ),
+                    ],
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: 15,
-                    ),
-                    const Text('Reset Zoom'),
-                    IconButton(
-                        icon: const Icon(Icons.refresh),
-                        onPressed: () => zoomPanBehavior2.reset()),
-                  ],
-                ),
-              ],
-            ),swapper),
+                  swapper),
 
-        ],
-      ));
+              //Symptoms Chart
+              _dashboardCard(
+                  Column(
+                    children: [
+                      SizedBox(
+                        height: 850,
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: SfCartesianChart(
+                            trackballBehavior: TrackballBehavior(
+                                activationMode: ActivationMode.doubleTap),
+                            zoomPanBehavior: zoomPanBehavior2,
+                            borderWidth: 2.0,
+                            primaryXAxis: CategoryAxis(),
+                            primaryYAxis: NumericAxis(),
+                            series: <BarSeries<RecordDataStats, String>>[
+                              BarSeries(
+                                  dataSource: RecordList.symptomList,
+                                  xValueMapper: (RecordDataStats rec, _) =>
+                                      rec.key,
+                                  yValueMapper: (RecordDataStats rec, _) =>
+                                      rec.value,
+                                  name: 'Symptom Data from Journal Entries',
+                                  color: Color(swapper.isColorSeed),
+                                  xAxisName: 'Symptoms',
+                                  yAxisName: 'Counts',
+                                  spacing: 0.5,
+                                  dataLabelSettings:
+                                      const DataLabelSettings(isVisible: true)),
+                            ],
+                            title: ChartTitle(
+                                text: 'Symptom Data from Journal Entries'),
+                          ),
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 15,
+                          ),
+                          const Text('Reset Zoom'),
+                          IconButton(
+                              icon: const Icon(Icons.refresh),
+                              onPressed: () => zoomPanBehavior2.reset()),
+                        ],
+                      ),
+                    ],
+                  ),
+                  swapper),
+            ],
+          ));
     });
   }
 }

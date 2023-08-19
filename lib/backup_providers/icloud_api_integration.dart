@@ -1,7 +1,1 @@
-
-
-
-
-class ICloudSyncClass{
-
-}
+class ICloudSyncClass {}

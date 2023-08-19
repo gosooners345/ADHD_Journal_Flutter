@@ -21,7 +21,7 @@ import 'dart:io';
 /// Required to open the application , simple login form to start
 
 class LoginScreen extends StatefulWidget {
-  LoginScreen({
+  const LoginScreen({
     Key? key,
     required this.swapper,
   }) : super(key: key);
@@ -47,7 +47,6 @@ bool isThisReturning = false;
 
 ///Handles the states of the application.
 class _LoginScreenState extends State<LoginScreen> {
-  //OneDriveSyncClass testDrive = OneDriveSyncClass();
   String loginPassword = '';
   String loginGreeting = '';
   var encryptedOrNot = false;
@@ -75,7 +74,6 @@ class _LoginScreenState extends State<LoginScreen> {
       hintText = 'Password Hint is : $passwordHint';
     }
     setState(() {
-      // Add buttons for OneDrive integration
       driveButton = ElevatedButton(
           onPressed: () async {
             var authenticated = prefs.getBool("authenticated") ?? false;
@@ -157,7 +155,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> checkForAllFiles(String callBack) async {
-    print("Check all files called");
+    if (kDebugMode) {
+      print("Check all files called");
+    }
     //Check for DB on device
     var checkDB = File(dbLocation);
     //Check for Keys on device
@@ -279,13 +279,19 @@ class _LoginScreenState extends State<LoginScreen> {
             }
           }
         } else {
-          print("Keys are not online");
+          if (kDebugMode) {
+            print("Keys are not online");
+          }
           preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
           googleIsDoingSomething(true);
-          print("Prefs are not online");
+          if (kDebugMode) {
+            print("Prefs are not online");
+          }
           String dataForEncryption =
               '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
-          print("Data is being encrypted and uploaded");
+          if (kDebugMode) {
+            print("Data is being encrypted and uploaded");
+          }
           googleIsDoingSomething(true);
           preferenceBackupAndEncrypt.encryptData(
               dataForEncryption, googleDrive);
@@ -322,17 +328,23 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         if (checkPublicKeys.existsSync() == false ||
             checkPrivateKeys.existsSync() == false) {
-          print("Keys aren't online");
+          if (kDebugMode) {
+            print("Keys aren't online");
+          }
           googleIsDoingSomething(true);
           preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
           googleIsDoingSomething(true);
           showMessage("Encryption keys Uploaded");
         }
         if (checkPrefs.existsSync() == false) {
-          print("Prefs are not online");
+          if (kDebugMode) {
+            print("Prefs are not online");
+          }
           String dataForEncryption =
               '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
-          print("Data is being encrypted and uploaded");
+          if (kDebugMode) {
+            print("Data is being encrypted and uploaded");
+          }
           googleIsDoingSomething(true);
           preferenceBackupAndEncrypt.encryptData(
               dataForEncryption, googleDrive);
@@ -527,7 +539,9 @@ class _LoginScreenState extends State<LoginScreen> {
   /// Check the user's Google Drive for age of file or even if the file exists
   Future<void> checkFileAge() async {
     isThisReturning = false;
-    print("Login Check File Age Called");
+    if (kDebugMode) {
+      print("Login Check File Age Called");
+    }
     File file = File(dbLocation); // DB
     googleIsDoingSomething(true);
     File privKeyFile = File(path.join(keyLocation, privateKeyFileName));
@@ -634,11 +648,11 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       googleIsDoingSomething(true);
       await Future.sync(() => googleDrive.syncBackupFiles(databaseName))
-          .whenComplete(() => {googleIsDoingSomething(false)});
+          .whenComplete(() => googleIsDoingSomething(false));
       var getFileTime = File(dbLocation);
       var time = getFileTime.lastModifiedSync();
       showMessage('Your journal is synced as of ${time.toLocal()}');
-    } on Exception catch (ex) {
+    } on Exception {
       showMessage('You need to open up the journal once to back it up.');
     }
   }

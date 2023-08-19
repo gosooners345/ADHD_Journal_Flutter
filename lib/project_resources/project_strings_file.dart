@@ -70,13 +70,14 @@ List<String> inattentiveSymptomDefinitionList = [
   'You\'re likely wiped out from putting in your best efforts and are exhausted from this task, resting will help you tremendously',
   'This is probably the most severe of the bunch. You\'re likely not wanting to do anything because you have a writer\'s block like mindset or you don\'t know what to say or do, '
       'don\'t lose heart, it\'s probably going to be okay'
-
-
 ];
 String driveStoreDirectory = "Journals";
-String oneDriveiOSRedirect = "msauth.com.reformeddeveloper.adhdJournal.test1://auth";
-String oneDriveAndroidDebugRedirect = "msauth://com.activitylogger.release1/gYfucgrOlZ3FLWgYctqk1bCxZbo%3D";
-String oneDriveAndroidProdRedirect = "msauth://com.activitylogger.release1/ga0RGNYHvNM5d0SLGQfpQWAPGJ8%3D";
+String oneDriveiOSRedirect =
+    "msauth.com.reformeddeveloper.adhdJournal.test1://auth";
+String oneDriveAndroidDebugRedirect =
+    "msauth://com.activitylogger.release1/gYfucgrOlZ3FLWgYctqk1bCxZbo%3D";
+String oneDriveAndroidProdRedirect =
+    "msauth://com.activitylogger.release1/ga0RGNYHvNM5d0SLGQfpQWAPGJ8%3D";
 List<String> stressDefinitionList = [
   "This is driven by stress going on in your life. Think of this like your symptoms are magnified by an event.",
   "Your mind is probably wondering why you exist or there\'s too much going on around you to take in the moment. This may also apply to a situation where the world is crashing around you",
@@ -84,19 +85,21 @@ List<String> stressDefinitionList = [
   "This is when life just seems meaningless and you don\'t want to exist. This is a catch all for depression symptoms."
 ];
 
-
 final stressorSymptomList = [
   'Stress enhanced ADHD Response',
   'Existential crisis',
   'Anxiety',
   'Depression',
 ];
-const String reset_RSA_Key_Dialog_Message_String = "Do you want to reset your encryption keys for your preferences? "
+const String reset_RSA_Key_Dialog_Message_String =
+    "Do you want to reset your encryption keys for your preferences? "
     "Doing so will replace them in the cloud if you have backup and sync turned on."
     "When you load this app on another device connected to your Google Drive account, the keys and the encrypted data file associated with your data will download with it replacing the old set."
-"Do this often to keep things secure. ";
-const String connection_Error_Message_String = "You need to be connected to a Wifi or Mobile network to use backup and sync.";
-const String downloading_journal_files_message_string ="Downloading updated journal files";
+    "Do this often to keep things secure. ";
+const String connection_Error_Message_String =
+    "You need to be connected to a Wifi or Mobile network to use backup and sync.";
+const String downloading_journal_files_message_string =
+    "Downloading updated journal files";
 const String password_Required_Message_String =
     "Please enter a password below to continue.";
 const String prefsName = 'journalStuff.txt';
@@ -132,7 +135,8 @@ const String password_hint_needed =
     'The app now features the ability to add a password hint so you can remember your password easier. '
     'Enter a password hint below and hit save to continue.'
     '';
-const String first_time_user_intro_string = "This is your first time using this application. "
+const String first_time_user_intro_string =
+    "This is your first time using this application. "
     "\r\nLet's get you started!";
 const String backup_and_sync_intro_paragraph_string =
     'You can backup and sync your journal across multiple devices. At this time, only Google Drive integration is supported. Other services will be added later. To activate, hit Sign into Google Drive. You can turn this off in settings by toggling the backup and sync switch.';
@@ -228,13 +232,16 @@ final stress_based_emotion_cluster = [
 ];
 final mindful_state_emotion_cluster = [
   'humble',
-
   'humbled',
   'informed',
   'inner peace',
-
 ];
-final conviction_based_emotion_cluster = ['convicted', 'repentant', 'serious','sobered',];
+final conviction_based_emotion_cluster = [
+  'convicted',
+  'repentant',
+  'serious',
+  'sobered',
+];
 final body_pain_emotion_cluster = ['sore', 'pain', 'sick', 'achy'];
 final fear_emotion_cluster = [
   'terrified',
@@ -283,7 +290,8 @@ final apathetic_emotion_cluster = [
 ];
 final peaceful_emotion_cluster = [
   'content',
-  'peace','inner peace',
+  'peace',
+  'inner peace',
   'peaceful',
   'calm',
   'thankful',
@@ -384,7 +392,6 @@ final love_emotion_cluster = [
   'devoted',
   'affectionate',
   'aroused',
-
 ];
 final surprised_emotion_cluster = [
   'amazed',
@@ -402,7 +409,6 @@ final wanting_emotion_cluster = [
   'ignored',
   'hungry',
   'lonely',
-
 ];
 final body_exhaustion_cluster = ['tired', 'sleepy', 'exhausted'];
 final weak_emotional_cluster = [

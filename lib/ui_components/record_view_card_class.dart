@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../record_data_package/records_data_class_db.dart';
 
 class RecordCardViewWidget extends StatefulWidget {
-  RecordCardViewWidget({Key? key, required this.record}) : super(key: key);
+  const RecordCardViewWidget({Key? key, required this.record}) : super(key: key);
   final Records record;
 
   @override
@@ -27,6 +27,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
             // Title Field
 
             ExpansionTile(
+
               tilePadding:
                   const EdgeInsets.only(left: 0, right: 0, top: 2, bottom: 4),
               expandedAlignment: Alignment.topLeft,
@@ -43,7 +44,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
                       const SizedBox(
                         width: 16,
                       ),
-                      Text('Rating: ' + super.widget.record.rating.round().toString()),
+                      Text('Rating: ${super.widget.record.rating.round()}'),
                     ],
                   ),
                   const SizedBox(
@@ -53,7 +54,8 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
                     Expanded(
                         child: Text(super.widget.record.content,
                             maxLines: 3,
-                            style: const TextStyle(overflow: TextOverflow.ellipsis)))
+                            style: const TextStyle(
+                                overflow: TextOverflow.ellipsis)))
                   ]),
                 ],
               ),

@@ -11,6 +11,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis_auth/googleapis_auth.dart' as auth show AuthClient;
 
 import '../project_resources/project_strings_file.dart';
+
 // OneDrive class will need to mirror this to succeed
 class GoogleDrive {
   String fileID = "";
@@ -20,9 +21,12 @@ class GoogleDrive {
   GoogleSignInAccount? account;
 
   bool isDoingSomething = false;
-  GoogleSignIn googleSignIn = GoogleSignIn(
-      signInOption: SignInOption.standard,
-      scopes: [ga.DriveApi.driveAppdataScope, ga.DriveApi.driveFileScope,ga.DriveApi.driveScope]);
+  GoogleSignIn googleSignIn =
+      GoogleSignIn(signInOption: SignInOption.standard, scopes: [
+    ga.DriveApi.driveAppdataScope,
+    ga.DriveApi.driveFileScope,
+    ga.DriveApi.driveScope
+  ]);
 
   // Have the user sign into Google Drive with their Google Account
   Future<auth.AuthClient?> getHttpClient() async {
@@ -36,14 +40,15 @@ class GoogleDrive {
     var authenticateClient = googleSignIn.authenticatedClient();
     return authenticateClient;
   }
+
   // Check to see if the folder used for storing app data exists in Drive
   Future<String?> _getFolderId(ga.DriveApi driveApi) async {
     const mimeType = "application/vnd.google-apps.folder";
     try {
-      final found = await Future.sync(()=>driveApi.files.list(
-        q: "mimeType = '$mimeType' and name = '$driveStoreDirectory'",
-        $fields: "files(id, name)",
-      ));
+      final found = await Future.sync(() => driveApi.files.list(
+            q: "mimeType = '$mimeType' and name = '$driveStoreDirectory'",
+            $fields: "files(id, name)",
+          ));
       final files = found.files;
       if (files == null) {
         if (kDebugMode) {
@@ -102,6 +107,7 @@ class GoogleDrive {
       }
     }
   }
+
   // Original method
   uploadFileToGoogleDrive(File file) async {
     drive = ga.DriveApi(client!);
@@ -128,7 +134,8 @@ class GoogleDrive {
       }
     }
   }
-  Future<bool> checkFileAge(String fileName,String directoryName) async {
+
+  Future<bool> checkFileAge(String fileName, String directoryName) async {
     client ??= await getHttpClient();
     try {
       drive = ga.DriveApi(client!);
@@ -162,43 +169,39 @@ class GoogleDrive {
         } else {
           return false;
         }
-      }
-      else {
+      } else {
         throw Exception("File not found $fileName");
       }
-    }
-    on Exception catch (ex) {
+    } on Exception catch (ex) {
       print(ex);
       return false;
     }
   }
+
   /// Check file age on device. If the file on the Google Drive is newer, it returns false,
   /// if not, it returns true. This is used to sync the db and prefs files.
-
 
   Future<bool> checkForFile(String fileName) async {
     drive = ga.DriveApi(client!);
 
-
+    var queryDrive = await drive.files.list(
+      q: "name contains '$fileName'",
+      $fields: "files(id, name,createdTime,modifiedTime)",
+    );
+    var files = queryDrive.files;
+    var i = 0;
+    if (files!.isEmpty) {
       var queryDrive = await drive.files.list(
-        q: "name contains '$fileName'",
+        q: "name contains '$driveStoreDirectory/$fileName'",
         $fields: "files(id, name,createdTime,modifiedTime)",
       );
-      var files = queryDrive.files;
-      var i = 0;
-      if (files!.isEmpty) {
-        var queryDrive = await drive.files.list(
-          q: "name contains '$driveStoreDirectory/$fileName'",
-          $fields: "files(id, name,createdTime,modifiedTime)",
-        );
-        files = queryDrive.files;
-      }
-      if (files!.isNotEmpty) {
-        return true;
-      } else {
-       return false;
-      }
-
+      files = queryDrive.files;
+    }
+    if (files!.isNotEmpty) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   deleteOutdatedBackups(String fileName) async {
@@ -239,7 +242,7 @@ class GoogleDrive {
         nameList.add(files?[i].name);
       }
       for (int i = 0; i < idList.length; i++) {
-       // ga.File file = await drive.files.get(idList[i],downloadOptions: ga.DownloadOptions.fullMedia) as ga.File;
+        // ga.File file = await drive.files.get(idList[i],downloadOptions: ga.DownloadOptions.fullMedia) as ga.File;
         ga.Media file = await drive.files.get(idList[i],
             downloadOptions: ga.DownloadOptions.fullMedia) as ga.Media;
 

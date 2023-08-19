@@ -20,6 +20,7 @@ class NetworkConnectivity {
       checkStatus(result);
     });
   }
+
 // 2.
   void checkStatus(ConnectivityResult result) async {
     bool isOnline = false;
@@ -30,12 +31,12 @@ class NetworkConnectivity {
     } on SocketException catch (_) {
       isOnline = false;
     }
-    if(name.contains("wifi") || name.contains("mobile")){
-    if(isOnline== true){
-      _controller.sink.add(isOnline);
+    if (name.contains("wifi") || name.contains("mobile")) {
+      if (isOnline == true) {
+        _controller.sink.add(isOnline);
+      }
     }
-    }
-
   }
+
   void disposeStream() => _controller.close();
 }

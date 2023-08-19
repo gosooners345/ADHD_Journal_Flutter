@@ -186,6 +186,7 @@ class RecordRatingStats implements Comparable {
     return date.compareTo(other.date);
   }
 }
+
 class RecordDataStats extends Comparable {
   String key = '';
   double value = 0.0;

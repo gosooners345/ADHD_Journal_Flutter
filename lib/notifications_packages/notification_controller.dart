@@ -6,16 +6,16 @@ import '../project_resources/project_utils.dart';
 import '../main.dart';
 
 class NotificationController {
-
   static ReceivedAction? initialAction;
 
   static Future<void> initializeLocalNotifications() async {
-    await AwesomeNotifications().initialize('resource://drawable/res_notification_app_icon', [
+    await AwesomeNotifications()
+        .initialize('resource://drawable/res_notification_app_icon', [
       NotificationChannel(
         channelKey: 'adhd_journal',
         channelName: "ADHD Journal Reminder",
         channelDescription: "ADHD Journal Reminder Notification",
-defaultColor: Colors.amberAccent,
+        defaultColor: Colors.amberAccent,
         playSound: true,
         onlyAlertOnce: false,
         groupAlertBehavior: GroupAlertBehavior.Children,
@@ -36,38 +36,30 @@ defaultColor: Colors.amberAccent,
         criticalAlerts: true,
       )
     ]);
-    initialAction = await AwesomeNotifications().getInitialNotificationAction(
-        removeFromActionEvents: false);
+    initialAction = await AwesomeNotifications()
+        .getInitialNotificationAction(removeFromActionEvents: false);
   }
 
-
- 
 //Notifications begin here
   static Future<void> startListeningNotificationEvents() async {
-    AwesomeNotifications().setListeners(
-        onActionReceivedMethod: onActionReceivedMethod);
-
+    AwesomeNotifications()
+        .setListeners(onActionReceivedMethod: onActionReceivedMethod);
   }
 
   @pragma('vm:entry-point')
   static Future<void> onActionReceivedMethod(
       ReceivedAction receivedAction) async {
-    if (
-    receivedAction.actionType == ActionType.SilentAction ||
-        receivedAction.actionType == ActionType.SilentBackgroundAction
-    ) {
+    if (receivedAction.actionType == ActionType.SilentAction ||
+        receivedAction.actionType == ActionType.SilentBackgroundAction) {
       // For background actions, you must hold the execution until the end
       if (kDebugMode) {
-        print('Message sent via notification input: "${receivedAction
-          .buttonKeyInput}"');
+        print(
+            'Message sent via notification input: "${receivedAction.buttonKeyInput}"');
       }
       await executeLongTaskInBackground();
-    }
-    else {
+    } else {
       MyApp.navigatorKey.currentState?.pushNamedAndRemoveUntil(
-          '/',
-              (route) =>
-          (route.settings.name != '/') || route.isFirst,
+          '/', (route) => (route.settings.name != '/') || route.isFirst,
           arguments: receivedAction);
     }
   }
@@ -80,11 +72,7 @@ defaultColor: Colors.amberAccent,
         builder: (BuildContext ctx) {
           return AlertDialog(
             title: Text('Get Notified!',
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .titleLarge),
-
+                style: Theme.of(context).textTheme.titleLarge),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -111,8 +99,7 @@ defaultColor: Colors.amberAccent,
                   },
                   child: Text(
                     'Deny',
-                    style: Theme
-                        .of(context)
+                    style: Theme.of(context)
                         .textTheme
                         .titleLarge
                         ?.copyWith(color: Colors.red),
@@ -124,8 +111,7 @@ defaultColor: Colors.amberAccent,
                   },
                   child: Text(
                     'Allow',
-                    style: Theme
-                        .of(context)
+                    style: Theme.of(context)
                         .textTheme
                         .titleLarge
                         ?.copyWith(color: Colors.deepPurple),
@@ -153,14 +139,11 @@ defaultColor: Colors.amberAccent,
 
     await AwesomeNotifications().createNotification(
         content: NotificationContent(
-
             id: createUniqueId(),
             channelKey: 'adhd_journal',
             title: 'Daily Reminder',
-            body:
-            "Don't forget to journal today!",
+            body: "Don't forget to journal today!",
             notificationLayout: NotificationLayout.Default));
-
   }
 
   static Future<void> scheduleNewNotification(TimeOfDay? dateTime) async {
@@ -170,16 +153,19 @@ defaultColor: Colors.amberAccent,
 
     await AwesomeNotifications().createNotification(
         content: NotificationContent(
-
             id: createUniqueId(),
-       category: NotificationCategory.Reminder,
+            category: NotificationCategory.Reminder,
             channelKey: 'adhd_journal_scheduled',
             title: "Daily Reminder",
-            body:
-            "Don't forget to journal today!",
-autoDismissible: true
-            ),
-        schedule: NotificationCalendar(hour: dateTime!.hour,minute:dateTime.minute,second: 0,allowWhileIdle: true,preciseAlarm: true,repeats: true ));
+            body: "Don't forget to journal today!",
+            autoDismissible: true),
+        schedule: NotificationCalendar(
+            hour: dateTime!.hour,
+            minute: dateTime.minute,
+            second: 0,
+            allowWhileIdle: true,
+            preciseAlarm: true,
+            repeats: true));
   }
 
   static Future<void> resetBadgeCounter() async {
@@ -192,10 +178,4 @@ autoDismissible: true
     }
     await AwesomeNotifications().cancelAll();
   }
-
-
-
-
-
 }
-

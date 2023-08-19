@@ -139,27 +139,29 @@ class PreferenceBackupAndEncrypt {
       io.File privateKeyStorage =
           io.File(join(keyLocation, privateKeyFileName));
       io.File publicKeyStorage = io.File(join(keyLocation, pubKeyFileName));
-      if (privateKeyStorage.existsSync() == false || publicKeyStorage.existsSync()==false) {
+      if (privateKeyStorage.existsSync() == false ||
+          publicKeyStorage.existsSync() == false) {
         generateRSAKeys();
       }
       bool checkPubKey = await drive.checkForFile(pubKeyFileName);
       bool checkPrivKey = await drive.checkForFile(privateKeyFileName);
       if (checkPubKey && checkPrivKey) {
         throw Exception("We have keys in the cloud already");
+      } else {
+        drive.uploadFileToGoogleDrive(privateKeyStorage);
+        drive.uploadFileToGoogleDrive(publicKeyStorage);
+        print("RSA Keys Generated and uploaded");
+        if (kriss.kDebugMode) {
+          print("data encrypted");
+        }
       }
-      else{
-      drive.uploadFileToGoogleDrive(privateKeyStorage);
-      drive.uploadFileToGoogleDrive(publicKeyStorage);
-      print("RSA Keys Generated and uploaded");
-      if (kriss.kDebugMode) {
-        print("data encrypted");
-      }}
     } on Exception {
       if (kriss.kDebugMode) {
         print("Keys already exist in cloud");
       }
     }
   }
+
 // We will need to Add in OneDrive and iCloud integration here
   //Replace RSA Keys with new keys
   void replaceRsaKeys(GoogleDrive drive) async {

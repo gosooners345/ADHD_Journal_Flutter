@@ -28,9 +28,7 @@ import 'records_compose_components/new_compose_records_screen.dart';
 List<Records> recordHolder = [];
 int id = 0;
 
-
 Future<void> main() async {
-
   await NotificationController.initializeLocalNotifications();
 
   runApp(ChangeNotifierProvider<ThemeSwap>(
@@ -39,28 +37,21 @@ Future<void> main() async {
   ));
 }
 
-
 late RecordsBloc recordsBloc;
 
 int listSize = 0;
 
-class MyApp extends StatefulWidget{
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   static final GlobalKey<NavigatorState> navigatorKey =
-  GlobalKey<NavigatorState>();
+      GlobalKey<NavigatorState>();
 
   @override
   State<MyApp> createState() => MyAppState();
-
-
 }
 
-
 class MyAppState extends State<MyApp> {
-
-
-
   @override
   void initState() {
     NotificationController.startListeningNotificationEvents();
@@ -70,44 +61,43 @@ class MyAppState extends State<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    final  swapper = Provider.of<ThemeSwap>(context);
+    final swapper = Provider.of<ThemeSwap>(context);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       debugShowMaterialGrid: false,
       title: 'ADHD Journal',
       theme: ThemeData(
-          colorSchemeSeed: Color(swapper
-              .isColorSeed),
+          colorSchemeSeed: Color(swapper.isColorSeed),
           useMaterial3: true,
           brightness: Brightness.light),
       darkTheme: ThemeData(
-          colorSchemeSeed: Color(swapper
-              .isColorSeed),
+          colorSchemeSeed: Color(swapper.isColorSeed),
           useMaterial3: true,
           brightness: Brightness.dark),
       themeMode: ThemeMode.system,
+      themeAnimationDuration: Duration(seconds: 2),
+      themeAnimationCurve: Curves.fastEaseInToSlowEaseOut,
       initialRoute: '/',
       routes: {
         '/': (context) => SplashScreen(),
-        '/notification':(context) => SplashScreen(),
+        '/notification': (context) => SplashScreen(),
         '/onboarding': (context) => OnBoardingWidget(),
         '/savePassword': (context) => LoginScreen(
-          swapper: swapper,
-        ),
+              swapper: swapper,
+            ),
         '/login': (context) => LoginScreen(
-          swapper: swapper,
-        ),
+              swapper: swapper,
+            ),
         '/success': (context) => ADHDJournalApp(),
         '/fail': (context) => LoginScreen(
-          swapper: swapper,
-        ),
+              swapper: swapper,
+            ),
         '/composehelp': (context) => ComposeHelpWidget(),
         '/tutorials': (context) => TutorialHelpScreen(),
         '/dashboardhelp': (context) => DashboardHelp(),
         '/searchhelp': (context) => SortHelp(),
         '/resources': (context) => HelpfulLinksWidget(),
         '/backuphelp': (context) => BackupAndSyncdHelp(),
-        //'/openaitest' : (context) => TranslateScreen()
       },
     );
   }
@@ -164,7 +154,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
   void encryptData() async {
     await Future.sync(() {
       preferenceBackupAndEncrypt.encryptData(
-         "$userPassword,$dbPassword,$passwordHint,$passwordEnabled,$greeting,$colorSeed",
+          "$userPassword,$dbPassword,$passwordHint,$passwordEnabled,$greeting,$colorSeed",
           googleDrive);
     });
   }
@@ -300,16 +290,16 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
             icon: Icon(Icons.settings),
             onPressed: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => SettingsPage()))
+                      MaterialPageRoute(builder: (_) => SettingsPage()))
                   .then((value) => {
-                if (userPassword != dbPassword)
-                  {
-                    recordsBloc.changeDBPasswords(userPassword),
-                    recordsBloc = RecordsBloc()
-                  },
-                userActiveBackup = prefs.getBool("testBackup") ?? false,
-                if (userActiveBackup) {encryptData()},
-              });
+                        if (userPassword != dbPassword)
+                          {
+                            recordsBloc.changeDBPasswords(userPassword),
+                            recordsBloc = RecordsBloc()
+                          },
+                        userActiveBackup = prefs.getBool("testBackup") ?? false,
+                        if (userActiveBackup) {encryptData()},
+                      });
             },
           ),
         ],
@@ -319,33 +309,45 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
         leading: IconButton(
             onPressed: () {
               recordsBloc.dispose();
-              Navigator.pop(context);
+              Navigator.of(context).pop();
             },
             icon: backArrowIcon),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) =>
+              Navigator.push(context,
+                PageRouteBuilder(
+                    transitionDuration: Duration(seconds: 2),
 
-                      /// Change password upon exit if the password has changed.
-                      /// Tested and Passed: 05/09/2022
-                      SettingsPage())).then((value) => {
-                setState(() {
-                  greeting = prefs.getString('greeting')!;
-                }),
-                if (userPassword != dbPassword)
-                  {
-                    recordsBloc.changeDBPasswords(userPassword), //,}
-                    recordsBloc = RecordsBloc(),
-                    recordsBloc.getRecords()
-                  },
-                userActiveBackup = prefs.getBool("testBackup") ?? false,
-                if (userActiveBackup) {encryptData()},
-              });
+                    pageBuilder: (context,animation,secondaryAnimation)=> SettingsPage(),
+transitionsBuilder: (context,animation,secondaryAnimation,child) {
+                  const begin = Offset(0, 1.0);
+                  const end = Offset.zero;
+                  const curve = Curves.ease;
+                  var tween = Tween(begin:begin, end:end).chain(CurveTween(curve: curve));
+                  return SlideTransition(position: animation.drive(tween),child: child,);
+}
+
+                )
+                  /*MaterialPageRoute(
+                      builder: (_) =>
+                      
+                    SettingsPage())*/).then((value) => {
+                    setState(() {
+                      greeting = prefs.getString('greeting')!;
+                    }),
+                    if (userPassword != dbPassword)
+                      {
+                        recordsBloc.changeDBPasswords(userPassword),
+                        recordsBloc = RecordsBloc(),
+                        recordsBloc.getRecords()
+                      },
+                    userActiveBackup = prefs.getBool("testBackup") ?? false,
+                    if (userActiveBackup) {
+                      encryptData()
+                    },
+                  });
             },
           ),
         ],
@@ -353,24 +355,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
     ];
   }
 
-  /// This is for the bottom navigation bar, this isn't related to the records at all.
-  void _onItemTapped(int index) {
-    setState(() {
-      if (recordsBloc.recordHolder.isNotEmpty) {
-        _selectedIndex = index;
-        if (_selectedIndex == 0) {
-          title = 'Home';
-        } else {
-          title = 'Dashboard';
-          RecordList.loadLists();
-        }
-      } else {
-        _selectedIndex = 0;
-      }
-    });
-  }
 
-  ///Updates greeting and password  that isn't tied to DB Password
 
   /// Allows users to create entries for the db and journal. Once submitted, the screen will update on demand.
   /// Checked and passed : true
@@ -394,9 +379,9 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                       timeUpdated: DateTime.now()),
                   id: 0,
                   title: 'Compose New Entry'))).then((value) => {
-        //_showAlert(context, "Journal Entry Saved"),
-        recordsBloc.writeCheckpoint()
-      });
+            //_showAlert(context, "Journal Entry Saved"),
+            recordsBloc.writeCheckpoint()
+          });
     } on Exception catch (ex) {
       if (kDebugMode) {
         print(ex);
@@ -417,22 +402,6 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
   /// Checked and Passed : true
   ///
 // This is where the Buttons associated with the bottom navigation bar will be located.
-  final dashboardButtonItem =
-  BottomNavigationBarItem(label: 'Dashboard', icon: Icon(Icons.dashboard));
-  final homeButtonItem =
-  BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home');
-
-  BottomNavigationBar bottomBar() {
-    List<BottomNavigationBarItem> navBar = [
-      homeButtonItem,
-      dashboardButtonItem
-    ];
-    return BottomNavigationBar(
-      items: navBar,
-      onTap: _onItemTapped,
-      currentIndex: _selectedIndex,
-    );
-  }
 
   void verifyPasswordChanged() {
     try {
@@ -479,13 +448,40 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                 try {
                   _createRecord();
                 } on Exception catch (ex) {
-                  // ignore: avoid_print
-                  print(ex);
+
+                  if (kDebugMode) {
+                    print(ex);
+                  }
                 }
               });
             },
           ),
-          bottomNavigationBar: bottomBar(),
+          bottomNavigationBar:
+          NavigationBar(selectedIndex: _selectedIndex,
+            onDestinationSelected: (int index){
+              setState(() {
+                if (recordsBloc.recordHolder.isNotEmpty) {
+                  _selectedIndex = index;
+                  if (_selectedIndex == 0) {
+                    title = 'Home';
+                  } else {
+                    title = 'Dashboard';
+                    RecordList.loadLists();
+                  }
+                } else {
+                  _selectedIndex = 0;
+                }
+              });
+            },
+            destinations: const [
+              NavigationDestination(icon: Icon(Icons.home_outlined), label: "Home",selectedIcon: Icon(Icons.home),tooltip: "The diary",),
+              NavigationDestination(icon: Icon(Icons.dashboard_outlined), label: "Dashboard",selectedIcon: Icon(Icons.dashboard),tooltip: "The dashboard",)
+            ],
+
+          )
+
+
+          //bottomBar(),
         );
       },
     );

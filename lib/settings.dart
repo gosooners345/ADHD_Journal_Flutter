@@ -76,13 +76,18 @@ class _SettingsPage extends State<SettingsPage> {
     setState(() {
       if (notificationsAllowed) {
         notifyText =
-        'Notifications Turned on, Click here to change the schedule or turn them off.\r\n'
-      'Hit cancel to turn them off when the time picker pops up.';
-        bellIcon = Icon(Icons.notifications_active, color: Color(colorSeed),);
-      }
-      else {
+            'Notifications Turned on, Click here to change the schedule or turn them off.\r\n'
+            'Hit cancel to turn them off when the time picker pops up.';
+        bellIcon = Icon(
+          Icons.notifications_active,
+          color: Color(colorSeed),
+        );
+      } else {
         notifyText = 'Click here to turn on notification reminders';
-        bellIcon = Icon(Icons.notifications, color: Color(colorSeed),);
+        bellIcon = Icon(
+          Icons.notifications,
+          color: Color(colorSeed),
+        );
       }
       greetingController = TextEditingController(text: greeting);
       passwordController = TextEditingController(text: userPassword);
@@ -142,23 +147,19 @@ class _SettingsPage extends State<SettingsPage> {
     });
   }
 
-  // OneDrive activation here
-void oneDriveActivation(){}
-
   // USE ONLY IF YOU NEED TO RESET KEYS ON DEVICE. A FILE WILL BE ON THE DRIVE WARNING OF OLD KEYS
 // This will need to be modified to permit multiple services to be used
   void resetRSAKeys() async {
     await Future.sync(() => googleDrive.deleteOutdatedBackups(prefsName));
 
     await Future.sync(() => googleDrive.deleteOutdatedBackups(".pem"))
-        .whenComplete(() =>
-    {
-      preferenceBackupAndEncrypt.generateRSAKeys(),
-    });
-    await Future.delayed(Duration(seconds: 2), () {
+        .whenComplete(
+      () => preferenceBackupAndEncrypt.generateRSAKeys(),
+    );
+    await Future.delayed(const Duration(seconds: 2), () {
       preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
     });
-    await Future.delayed(Duration(seconds: 5), () {
+    await Future.delayed(const Duration(seconds: 5), () {
       preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
     });
   }
@@ -184,12 +185,15 @@ void oneDriveActivation(){}
                   print(passwordHint);
                 }
                 Future.delayed(const Duration(milliseconds: 50),
-                        () => Navigator.pop(context));
+                    () => Navigator.pop(context));
               },
               icon: backArrowIcon),
         ),
         extendBody: true,
-        body: ListView(
+        body:
+
+
+        ListView(
           children: <Widget>[
             ListTile(
               iconColor: Color(swapper.isColorSeed),
@@ -227,7 +231,9 @@ void oneDriveActivation(){}
             spacer,
             ListTile(
               leading: Icon(
-                Icons.color_lens, color: Color(swapper.isColorSeed),),
+                Icons.color_lens,
+                color: Color(swapper.isColorSeed),
+              ),
               title: const Text(
                 "Click here to change the application theme color",
               ),
@@ -258,7 +264,8 @@ void oneDriveActivation(){}
                       );
                     });
               },
-            ), spacer,
+            ),
+            spacer,
             Divider(
               height: 1.0,
               thickness: 0.5,
@@ -270,55 +277,65 @@ void oneDriveActivation(){}
                 leading: bellIcon,
                 title: Text(notifyText),
                 onTap: () {
-                  AwesomeNotifications().isNotificationAllowed().then((
-                      isAllowed) {
+                  AwesomeNotifications()
+                      .isNotificationAllowed()
+                      .then((isAllowed) {
                     if (!isAllowed) {
-                      showDialog(context: context, builder: (context) =>
-                          AlertDialog(
-                            title: const Text("Allow reminder notifications?"),
-                            content: const Text(
-                                "Would you like to be reminded to journal daily? If so, hit allow."),
-                            actions: [
-                              TextButton(onPressed: () {
-                                AwesomeNotifications()
-                                    .requestPermissionToSendNotifications()
-                                    .then((_) async {
-                                  prefs.setBool("notifications", true);
-                                  notifyText =
-                                  'Notifications Turned on, Click here to change the schedule or turn them off.\r\n'
-                                      'Hit cancel to turn them off when the time picker pops up.';
-                                  setState(() {
-                                    bellIcon = Icon(Icons.notifications_active,
-                                      color: Color(colorSeed),);
-                                  });
-                                },);
-                                Navigator.pop(context);
-                              }, child: const Text("Allow")),
-                              TextButton(
-                                onPressed: () {
-                                  prefs.setBool("notifications", false);
-                                  notifyText =
-                                  'Click here to turn on notification reminders';
-                                  setState(() {
-                                    bellIcon = Icon(Icons.notifications,
-                                      color: Color(colorSeed),);
-                                  });
-                                  Navigator.pop(context);
-                                },
-                                child: const Text(
-                                  'Don\'t Allow',
-                                ),
-                              ),
-                            ],
-                          ));
-                    }
-                    else {
-
+                      showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                title:
+                                    const Text("Allow reminder notifications?"),
+                                content: const Text(
+                                    "Would you like to be reminded to journal daily? If so, hit allow."),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () {
+                                        AwesomeNotifications()
+                                            .requestPermissionToSendNotifications()
+                                            .then(
+                                          (_) async {
+                                            prefs.setBool(
+                                                "notifications", true);
+                                            notifyText =
+                                                'Notifications Turned on, Click here to change the schedule or turn them off.\r\n'
+                                                'Hit cancel to turn them off when the time picker pops up.';
+                                            setState(() {
+                                              bellIcon = Icon(
+                                                Icons.notifications_active,
+                                                color: Color(colorSeed),
+                                              );
+                                            });
+                                          },
+                                        );
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text("Allow")),
+                                  TextButton(
+                                    onPressed: () {
+                                      prefs.setBool("notifications", false);
+                                      notifyText =
+                                          'Click here to turn on notification reminders';
+                                      setState(() {
+                                        bellIcon = Icon(
+                                          Icons.notifications,
+                                          color: Color(colorSeed),
+                                        );
+                                      });
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text(
+                                      'Don\'t Allow',
+                                    ),
+                                  ),
+                                ],
+                              ));
+                    } else {
                       prefs.setBool("notifications", true);
                       notificationsAllowed =
                           prefs.getBool('notifications') ?? true;
-                      NotificationController.cancelNotifications().then((
-                          _) async {
+                      NotificationController.cancelNotifications()
+                          .then((_) async {
                         TimeOfDay? scheduleReminder = await showTimePicker(
                             context: context, initialTime: TimeOfDay.now());
 
@@ -326,29 +343,35 @@ void oneDriveActivation(){}
                           NotificationController.scheduleNewNotification(
                               scheduleReminder);
                           setState(() {
-                            bellIcon = Icon(Icons.notifications_active,
-                              color: Color(colorSeed),);
+                            bellIcon = Icon(
+                              Icons.notifications_active,
+                              color: Color(colorSeed),
+                            );
                             notifyText =
-                            'Notifications Turned on, Click here to change the schedule or turn them off.\r\n'
+                                'Notifications Turned on, Click here to change the schedule or turn them off.\r\n'
                                 'Hit cancel to turn them off when the time picker pops up.';
                           });
-                          String AMPM = scheduleReminder.hour> 12 ? "PM" :"AM";
-showMessage("Reminder Created for "+scheduleReminder.hourOfPeriod.toString() +":"+scheduleReminder.minute.toString() + AMPM);
-                          print("Notification schedule created");
-                        }
-                        else {
+                          String AMPM =
+                              scheduleReminder.hour > 12 ? "PM" : "AM";
+                          showMessage("Reminder Created for ${scheduleReminder.hourOfPeriod}:${scheduleReminder.minute}$AMPM");
+                          if (kDebugMode) {
+                            print("Notification schedule created");
+                          }
+                        } else {
                           AwesomeNotifications().cancelSchedulesByChannelKey(
                               'adhd_journal_scheduled');
                           showMessage("Notification schedule cancelled");
-                          /*print("Notification schedule canceled");*/
+
                           prefs.setBool("notifications", false);
                           notificationsAllowed =
                               prefs.getBool('notifications') ?? false;
                           notifyText =
-                          'Click here to turn on notification reminders';
+                              'Click here to turn on notification reminders';
                           setState(() {
                             bellIcon = Icon(
-                              Icons.notifications, color: Color(colorSeed),);
+                              Icons.notifications,
+                              color: Color(colorSeed),
+                            );
                           });
                         }
                       });
@@ -436,7 +459,9 @@ showMessage("Reminder Created for "+scheduleReminder.hourOfPeriod.toString() +":
                     );
                     passwordLabelText = "Password Enabled";
                     prefs.setBool('passwordEnabled', value);
-                    print(value);
+                    if (kDebugMode) {
+                      print(value);
+                    }
                   } else if (!value) {
                     lockIcon = Icon(
                       Icons.lock_open,
@@ -444,7 +469,9 @@ showMessage("Reminder Created for "+scheduleReminder.hourOfPeriod.toString() +":
                     );
                     passwordLabelText = "Password Disabled";
                     prefs.setBool('passwordEnabled', value);
-                    print(value);
+                    if (kDebugMode) {
+                      print(value);
+                    }
                   }
                   passwordLabelWidget = Text(passwordLabelText);
                 });
@@ -461,40 +488,37 @@ showMessage("Reminder Created for "+scheduleReminder.hourOfPeriod.toString() +":
             //Sync
 
             ListTile(
-              title: Text(
+              title: const Text(
                   "Advanced Settings - Click here if you need to reset your RSA encryption keys for backup and sync"),
               onTap: () {
                 showDialog(
                   context: context,
                   builder: (BuildContext builder) {
                     return AlertDialog(
-                      title: Text(
+                      title: const Text(
                         "Reset RSA Keys for backup and sync.",
                       ),
-                      content: const Text(reset_RSA_Key_Dialog_Message_String
-                      ),
+                      content: const Text(reset_RSA_Key_Dialog_Message_String),
                       actions: [
                         ElevatedButton(
                             onPressed: () async {
                               if (userActiveBackup == true) {
                                 Navigator.of(context).pop();
-                                await Future.sync(
-                                        () => resetRSAKeys())
+                                await Future.sync(() => resetRSAKeys())
                                     .whenComplete(() {
-                                  showMessage(
-                                      "Your keys have been reset");
+                                  showMessage("Your keys have been reset");
                                 });
                               } else {
                                 Navigator.of(context).pop();
                               }
                             },
-                            child: Text(
-                                "Yes")),
+                            child: const Text("Yes")),
                         ElevatedButton(
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
-                          child: Text("No"),)
+                          child: const Text("No"),
+                        )
                       ],
                     );
                   },
@@ -599,13 +623,13 @@ showMessage("Reminder Created for "+scheduleReminder.hourOfPeriod.toString() +":
               },
               iconColor: Color(swapper.isColorSeed),
               title: const Text('Contact Me'),
-              subtitle: Row(
-                children: const [
+              subtitle: const Row(
+                children: [
                   Expanded(
                     flex: 1,
                     child: Text(
                       "Tell me about your experience using this app or request new features here!",
-                      softWrap: true, /*textScaleFactor: 1.15,*/
+                      softWrap: true,
                     ),
                   ),
                 ],
@@ -665,16 +689,12 @@ showMessage("Reminder Created for "+scheduleReminder.hourOfPeriod.toString() +":
             ),
 
             ListTile(
-
               leading: Image.asset('images/GoogleDriveLogo.png'),
               title: const Text(''),
               subtitle: const Text(
                   'Google Drive is a trademark of Google Inc. Use of this trademark is subject to Google Permissions.'),
-              onTap: () {
-
-              },
+              onTap: () {},
             ),
-
           ],
         ),
       );
@@ -689,6 +709,7 @@ showMessage("Reminder Created for "+scheduleReminder.hourOfPeriod.toString() +":
         isHTML: false);
     await FlutterEmailSender.send(email);
   }
+
 //Onedrive agent method needed
   void getDriveAgent() async {
     googleDrive.client = await googleDrive.getHttpClient();

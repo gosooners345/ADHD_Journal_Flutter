@@ -2,16 +2,13 @@ import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-
 extension ListSpaceBetweenExtension on List<Widget> {
   List<Widget> withSpaceBetween({double? width, double? height}) => [
-    for (int i = 0; i < length; i++)
-      ...[
-        if (i > 0)
-          SizedBox(width: width, height: height),
-        this[i],
-      ],
-  ];
+        for (int i = 0; i < length; i++) ...[
+          if (i > 0) SizedBox(width: width, height: height),
+          this[i],
+        ],
+      ];
 }
 
 int createUniqueId() {
@@ -29,8 +26,8 @@ class NotificationWeekAndTime {
 }
 
 Future<NotificationWeekAndTime?> pickSchedule(
-    BuildContext context,
-    ) async {
+  BuildContext context,
+) async {
   List<String> weekdays = [
     'Mon',
     'Tue',
@@ -101,24 +98,29 @@ Future<NotificationWeekAndTime?> pickSchedule(
   return null;
 }
 
-Widget uiCard(Widget child,ThemeSwap swapper){
-  return Card(borderOnForeground: true,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4),
-        side: BorderSide(color:Color(swapper.isColorSeed).withOpacity(1.0))
-    ),child: child,);
+Widget uiCard(Widget child, ThemeSwap swapper) {
+  return Card(
+    borderOnForeground: true,
+    shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4),
+        side: BorderSide(color: Color(swapper.isColorSeed).withOpacity(1.0))),
+    child: child,
+  );
 }
-Widget entryCard(Widget child, ThemeSwap swapper){
- return Card(
+
+Widget entryCard(Widget child, ThemeSwap swapper) {
+  return Card(
       borderOnForeground: true,
       shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(4), // if you need this
-  side: BorderSide(
-  color: Color(swapper.isColorSeed).withOpacity(1.0),
-  width: 1,
-  ),
-  ),
-  elevation: 2.0,
-  margin: const EdgeInsets.all(10),
-  child:child);
+        borderRadius: BorderRadius.circular(4), // if you need this
+        side: BorderSide(
+          color: Color(swapper.isColorSeed).withOpacity(1.0),
+          width: 1,
+        ),
+      ),
+      elevation: 2.0,
+      margin: const EdgeInsets.all(10),
+      child: child);
 }
- const platform = MethodChannel('com.activitylogger.release1/ADHDJournal');
+
+const platform = MethodChannel('com.activitylogger.release1/ADHDJournal');

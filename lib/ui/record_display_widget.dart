@@ -24,7 +24,9 @@ class RecordDisplayWidget extends StatefulWidget {
 TextEditingController passwordHintController = TextEditingController();
 late TextEditingController searchController;
 
-class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
+class RecordDisplayWidgetState extends State<RecordDisplayWidget> with SingleTickerProviderStateMixin{
+
+
   @override
   void initState() {
     super.initState();
@@ -44,6 +46,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
       }
     }
   }
+//Animations
 
 // For updating the list when its opening. this
   startTimer() async {
@@ -63,130 +66,12 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
     RecordList.loadLists();
   }
 
-  /// Stream widget testing here
-  Widget getRecordsDisplay() {
-    return Consumer<ThemeSwap>(builder: (context, swapper, child) {
-      return StreamBuilder(
-        stream: recordsBloc.recordStuffs,
-        builder: (BuildContext context, AsyncSnapshot<List<Records>> snapshot) {
-          return getRecordCards(snapshot);
-        },
-      );
-    });
-  }
 
-  Widget getRecordCards(AsyncSnapshot<List<Records>> snapshot) {
-    if (snapshot.hasData) {
-      return Consumer<ThemeSwap>(builder: (context, swapper, child) {
-        return snapshot.data!.isNotEmpty
-            ? ListView.builder(
-                itemBuilder: (context, index) {
-                  Records record = snapshot.data![index];
-
-                  Widget dismissableCard = Dismissible(
-                    background: Card(
-                      shape: RoundedRectangleBorder(
-                          side: BorderSide(
-                              color: Color(swapper.isColorSeed), width: 1.0),
-                          borderRadius: BorderRadius.circular(18)),
-                      elevation: 2.0,
-                      child: const Padding(
-                        padding: EdgeInsets.only(left: 10),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Row(mainAxisAlignment:MainAxisAlignment.start,children:[const Icon(Icons.delete,color: Colors.white,),Text(
-                            "Deleting",
-                            style: TextStyle(color: Colors.white),
-                          ),])
-                        ),
-                      ),
-                      color:Color(swapper.isColorSeed),
-                    ),
-                    key: ObjectKey(record),
-                    child: Card(
-                        shape: RoundedRectangleBorder(
-                            side: BorderSide(
-                                color: Color(swapper.isColorSeed), width: 1.0),
-                            borderRadius: BorderRadius.circular(18)),
-                        child: ListTile(
-                          onTap: () {
-                            _editRecord(record);
-                          },
-                          title: RecordCardViewWidget(
-                            record: record,
-                          ),
-                          contentPadding: EdgeInsets.all(8),
-                        )),
-                    confirmDismiss: (value) async{
-                      return await showDialog(
-                          context: context,
-                          builder: (BuildContext context) =>
-                          AlertDialog(
-                            title: const Text('Delete Entry?'),
-                            content: const Text(
-                                'Are you sure you want to delete this entry?'),
-                            actions: [
-                              TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop(true);
-
-                                  },
-                                  child: const Text('Yes')),
-                              TextButton(
-                                  child: Text('No'),
-                                  onPressed: () {
-                                   // recordsBloc.getRecords();
-                                    Navigator.of(context).pop(false);
-                                  })
-                            ],
-                          ));
-                    },
-
-                    onDismissed: (direction) {
-                      recordsBloc.deleteRecordByID(record.id);
-
-                      recordsBloc.writeCheckpoint();
-                      _showAlert(context, "Entry Deleted");
-
-                    },
-                    direction: DismissDirection.horizontal,
-                  );
-                  return dismissableCard;
-                },
-                itemCount: snapshot.data?.length,
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-              )
-            : const Center(
-                child: Text(
-                    'Add a new record by hitting the create button below!'),
-              );
-      });
-    } else if (snapshot.hasError) {
-      if (kDebugMode) {
-        print(snapshot.error);
-      }
-      return Text(snapshot.stackTrace.toString());
-    } else {
-      if (kDebugMode) {
-        print(snapshot.connectionState);
-      }
-      return const Center(
-        child: Center(
-          child: Column(
-            children: <Widget>[
-              CircularProgressIndicator(),
-              Text('Loading your journal entries.'),
-            ],
-          ),
-        ),
-      );
-    }
-  }
 
   @override
   dispose() {
     super.dispose();
+
     recordsBloc.dispose();
   }
 
@@ -279,27 +164,143 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> {
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(builder: (context, swapper, child) {
-      return SafeArea(minimum:EdgeInsets.all(5.0),child: Column(
-        children: <Widget>[
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.only(
-                left: 15.0, right: 15.0, top: 15, bottom: 15.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    'Welcome back $greeting! What would you like to record today?',
-                    style: const TextStyle(fontSize: 18.0),
-                    textAlign: TextAlign.center,
-                  ),
+      return SafeArea(
+          minimum: const EdgeInsets.all(5.0),
+          child: Column(
+            children: <Widget>[
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 15.0, right: 15.0, top: 15, bottom: 15.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Welcome back $greeting! What would you like to record today?',
+                        style: const TextStyle(fontSize: 18.0),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-          Expanded(child: getRecordsDisplay())
-        ],
-      ));
+              ),
+              Expanded(
+              child: StreamBuilder(
+                stream: recordsBloc.recordStuffs,
+                builder: (BuildContext context, AsyncSnapshot<List<Records>> snapshot) {
+                  if (snapshot.hasData) {
+                    return snapshot.data!.isNotEmpty
+                          ?
+                    ListView.builder(
+                        itemBuilder: (context, index) {
+                          Records record = snapshot.data![index];
+                          Widget dismissableCard = Dismissible(
+                            background: Card(
+                              shape: RoundedRectangleBorder(
+                                  side: BorderSide(
+                                      color: Color(swapper.isColorSeed), width: 1.0),
+                                  borderRadius: BorderRadius.circular(18)),
+                              elevation: 2.0,
+                              color: Color(swapper.isColorSeed),
+                              child: const Padding(
+                                padding: EdgeInsets.only(left: 10),
+                                child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          Icon(
+                                            Icons.delete,
+                                            color: Colors.white,
+                                          ),
+                                          Text(
+                                            "Deleting",
+                                            style: TextStyle(color: Colors.white),
+                                          ),
+                                        ])),
+                              ),
+                            ),
+                            key: ObjectKey(record),
+                            confirmDismiss: (value) async {
+                              return await showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) => AlertDialog(
+                                    title: const Text('Delete Entry?'),
+                                    content: const Text(
+                                        'Are you sure you want to delete this entry?'),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop(true);
+                                          },
+                                          child: const Text('Yes')),
+                                      TextButton(
+                                          child: const Text('No'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop(false);
+                                          })
+                                    ],
+                                  ));
+                            },
+                            onDismissed: (direction) {
+                              recordsBloc.deleteRecordByID(record.id);
+
+                              recordsBloc.writeCheckpoint();
+                              _showAlert(context, "Entry Deleted");
+                            },
+                            direction: DismissDirection.horizontal,
+                            child: Card(
+                                shape: RoundedRectangleBorder(
+                                    side: BorderSide(
+                                        color: Color(swapper.isColorSeed), width: 1.0),
+                                    borderRadius: BorderRadius.circular(18)),
+                                child: ListTile(
+                                  onTap: () {
+                                    _editRecord(record);
+                                  },
+                                  title: RecordCardViewWidget(
+                                    record: record,
+                                  ),
+                                  contentPadding: const EdgeInsets.all(8),
+                                )),
+                          );
+                          return dismissableCard;
+                        },
+                        itemCount: snapshot.data?.length,
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                      )
+                          : const Center(
+                        child: Text(
+                            'Add a new record by hitting the create button below!'),
+                      );
+
+                  } else if (snapshot.hasError) {
+                    if (kDebugMode) {
+                      print(snapshot.error);
+                    }
+                    return Text(snapshot.stackTrace.toString());
+                  } else {
+                    if (kDebugMode) {
+                      print(snapshot.connectionState);
+                    }
+                    return const Center(
+                      child: Center(
+                        child: Column(
+                          children: <Widget>[
+                            CircularProgressIndicator(),
+                            Text('Loading your journal entries.'),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                },
+              ),
+
+              )
+            ],
+          ));
     });
   }
 }

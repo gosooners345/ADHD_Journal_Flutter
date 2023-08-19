@@ -28,7 +28,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
   GoogleDrive googleDrive = GoogleDrive();
   late ElevatedButton driveButton;
   final PageController _pageController = PageController();
-  double? currentPage =0;
+  double? currentPage = 0;
   var pageTitleStyle = const TextStyle(
     fontSize: 23.0,
     wordSpacing: 1,
@@ -51,9 +51,9 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     _pageController.addListener(() {
       currentPage = _pageController.page;
       setState(() {
-      currentPage = _pageController.page;
-    });});
-
+        currentPage = _pageController.page;
+      });
+    });
   }
 
   void storePrefs() async {
@@ -67,526 +67,570 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
     prefs.setBool('firstVisit', false);
   }
 
-
-  PageView _buildOnboardingCards(ThemeSwap swapper){
-    return PageView(controller: _pageController,
-    children: [
-   //Introduction
-      uiCard(SingleChildScrollView(
-      controller: ScrollController(),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 45.0,
-              vertical: 90.0,
-            ),
-            child: Image.asset(
-              'images/appicon-76x76.png',
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 45.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Welcome to the ADHD Journal!',
-                style: pageTitleStyle,
-                textAlign: TextAlign.left,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 45.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                first_intro_paragraph_string,
-                style: pageInfoStyle,
-                textAlign: TextAlign.left,
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.zero,
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height,
-            ),
-          )
-        ],
-      ),
-    ), swapper),
-      //Security page
-
-      uiCard( SingleChildScrollView(
-      controller: ScrollController(),
-      child: Column(
-        children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: 45.0,
-              vertical: 90.0,
-            ),
-            child: Icon(
-              Icons.security_sharp,
-              // color: Colors.black,
-              size: 60.0,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 45.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Security',
-                style: pageTitleStyle,
-                textAlign: TextAlign.left,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 45.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                security_paragraph_intro_string,
-                style: pageInfoStyle,
-                textAlign: TextAlign.left,
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.zero,
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height,
-            ),
-          )
-        ],
-      ),
-    ), swapper),
-      //Home Page
-
-      uiCard(SingleChildScrollView(
-      controller: ScrollController(),
-      child: Column(
-        children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: 45.0,
-              vertical: 90.0,
-            ),
-            child: Icon(
-              Icons.home,
-              // color: Colors.black,
-              size: 60.0,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 45.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Home Page',
-                style: pageTitleStyle,
-                textAlign: TextAlign.left,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 16.0, vertical: 8.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                home_page_intro_paragraph_string,
-                style: pageInfoStyle,
-                textAlign: TextAlign.left,
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.zero,
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height,
-            ),
-          )
-        ],
-      ),
-    ), swapper),
-      // Dashboard
-
-      uiCard( SingleChildScrollView(
-      controller: ScrollController(),
-      child: Column(
-        children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: 45.0,
-              vertical: 90.0,
-            ),
-            child: Icon(
-              Icons.dashboard,
-              //  color: Colors.black,
-              size: 60.0,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 45.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Dashboard',
-                style: pageTitleStyle,
-                textAlign: TextAlign.left,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 16.0, vertical: 8.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                dashboard_paragraph_intro_string,
-                style: pageInfoStyle,
-                textAlign: TextAlign.left,
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.zero,
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height,
-            ),
-          )
-        ],
-      ),
-    ), swapper),
-      // Record Entry page
-
-      uiCard(SingleChildScrollView(
-      controller: ScrollController(),
-      child: Column(
-        children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: 45.0,
-              vertical: 90.0,
-            ),
-            child: Icon(
-              Icons.edit,
-              //   color: Colors.black,
-              size: 60.0,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 45.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Composing Entries',
-                style: pageTitleStyle,
-                textAlign: TextAlign.left,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 16.0, vertical: 8.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                records_intro_paragraph_string,
-                style: pageInfoStyle,
-                textAlign: TextAlign.left,
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.zero,
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height,
-            ),
-          )
-        ],
-      ),
-    ), swapper),
-      // Settings Page
-      uiCard(ListView(
+  PageView _buildOnboardingCards(ThemeSwap swapper) {
+    return PageView(
+      controller: _pageController,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: 45.0,
-            vertical: 90.0,
-          ),
-          child: Icon(
-            Icons.settings,
-            size: 60.0,
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 45.0),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'Settings',
-              style: pageTitleStyle,
-              textAlign: TextAlign.left,
+        //Introduction
+        uiCard(
+            SingleChildScrollView(
+              controller: ScrollController(),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 45.0,
+                      vertical: 90.0,
+                    ),
+                    child: Image.asset(
+                      'images/appicon-76x76.png',
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Welcome to the ADHD Journal!',
+                        style: pageTitleStyle,
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        first_intro_paragraph_string,
+                        style: pageInfoStyle,
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.zero,
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height,
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-        ),
-        Padding(
-          padding:
-          EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              settings_paragraph_intro_string,
-              style: pageInfoStyle,
-              textAlign: TextAlign.left,
+            swapper),
+        //Security page
+
+        uiCard(
+            SingleChildScrollView(
+              controller: ScrollController(),
+              child: Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 45.0,
+                      vertical: 90.0,
+                    ),
+                    child: Icon(
+                      Icons.security_sharp,
+                      // color: Colors.black,
+                      size: 60.0,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Security',
+                        style: pageTitleStyle,
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        security_paragraph_intro_string,
+                        style: pageInfoStyle,
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.zero,
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height,
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.zero,
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height,
-          ),
-        )
+            swapper),
+        //Home Page
+
+        uiCard(
+            SingleChildScrollView(
+              controller: ScrollController(),
+              child: Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 45.0,
+                      vertical: 90.0,
+                    ),
+                    child: Icon(
+                      Icons.home,
+                      // color: Colors.black,
+                      size: 60.0,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Home Page',
+                        style: pageTitleStyle,
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        home_page_intro_paragraph_string,
+                        style: pageInfoStyle,
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.zero,
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height,
+                    ),
+                  )
+                ],
+              ),
+            ),
+            swapper),
+        // Dashboard
+
+        uiCard(
+            SingleChildScrollView(
+              controller: ScrollController(),
+              child: Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 45.0,
+                      vertical: 90.0,
+                    ),
+                    child: Icon(
+                      Icons.dashboard,
+                      //  color: Colors.black,
+                      size: 60.0,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Dashboard',
+                        style: pageTitleStyle,
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        dashboard_paragraph_intro_string,
+                        style: pageInfoStyle,
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.zero,
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height,
+                    ),
+                  )
+                ],
+              ),
+            ),
+            swapper),
+        // Record Entry page
+
+        uiCard(
+            SingleChildScrollView(
+              controller: ScrollController(),
+              child: Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 45.0,
+                      vertical: 90.0,
+                    ),
+                    child: Icon(
+                      Icons.edit,
+                      //   color: Colors.black,
+                      size: 60.0,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Composing Entries',
+                        style: pageTitleStyle,
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        records_intro_paragraph_string,
+                        style: pageInfoStyle,
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.zero,
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height,
+                    ),
+                  )
+                ],
+              ),
+            ),
+            swapper),
+        // Settings Page
+        uiCard(
+            ListView(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 45.0,
+                    vertical: 90.0,
+                  ),
+                  child: Icon(
+                    Icons.settings,
+                    size: 60.0,
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 45.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Settings',
+                      style: pageTitleStyle,
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      settings_paragraph_intro_string,
+                      style: pageInfoStyle,
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.zero,
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                  ),
+                )
+              ],
+            ),
+            swapper),
+        //Backup And Sync Page
+        uiCard(
+            SingleChildScrollView(
+              controller: ScrollController(),
+              child: Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 45.0,
+                      vertical: 90.0,
+                    ),
+                    child: Icon(
+                      Icons.sync,
+                      // color: Colors.black,
+                      size: 60.0,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Backup and Sync Functionality',
+                        style: pageTitleStyle,
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        backup_and_sync_intro_paragraph_string,
+                        style: pageInfoStyle,
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        backup_and_sync_2nd_paragraph_string,
+                        style: pageInfoStyle,
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.zero,
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height,
+                    ),
+                  )
+                ],
+              ),
+            ),
+            swapper),
+        //Last page
+        uiCard(
+            ListView(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 45.0,
+                    vertical: 90.0,
+                  ),
+                  child: Icon(
+                    Icons.done,
+                    size: 60.0,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 45.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'One more thing...',
+                      style: pageTitleStyle,
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      sixth_paragraph_intro_string,
+                      style: pageInfoStyle,
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                      left: 15.0, right: 15.0, top: 15, bottom: 0),
+                  child: TextField(
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Enter your name here',
+                        hintText: 'Enter your name here'),
+                    onChanged: (text) {
+                      greetingValueSaved = text;
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                      left: 15.0, right: 15.0, top: 15, bottom: 0),
+                  child: TextField(
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'New Password for diary',
+                        hintText: 'Enter a secure Password'),
+                    onChanged: (text) {
+                      savedPasswordValue = text;
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                      left: 15.0, right: 15.0, top: 15, bottom: 0),
+                  child: TextField(
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Password Hint',
+                        hintText:
+                            'Enter a hint to help you remember your password easier here'),
+                    onChanged: (text) {
+                      passwordHint = text;
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: CheckboxListTile(
+                      title: const Text("Password enabled?"),
+                      activeColor: Color(swapper.isColorSeed),
+                      value: isSaved,
+                      onChanged: (bool? changed) {
+                        setState(() {
+                          isSaved = changed!;
+                        });
+                      }),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (savedPasswordValue != '') {
+                      await Future.sync(() => storePrefs()).whenComplete(() => {
+                            dbPassword = savedPasswordValue,
+                            userPassword = savedPasswordValue,
+                            Navigator.pushReplacementNamed(context, '/login')
+                          });
+                    } else {
+                      try {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                                  title: const Text('Password Required!'),
+                                  content: const Text(
+                                      password_Required_Message_String),
+                                  actions: [
+                                    TextButton(
+                                        onPressed: () async {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text('OK')),
+                                  ],
+                                ));
+                      } catch (e, s) {
+                        if (kDebugMode) {
+                          print(s);
+                        }
+                      }
+                    }
+                  },
+                  child: const Text('Save'),
+                )
+              ],
+            ),
+            swapper),
       ],
-    ), swapper),
-      //Backup And Sync Page
-      uiCard( SingleChildScrollView(
-        controller: ScrollController(),
-        child: Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 45.0,
-                vertical: 90.0,
-              ),
-              child: Icon(
-                Icons.sync,
-                // color: Colors.black,
-                size: 60.0,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 45.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Backup and Sync Functionality',
-                  style: pageTitleStyle,
-                  textAlign: TextAlign.left,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0, vertical: 8.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  backup_and_sync_intro_paragraph_string,
-                  style: pageInfoStyle,
-                  textAlign: TextAlign.left,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0, vertical: 8.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  backup_and_sync_2nd_paragraph_string,
-                  style: pageInfoStyle,
-                  textAlign: TextAlign.left,
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.zero,
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height,
-              ),
-            )
-          ],
-        ),
-      ), swapper),
-      //Last page
-      uiCard( ListView(
-        children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: 45.0,
-              vertical: 90.0,
-            ),
-            child: Icon(
-              Icons.done,
-              size: 60.0,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 45.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'One more thing...',
-                style: pageTitleStyle,
-                textAlign: TextAlign.left,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 16.0, vertical: 8.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                sixth_paragraph_intro_string,
-                style: pageInfoStyle,
-                textAlign: TextAlign.left,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-                left: 15.0, right: 15.0, top: 15, bottom: 0),
-            child: TextField(
-              decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Enter your name here',
-                  hintText: 'Enter your name here'),
-              onChanged: (text) {
-                greetingValueSaved = text;
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-                left: 15.0, right: 15.0, top: 15, bottom: 0),
-            child: TextField(
-              decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'New Password for diary',
-                  hintText: 'Enter a secure Password'),
-              onChanged: (text) {
-                savedPasswordValue = text;
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-                left: 15.0, right: 15.0, top: 15, bottom: 0),
-            child: TextField(
-              decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Password Hint',
-                  hintText:
-                  'Enter a hint to help you remember your password easier here'),
-              onChanged: (text) {
-                passwordHint = text;
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: CheckboxListTile(
-                title: const Text("Password enabled?"),
-                activeColor: Color(swapper.isColorSeed),
-                value: isSaved,
-                onChanged: (bool? changed) {
-                  setState(() {
-                    isSaved = changed!;
-                  });
-                }),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              if (savedPasswordValue != '') {
-                await Future.sync(() => storePrefs())
-                    .whenComplete(() => {
-                  dbPassword = savedPasswordValue,
-                  userPassword = savedPasswordValue,
-                  Navigator.pushReplacementNamed(
-                      context, '/login')
-                });
-              } else {
-                try {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                        title: const Text('Password Required!'),
-                        content: const Text(
-                            password_Required_Message_String),
-                        actions: [
-                          TextButton(
-                              onPressed: () async {
-                                Navigator.pop(context);
-                              },
-                              child: const Text('OK')),
-                        ],
-                      ));
-                } catch (e, s) {
-                  if (kDebugMode) {
-                    print(s);
-                  }
-                }
-              }
-            },
-            child: const Text('Save'),
-          )
-        ],
-      ), swapper),
-    ],
     );
   }
   // Useful for Cards
-  
 
   @override
   Widget build(BuildContext context) {
-    const pageCount= 8;
+    const pageCount = 8;
     return Consumer<ThemeSwap>(
         builder: (context, ThemeSwap themeNotifier, child) {
       return Scaffold(
-        body: SafeArea(minimum:const EdgeInsets.fromLTRB(8,8,8,80),child:Stack(children: [
-          currentPage! == 0 ? const Text(""):
-          Align(alignment: AlignmentDirectional.centerStart,
-              child: IconButton(tooltip:"Previous",onPressed: (){_pageController.previousPage(duration: const Duration(milliseconds:200 ), curve:Curves.easeInExpo ).whenComplete(() =>
-              {
-                setState(() {
-                  currentPage = _pageController.page!;
-                })
-              });
-              },
-                icon: backArrowIcon,)) ,
-         Padding(padding: const EdgeInsets.fromLTRB(35, 8, 35, 10),child:  _buildOnboardingCards(themeNotifier)),
-          currentPage! == pageCount-1 ? const Text(""):
-          Align(alignment: AlignmentDirectional.centerEnd,
-              child: IconButton(tooltip: "Next",onPressed: (){_pageController.nextPage(duration: const Duration(milliseconds:200 ), curve:Curves.easeInExpo ).whenComplete(() => {
-                setState(() {
-                  currentPage= _pageController.page!;
-                })
-              });},
-                icon: nextArrowIcon,)),
-          Align(alignment: Alignment.bottomCenter,
-            child:SizedBox(height: 8,
-                child:
-                SmoothPageIndicator(controller: _pageController,
-                  count:pageCount,
-                  effect:  WormEffect(dotHeight: 12,dotWidth: 12,dotColor:Color(themeNotifier.isColorSeed)),onDotClicked: (value){
-                    setState(() {
-                      currentPage = value.toDouble();
-                      _pageController.jumpToPage(value);
-                    });
-                  },)),
-          ),
-        ],
-        )),
-
+        body: SafeArea(
+            minimum: const EdgeInsets.fromLTRB(8, 8, 8, 80),
+            child: Stack(
+              children: [
+                currentPage! == 0
+                    ? const Text("")
+                    : Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: IconButton(
+                          tooltip: "Previous",
+                          onPressed: () {
+                            _pageController
+                                .previousPage(
+                                    duration: const Duration(milliseconds: 200),
+                                    curve: Curves.easeInExpo)
+                                .whenComplete(() => {
+                                      setState(() {
+                                        currentPage = _pageController.page!;
+                                      })
+                                    });
+                          },
+                          icon: backArrowIcon,
+                        )),
+                Padding(
+                    padding: const EdgeInsets.fromLTRB(35, 8, 35, 10),
+                    child: _buildOnboardingCards(themeNotifier)),
+                currentPage! == pageCount - 1
+                    ? const Text("")
+                    : Align(
+                        alignment: AlignmentDirectional.centerEnd,
+                        child: IconButton(
+                          tooltip: "Next",
+                          onPressed: () {
+                            _pageController
+                                .nextPage(
+                                    duration: const Duration(milliseconds: 200),
+                                    curve: Curves.easeInExpo)
+                                .whenComplete(() => {
+                                      setState(() {
+                                        currentPage = _pageController.page!;
+                                      })
+                                    });
+                          },
+                          icon: nextArrowIcon,
+                        )),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: SizedBox(
+                      height: 8,
+                      child: SmoothPageIndicator(
+                        controller: _pageController,
+                        count: pageCount,
+                        effect: WormEffect(
+                            dotHeight: 12,
+                            dotWidth: 12,
+                            dotColor: Color(themeNotifier.isColorSeed)),
+                        onDotClicked: (value) {
+                          setState(() {
+                            currentPage = value.toDouble();
+                            _pageController.jumpToPage(value);
+                          });
+                        },
+                      )),
+                ),
+              ],
+            )),
       );
     });
   }

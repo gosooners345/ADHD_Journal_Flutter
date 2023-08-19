@@ -84,188 +84,215 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(builder: (context, swapper, child) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('ADHD Symptom Selection'),
-        leading: IconButton(
-            onPressed: () {
-              addItemsToSymptomList();
-              Navigator.pop(context, super.widget.symptoms);
-            },
-            icon: backArrowIcon),
-      ),
-      body: SafeArea(minimum: const EdgeInsets.all(8.0),child:
-      CustomScrollView(slivers: [
-        SliverList(
-          delegate: SliverChildListDelegate([
-            const ListTile(
-              title: Text(
-                "Positive Symptoms/Benefits",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('ADHD Symptom Selection'),
+          leading: IconButton(
+              onPressed: () {
+                addItemsToSymptomList();
+                Navigator.pop(context, super.widget.symptoms);
+              },
+              icon: backArrowIcon),
+        ),
+        body: SafeArea(
+          minimum: const EdgeInsets.all(8.0),
+          child: CustomScrollView(slivers: [
+            SliverList(
+              delegate: SliverChildListDelegate([
+                const ListTile(
+                  title: Text(
+                    "Positive Symptoms/Benefits",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ]),
+            ),
+            SliverList(
+              delegate:
+                  SliverChildBuilderDelegate((BuildContext context, int index) {
+                return uiCard(
+                    CheckboxListTile(
+                        activeColor: Color(swapper.isColorSeed),
+                        value: positiveSymptomListSelection[index].isChecked,
+                        onChanged: (bool? changed) {
+                          setState(() {
+                            positiveSymptomListSelection[index].isChecked =
+                                changed!;
+                            if (changed == true) {
+                              symptomsChecked.add(
+                                  positiveSymptomListSelection[index].symptom);
+                            } else {
+                              symptomsChecked.remove(
+                                  positiveSymptomListSelection[index].symptom);
+                            }
+                          });
+                        },
+                        title:
+                            Text(positiveSymptomListSelection[index].symptom)),
+                    swapper);
+              }, childCount: positiveSymptomListSelection.length),
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate([
+                const ListTile(
+                  title: Text(
+                    "Attention-based symptoms based on intensity",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ]),
+            ),
+            SliverList(
+              delegate:
+                  SliverChildBuilderDelegate((BuildContext context, int index) {
+                return uiCard(
+                    CheckboxListTile(
+                        activeColor: Color(swapper.isColorSeed),
+                        value: inattentiveSymptomListSelection[index].isChecked,
+                        onChanged: (bool? changed) {
+                          setState(() {
+                            inattentiveSymptomListSelection[index].isChecked =
+                                changed!;
+                            if (changed == true) {
+                              symptomsChecked.add(
+                                  inattentiveSymptomListSelection[index]
+                                      .symptom);
+                            } else {
+                              symptomsChecked.remove(
+                                  inattentiveSymptomListSelection[index]
+                                      .symptom);
+                            }
+                          });
+                        },
+                        title: Text(
+                            inattentiveSymptomListSelection[index].symptom +
+                                ' - ' +
+                                inattentiveSymptomDefinitionList[index] +
+                                '.')),
+                    swapper);
+              }, childCount: inattentiveSymptomListSelection.length),
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate([
+                const ListTile(
+                  title: Text(
+                    "Common ADHD symptoms based on intensity ",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ]),
+            ),
+            SliverList(
+              delegate:
+                  SliverChildBuilderDelegate((BuildContext context, int index) {
+                return uiCard(
+                    CheckboxListTile(
+                        activeColor: Color(swapper.isColorSeed),
+                        value: executiveDysfunctionSelection[index].isChecked,
+                        onChanged: (bool? changed) {
+                          setState(() {
+                            executiveDysfunctionSelection[index].isChecked =
+                                changed!;
+                            if (changed == true) {
+                              symptomsChecked.add(
+                                  executiveDysfunctionSelection[index].symptom);
+                            } else {
+                              symptomsChecked.remove(
+                                  executiveDysfunctionSelection[index].symptom);
+                            }
+                          });
+                        },
+                        title: Text(
+                            executiveDysfunctionSelection[index].symptom +
+                                " - " +
+                                executiveSymptomDefinitionList[index] +
+                                ".")),
+                    swapper);
+              }, childCount: executiveDysfunctionSelection.length),
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate([
+                const ListTile(
+                  title: Text(
+                    "Emotional regulation based symptoms based on intensity",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ]),
+            ),
+            SliverList(
+              delegate:
+                  SliverChildBuilderDelegate((BuildContext context, int index) {
+                return uiCard(
+                    CheckboxListTile(
+                        activeColor: Color(swapper.isColorSeed),
+                        value: emotionalListSelection[index].isChecked,
+                        onChanged: (bool? changed) {
+                          setState(() {
+                            emotionalListSelection[index].isChecked = changed!;
+                            if (changed == true) {
+                              symptomsChecked
+                                  .add(emotionalListSelection[index].symptom);
+                            } else {
+                              symptomsChecked.remove(
+                                  emotionalListSelection[index].symptom);
+                            }
+                          });
+                        },
+                        title: Text(emotionalListSelection[index].symptom +
+                            ' - ' +
+                            emotionalRegDefinitionList[index] +
+                            ".")),
+                    swapper);
+              }, childCount: emotionalListSelection.length),
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate([
+                const ListTile(
+                  title: Text(
+                    "Stress-based symptoms based on intensity",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ]),
+            ),
+            SliverList(
+              delegate:
+                  SliverChildBuilderDelegate((BuildContext context, int index) {
+                return uiCard(
+                    CheckboxListTile(
+                        activeColor: Color(swapper.isColorSeed),
+                        value: stressorSymptomsSelection[index].isChecked,
+                        onChanged: (bool? changed) {
+                          setState(() {
+                            stressorSymptomsSelection[index].isChecked =
+                                changed!;
+                            if (changed == true) {
+                              symptomsChecked.add(
+                                  stressorSymptomsSelection[index].symptom);
+                            } else {
+                              symptomsChecked.remove(
+                                  stressorSymptomsSelection[index].symptom);
+                            }
+                          });
+                        },
+                        title: Text(stressorSymptomsSelection[index].symptom +
+                            " - " +
+                            stressDefinitionList[index])),
+                    swapper);
+              }, childCount: stressorSymptomsSelection.length),
             ),
           ]),
         ),
-        SliverList(
-          delegate:
-              SliverChildBuilderDelegate((BuildContext context, int index) {
-            return uiCard(CheckboxListTile(
-                  activeColor: Color(swapper.isColorSeed),
-                  value: positiveSymptomListSelection[index].isChecked,
-                  onChanged: (bool? changed) {
-                    setState(() {
-                      positiveSymptomListSelection[index].isChecked = changed!;
-                      if (changed == true) {
-                        symptomsChecked
-                            .add(positiveSymptomListSelection[index].symptom);
-                      } else {
-                        symptomsChecked.remove(
-                            positiveSymptomListSelection[index].symptom);
-                      }
-                    });
-                  },
-                  title: Text(positiveSymptomListSelection[index].symptom )),
-            swapper);
-          }, childCount: positiveSymptomListSelection.length),
+        floatingActionButton: FloatingActionButton.extended(
+          label: const Text('Save'),
+          onPressed: () {
+            addItemsToSymptomList();
+            Navigator.pop(context, super.widget.symptoms);
+          },
         ),
-        SliverList(
-          delegate: SliverChildListDelegate([
-            const ListTile(
-              title: Text(
-                "Attention-based symptoms based on intensity",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ]),
-        ),
-        SliverList(
-          delegate:
-              SliverChildBuilderDelegate((BuildContext context, int index) {
-            return uiCard( CheckboxListTile(
-                  activeColor: Color(swapper.isColorSeed),
-                  value: inattentiveSymptomListSelection[index].isChecked,
-                  onChanged: (bool? changed) {
-                    setState(() {
-                      inattentiveSymptomListSelection[index].isChecked =
-                          changed!;
-                      if (changed == true) {
-                        symptomsChecked.add(
-                            inattentiveSymptomListSelection[index].symptom);
-                      } else {
-                        symptomsChecked.remove(
-                            inattentiveSymptomListSelection[index].symptom);
-                      }
-                    });
-                  },
-                  title: Text(inattentiveSymptomListSelection[index].symptom + ' - '+ inattentiveSymptomDefinitionList[index]+'.')),swapper
-            );
-          }, childCount: inattentiveSymptomListSelection.length),
-        ),
-        SliverList(
-          delegate: SliverChildListDelegate([
-            const ListTile(
-              title: Text(
-                "Common ADHD symptoms based on intensity ",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ]),
-        ),
-        SliverList(
-          delegate:
-              SliverChildBuilderDelegate((BuildContext context, int index) {
-            return uiCard( CheckboxListTile(
-                  activeColor: Color(swapper.isColorSeed),
-                  value: executiveDysfunctionSelection[index].isChecked,
-                  onChanged: (bool? changed) {
-                    setState(() {
-                      executiveDysfunctionSelection[index].isChecked = changed!;
-                      if (changed == true) {
-                        symptomsChecked
-                            .add(executiveDysfunctionSelection[index].symptom);
-                      } else {
-                        symptomsChecked.remove(
-                            executiveDysfunctionSelection[index].symptom);
-                      }
-                    });
-                  },
-                  title: Text(executiveDysfunctionSelection[index].symptom +" - " +executiveSymptomDefinitionList[index]+"." )),swapper
-            );
-          }, childCount: executiveDysfunctionSelection.length),
-        ),
-        SliverList(
-          delegate: SliverChildListDelegate([
-            const ListTile(
-              title: Text(
-                "Emotional regulation based symptoms based on intensity",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ]),
-        ),
-        SliverList(
-          delegate:
-              SliverChildBuilderDelegate((BuildContext context, int index) {
-            return uiCard( CheckboxListTile(
-                  activeColor: Color(swapper.isColorSeed),
-                  value: emotionalListSelection[index].isChecked,
-                  onChanged: (bool? changed) {
-                    setState(() {
-                      emotionalListSelection[index].isChecked = changed!;
-                      if (changed == true) {
-                        symptomsChecked
-                            .add(emotionalListSelection[index].symptom);
-                      } else {
-                        symptomsChecked
-                            .remove(emotionalListSelection[index].symptom);
-                      }
-                    });
-                  },
-                  title: Text(emotionalListSelection[index].symptom + ' - '+ emotionalRegDefinitionList[index]+".")),swapper
-            );
-          }, childCount: emotionalListSelection.length),
-        ),
-        SliverList(
-          delegate: SliverChildListDelegate([
-            const ListTile(
-              title: Text(
-                "Stress-based symptoms based on intensity",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ]),
-        ),
-        SliverList(
-          delegate:
-              SliverChildBuilderDelegate((BuildContext context, int index) {
-            return uiCard( CheckboxListTile(
-                  activeColor: Color(swapper.isColorSeed),
-                  value: stressorSymptomsSelection[index].isChecked,
-                  onChanged: (bool? changed) {
-                    setState(() {
-                      stressorSymptomsSelection[index].isChecked = changed!;
-                      if (changed == true) {
-                        symptomsChecked
-                            .add(stressorSymptomsSelection[index].symptom);
-                      } else {
-                        symptomsChecked
-                            .remove(stressorSymptomsSelection[index].symptom);
-                      }
-                    });
-                  },
-                  title: Text(stressorSymptomsSelection[index].symptom + " - "+ stressDefinitionList[index] )),swapper
-            );
-          }, childCount: stressorSymptomsSelection.length),
-        ),
-      ]),),
-      floatingActionButton: FloatingActionButton.extended(
-        label: const Text('Save'),
-        onPressed: () {
-          addItemsToSymptomList();
-          Navigator.pop(context, super.widget.symptoms);
-        },
-      ),
-    );});
+      );
+    });
   }
 }
 
