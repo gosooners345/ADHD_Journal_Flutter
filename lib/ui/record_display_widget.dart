@@ -10,6 +10,7 @@ import '../main.dart';
 import 'package:flutter/material.dart';
 import '../project_resources/project_colors.dart';
 import '../app_start_package/splash_screendart.dart';
+import '../project_resources/project_utils.dart';
 import '../record_data_package/records_data_class_db.dart';
 import '../app_start_package/login_screen_file.dart';
 import '../records_compose_components/new_compose_records_screen.dart';
@@ -57,7 +58,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> with SingleTic
 
   void checkHint() async {
     if (passwordHint == '' || passwordHint == ' ') {
-      _showAlertWithDelegate(
+      showAlertWithDelegate(
           context, "Password Hint Needed", "ADD Hint", enterSettings);
     }
   }
@@ -89,9 +90,9 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> with SingleTic
                     id: 1,
                     title: 'Edit Entry',
                   ))).then((value) {
-        _showAlert(context, 'Record Saved');
+        showAlert(context, 'Record Saved');
         recordsBloc.writeCheckpoint();
-        _showAlert(context, "Changes to DB Saved");
+        showAlert(context, "Changes to DB Saved");
       });
     });
   }
@@ -125,7 +126,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> with SingleTic
                   onPressed: () {
                     saveSettings(passwordHint, 'passwordHint');
                     Navigator.pop(context);
-                    _showAlert(context, "Password hint saved.");
+                    showAlert(context, "Password hint saved.");
                   },
                   child: const Text("Ok"))
             ],
@@ -133,28 +134,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> with SingleTic
         });
   }
 
-  void _showAlert(BuildContext context, String title) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(title),
-      ),
-    );
-  }
 
-  void _showAlertWithDelegate(
-      BuildContext context, String title, String message, Function delegate) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(title),
-        action: SnackBarAction(
-          label: message,
-          onPressed: () {
-            delegate(context);
-          },
-        ),
-      ),
-    );
-  }
 
   void saveSettings(String value, String key) async {
     encryptedSharedPrefs.setString(key, value);
@@ -246,7 +226,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> with SingleTic
                               recordsBloc.deleteRecordByID(record.id);
 
                               recordsBloc.writeCheckpoint();
-                              _showAlert(context, "Entry Deleted");
+                              showAlert(context, "Entry Deleted");
                             },
                             direction: DismissDirection.horizontal,
                             child: Card(

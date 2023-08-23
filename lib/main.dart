@@ -3,6 +3,7 @@
 import 'dart:async';
 
 //import 'package:adhd_journal_flutter/adhd_ml_engine_package/ml_kit_class.dart';
+import 'package:adhd_journal_flutter/project_resources/project_utils.dart';
 import 'package:adhd_journal_flutter/settings_tutorials/backup_and_sync_help.dart';
 import 'package:adhd_journal_flutter/ui/dashboard_stats_display_widget.dart';
 import 'package:adhd_journal_flutter/record_data_package/record_list_class.dart';
@@ -390,13 +391,13 @@ transitionsBuilder: (context,animation,secondaryAnimation,child) {
   }
 
   /// This alert is a non intrusive way to show alerts to the user.
-  void _showAlert(BuildContext context, String title) {
+  /*void _showAlert(BuildContext context, String title) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(title),
       ),
     );
-  }
+  }*/
 
   /// This method allows users to access an existing record to edit. The future implementations will prevent timestamps from being edited
   /// Checked and Passed : true
@@ -407,12 +408,12 @@ transitionsBuilder: (context,animation,secondaryAnimation,child) {
     try {
       int results = getPasswordChangeResults();
       if (results == 0) {
-        _showAlert(context, "Password Change Successful!");
+        showAlert(context, "Password Change Successful!");
       } else {
         throw Exception("Password Change Failed");
       }
     } on Exception {
-      _showAlert(context, "Password Change failed");
+      showAlert(context, "Password Change failed");
     }
   }
 

@@ -124,3 +124,32 @@ Widget entryCard(Widget child, ThemeSwap swapper) {
 }
 
 const platform = MethodChannel('com.activitylogger.release1/ADHDJournal');
+void _showAlert(BuildContext context, String title) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(title),
+    ),
+  );
+}
+
+void showAlertWithDelegate(
+    BuildContext context, String title, String message, Function delegate) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(title),
+      action: SnackBarAction(
+        label: message,
+        onPressed: () {
+          delegate(context);
+        },
+      ),
+    ),
+  );
+}
+
+void showAlert(BuildContext context, String title) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(title),
+    ),
+  );}
