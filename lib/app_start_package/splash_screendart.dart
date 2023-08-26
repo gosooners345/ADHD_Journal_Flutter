@@ -13,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 import '../project_resources/network_connectivity_checker.dart';
 import '../backup_providers/google_drive_backup_class.dart';
+import '../project_resources/project_utils.dart';
 import 'login_screen_file.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -52,7 +53,7 @@ class _SplashScreenState extends State<SplashScreen> {
         redirectOneDriveURL = oneDriveAndroidProdRedirect;
       }
       backArrowIcon = const Icon(Icons.arrow_back);
-      nextArrowIcon = Icon(Icons.arrow_forward);
+      nextArrowIcon = const Icon(Icons.arrow_forward);
       onboardingBackIcon =
           Icon(Icons.arrow_back, color: AppColors.mainAppColor);
       onboardingForwardIcon =
@@ -187,7 +188,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> checkForAllFiles(String callBack) async {
-    print("Check all files called");
     //Check for DB on device
     var checkDB = File(dbLocation);
     //Check for Keys on device
@@ -285,31 +285,24 @@ class _SplashScreenState extends State<SplashScreen> {
           /*checkFileAge();*/
         } else {
           if (checkPrivateKeyOnline == false || checkPublicKeyOnline == false) {
-            print("Keys aren't online");
             googleIsDoingSomething(true);
             preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
             googleIsDoingSomething(true);
           } else if (checkPrivateKeyOnline == true && checkPublicKeyOnline) {
-            print("Keys are online");
             await Future.sync(
                 () => preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive));
-            print(
-                "Keys are being downloaded or are already downloaded onto device");
             googleIsDoingSomething(true);
           }
 
           if (checkPrefsOnline == false) {
-            print("Prefs are not online");
             String dataForEncryption =
                 '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
-            print("Data is being encrypted and uploaded");
             googleIsDoingSomething(true);
             preferenceBackupAndEncrypt.encryptData(
                 dataForEncryption, googleDrive);
             googleIsDoingSomething(true);
           } else if (checkPrefsOnline == true) {
             googleIsDoingSomething(true);
-            print("Prefs are online, downloading them to device now");
             await Future.sync(() =>
                 preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive));
             googleIsDoingSomething(true);
@@ -320,20 +313,16 @@ class _SplashScreenState extends State<SplashScreen> {
           }
         }
       } else {
-        print("Keys are not online");
         preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
         googleIsDoingSomething(true);
-        print("Prefs are not online");
         String dataForEncryption =
             '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
-        print("Data is being encrypted and uploaded");
         googleIsDoingSomething(true);
         preferenceBackupAndEncrypt.encryptData(dataForEncryption, googleDrive);
         googleIsDoingSomething(true);
         showMessage("Preferences Uploaded");
       }
     } else {
-      print("Creating Journals folder");
       ga.File journalFile = ga.File();
       journalFile.name = driveStoreDirectory;
       var mimetype = "application/vnd.google-apps.folder";
@@ -361,17 +350,14 @@ class _SplashScreenState extends State<SplashScreen> {
       } else {
         if (checkPublicKeys.existsSync() == false ||
             checkPrivateKeys.existsSync() == false) {
-          print("Keys aren't online");
           googleIsDoingSomething(true);
           preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
           googleIsDoingSomething(true);
           showMessage("Encryption keys Uploaded");
         }
         if (checkPrefs.existsSync() == false) {
-          print("Prefs are not online");
           String dataForEncryption =
               '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
-          print("Data is being encrypted and uploaded");
           googleIsDoingSomething(true);
           preferenceBackupAndEncrypt.encryptData(
               dataForEncryption, googleDrive);
@@ -390,7 +376,6 @@ class _SplashScreenState extends State<SplashScreen> {
   void checkFileAge() async {
     appStatus.value =
         "Checking for updated files... \r\nThanks for your patience";
-    print("Splashscreen Check File Age Called");
     readyButton.boolSink.add(true);
 
     File dbFile = File(dbLocation);
@@ -462,26 +447,24 @@ class _SplashScreenState extends State<SplashScreen> {
     }
     bool checkDBFile1 = await googleDrive.checkForFile(databaseName);
     bool checkDBFile2 = await googleDrive.checkForFile(dbWal);
-    print("This is checking for DB Files It is here = $checkDBFile1");
-    print(checkDBFile1);
+    if (kDebugMode) {
+      print("This is checking for DB Files It is here = $checkDBFile1");
+    }
+    if (kDebugMode) {
+      print(checkDBFile1);
+    }
     if (checkDBFile1 || checkDBFile2) {
       if (!dbFile.existsSync() || !fileCheckAge) {
         readyButton.boolSink.add(true);
         await Future.sync(() => restoreDBFiles().whenComplete(() => {
-              if (kDebugMode)
-                {
-                  print("Download done"),
-                },
+
               appStatus.value = "Your Journal is synced on device now",
               readyButton.boolSink.add(false)
             }));
       } else {
         readyButton.boolSink.add(true);
         await Future.sync(() => uploadDBFiles().whenComplete(() => {
-              if (kDebugMode)
-                {
-                  print("Upload done"),
-                },
+
               appStatus.value = "Your Journal is synced online now",
               readyButton.boolSink.add(false),
               readyButton.boolSink.add(false)
@@ -493,7 +476,7 @@ class _SplashScreenState extends State<SplashScreen> {
       readyButton.boolSink.add(false);
     } else {
       appStatus.value =
-          "You need to create a database for use in this application";
+          "You need to finish onboarding into this app";
     }
   }
 

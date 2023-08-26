@@ -1,4 +1,3 @@
-// ignore_for_file: prefer_const_constructors
 
 import 'dart:async';
 import 'dart:convert';
@@ -10,6 +9,7 @@ import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 import '../backup_utils_package/crypto_utils.dart';
 import '../project_resources/project_colors.dart';
+import '../project_resources/project_utils.dart';
 import 'splash_screendart.dart';
 import 'onboarding_widget_class.dart';
 import 'package:flutter/material.dart';
@@ -65,6 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     getNetStatus();
     loadStateStuff();
+    // Migrate check code to separate class and have it called from either place IOS : Login, Android: Splashscreen
     if (passwordHint == '') {
       hintText = 'Enter secure password';
       hintPrompt =
@@ -84,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   builder: (BuildContext context) {
                     return AlertDialog(
                       title: const Text("Backup and Sync Feature "),
-                      content: Text(
+                      content: const Text(
                           "You're about to turn on Backup and Sync for ADHD Journal. The service uses your Google Drive account to store your Journal and related files with it. "
                           "All encrypted. Your journal, passwords, and preferences sync between all devices linked with your gmail and this app. For more information, check out the help page in settings."),
                       actions: <Widget>[
@@ -102,9 +103,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                         setState(() {
                                           Future.sync(
                                               () => getSyncStateStatus());
+                                          Navigator.of(context).pop();
                                         }),
-                                        Navigator.of(context).pop()
+
                                       });
+
                             } else {
                               showMessage(connection_Error_Message_String);
                             }
@@ -118,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   "To turn Backup & Sync on, simply hit Backup to Google Drive and hit Yes next time!");
                               Navigator.of(context).pop();
                             },
-                            child: Text("No"))
+                            child: const Text("No"))
                       ],
                     );
                   });
@@ -144,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 'images/GoogleDriveLogo.png',
                 height: 35,
               ),
-              SizedBox(
+              const SizedBox(
                 width: 40,
               ),
               Text("Backup with Google Drive")
@@ -152,6 +155,103 @@ class _LoginScreenState extends State<LoginScreen> {
           ));
       stuff = TextEditingController();
     });
+  }
+
+  //Find a way to migrate most of the code to a single method outside of this class. Probably put it in Google Drive?
+
+  Future<void> checkFileAge() async {
+    isThisReturning = false;
+    if (kDebugMode) {
+      print("Login Check File Age Called");
+    }
+    File file = File(dbLocation); // DB
+    googleIsDoingSomething(true);
+    File privKeyFile = File(path.join(keyLocation, privateKeyFileName));
+    try {
+      bool fileCheckAge = false;
+      fileCheckAge = await Future.sync(
+              () => googleDrive.checkFileAge(databaseName, dbLocation));
+      String dataForEncryption =
+          '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
+      var onlineKeys = await googleDrive.checkForFile(privateKeyFileName);
+// Keys first
+      if (onlineKeys) {
+        await preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
+      } else if (!privKeyFile.existsSync() && !onlineKeys) {
+        preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
+      } else {
+        preferenceBackupAndEncrypt.assignRSAKeys(googleDrive);
+      }
+
+      bool fileCheckCSV = await googleDrive.checkForFile(prefsName);
+      bool txtFileCheckAge = false;
+      //Check for file
+      if (fileCheckCSV) {
+        // If file exists on Google Drive execute
+        txtFileCheckAge =
+        await googleDrive.checkFileAge(prefsName, docsLocation);
+        if (txtFileCheckAge) {
+          // if file is older in the cloud
+          preferenceBackupAndEncrypt.encryptData(
+              dataForEncryption, googleDrive);
+        } else {
+          await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
+          if (dataForEncryption == decipheredData) {
+            isDataSame = true;
+          } else {
+            isDataSame = false;
+          }
+        }
+      } else {
+        //otherwise
+        File checkPrefsTxt = File(docsLocation);
+        if (checkPrefsTxt.existsSync()) {
+          checkPrefsTxt.deleteSync();
+        } else {
+          await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
+          if (dataForEncryption == decipheredData) {
+            isDataSame = true;
+          } else {
+            isDataSame = false;
+          }
+        }
+      }
+      bool isDBOnline = await googleDrive.checkForFile(databaseName);
+
+//Last DB
+      if (fileCheckAge == false || file.existsSync() == false) {
+        if (isDBOnline) {
+          await Future.sync(() => restoreDBFiles());
+        } else {
+          throw Exception(
+              "File not on Google Drive, you'll need to open app first");
+        }
+      } else {
+        await uploadDBFiles();
+        googleIsDoingSomething(false);
+      }
+      if (isDataSame == false) {
+        googleIsDoingSomething(true);
+        setState(() {
+          updateValues();
+        });
+        googleIsDoingSomething(false);
+      }
+    } on Exception catch (ex) {
+      showMessage(ex.toString());
+      await Future.sync(() => restoreDBFiles());
+      preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
+      await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
+      if (isDataSame == false) {
+        googleIsDoingSomething(true);
+        setState(() {
+          updateValues();
+        });
+        googleIsDoingSomething(false);
+      } else {
+        googleIsDoingSomething(false);
+      }
+    }
   }
 
   Future<void> checkForAllFiles(String callBack) async {
@@ -191,12 +291,14 @@ class _LoginScreenState extends State<LoginScreen> {
               checkPublicKeys.existsSync()) {
             switch (callBack) {
               case "Drive":
-                showDialog(
+                if(!mounted){ break;}
+
+               showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: Text("Data exists online already"),
-                        content: Text(
+                        title: const Text("Data exists online already"),
+                        content: const Text(
                             "It appears you have data online from another device, do you want to download it to this device and overwrite what's already on here?"),
                         actions: [
                           TextButton(
@@ -233,7 +335,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 if (checkPrefs.existsSync()) {
                                   String dataForEncryption =
                                       '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
-                                  print("Data is being encrypted and uploaded");
+                                  if (kDebugMode) {
+                                    print("Data is being encrypted and uploaded");
+                                  }
                                   googleIsDoingSomething(true);
                                   preferenceBackupAndEncrypt.encryptData(
                                       dataForEncryption, googleDrive);
@@ -378,7 +482,9 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       dbPassword = await encryptedSharedPrefs.getString('dbPassword');
     } on Exception catch (ex) {
-      print(ex);
+      if (kDebugMode) {
+        print(ex);
+      }
       try {
         await encryptedSharedPrefs.remove('dbPassword');
       } on Exception catch (ex) {
@@ -398,7 +504,7 @@ class _LoginScreenState extends State<LoginScreen> {
       resetLoginFieldState();
     });
     googleIsDoingSomething(true);
-    await Future.delayed(Duration(seconds: 2), checkDataFiles);
+    await Future.delayed(const Duration(seconds: 2), checkDataFiles);
     googleIsDoingSomething(false);
   }
 
@@ -535,102 +641,9 @@ class _LoginScreenState extends State<LoginScreen> {
     });
     googleIsDoingSomething(false);
   }
-
+//This needs to move
   /// Check the user's Google Drive for age of file or even if the file exists
-  Future<void> checkFileAge() async {
-    isThisReturning = false;
-    if (kDebugMode) {
-      print("Login Check File Age Called");
-    }
-    File file = File(dbLocation); // DB
-    googleIsDoingSomething(true);
-    File privKeyFile = File(path.join(keyLocation, privateKeyFileName));
-    try {
-      bool fileCheckAge = false;
-      fileCheckAge = await Future.sync(
-          () => googleDrive.checkFileAge(databaseName, dbLocation));
-      String dataForEncryption =
-          '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
-      var onlineKeys = await googleDrive.checkForFile(privateKeyFileName);
-// Keys first
-      if (onlineKeys) {
-        await preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
-      } else if (!privKeyFile.existsSync() && !onlineKeys) {
-        preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
-      } else {
-        preferenceBackupAndEncrypt.assignRSAKeys(googleDrive);
-      }
 
-      bool fileCheckCSV = await googleDrive.checkForFile(prefsName);
-      bool txtFileCheckAge = false;
-      //Check for file
-      if (fileCheckCSV) {
-        // If file exists on Google Drive execute
-        txtFileCheckAge =
-            await googleDrive.checkFileAge(prefsName, docsLocation);
-        if (txtFileCheckAge) {
-          // if file is older in the cloud
-          preferenceBackupAndEncrypt.encryptData(
-              dataForEncryption, googleDrive);
-        } else {
-          await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
-          if (dataForEncryption == decipheredData) {
-            isDataSame = true;
-          } else {
-            isDataSame = false;
-          }
-        }
-      } else {
-        //otherwise
-        File checkPrefsTxt = File(docsLocation);
-        if (checkPrefsTxt.existsSync()) {
-          checkPrefsTxt.deleteSync();
-        } else {
-          await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
-          if (dataForEncryption == decipheredData) {
-            isDataSame = true;
-          } else {
-            isDataSame = false;
-          }
-        }
-      }
-      bool isDBOnline = await googleDrive.checkForFile(databaseName);
-
-//Last DB
-      if (fileCheckAge == false || file.existsSync() == false) {
-        if (isDBOnline) {
-          await Future.sync(() => restoreDBFiles());
-        } else {
-          throw Exception(
-              "File not on Google Drive, you'll need to open app first");
-        }
-      } else {
-        await uploadDBFiles();
-        googleIsDoingSomething(false);
-      }
-      if (isDataSame == false) {
-        googleIsDoingSomething(true);
-        setState(() {
-          updateValues();
-        });
-        googleIsDoingSomething(false);
-      }
-    } on Exception catch (ex) {
-      showMessage(ex.toString());
-      await Future.sync(() => restoreDBFiles());
-      preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
-      await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
-      if (isDataSame == false) {
-        googleIsDoingSomething(true);
-        setState(() {
-          updateValues();
-        });
-        googleIsDoingSomething(false);
-      } else {
-        googleIsDoingSomething(false);
-      }
-    }
-  }
 
 //Experimental
   Future<void> uploadDBFiles() async {
@@ -777,7 +790,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   AsyncSnapshot<bool> snapshot,
                                 ) {
                                   if (snapshot.hasError) {
-                                    return Text(
+                                    return const Text(
                                         'Error returning password  information');
                                   } else if (snapshot.hasData) {
                                     return ElevatedButton(
@@ -810,7 +823,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   });
                                         }
                                       },
-                                      child: Text(
+                                      child: const Text(
                                         'Login',
                                         style: TextStyle(fontSize: 25),
                                       ),

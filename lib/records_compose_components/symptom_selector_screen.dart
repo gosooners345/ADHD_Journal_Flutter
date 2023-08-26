@@ -70,7 +70,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
     String unfilteredString = '';
     if (symptomsChecked.isNotEmpty) {
       for (String element in symptomsChecked) {
-        unfilteredString += element + ',';
+        unfilteredString += '$element,';
       }
       var indexComma = unfilteredString.lastIndexOf(',');
       var filteredString =

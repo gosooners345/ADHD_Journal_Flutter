@@ -177,7 +177,7 @@ SliverChildListDelegate([
         if (snapshot.hasData) {
           return snapshot.data!.isNotEmpty
               ? SliverSafeArea(top: true,right: true,left: true,bottom: true,
-              minimum: EdgeInsets.symmetric(horizontal: 5),sliver:
+              minimum: const EdgeInsets.symmetric(horizontal: 5),sliver:
           SliverList(delegate: SliverChildBuilderDelegate(
                   (context, index) {
                 Records record = snapshot.data![index];
@@ -258,7 +258,7 @@ SliverChildListDelegate([
           ))):
 
                 SliverList(delegate: SliverChildListDelegate([
-               Center(
+               const Center(
             child: Text(
                 'Add a new record by hitting the create button below!'),
           )]));

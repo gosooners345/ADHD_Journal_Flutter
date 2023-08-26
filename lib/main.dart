@@ -160,195 +160,13 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
     });
   }
 
-  List<AppBar> appBars() {
-    return [
-      AppBar(
-        title: Text("Home"),
-        leading: IconButton(
-            onPressed: () {
-              isThisReturning = true;
-              recordsBloc.dispose();
-              Navigator.pop(context);
-            },
-            icon: backArrowIcon),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) => AlertDialog(
-                  title: const Text('Search Entries'),
-                  content: Padding(
-                    padding: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-                    child: TextField(
-                      controller: searchController,
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Search here',
-                          hintText: 'Enter your search topic here.'),
-                      expands: false,
-                    ),
-                  ),
-                  actions: [
-                    TextButton(
-                        onPressed: () {
-                          if (searchController.text.isNotEmpty) {
-                            recordsBloc
-                                .getSearchedRecords(searchController.text);
-                          } else {
-                            recordsBloc.getRecords();
-                          }
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Search')),
-                  ],
-                ),
-              );
-            },
-          ),
-          PopupMenuButton(
-            itemBuilder: (BuildContext context) {
-              return <PopupMenuItem>[
-                PopupMenuItem(
-                  child: Row(
-                    children: const [
-                      Icon(Icons.restart_alt),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text('Reset')
-                    ],
-                  ),
-                  onTap: () {
-                    recordsBloc.getRecords();
-                  },
-                ),
-                PopupMenuItem(
-                  enabled: false,
-                  child: Text("Sort by"),
-                ),
-                PopupMenuItem(
-                  child: Row(
-                    children: const [
-                      Icon(Icons.history),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text('Most Recent')
-                    ],
-                  ),
-                  onTap: () {
-                    recordsBloc.getSortedRecords("Most Recent");
-                  },
-                ),
-                PopupMenuItem(
-                    child: Row(
-                      children: const [
-                        Icon(Icons.sort_by_alpha),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Text('Alphabetical')
-                      ],
-                    ),
-                    onTap: () {
-                      recordsBloc.getSortedRecords("Alphabetical");
-                    }),
-                (PopupMenuItem(
-                  child: Row(
-                    children: const [
-                      Icon(Icons.history),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text('Time Created')
-                    ],
-                  ),
-                  onTap: () {
-                    recordsBloc.getSortedRecords("Time Created");
-                  },
-                )),
-                (PopupMenuItem(
-                  child: Row(
-                    children: const [
-                      Icon(Icons.stars),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text('Rating')
-                    ],
-                  ),
-                  onTap: () {
-                    recordsBloc.getSortedRecords("Rating");
-                  },
-                )),
-              ];
-            },
-            icon: Icon(Icons.filter_list),
-          ),
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () {
-              Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => SettingsPage()))
-                  .then((value) => {
-                        if (userPassword != dbPassword)
-                          {
-                            recordsBloc.changeDBPasswords(userPassword),
-                            recordsBloc = RecordsBloc()
-                          },
-                        userActiveBackup = prefs.getBool("testBackup") ?? false,
-                        if (userActiveBackup) {encryptData()},
-                      });
-            },
-          ),
-        ],
-      ),
-      AppBar(
-        title: Text("Stats"),
-        leading: IconButton(
-            onPressed: () {
-              recordsBloc.dispose();
-              Navigator.of(context).pop();
-            },
-            icon: backArrowIcon),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () {
-              Navigator.push(context,
 
-                  MaterialPageRoute(
-                      builder: (_) =>
-                      
-                    SettingsPage())).then((value) => {
-                    setState(() {
-                      greeting = prefs.getString('greeting')!;
-                    }),
-                    if (userPassword != dbPassword)
-                      {
-                        recordsBloc.changeDBPasswords(userPassword),
-                        recordsBloc = RecordsBloc(),
-                        recordsBloc.getRecords()
-                      },
-                    userActiveBackup = prefs.getBool("testBackup") ?? false,
-                    if (userActiveBackup) {
-                      encryptData()
-                    },
-                  });
-            },
-          ),
-        ],
-      )
-    ];
-  }
 
 
 
   /// Allows users to create entries for the db and journal. Once submitted, the screen will update on demand.
   /// Checked and passed : true
-  void _createRecord() async {
+  void _createRecord()  {
     try {
       Navigator.push(
           context,
@@ -417,10 +235,160 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
     return Consumer<ThemeSwap>(
       builder: (context, swapper, child) {
         return Scaffold(
-          appBar: appBars()[_selectedIndex],
+          appBar: AppBar(
+            title:Text( _selectedIndex==0?"Home":"Stats"),
+leading: IconButton(onPressed: (){
+  isThisReturning = true;
+  recordsBloc.dispose();
+  Navigator.of(context).pop();
+},icon: backArrowIcon,),
+            actions: [
+              _selectedIndex==0? IconButton(
+                icon: Icon(Icons.search),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      title: const Text('Search Entries'),
+                      content: Padding(
+                        padding: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
+                        child: TextField(
+                          controller: searchController,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Search here',
+                              hintText: 'Enter your search topic here.'),
+                          expands: false,
+                        ),
+                      ),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              if (searchController.text.isNotEmpty) {
+                                recordsBloc
+                                    .getSearchedRecords(searchController.text);
+                              } else {
+                                recordsBloc.getRecords();
+                              }
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Search')),
+                      ],
+                    ),
+                  );
+                },
+              ):Text(""),
+              _selectedIndex==0?PopupMenuButton(
+                itemBuilder: (BuildContext context) {
+                  return <PopupMenuItem>[
+                    PopupMenuItem(
+                      child: Row(
+                        children: const [
+                          Icon(Icons.restart_alt),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text('Reset')
+                        ],
+                      ),
+                      onTap: () {
+                        recordsBloc.getRecords();
+                      },
+                    ),
+                    PopupMenuItem(
+                      enabled: false,
+                      child: Text("Sort by"),
+                    ),
+                    PopupMenuItem(
+                      child: Row(
+                        children: const [
+                          Icon(Icons.history),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text('Most Recent')
+                        ],
+                      ),
+                      onTap: () {
+                        recordsBloc.getSortedRecords("Most Recent");
+                      },
+                    ),
+                    PopupMenuItem(
+                        child: Row(
+                          children: const [
+                            Icon(Icons.sort_by_alpha),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text('Alphabetical')
+                          ],
+                        ),
+                        onTap: () {
+                          recordsBloc.getSortedRecords("Alphabetical");
+                        }),
+                    (PopupMenuItem(
+                      child: Row(
+                        children: const [
+                          Icon(Icons.history),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text('Time Created')
+                        ],
+                      ),
+                      onTap: () {
+                        recordsBloc.getSortedRecords("Time Created");
+                      },
+                    )),
+                    (PopupMenuItem(
+                      child: Row(
+                        children: const [
+                          Icon(Icons.stars),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text('Rating')
+                        ],
+                      ),
+                      onTap: () {
+                        recordsBloc.getSortedRecords("Rating");
+                      },
+                    )),
+                  ];
+                },
+                icon: Icon(Icons.filter_list),
+              ):Text(""),
+              IconButton(
+                icon: Icon(Icons.settings),
+                onPressed: () {
+                  Navigator.push(context,
+
+                      MaterialPageRoute(
+                          builder: (_) =>
+
+                              SettingsPage())).then((value) => {
+                    setState(() {
+                      greeting = prefs.getString('greeting')!;
+                    }),
+                    if (userPassword != dbPassword)
+                      {
+                        recordsBloc.changeDBPasswords(userPassword),
+                        recordsBloc = RecordsBloc(),
+                        recordsBloc.getRecords()
+                      },
+                    userActiveBackup = prefs.getBool("testBackup") ?? false,
+                    if (userActiveBackup) {
+                      encryptData()
+                    },
+                  });
+                },
+              ),
+            ],
+          ),
+
           body:
           screens.elementAt(_selectedIndex),
-          //Center(child: screens.elementAt(_selectedIndex)),
+
           floatingActionButton: FloatingActionButton.extended(
             label: Text('Compose'),
             icon: Icon(Icons.edit),
@@ -461,8 +429,6 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
 
           )
 
-
-          //bottomBar(),
         );
       },
     );
