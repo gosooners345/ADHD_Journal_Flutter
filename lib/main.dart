@@ -148,9 +148,9 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
     }
   }
 
-  List<Widget> screens() {
-    return const [RecordDisplayWidget(), DashboardViewWidget()];
-  }
+  static const List<Widget> screens =
+     [RecordDisplayWidget(), DashboardViewWidget()];
+
 
   void encryptData() async {
     await Future.sync(() {
@@ -318,23 +318,11 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
             icon: Icon(Icons.settings),
             onPressed: () {
               Navigator.push(context,
-                PageRouteBuilder(
-                    transitionDuration: Duration(seconds: 2),
 
-                    pageBuilder: (context,animation,secondaryAnimation)=> SettingsPage(),
-transitionsBuilder: (context,animation,secondaryAnimation,child) {
-                  const begin = Offset(0, 1.0);
-                  const end = Offset.zero;
-                  const curve = Curves.ease;
-                  var tween = Tween(begin:begin, end:end).chain(CurveTween(curve: curve));
-                  return SlideTransition(position: animation.drive(tween),child: child,);
-}
-
-                )
-                  /*MaterialPageRoute(
+                  MaterialPageRoute(
                       builder: (_) =>
                       
-                    SettingsPage())*/).then((value) => {
+                    SettingsPage())).then((value) => {
                     setState(() {
                       greeting = prefs.getString('greeting')!;
                     }),
@@ -380,7 +368,6 @@ transitionsBuilder: (context,animation,secondaryAnimation,child) {
                       timeUpdated: DateTime.now()),
                   id: 0,
                   title: 'Compose New Entry'))).then((value) => {
-            //_showAlert(context, "Journal Entry Saved"),
             recordsBloc.writeCheckpoint()
           });
     } on Exception catch (ex) {
@@ -389,15 +376,6 @@ transitionsBuilder: (context,animation,secondaryAnimation,child) {
       }
     }
   }
-
-  /// This alert is a non intrusive way to show alerts to the user.
-  /*void _showAlert(BuildContext context, String title) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(title),
-      ),
-    );
-  }*/
 
   /// This method allows users to access an existing record to edit. The future implementations will prevent timestamps from being edited
   /// Checked and Passed : true
@@ -440,7 +418,9 @@ transitionsBuilder: (context,animation,secondaryAnimation,child) {
       builder: (context, swapper, child) {
         return Scaffold(
           appBar: appBars()[_selectedIndex],
-          body: Center(child: screens().elementAt(_selectedIndex)),
+          body:
+          screens.elementAt(_selectedIndex),
+          //Center(child: screens.elementAt(_selectedIndex)),
           floatingActionButton: FloatingActionButton.extended(
             label: Text('Compose'),
             icon: Icon(Icons.edit),

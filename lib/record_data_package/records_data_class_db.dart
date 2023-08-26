@@ -43,8 +43,7 @@ ByteData image = ByteData(0);
         tags = record['tags'],
         rating = record['rating'],
         success = record['success'],
-  //audio = record['audioBlob'],
-  //images = record['images'],
+
         timeCreated = record['time_created'],
         timeUpdated = record['time_updated'];
 
@@ -67,7 +66,6 @@ ByteData image = ByteData(0);
       'tags': tags,
       'rating': rating,
       'success': success ? 1 : 0,
-      //'audioBlob' : audio
       'time_created': timeCreated.millisecondsSinceEpoch,
       'time_updated': timeUpdated.millisecondsSinceEpoch
     };

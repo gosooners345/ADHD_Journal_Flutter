@@ -151,7 +151,6 @@ class GoogleDrive {
         );
         var files = queryDrive.files;
         // Need for repeating until query is loaded or no file exists
-        var i = 0;
         if (files!.isEmpty) {
           var queryDrive = await drive.files.list(
             q: "name contains '$fileName'",
@@ -173,7 +172,9 @@ class GoogleDrive {
         throw Exception("File not found $fileName");
       }
     } on Exception catch (ex) {
-      print(ex);
+      if (kDebugMode) {
+        print(ex);
+      }
       return false;
     }
   }
@@ -242,7 +243,6 @@ class GoogleDrive {
         nameList.add(files?[i].name);
       }
       for (int i = 0; i < idList.length; i++) {
-        // ga.File file = await drive.files.get(idList[i],downloadOptions: ga.DownloadOptions.fullMedia) as ga.File;
         ga.Media file = await drive.files.get(idList[i],
             downloadOptions: ga.DownloadOptions.fullMedia) as ga.Media;
 

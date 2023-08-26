@@ -70,7 +70,118 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(builder: (context, swapper, child) {
-      return SafeArea(
+    return  CustomScrollView(slivers: [
+        SliverList(delegate: SliverChildListDelegate([
+          Center(child: Text("Summary of statistics"),)
+        ])),
+      SliverSafeArea(
+          top: true,left: true,right: true,bottom: true,minimum: EdgeInsets.all(10),
+          sliver:
+      SliverList.list(children: [
+        Card(
+          borderOnForeground: true,
+          elevation: 2.0,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(color: Color(swapper.isColorSeed).withOpacity(1.0))),
+          margin: const EdgeInsets.all(5),
+          child:
+         Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
+            child: Text(
+                'Here\'s a summary of your statistics:\r\n${summaryGen()}',
+                style: const TextStyle(
+                    fontSize: 16.0, fontStyle: FontStyle.italic)),
+
+        ),),
+Card(
+    borderOnForeground: true,
+    elevation: 2.0,
+    shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Color(swapper.isColorSeed).withOpacity(1.0))),
+    margin: const EdgeInsets.all(5),
+    child:
+    GridTile(child:
+Column(children: [
+
+    SfCartesianChart(
+      zoomPanBehavior: zoomPanBehavior,
+      borderWidth: 2.0,
+      primaryXAxis: CategoryAxis(),
+      primaryYAxis: NumericAxis(),
+      series: <LineSeries<RecordRatingStats, String>>[
+        LineSeries(
+          dataSource: RecordList.ratingsList,
+          width: 1.0,
+          xValueMapper: (RecordRatingStats recLbl, _) =>
+              DateFormat("MM/dd/yyyy hh:mm:ss aa")
+                  .format(recLbl.date),
+          color: Color(swapper.isColorSeed),
+          yValueMapper: (RecordRatingStats recLbl, _) =>
+          recLbl.value,
+          dataLabelSettings:
+          const DataLabelSettings(isVisible: true),
+          xAxisName: 'Entry Timestamps',
+          yAxisName: 'Ratings',
+        ),
+      ],
+      title: ChartTitle(
+          text: 'Ratings data from journal entries'),
+      margin: const EdgeInsets.all(8.0),
+    ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: 15,
+            ),
+            const Text('Reset Zoom'),
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: () => zoomPanBehavior.reset(),
+            )
+
+],)
+
+
+
+    ])),
+    ),
+        _dashboardCard(
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SfCircularChart(
+                title: ChartTitle(
+                    text: 'Success/Fail Data from Journal Entries'),
+                legend: Legend(isVisible: true),
+                series: <PieSeries<RecordDataStats, String>>[
+                  PieSeries<RecordDataStats, String>(
+                    explode: true,
+                    explodeIndex: 0,
+                    dataSource: RecordList.successList,
+                    xValueMapper: (RecordDataStats recs, _) => recs.key,
+                    yValueMapper: (RecordDataStats recs, _) => recs.value,
+                    dataLabelMapper: (RecordDataStats recs, _) =>
+                    "${recs.key}: ${((recs.value / recordsBloc.recordHolder.length.toDouble()) * 100.0).toStringAsFixed(2)} % ",
+                    dataLabelSettings: const DataLabelSettings(
+                      isVisible: true,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            swapper),
+]
+),
+
+
+
+
+
+      )
+      ],);
+     /* return SafeArea(
           minimum: EdgeInsets.all(13.0),
           child: ListView(
             padding: const EdgeInsets.all(5.0),
@@ -262,7 +373,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                   ),
                   swapper),
             ],
-          ));
+          ));*/
     });
   }
 }
