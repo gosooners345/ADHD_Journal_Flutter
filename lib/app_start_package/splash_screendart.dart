@@ -148,7 +148,6 @@ class _SplashScreenState extends State<SplashScreen> {
     appStatus.value = 'Loading up your journal now...';
   }
 
-// This will need to be inclusive
   void googleIsDoingSomething(bool value) {
     readyButton.boolSink.add(value);
   }

@@ -179,6 +179,8 @@ class GoogleDrive {
     }
   }
 
+  //Scale down the scope of the call to specific files to appease Google
+
   /// Check file age on device. If the file on the Google Drive is newer, it returns false,
   /// if not, it returns true. This is used to sync the db and prefs files.
 
