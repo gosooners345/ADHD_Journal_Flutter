@@ -13,7 +13,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 import '../project_resources/network_connectivity_checker.dart';
 import '../backup_providers/google_drive_backup_class.dart';
-import '../project_resources/project_utils.dart';
 import 'login_screen_file.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -34,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
   bool passwordEnabledTransfer = false;
   bool checkTransferred = false;
 
-  Text statusUpdateWidget = Text('');
+  Text statusUpdateWidget = const Text('');
   ValueNotifier<String> appStatus = ValueNotifier("");
 
   @override
@@ -222,8 +221,8 @@ class _SplashScreenState extends State<SplashScreen> {
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      title: Text("Data exists online already"),
-                      content: Text(
+                      title: const Text("Data exists online already"),
+                      content: const Text(
                           "It appears you have data online from another device, do you want to download it to this device and overwrite what's already on here?"),
                       actions: [
                         TextButton(
@@ -271,7 +270,7 @@ class _SplashScreenState extends State<SplashScreen> {
                                 uploadDBFiles();
                               }
                             },
-                            child: Text("No"))
+                            child: const Text("No"))
                       ],
                     );
                   });
@@ -534,7 +533,7 @@ class _SplashScreenState extends State<SplashScreen> {
             child: Image.asset('images/appicon_appstore.png'),
           ),
           Padding(
-            padding: EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(20.0),
             child: ValueListenableBuilder(
                 valueListenable: appStatus,
                 builder: (BuildContext builder, String value, Widget? child) {

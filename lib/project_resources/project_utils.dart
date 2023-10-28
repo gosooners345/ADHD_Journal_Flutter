@@ -1,14 +1,7 @@
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
-import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:io';
-import 'package:path/path.dart' as path;
-import 'package:googleapis/drive/v3.dart' as ga;
 
-import '../app_start_package/login_screen_file.dart';
-import '../app_start_package/splash_screendart.dart';
 
 extension ListSpaceBetweenExtension on List<Widget> {
   List<Widget> withSpaceBetween({double? width, double? height}) => [
@@ -53,7 +46,7 @@ Future<NotificationWeekAndTime?> pickSchedule(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text(
+          title: const Text(
             'I want to be reminded every:',
             textAlign: TextAlign.center,
           ),
@@ -84,13 +77,13 @@ Future<NotificationWeekAndTime?> pickSchedule(
         context: context,
         initialTime: TimeOfDay.fromDateTime(
           now.add(
-            Duration(minutes: 1),
+            const Duration(minutes: 1),
           ),
         ),
         builder: (BuildContext context, Widget? child) {
           return Theme(
             data: ThemeData(
-              colorScheme: ColorScheme.light(
+              colorScheme: const ColorScheme.light(
                 primary: Colors.teal,
               ),
             ),

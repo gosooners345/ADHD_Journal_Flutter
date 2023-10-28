@@ -165,10 +165,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
                           });
                         },
                         title: Text(
-                            inattentiveSymptomListSelection[index].symptom +
-                                ' - ' +
-                                inattentiveSymptomDefinitionList[index] +
-                                '.')),
+                            '${inattentiveSymptomListSelection[index].symptom} - ${inattentiveSymptomDefinitionList[index]}.')),
                     swapper);
               }, childCount: inattentiveSymptomListSelection.length),
             ),
@@ -203,10 +200,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
                           });
                         },
                         title: Text(
-                            executiveDysfunctionSelection[index].symptom +
-                                " - " +
-                                executiveSymptomDefinitionList[index] +
-                                ".")),
+                            "${executiveDysfunctionSelection[index].symptom} - ${executiveSymptomDefinitionList[index]}.")),
                     swapper);
               }, childCount: executiveDysfunctionSelection.length),
             ),
@@ -276,9 +270,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
                             }
                           });
                         },
-                        title: Text(stressorSymptomsSelection[index].symptom +
-                            " - " +
-                            stressDefinitionList[index])),
+                        title: Text("${stressorSymptomsSelection[index].symptom} - ${stressDefinitionList[index]}")),
                     swapper);
               }, childCount: stressorSymptomsSelection.length),
             ),
@@ -345,6 +337,6 @@ class Symptoms {
 
   @override
   String toString() {
-    return symptom + ' $isChecked\r\n';
+    return '$symptom $isChecked\r\n';
   }
 }

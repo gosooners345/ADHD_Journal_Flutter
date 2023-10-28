@@ -62,10 +62,10 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
     return Consumer<ThemeSwap>(builder: (context, swapper, child) {
     return  CustomScrollView(slivers: [
         SliverList(delegate: SliverChildListDelegate([
-          Center(child: Text("Summary of statistics"),)
+          const Center(child: Text("Summary of statistics"),)
         ])),
       SliverSafeArea(
-          top: true,left: true,right: true,bottom: true,minimum: EdgeInsets.all(10),
+          top: true,left: true,right: true,bottom: true,minimum: const EdgeInsets.all(10),
           sliver:
       SliverList(delegate: SliverChildListDelegate([
         Card(
@@ -123,7 +123,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 15,
                 ),
                 const Text('Reset Zoom'),
@@ -267,7 +267,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                SizedBox(
+                const SizedBox(
                   width: 15,
                 ),
                 const Text('Reset Zoom'),

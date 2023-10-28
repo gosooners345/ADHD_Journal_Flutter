@@ -11,7 +11,7 @@ import '../project_resources/project_colors.dart';
 class HelpfulLinksWidget extends StatelessWidget {
   //final Divider Divider(
 
-  HelpfulLinksWidget({Key? key}) : super(key: key);
+  const HelpfulLinksWidget({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(builder: (context, swapper, child) {
@@ -150,8 +150,9 @@ class HelpfulLinksWidget extends StatelessWidget {
   //This launches the URL Links in the application.
   void _launchURL(Uri url) async {
     if (Platform.isIOS) {
-      if (!await launchUrl(url, mode: LaunchMode.inAppWebView))
+      if (!await launchUrl(url, mode: LaunchMode.inAppWebView)) {
         throw 'Failed to launch $url';
+      }
     } else {
       if (!await launchUrl(url)) throw 'Failed to launch $url';
     }

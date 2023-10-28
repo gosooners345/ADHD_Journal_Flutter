@@ -165,7 +165,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> with SingleTic
                 ),
               ])),),
 SliverSafeArea(top: true,right: true,left: true,bottom: true,
-  minimum: EdgeInsets.symmetric(horizontal: 15),sliver:
+  minimum: const EdgeInsets.symmetric(horizontal: 15),sliver:
 SliverList(delegate:
 SliverChildListDelegate([
   Divider(height: 5,thickness: 1.0,color: Color(swapper.isColorSeed),),

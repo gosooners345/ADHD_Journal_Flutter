@@ -72,7 +72,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
                 Row(children: [
                   Expanded(
                       child: Text(
-                    'I felt ' + super.widget.record.emotions.toLowerCase(),
+                    'I felt ${super.widget.record.emotions.toLowerCase()}',
                     style: const TextStyle(
                         overflow: TextOverflow.ellipsis,
                         fontStyle: FontStyle.italic),
@@ -108,8 +108,7 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
                 Row(children: [
                   Expanded(
                       child: Text(
-                    'Related ADHD Symptoms are: ' +
-                        super.widget.record.symptoms,
+                    'Related ADHD Symptoms are: ${super.widget.record.symptoms}',
                     maxLines: 2,
                     style: const TextStyle(
                         fontStyle: FontStyle.italic,
@@ -142,17 +141,15 @@ class _RecordCardViewWidget extends State<RecordCardViewWidget> {
               children: [
                 Expanded(
                     child: Text(
-                  'Time created: ' +
-                      DateFormat("MM/dd/yyyy hh:mm:ss aa")
-                          .format(super.widget.record.timeCreated),
+                  'Time created: ${DateFormat("MM/dd/yyyy hh:mm:ss aa")
+                          .format(super.widget.record.timeCreated)}',
                   style: const TextStyle(fontStyle: FontStyle.italic),
                 )),
                 space2,
                 Expanded(
                     child: Text(
-                  'Time updated: ' +
-                      DateFormat("MM/dd/yyyy hh:mm:ss aa")
-                          .format(super.widget.record.timeUpdated),
+                  'Time updated: ${DateFormat("MM/dd/yyyy hh:mm:ss aa")
+                          .format(super.widget.record.timeUpdated)}',
                   style: const TextStyle(fontStyle: FontStyle.italic),
                 )),
               ],

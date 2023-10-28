@@ -9,7 +9,6 @@ import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 import '../backup_utils_package/crypto_utils.dart';
 import '../project_resources/project_colors.dart';
-import '../project_resources/project_utils.dart';
 import 'splash_screendart.dart';
 import 'onboarding_widget_class.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +34,7 @@ String dbPassword = '';
 String userPassword = '';
 bool isPasswordChecked = false;
 String greeting = '';
-TextField loginField = TextField();
+TextField loginField = const TextField();
 String dlDBPassword = '';
 String dlUserPassword = "";
 int dlColorSeed = 0;
@@ -52,8 +51,8 @@ class _LoginScreenState extends State<LoginScreen> {
   var encryptedOrNot = false;
   late SharedPreferences sharedPrefs;
   late TextEditingController stuff;
-  TextField loginField = TextField();
-  Row greetingField = Row(
+  TextField loginField = const TextField();
+  Row greetingField = const Row(
     children: [],
   );
   String hintText = '';
@@ -150,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(
                 width: 40,
               ),
-              Text("Backup with Google Drive")
+              const Text("Backup with Google Drive")
             ],
           ));
       stuff = TextEditingController();
@@ -347,7 +346,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   uploadDBFiles();
                                 }
                               },
-                              child: Text("No"))
+                              child: const Text("No"))
                         ],
                       );
                     });
@@ -560,7 +559,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void refreshPrefs() async {
     prefs.reload();
     await Future.sync(() => encryptedSharedPrefs.reload());
-    await Future.delayed(Duration(seconds: 1), loadStateStuff);
+    await Future.delayed(const Duration(seconds: 1), loadStateStuff);
   }
 
   void resetLoginFieldState() async {
@@ -574,7 +573,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Expanded(
             child: Text(
           loginGreeting,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 20.0,
           ),
           textAlign: TextAlign.center,
@@ -586,7 +585,7 @@ class _LoginScreenState extends State<LoginScreen> {
           obscureText: true,
           controller: stuff,
           decoration: InputDecoration(
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
               labelText: 'Password',
               hintText: hintText),
           onChanged: (text) {
@@ -604,18 +603,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: Text(
+                        title: const Text(
                           "Invalid password",
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        content: Text(
+                        content: const Text(
                             'You have entered the incorrect password. Please try again.'),
                         actions: [
                           TextButton(
                               onPressed: () {
                                 Navigator.pop(context);
                               },
-                              child: Text("Ok"))
+                              child: const Text("Ok"))
                         ],
                       );
                     });
@@ -628,7 +627,7 @@ class _LoginScreenState extends State<LoginScreen> {
         loginField = TextField(
           obscureText: true,
           controller: stuff,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Password Disabled. Hit Login to continue',
               hintText: 'Password Disabled. Hit Login to continue'),
@@ -751,7 +750,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Consumer<ThemeSwap>(builder: (context, swapper, child) {
       return Scaffold(
         appBar: AppBar(
-          title: Text("ADHD Journal"),
+          title: const Text("ADHD Journal"),
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -765,8 +764,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     left: 15.0, right: 15.0, top: 15, bottom: 0),
                 child: loginField,
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 60.0),
+              const Padding(
+                padding: EdgeInsets.only(top: 60.0),
                 child: Center(),
               ),
               SizedBox(
@@ -777,10 +776,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     builder:
                         (BuildContext context, AsyncSnapshot<bool> snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Text("Updating Files on device");
+                        return const Text("Updating Files on device");
                       } else {
                         if (snapshot.hasError) {
-                          return Text("Error retrieving information");
+                          return const Text("Error retrieving information");
                         } else if (snapshot.hasData) {
                           if (snapshot.data == false) {
                             return FutureBuilder(
@@ -844,26 +843,26 @@ class _LoginScreenState extends State<LoginScreen> {
                                           stuff.clear();
                                         }
                                       },
-                                      child: Text(
+                                      child: const Text(
                                         'Login',
                                         style: TextStyle(
                                             color: Colors.white, fontSize: 25),
                                       ),
                                     );
                                   } else {
-                                    return Text('Waiting for password info');
+                                    return const Text('Waiting for password info');
                                   }
                                 });
                           } else {
-                            return Text("Updating Values, Please wait!");
+                            return const Text("Updating Values, Please wait!");
                           }
                         } else {
-                          return Text("Something is wrong");
+                          return const Text("Something is wrong");
                         }
                       }
                     }),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 130,
               ),
               Padding(
@@ -873,7 +872,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     builder:
                         (BuildContext context, AsyncSnapshot<bool> snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Text("Getting Connection Status");
+                        return const Text("Getting Connection Status");
                       } else {
                         if (snapshot.hasData) {
                           if (snapshot.data == true) {
@@ -885,20 +884,20 @@ class _LoginScreenState extends State<LoginScreen> {
                                     AsyncSnapshot<bool> snapshot,
                                   ) {
                                     if (snapshot.hasError) {
-                                      return Text("Error");
+                                      return const Text("Error");
                                     } else if (snapshot.hasData) {
                                       if (snapshot.data! == true) {
-                                        return Text("");
+                                        return const Text("");
                                       } else {
                                         return driveButton;
                                       }
                                     } else {
-                                      return Text("Waiting");
+                                      return const Text("Waiting");
                                     }
                                   }),
                             );
                           } else {
-                            return Center(
+                            return const Center(
                               child: Text(connection_Error_Message_String),
                             );
                           }
@@ -911,15 +910,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                   AsyncSnapshot<bool> snapshot,
                                 ) {
                                   if (snapshot.hasError) {
-                                    return Text("Error");
+                                    return const Text("Error");
                                   } else if (snapshot.hasData) {
                                     if (snapshot.data! == true) {
-                                      return Text("");
+                                      return const Text("");
                                     } else {
                                       return driveButton;
                                     }
                                   } else {
-                                    return Text("Waiting");
+                                    return const Text("Waiting");
                                   }
                                 }),
                           );
@@ -927,7 +926,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       }
                     }),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 40,
               ),
               // Padding(padding: EdgeInsets.all(8),child:testDrive.connectButton() ,),
@@ -937,7 +936,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () async {
                     await Future.sync(() => checkForAllFiles(""));
                   },
-                  child: Text(
+                  child: const Text(
                     'Update Files',
                     style: TextStyle(fontSize: 25),
                   ),

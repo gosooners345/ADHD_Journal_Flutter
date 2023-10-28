@@ -4,10 +4,7 @@ import 'dart:core';
 
 import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
 import 'package:adhd_journal_flutter/record_data_package/records_data_class_db.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
-import '../ui/dashboard_stats_display_widget.dart';
 import '../main.dart';
 
 // Look into combining lists to help reduce memory usage if possible.

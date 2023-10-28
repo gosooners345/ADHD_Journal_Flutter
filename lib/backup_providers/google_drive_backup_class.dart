@@ -25,7 +25,7 @@ class GoogleDrive {
       GoogleSignIn(signInOption: SignInOption.standard, scopes: [
     ga.DriveApi.driveAppdataScope,
     ga.DriveApi.driveFileScope,
-    ga.DriveApi.driveScope
+    //ga.DriveApi.driveScope
   ]);
 
   // Have the user sign into Google Drive with their Google Account
@@ -158,7 +158,7 @@ class GoogleDrive {
           );
           print(queryDrive.files);
         }
-        if (files!.isNotEmpty) {
+        if (files.isNotEmpty) {
           files = queryDrive.files;
           var checkFile = files!.first;
           var checkTime = checkFile.createdTime;
@@ -180,6 +180,16 @@ class GoogleDrive {
   }
 
   //Scale down the scope of the call to specific files to appease Google
+Future<bool> checkForFileV2(String fileName) async{
+    drive = ga.DriveApi(client!);
+
+    var queryDrive = await drive.files.list();
+
+
+    return false;
+}
+
+
 
   /// Check file age on device. If the file on the Google Drive is newer, it returns false,
   /// if not, it returns true. This is used to sync the db and prefs files.
@@ -216,8 +226,8 @@ class GoogleDrive {
     final files = queryDrive.files;
     if (files?.isNotEmpty == true) {
       var idList = [];
-      int? test = files?.length!;
-      for (int i = 0; i <= test! - 1!; i++) {
+      int? test = files?.length;
+      for (int i = 0; i <= test! - 1; i++) {
         idList.add(files?[i].id);
       }
       //Removes outdated backups.

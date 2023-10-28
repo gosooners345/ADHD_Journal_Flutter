@@ -21,9 +21,9 @@ final emotionalSymptomList = [
 
 List<String> emotionalRegDefinitionList = [
   "This is when your passion and emotions pair up and drive your response, sometimes your brain will not keep these in check when you make a response to something going on",
-  "Your brain\'s emotion regulator inhibitors are overwhelmed with a surge of flooding, it can be any emotion. This is like when you have moments of intense joy or anger. Your brain is likely not going to be in a \'rational\' state. Be careful ",
-  "You are likely feeling the pain of a potential or actual rejection and it\'s driving a fear based response or something related",
-  "Your emotional state is in a red zone, you may want to take a moment to step away and cool down. Don\'t see this as something negative, your loved ones still love you ",
+  "Your brain's emotion regulator inhibitors are overwhelmed with a surge of flooding, it can be any emotion. This is like when you have moments of intense joy or anger. Your brain is likely not going to be in a 'rational' state. Be careful ",
+  "You are likely feeling the pain of a potential or actual rejection and it's driving a fear based response or something related",
+  "Your emotional state is in a red zone, you may want to take a moment to step away and cool down. Don't see this as something negative, your loved ones still love you ",
 ];
 final inattentiveSymptomsList = [
   'Distractions',
@@ -80,9 +80,9 @@ String oneDriveAndroidProdRedirect =
     "msauth://com.activitylogger.release1/ga0RGNYHvNM5d0SLGQfpQWAPGJ8%3D";
 List<String> stressDefinitionList = [
   "This is driven by stress going on in your life. Think of this like your symptoms are magnified by an event.",
-  "Your mind is probably wondering why you exist or there\'s too much going on around you to take in the moment. This may also apply to a situation where the world is crashing around you",
-  "Your mind is panicking about something going on around you or internally, This is here because it can be classified as a symptom of ADHD. But it does take place in everyone\'es lives.",
-  "This is when life just seems meaningless and you don\'t want to exist. This is a catch all for depression symptoms."
+  "Your mind is probably wondering why you exist or there's too much going on around you to take in the moment. This may also apply to a situation where the world is crashing around you",
+  "Your mind is panicking about something going on around you or internally, This is here because it can be classified as a symptom of ADHD. But it does take place in everyone'es lives.",
+  "This is when life just seems meaningless and you don't want to exist. This is a catch all for depression symptoms."
 ];
 
 final stressorSymptomList = [
@@ -127,8 +127,8 @@ const String sixth_paragraph_intro_string =
     ' Let\'s make mental health better for everyone!';
 const String home_page_intro_paragraph_string =
     'Once you log in, you\'ll see your journal entries, the navigation bar at the bottom, the compose button in the lower right hand corner, and several buttons on top. '
-    "\r\n Here\'s a quick rundown of the buttons: The search button is in the middle with a clear all button for resetting the list after a search is completed, the sort button is the second from the right, and the settings is button on the upper right hand corner of the screen."
-    "\r\n This is where you will probably spend most of the time in the app if you\'re not composing an entry or viewing the dashboard. ";
+    "\r\n Here's a quick rundown of the buttons: The search button is in the middle with a clear all button for resetting the list after a search is completed, the sort button is the second from the right, and the settings is button on the upper right hand corner of the screen."
+    "\r\n This is where you will probably spend most of the time in the app if you're not composing an entry or viewing the dashboard. ";
 const String resource_link_title =
     'Click here to quickly access resources about ADHD and to learn more about how to cope with it\'s many symptoms';
 const String password_hint_needed =

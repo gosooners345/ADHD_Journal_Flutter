@@ -336,7 +336,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 45.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 45.0),
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -348,7 +348,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                 ),
                 Padding(
                   padding:
-                      EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -580,11 +580,10 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                                 .previousPage(
                                     duration: const Duration(milliseconds: 200),
                                     curve: Curves.easeInExpo)
-                                .whenComplete(() => {
-                                      setState(() {
+                                .whenComplete(() => setState(() {
                                         currentPage = _pageController.page!;
                                       })
-                                    });
+                                    );
                           },
                           icon: backArrowIcon,
                         )),
@@ -602,11 +601,10 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                                 .nextPage(
                                     duration: const Duration(milliseconds: 200),
                                     curve: Curves.easeInExpo)
-                                .whenComplete(() => {
-                                      setState(() {
+                                .whenComplete(() => setState(() {
                                         currentPage = _pageController.page!;
                                       })
-                                    });
+                                    );
                           },
                           icon: nextArrowIcon,
                         )),

@@ -25,14 +25,14 @@ class PodcastTilesDataClass {
 // List of website links
 var linkArray = [
   LinkTilesDataClass(
-      title: Text('Additude magazine'),
+      title: const Text('Additude magazine'),
       url: Uri.parse(link_additudemag_website)),
   LinkTilesDataClass(
-      title: Text('CHADD.org'), url: Uri.parse(link_chadd_website)),
+      title: const Text('CHADD.org'), url: Uri.parse(link_chadd_website)),
 ];
 var youtube_LinksArray = [
   LinkTilesDataClass(
-      title: Text('How to ADHD Youtube Channel'),
+      title: const Text('How to ADHD Youtube Channel'),
       url: Uri.parse(link_how_to_ADHD_YT)),
 ];
 /*

@@ -10,7 +10,7 @@ class TutorialHelpScreen extends StatelessWidget {
     return Consumer<ThemeSwap>(builder: (context, swapper, child) {
       return Scaffold(
         appBar: AppBar(
-          title: Text("Help Guide"),
+          title: const Text("Help Guide"),
         ),
         body: ListView(
           children: [
@@ -21,7 +21,7 @@ class TutorialHelpScreen extends StatelessWidget {
             ),
             ListTile(
               iconColor: Color(swapper.isColorSeed),
-              title: Text(
+              title: const Text(
                   'Creating a new journal entry, or editing an existing entry'),
               onTap: () {
                 Navigator.pushNamed(context, '/composehelp');
@@ -33,7 +33,7 @@ class TutorialHelpScreen extends StatelessWidget {
               color: Color(swapper.isColorSeed),
             ),
             ListTile(
-              title: Text('How to use the dashboard feature'),
+              title: const Text('How to use the dashboard feature'),
               onTap: () {
                 Navigator.pushNamed(context, '/dashboardhelp');
               },
@@ -44,7 +44,7 @@ class TutorialHelpScreen extends StatelessWidget {
               color: Color(swapper.isColorSeed),
             ),
             ListTile(
-              title: Text('How to use sorting and filtering features'),
+              title: const Text('How to use sorting and filtering features'),
               onTap: () {
                 Navigator.pushNamed(context, '/searchhelp');
               },
@@ -55,7 +55,7 @@ class TutorialHelpScreen extends StatelessWidget {
               color: Color(swapper.isColorSeed),
             ),
             ListTile(
-              title: Text('How Backup and sync works'),
+              title: const Text('How Backup and sync works'),
               onTap: () {
                 Navigator.pushNamed(context, '/backuphelp');
               },

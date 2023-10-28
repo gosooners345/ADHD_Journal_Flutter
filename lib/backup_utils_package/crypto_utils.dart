@@ -490,7 +490,7 @@ class CryptoUtils {
         .map((line) => line.trim())
         .where((line) => line.isNotEmpty)
         .toList();
-    var base64;
+    String base64;
     if (checkHeader) {
       if (lines.length < 2 ||
           !lines.first.startsWith('-----BEGIN') ||
@@ -520,7 +520,7 @@ class CryptoUtils {
   static RSAPublicKey rsaPublicKeyFromDERBytes(Uint8List bytes) {
     var asn1Parser = ASN1Parser(bytes);
     var topLevelSeq = asn1Parser.nextObject() as ASN1Sequence;
-    var publicKeySeq;
+    ASN1Sequence publicKeySeq;
     if (topLevelSeq.elements![1].runtimeType == ASN1BitString) {
       var publicKeyBitString = topLevelSeq.elements![1] as ASN1BitString;
 
@@ -676,7 +676,7 @@ class CryptoUtils {
     var asn1Parser = ASN1Parser(bytes);
     var topLevelSeq = asn1Parser.nextObject() as ASN1Sequence;
     var curveName;
-    var x;
+    Uint8List x;
     if (pkcs8) {
       // Parse the PKCS8 format
       var innerSeq = topLevelSeq.elements!.elementAt(1) as ASN1Sequence;

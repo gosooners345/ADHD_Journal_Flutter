@@ -63,11 +63,10 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
             .nextPage(
                 duration: const Duration(milliseconds: 150),
                 curve: Curves.easeInExpo)
-            .whenComplete(() => {
-                  setState(() {
+            .whenComplete(() => setState(() {
                     currentPage = _pageController.page!;
                   })
-                });
+                );
       },
       icon: nextArrowIcon,
     );
@@ -78,11 +77,10 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
             .previousPage(
                 duration: const Duration(milliseconds: 150),
                 curve: Curves.easeInExpo)
-            .whenComplete(() => {
-                  setState(() {
+            .whenComplete(() => setState(() {
                     currentPage = _pageController.page!;
                   })
-                });
+                );
       },
       icon: backArrowIcon,
     );
@@ -147,12 +145,12 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
             Column(children: [
               const Padding(
                   padding: EdgeInsets.all(10),
-                  child: const Center(
+                  child: Center(
                       child: Text(
-                    "What\'s on your mind?",
+                    "What's on your mind?",
                     style: TextStyle(fontSize: 20),
                   ))),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Padding(
@@ -167,7 +165,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
                                 width:
                                     1)), //labelText: 'What\'s on your mind? ',
                         hintText:
-                            "Enter what happened here or what you\'re thinking about."),
+                            "Enter what happened here or what you're thinking about."),
                     keyboardType: TextInputType.multiline,
                     minLines: 1,
                     maxLines: 3,
@@ -183,14 +181,14 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
         uiCard(
             Column(
               children: [
-                Padding(
+                const Padding(
                     padding: EdgeInsets.all(10),
-                    child: const Center(
+                    child: Center(
                         child: Text("How do you feel currently?",
                             style: TextStyle(fontSize: 20)))),
                 space,
                 Padding(
-                    padding: EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10),
                     child: TextField(
                       decoration: InputDecoration(
                           border: OutlineInputBorder(
@@ -212,15 +210,15 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
         uiCard(
             Column(
               children: [
-                Padding(
+                const Padding(
                     padding: EdgeInsets.all(10),
-                    child: const Center(
+                    child: Center(
                         child: Text(
                             "Is there anything that may have contributed to this?",
                             style: TextStyle(fontSize: 20.0)))),
                 space,
                 Padding(
-                    padding: EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10),
                     child: TextField(
                       decoration: InputDecoration(
                           border: OutlineInputBorder(
@@ -249,10 +247,10 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
             swapper),
         uiCard(
             Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-              Padding(
+              const Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
-                    "Related ADHD Symptoms:" + "\r\n ",
+                    "Related ADHD Symptoms:" "\r\n ",
                     style: TextStyle(fontSize: 20),
                   )),
               ListTile(
@@ -260,7 +258,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
                     ? Text(symptomCoverText)
                     : Text(
                         super.widget.record.symptoms,
-                        style: TextStyle(fontSize: 15),
+                        style: const TextStyle(fontSize: 15),
                       ),
                 onTap: () {
                   Navigator.push(
@@ -283,9 +281,9 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
         uiCard(
             Column(
               children: [
-                Padding(
+                const Padding(
                     padding: EdgeInsets.all(10),
-                    child: const Center(
+                    child: Center(
                       child: Text(
                         "Tags",
                         style: TextStyle(fontSize: 20),
@@ -293,7 +291,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
                     )),
                 space,
                 Padding(
-                    padding: EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10),
                     child: TextField(
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
@@ -316,9 +314,9 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
         uiCard(
             Column(
               children: [
-                Padding(
+                const Padding(
                     padding: EdgeInsets.all(10),
-                    child: const Center(
+                    child: Center(
                       child: Text(
                         "How would you rate this?",
                         style: TextStyle(fontSize: 20),
@@ -326,7 +324,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
                     )),
                 space,
                 Padding(
-                    padding: EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10),
                     child: Center(child: ratingSliderWidget)),
                 Slider(
                     value: super.widget.record.rating,
@@ -366,13 +364,13 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
             swapper),
         uiCard(
             Column(children: [
-              Padding(
+              const Padding(
                   padding: EdgeInsets.all(10),
-                  child: const Center(
+                  child: Center(
                       child: Text("Do you think what happened was successful? ",
                           style: TextStyle(fontSize: 20)))),
               Padding(
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 child: SwitchListTile(
                   value: isChecked,
                   onChanged: (bool value) {
@@ -398,6 +396,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
             ListView(
               padding: const EdgeInsets.only(
                   left: 10, top: 20, right: 10, bottom: 40),
+              shrinkWrap: true,
               children: <Widget>[
                 const Text(
                     "Here's what you entered. Check and see if everything is correct. Once you're done, hit save.",
@@ -558,7 +557,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
                     label: super.widget.record.rating.toString()),
                 space,
                 Padding(
-                    padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
                     child: SwitchListTile(
                       value: isChecked,
                       onChanged: (bool value) {
@@ -577,11 +576,10 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
                       title: successStateWidget,
                       activeColor: Color(swapper.isColorSeed),
                     )),
-                SizedBox(
+                const SizedBox(
                   height: 40,
                 )
               ],
-              shrinkWrap: true,
             ),
             swapper),
       ],
@@ -658,8 +656,8 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
               _showAlert(context, "Save failed");
             }
           },
-          label: Text("Save"),
-          icon: Icon(Icons.save),
+          label: const Text("Save"),
+          icon: const Icon(Icons.save),
         ),
       );
     });

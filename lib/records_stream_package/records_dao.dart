@@ -161,9 +161,9 @@ class RecordsDao {
   changePasswords(String newPassword) async {
     var db = await recordsDB.database;
 
-    var query = "PRAGMA key = ${dbPassword};";
+    var query = "PRAGMA key = $dbPassword;";
 
-    var query2 = "PRAGMA rekey = ${newPassword};";
+    var query2 = "PRAGMA rekey = $newPassword;";
     try {
       var disposal = await db.query("records");
       if (Platform.isAndroid) {

@@ -8,7 +8,7 @@ class NetworkConnectivity {
   static final _instance = NetworkConnectivity._();
   static NetworkConnectivity get instance => _instance;
   final _networkConnectivity = Connectivity();
-  StreamController<bool> _controller = StreamController.broadcast(sync: true);
+  final StreamController<bool> _controller = StreamController.broadcast(sync: true);
   StreamSink<bool> get streamSink => _controller.sink;
   Stream<bool> get myStream => _controller.stream;
   // 1.
