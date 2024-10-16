@@ -6,7 +6,7 @@ import SQLCipher
 
 
 
-@UIApplicationMain
+@main
 @objc class AppDelegate: FlutterAppDelegate {
 
 

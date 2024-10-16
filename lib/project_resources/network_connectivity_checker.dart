@@ -13,11 +13,14 @@ class NetworkConnectivity {
   Stream<bool> get myStream => _controller.stream;
   // 1.
   void initialise() async {
-    ConnectivityResult result = await _networkConnectivity.checkConnectivity();
-    checkStatus(result);
+     List<ConnectivityResult> connList = await _networkConnectivity.checkConnectivity();
+    ConnectivityResult result = connList.last;
+     checkStatus(result);
     _networkConnectivity.onConnectivityChanged.listen((result) {
+      ConnectivityResult results = result.last;
       print(result);
-      checkStatus(result);
+
+      checkStatus(results);
     });
   }
 

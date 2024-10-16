@@ -38,7 +38,7 @@ dependencies:
   firebase_auth:
   firebase_dart:
   material: ^1.0.0+2
-  sqflite_sqlcipher: ^2.2.0
+  sqflite_sqlcipher: ^3.1.0+1
   shared_preferences: ^2.0.18
   encrypted_shared_preferences:
   intl:
@@ -54,18 +54,18 @@ dependencies:
   rxdart:
   flutter_launcher_icons: ^0.13.1
   flutter_email_sender: ^6.0.1
-  flutter_secure_storage:
+  flutter_secure_storage: ^9.2.2
   envied:
   smooth_page_indicator:
   package_info_plus:
-  googleapis: ^11.4.0
-  googleapis_auth: ^1.4.0
-  google_sign_in: ^6.1.4
+  googleapis:
+  googleapis_auth:
+  google_sign_in:
   encrypt: ^5.0.1
   build_runner:
   file_cryptor: ^0.0.3
   pointycastle: ^3.6.2
-  connectivity_plus: ^4.0.2
+  connectivity_plus: ^6.0.5
   extension_google_sign_in_as_googleapis_auth:
 flutter_icons:
   image_path_android: "images/appicon_appstore.png"
@@ -74,7 +74,7 @@ flutter_icons:
   ios: true
 dev_dependencies:
 
-  envied_generator: ^0.3.0+3
+  envied_generator: ^0.5.4+1
   flutter_test:
     sdk: flutter
 dependency_overrides:
@@ -88,7 +88,7 @@ dependency_overrides:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.1
+  flutter_lints: ^5.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

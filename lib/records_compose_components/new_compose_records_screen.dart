@@ -245,7 +245,22 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
               ],
             ),
             swapper),
-        uiCard(
+        GestureDetector(
+            onTap: (){
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => SymptomSelectorScreen(
+                        symptoms: super.widget.record.symptoms,
+                      ))).then((value) {
+                setState(() {
+                  super.widget.record.symptoms = value as String;
+                });
+              }).onError((error, stackTrace) {
+                super.widget.record.symptoms = '';
+              });},
+            child: uiCard(
+
             Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
               const Padding(
                   padding: EdgeInsets.all(8.0),
@@ -277,7 +292,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
               ),
               space
             ]),
-            swapper),
+            swapper)),
         uiCard(
             Column(
               children: [
