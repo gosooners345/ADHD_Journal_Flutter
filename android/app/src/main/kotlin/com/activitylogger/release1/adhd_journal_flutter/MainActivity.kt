@@ -10,7 +10,7 @@ import androidx.annotation.NonNull
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import java.lang.Exception
-import net.sqlcipher.database.SQLiteDatabase
+//import net.sqlcipher.database.SQLiteDatabase
 import java.io.File
 import java.io.FileNotFoundException
 import java.util.*
