@@ -35,7 +35,7 @@ class RecordsDao {
 
     if (query.isNotEmpty) {
       maps = await database.query('records',
-          where: /*title LIKE ?*/
+          where:
               "title like ?  OR "
               "emotions LIKE ? OR  "
               "sources LIKE ? OR "

@@ -38,7 +38,7 @@ dependencies:
   firebase_auth:
   firebase_dart:
   material: ^1.0.0+2
-  sqflite_sqlcipher: ^3.1.0+1
+  sqflite_sqlcipher: ^2.2.0
   shared_preferences: ^2.0.18
   encrypted_shared_preferences:
   intl:
@@ -56,11 +56,12 @@ dependencies:
   flutter_email_sender: ^6.0.1
   flutter_secure_storage: ^9.2.2
   envied:
+  google_fonts:
   smooth_page_indicator:
   package_info_plus:
-  googleapis:
-  googleapis_auth:
-  google_sign_in:
+  googleapis: ^11.4.0
+  googleapis_auth: ^1.4.0
+  google_sign_in: ^6.1.4
   encrypt: ^5.0.1
   build_runner:
   file_cryptor: ^0.0.3
