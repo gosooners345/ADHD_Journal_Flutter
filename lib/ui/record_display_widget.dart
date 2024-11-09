@@ -14,6 +14,7 @@ import '../project_resources/project_utils.dart';
 import '../record_data_package/records_data_class_db.dart';
 import '../app_start_package/login_screen_file.dart';
 import '../records_compose_components/new_compose_records_screen.dart';
+import '../ui_components/loading_card_widget.dart';
 
 class RecordDisplayWidget extends StatefulWidget {
   const RecordDisplayWidget({Key? key}) : super(key: key);
@@ -134,7 +135,14 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> with SingleTic
         });
   }
 
-
+  Widget _buildListItem(bool isLoading) {
+    return ShimmerLoading(
+      isLoading: isLoading,
+      child: CardListItem(
+        isLoading: isLoading,
+      ),
+    );
+  }
 
   void saveSettings(String value, String key) async {
     encryptedSharedPrefs.setString(key, value);
@@ -146,7 +154,9 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> with SingleTic
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeSwap>(builder: (context, swapper, child) {
-      return
+      return// SafeArea(
+        //  minimum: const EdgeInsets.all(5.0),
+      //    child:
       CustomScrollView(slivers:[
             SliverPadding(padding: const EdgeInsets.all(15),sliver:
             SliverList(delegate: SliverChildListDelegate([ const SizedBox(height: 20),
@@ -266,26 +276,24 @@ SliverChildListDelegate([
             print(snapshot.error);
           }
           return   SliverList(delegate: SliverChildListDelegate([ Text(snapshot.stackTrace.toString())]));
-        } else {
+        } else { //if loading.
           if (kDebugMode) {
             print(snapshot.connectionState);
           }
           return
             SliverList(delegate: SliverChildListDelegate([
-            const Center(
+             Center(
             child: Center(
-              child: Column(
-                children: <Widget>[
-                  CircularProgressIndicator(),
-                  Text('Loading your journal entries.'),
-                ],
+              child: Column(children: [_buildListItem(true)],
               ),
             ),
           )]));
         }
       },
-      ),
-       ]);
+      )]);
+
+
+
     });
   }
 }
