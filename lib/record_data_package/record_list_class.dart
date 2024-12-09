@@ -28,6 +28,21 @@ class RecordList {
     successList = getSuccessList();
   }
 
+  //List of Integers and Dates. - Derived from the list without creating a class.
+//What if this was integrated into the master stream class.
+  // 1. Rating value, 2. Date value.
+/*List<dynamic>  ratingList(){
+  var tempratingList = [];
+    Map<String,Object> ratingsMap = {};
+    for(int i =0; i<recordHolder.length; i++){
+      ratingsMap.
+  }*/
+
+
+
+
+
+
 // List Methods for the lists above
   static List<RecordDataStats> getSuccessList() {
     List<RecordDataStats> successData = [];
@@ -155,7 +170,7 @@ class RecordList {
     symptomList = symptomList.reversed.toList();
     return symptomList;
   }
-
+//old ratings list
 //Ratings List Method
   static Future<List<RecordRatingStats>> _getRatingsList() async {
     List<RecordRatingStats> ratingsData = List.empty(growable: true);

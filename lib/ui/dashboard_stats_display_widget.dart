@@ -7,7 +7,7 @@ import '../main.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class DashboardViewWidget extends StatefulWidget {
-  const DashboardViewWidget({Key? key}) : super(key: key);
+  const DashboardViewWidget({super.key});
   @override
   State<DashboardViewWidget> createState() => _DashboardViewWidget();
 }
@@ -84,7 +84,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                     fontSize: 16.0, fontStyle: FontStyle.italic)),
 
           ),),
-        Card(
+   /*     Card(
           borderOnForeground: true,
           elevation: 2.0,
           shape: RoundedRectangleBorder(
@@ -137,7 +137,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
 
 
           ])),
-        ),
+        ),*/
         Card(
             borderOnForeground: true,
             elevation: 2.0,
