@@ -625,6 +625,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
         key: _formKey,
         body: SafeArea(
           minimum: const EdgeInsets.fromLTRB(5, 5, 5, 80),
+          // Code to examine for ratings dashboard examination
           child: Stack(
             children: [
               currentPage! == 0

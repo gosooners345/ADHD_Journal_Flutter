@@ -1,23 +1,76 @@
+import 'package:adhd_journal_flutter/project_resources/project_utils.dart';
 import 'package:adhd_journal_flutter/record_data_package/record_list_class.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:provider/provider.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import '../app_start_package/splash_screendart.dart';
 import '../main.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:syncfusion_flutter_charts/sparkcharts.dart';
+
+
+
+
 
 class DashboardViewWidget extends StatefulWidget {
   const DashboardViewWidget({super.key});
   @override
   State<DashboardViewWidget> createState() => _DashboardViewWidget();
 }
-
 class _DashboardViewWidget extends State<DashboardViewWidget> {
+
+  int capacity = (RecordList.ratingsList.length/10).toInt();
   @override
   void initState() {
     super.initState();
-  }
 
+    // Add multiple arrays to a single list to display.
+int startIndex=0;
+   for(int y=0; y<capacity;y++){
+      ratingList.clear();
+      for (int i=startIndex; i<(capacity)*(y+1)/*RecordList.ratingsList.length*/; i++){
+ratingList.add(RecordList.ratingsList[i].value);
+    }
+      startIndex+=capacity;
+    superList.add(ratingList);
+    }
+    graphController.addListener(() {
+      setState(() {
+        currentPage = graphController.page;
+      });
+    });
+    nextButton = IconButton(
+      tooltip: "Next",
+      onPressed: () {
+        graphController
+            .nextPage(
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeInExpo)
+            .whenComplete(() => setState(() {
+          currentPage = graphController.page!;
+        })
+        );
+      },
+      icon: nextArrowIcon,
+    );
+    prevButton = IconButton(
+      tooltip: "Previous",
+      onPressed: () {
+        graphController
+            .previousPage(
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeInExpo)
+            .whenComplete(() => setState(() {
+          currentPage = graphController.page!;
+        })
+        );
+      },
+      icon: backArrowIcon,
+    );
+  }
+  late IconButton nextButton,prevButton;
+PageController graphController = PageController(initialPage: 0);
 //Method for collecting counts of Words in a list
   ZoomPanBehavior zoomPanBehavior = ZoomPanBehavior(
       enablePinching: true, enablePanning: true, zoomMode: ZoomMode.x);
@@ -25,7 +78,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
       enableDoubleTapZooming: true, enablePanning: true, zoomMode: ZoomMode.x);
   ZoomPanBehavior zoomPanBehavior1 = ZoomPanBehavior(
       enableDoubleTapZooming: true, enablePanning: true, zoomMode: ZoomMode.x);
-
+double? currentPage=0;
   String summaryGen() {
     String summaryString = '';
     String successString = '';
@@ -45,7 +98,9 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
       successString = "fail";
     }
 
+
     //For the symptom and emotion section
+
 
     summaryString =
         "You have ${recordsBloc.recordHolder.length} entries in your journal.\r\n"
@@ -55,10 +110,12 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
 
     return summaryString;
   }
-
-
+List<double> ratingList=[];
+List<String> dateList=[];
+var superList =[];
   @override
   Widget build(BuildContext context) {
+    int pageCount =capacity;
     return Consumer<ThemeSwap>(builder: (context, swapper, child) {
     return  CustomScrollView(slivers: [
         SliverList(delegate: SliverChildListDelegate([
@@ -84,60 +141,112 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
                     fontSize: 16.0, fontStyle: FontStyle.italic)),
 
           ),),
+        // Create paged values, use sets of 100
+
+
+
+uiCard(
+SizedBox(width: 300,height: 400,child:
+
+    Stack(children: [
+      currentPage! == 0
+          ? const Text("")
+          : Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: prevButton),
+      Padding(
+      padding: const EdgeInsets.fromLTRB(35, 8, 35, 15),
+      child:
+      PageView.builder(controller: graphController,
+          itemCount: superList.length,
+          itemBuilder: (BuildContext context,index){
+
+return  GridTile(
+    child:
+    Column(children: [
+      SfSparkLineChart(
+        data: superList[index],
+        width: 1,
+        marker:SparkChartMarker(displayMode: SparkChartMarkerDisplayMode.all,
+        ) ,
+        labelDisplayMode: SparkChartLabelDisplayMode.all,
+//plotBand: SparkChartPlotBand(start: 0,end: ratingList.length.toDouble()),
+      ),
+
+
+      Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          const SizedBox(
+            width: 15,
+          ),
+          const Text('Reset Zoom'),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => zoomPanBehavior.reset(),
+          )
+
+        ],)
+
+
+
+    ]));
+          },
+      onPageChanged:(page){
+        graphController.animateToPage(page,        duration: const Duration(milliseconds: 100), curve: Curves.easeIn);
+      } ,
+
+      )
+
+
+
+
+      ),
+      currentPage! == pageCount - 1
+          ? const Text("")
+          : Align(
+          alignment: AlignmentDirectional.centerEnd,
+          child: nextButton),
+      Align(
+        alignment: Alignment.bottomCenter,
+        child: SizedBox(
+            height: 8,
+            child: SmoothPageIndicator(
+              controller: graphController,
+              count: pageCount,
+              effect: WormEffect(
+                dotHeight: 12,
+                dotWidth: 12,
+                dotColor: Color(swapper.isColorSeed),
+              ),
+              onDotClicked: (value) {
+                setState(() {
+                  currentPage = value.toDouble();
+                  graphController.jumpToPage(value);
+                });
+              },
+            )),
+      ),
+
+    ],),
+
+
+   ),swapper),
    /*     Card(
           borderOnForeground: true,
           elevation: 2.0,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
               side: BorderSide(color: Color(swapper.isColorSeed).withOpacity(1.0))),
-
           child:
-          GridTile(child:
-          Column(children: [
-
-            SfCartesianChart(
-              zoomPanBehavior: zoomPanBehavior,
-              borderWidth: 2.0,
-              primaryXAxis: CategoryAxis(),
-              primaryYAxis: NumericAxis(),
-              series: <LineSeries<RecordRatingStats, String>>[
-                LineSeries(
-                  dataSource: RecordList.ratingsList,
-                  width: 1.0,
-                  xValueMapper: (RecordRatingStats recLbl, _) =>
-                      DateFormat("MM/dd/yyyy hh:mm:ss aa")
-                          .format(recLbl.date),
-                  color: Color(swapper.isColorSeed),
-                  yValueMapper: (RecordRatingStats recLbl, _) =>
-                  recLbl.value,
-                  dataLabelSettings:
-                  const DataLabelSettings(isVisible: true),
-                  xAxisName: 'Entry Timestamps',
-                  yAxisName: 'Ratings',
-                ),
-              ],
-              title: ChartTitle(
-                  text: 'Ratings data from journal entries'),
-              margin: const EdgeInsets.all(8.0),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const SizedBox(
-                  width: 15,
-                ),
-                const Text('Reset Zoom'),
-                IconButton(
-                  icon: const Icon(Icons.refresh),
-                  onPressed: () => zoomPanBehavior.reset(),
-                )
-
-              ],)
 
 
 
-          ])),
-        ),*/
+
+
+  ),*/
+
+
         Card(
             borderOnForeground: true,
             elevation: 2.0,
@@ -169,6 +278,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
               ),
             ),
             )),
+     /*
         Card(borderOnForeground: true,
           elevation: 2.0,
           shape: RoundedRectangleBorder(
@@ -222,7 +332,8 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
               ],
             ),
           ],),),
-        ),
+        ),*/
+       /*
         Card(
           borderOnForeground: true,
           elevation: 2.0,
@@ -277,7 +388,7 @@ class _DashboardViewWidget extends State<DashboardViewWidget> {
               ],
             ),
           ],
-        ) ,),)
+        ) ,),)*/
       ]),),
 
 
