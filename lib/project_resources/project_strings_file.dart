@@ -12,6 +12,7 @@ final positiveSymptomList = [
   'Hyperfocus',
 ];
 
+
 final emotionalSymptomList = [
   'Emotion fueled response',
   'Emotional Flooding',

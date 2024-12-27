@@ -166,7 +166,8 @@ return  GridTile(
               borderWidth: 2.0,
               primaryXAxis: CategoryAxis(name: "Dates",labelAlignment: LabelAlignment.center,labelRotation: 285,
                 labelPosition: ChartDataLabelPosition.outside,title: AxisTitle(text: "Dates"),),
-              primaryYAxis: NumericAxis(name: "Ratings",labelAlignment: LabelAlignment.center,title: AxisTitle(text: "Ratings"),rangePadding: ChartRangePadding.auto),
+              primaryYAxis: NumericAxis(name: "Ratings",
+                  labelAlignment: LabelAlignment.center,title: AxisTitle(text: "Ratings"),rangePadding: ChartRangePadding.auto),
 
          series: <LineSeries<RecordRatingStats, String>>[
                 LineSeries(
@@ -208,12 +209,7 @@ return  GridTile(
         graphController.animateToPage(page,
             duration: const Duration(milliseconds: 100), curve: Curves.easeIn);
       } ,
-
       )
-
-
-
-
       ),
 
       currentPage! == pageCount - 1
@@ -280,7 +276,7 @@ return  GridTile(
               ),
             ),
             )),
-     /*
+
         Card(borderOnForeground: true,
           elevation: 2.0,
           shape: RoundedRectangleBorder(
@@ -297,8 +293,11 @@ return  GridTile(
                   trackballBehavior: TrackballBehavior(
                       activationMode: ActivationMode.doubleTap),
                   borderWidth: 2.0,
-                  primaryXAxis: CategoryAxis(),
-                  primaryYAxis: NumericAxis(),
+                  primaryXAxis: CategoryAxis(name: "Emotions",labelAlignment: LabelAlignment.center,
+                    labelPosition: ChartDataLabelPosition.outside,title: AxisTitle(text: "Emotions"),),
+                  primaryYAxis: NumericAxis(name: "Counts",
+                      labelAlignment: LabelAlignment.center,title: AxisTitle(text: "Quantity"),rangePadding: ChartRangePadding.auto
+                  ),
                   series: <BarSeries<RecordDataStats, String>>[
                     BarSeries(
                       dataSource: RecordList.emotionsList,
@@ -309,7 +308,7 @@ return  GridTile(
                       name: 'Emotion Data from Journal Entries',
                       color: Color(swapper.isColorSeed),
                       xAxisName: 'Emotions',
-                      spacing: 0,
+                      spacing: 0.015,
                       dataLabelSettings: const DataLabelSettings(
                         isVisible: true,
                       ),
@@ -334,8 +333,8 @@ return  GridTile(
               ],
             ),
           ],),),
-        ),*/
-       /*
+        ),
+
         Card(
           borderOnForeground: true,
           elevation: 2.0,
@@ -349,14 +348,17 @@ return  GridTile(
             SizedBox(
               height: 850,
               child: Padding(
-                padding: const EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(8.0),
                 child: SfCartesianChart(
                   trackballBehavior: TrackballBehavior(
                       activationMode: ActivationMode.doubleTap),
                   zoomPanBehavior: zoomPanBehavior2,
                   borderWidth: 2.0,
-                  primaryXAxis: CategoryAxis(),
-                  primaryYAxis: NumericAxis(),
+                  primaryXAxis: CategoryAxis(name: "Symptoms",labelAlignment: LabelAlignment.center,title: AxisTitle(text: "Symptoms"),
+                    labelPosition: ChartDataLabelPosition.outside,),
+                  primaryYAxis: NumericAxis(name: "Counts",
+                      labelAlignment: LabelAlignment.center,title: AxisTitle(text: "Quantity"),rangePadding: ChartRangePadding.auto
+                  ),
                   series: <BarSeries<RecordDataStats, String>>[
                     BarSeries(
                         dataSource: RecordList.symptomList,
@@ -390,7 +392,7 @@ return  GridTile(
               ],
             ),
           ],
-        ) ,),)*/
+        ) ,),)
       ]),),
 
 
