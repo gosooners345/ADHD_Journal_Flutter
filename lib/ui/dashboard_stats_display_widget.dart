@@ -1,14 +1,16 @@
 import 'package:adhd_journal_flutter/project_resources/project_utils.dart';
 import 'package:adhd_journal_flutter/record_data_package/record_list_class.dart';
+import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../app_start_package/splash_screendart.dart';
 import '../main.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
-
+import 'package:collection/collection.dart';
 
 
 
@@ -19,22 +21,26 @@ class DashboardViewWidget extends StatefulWidget {
   State<DashboardViewWidget> createState() => _DashboardViewWidget();
 }
 class _DashboardViewWidget extends State<DashboardViewWidget> {
-
-  int capacity = (RecordList.ratingsList.length/10).toInt();
+  late IconButton nextButton,prevButton;
+  PageController graphController = PageController(initialPage: 0);
+//Method for collecting counts of Words in a list
+  ZoomPanBehavior zoomPanBehavior = ZoomPanBehavior(
+      enablePinching: true, enablePanning: true, zoomMode: ZoomMode.x);
+  ZoomPanBehavior zoomPanBehavior2 = ZoomPanBehavior(
+      enableDoubleTapZooming: true, enablePanning: true, zoomMode: ZoomMode.x);
+  ZoomPanBehavior zoomPanBehavior1 = ZoomPanBehavior(
+      enableDoubleTapZooming: true, enablePanning: true, zoomMode: ZoomMode.x);
+  double? currentPage=0;
+ // int capacity = RecordList.ratingsList.length~/5;
   @override
   void initState() {
     super.initState();
 
-    // Add multiple arrays to a single list to display.
-int startIndex=0;
-   for(int y=0; y<capacity;y++){
-      ratingList.clear();
-      for (int i=startIndex; i<(capacity)*(y+1)/*RecordList.ratingsList.length*/; i++){
-ratingList.add(RecordList.ratingsList[i].value);
-    }
-      startIndex+=capacity;
-    superList.add(ratingList);
-    }
+
+    superList.addAll(RecordList.ratingsList.slices(30));
+var templist = superList.reversed;
+superList = templist.toList();
+
     graphController.addListener(() {
       setState(() {
         currentPage = graphController.page;
@@ -69,16 +75,7 @@ ratingList.add(RecordList.ratingsList[i].value);
       icon: backArrowIcon,
     );
   }
-  late IconButton nextButton,prevButton;
-PageController graphController = PageController(initialPage: 0);
-//Method for collecting counts of Words in a list
-  ZoomPanBehavior zoomPanBehavior = ZoomPanBehavior(
-      enablePinching: true, enablePanning: true, zoomMode: ZoomMode.x);
-  ZoomPanBehavior zoomPanBehavior2 = ZoomPanBehavior(
-      enableDoubleTapZooming: true, enablePanning: true, zoomMode: ZoomMode.x);
-  ZoomPanBehavior zoomPanBehavior1 = ZoomPanBehavior(
-      enableDoubleTapZooming: true, enablePanning: true, zoomMode: ZoomMode.x);
-double? currentPage=0;
+
   String summaryGen() {
     String summaryString = '';
     String successString = '';
@@ -115,7 +112,7 @@ List<String> dateList=[];
 var superList =[];
   @override
   Widget build(BuildContext context) {
-    int pageCount =capacity;
+    int pageCount =superList.length;
     return Consumer<ThemeSwap>(builder: (context, swapper, child) {
     return  CustomScrollView(slivers: [
         SliverList(delegate: SliverChildListDelegate([
@@ -155,7 +152,7 @@ SizedBox(width: 300,height: 400,child:
           alignment: AlignmentDirectional.centerStart,
           child: prevButton),
       Padding(
-      padding: const EdgeInsets.fromLTRB(35, 8, 35, 15),
+      padding: const EdgeInsets.fromLTRB(25, 8, 25, 15),
       child:
       PageView.builder(controller: graphController,
           itemCount: superList.length,
@@ -164,16 +161,34 @@ SizedBox(width: 300,height: 400,child:
 return  GridTile(
     child:
     Column(children: [
-      SfSparkLineChart(
-        data: superList[index],
-        width: 1,
-        marker:SparkChartMarker(displayMode: SparkChartMarkerDisplayMode.all,
-        ) ,
-        labelDisplayMode: SparkChartLabelDisplayMode.all,
-//plotBand: SparkChartPlotBand(start: 0,end: ratingList.length.toDouble()),
-      ),
+       SfCartesianChart(
+              zoomPanBehavior: zoomPanBehavior,
+              borderWidth: 2.0,
+              primaryXAxis: CategoryAxis(name: "Dates",labelAlignment: LabelAlignment.center,labelRotation: 285,
+                labelPosition: ChartDataLabelPosition.outside,title: AxisTitle(text: "Dates"),),
+              primaryYAxis: NumericAxis(name: "Ratings",labelAlignment: LabelAlignment.center,title: AxisTitle(text: "Ratings"),rangePadding: ChartRangePadding.auto),
 
+         series: <LineSeries<RecordRatingStats, String>>[
+                LineSeries(
+                  dataSource: superList[index],
+                  width: 1.0,
+                  xValueMapper: (RecordRatingStats recLbl, _) =>
+                      DateFormat("MM/dd/yyyy")
+                          .format(recLbl.date),
+                  color: Color(swapper.isColorSeed),
+                  yValueMapper: (RecordRatingStats recLbl, _) =>
+                  recLbl.value,
+                  dataLabelSettings:
+                  const DataLabelSettings(isVisible: true,),
+                  xAxisName: 'Dates',
 
+                  yAxisName: 'Ratings',
+                ),
+              ],
+              title: ChartTitle(
+                  text: 'Journal entry ratings'),
+              margin: const EdgeInsets.all(8.0),
+            ),
       Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -187,13 +202,11 @@ return  GridTile(
           )
 
         ],)
-
-
-
     ]));
           },
       onPageChanged:(page){
-        graphController.animateToPage(page,        duration: const Duration(milliseconds: 100), curve: Curves.easeIn);
+        graphController.animateToPage(page,
+            duration: const Duration(milliseconds: 100), curve: Curves.easeIn);
       } ,
 
       )
@@ -202,11 +215,15 @@ return  GridTile(
 
 
       ),
+
       currentPage! == pageCount - 1
           ? const Text("")
           : Align(
           alignment: AlignmentDirectional.centerEnd,
           child: nextButton),
+
+     Padding(padding: EdgeInsets.all(8.0),child:
+
       Align(
         alignment: Alignment.bottomCenter,
         child: SizedBox(
@@ -226,27 +243,12 @@ return  GridTile(
                 });
               },
             )),
-      ),
+      ),),
 
     ],),
 
 
    ),swapper),
-   /*     Card(
-          borderOnForeground: true,
-          elevation: 2.0,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: Color(swapper.isColorSeed).withOpacity(1.0))),
-          child:
-
-
-
-
-
-  ),*/
-
-
         Card(
             borderOnForeground: true,
             elevation: 2.0,
