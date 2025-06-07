@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 ///Adding ability to insert pictures, audio or video.
 ///See if compatible with SQLite before starting
-
+/// Media variable added to store blob for media data.
 
 class Records implements Comparable {
   int id;
@@ -18,7 +18,7 @@ class Records implements Comparable {
   bool success;
   DateTime timeCreated;
   DateTime timeUpdated;
-ByteData image = ByteData(0);
+Uint8List media = Uint8List(0);
   Records(
       {required this.id,
       required this.title,
@@ -29,11 +29,12 @@ ByteData image = ByteData(0);
       required this.tags,
       required this.rating,
       required this.success,
+        required this.media,
       required this.timeCreated,
       required this.timeUpdated,}
   );
 
-  Records.fromMap(Map<String, dynamic> record)
+ /* Records.fromMap(Map<String, dynamic> record)
       : id = record['id'],
         title = record['title'],
         content = record['content'],
@@ -43,9 +44,9 @@ ByteData image = ByteData(0);
         tags = record['tags'],
         rating = record['rating'],
         success = record['success'],
-
+        media = convertBytestoList(record['media']),
         timeCreated = record['time_created'],
-        timeUpdated = record['time_updated'];
+        timeUpdated = record['time_updated'];*/
 
 
   @override
@@ -65,6 +66,7 @@ ByteData image = ByteData(0);
       'sources': sources,
       'tags': tags,
       'rating': rating,
+      'media': media,
       'success': success ? 1 : 0,
       'time_created': timeCreated.millisecondsSinceEpoch,
       'time_updated': timeUpdated.millisecondsSinceEpoch
@@ -112,10 +114,16 @@ ByteData image = ByteData(0);
   int compareRatings(double other) {
     return rating.compareTo(other);
   }
+  Uint8List convertBytestoList(dynamic bytedata){
+    if(bytedata!=null){
+      Uint8List list = Uint8List.fromList(bytedata);
+      return list;} else {
+      return Uint8List(0);
+    }
+  }
 
-
-  void addImage(ByteData data){
-   image = data;
+  void addMedia(Uint8List data){
+   media = data;
   }
 
 

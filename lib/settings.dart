@@ -4,7 +4,8 @@ import 'notifications_packages/notification_controller.dart';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
 import 'package:flutter/foundation.dart';
-import 'package:launch_review/launch_review.dart';
+import 'package:in_app_review/in_app_review.dart';
+//import 'package:launch_review/launch_review.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +29,7 @@ class _SettingsPage extends State<SettingsPage> {
   //Parameter setting stuff
   bool isChecked = false;
   late Icon bellIcon;
-
+final InAppReview inAppReview = InAppReview.instance;
   //Preference Values
   String passwordValue = userPassword;
   String passwordHintValue = passwordHint;
@@ -642,12 +643,8 @@ class _SettingsPage extends State<SettingsPage> {
             ),
             ListTile(
               onTap: () {
-                if (Platform.isIOS) {
-                  LaunchReview.launch(iOSAppId: '1624483395');
-                } else {
-                  LaunchReview.launch(
-                      androidAppId: 'com.activitylogger.release1');
-                }
+                inAppReview.openStoreListing(appStoreId: '1624483395');
+
               },
               title: const Text('Rate my app'),
               iconColor: Color(swapper.isColorSeed),

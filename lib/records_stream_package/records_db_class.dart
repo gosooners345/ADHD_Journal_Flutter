@@ -21,14 +21,19 @@ class RecordsDB {
       password: dbPassword,
       onCreate: (database, version) {
         return database.execute(
-            'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT,symptoms TEXT,rating DOUBLE, tags TEXT,success INT,time_updated INT, time_created INT)');
+            'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT,symptoms TEXT,rating DOUBLE, tags TEXT,success INT,time_updated INT, time_created INT, media BLOB)');
+      },
+      onUpgrade: (database, oldVersion, newVersion) async {
+        if(oldVersion <= 6){
+          await database.execute("ALTER TABLE records ADD COLUMN media BLOB;");
+        }
       },
       onOpen: (database) {
-        database.execute(
-            "DROP TABLE IF EXISTS android_metadata; DROP TABLE IF EXISTS room_master_table;");
-      },
+        //database.execute("DROP TABLE IF EXISTS android_metadata; DROP TABLE IF EXISTS room_master_table;");
+      database.execute( "DROP TABLE IF EXISTS android_metadata; DROP TABLE IF EXISTS room_master_table; ");
+        },
       singleInstance: true,
-      version: 5,
+      version: 7,
     );
   }
 }

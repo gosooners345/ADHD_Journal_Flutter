@@ -199,7 +199,7 @@ class RecordRatingStats implements Comparable {
   }
 }
 
-class RecordDataStats extends Comparable {
+class RecordDataStats implements Comparable {
   String key = '';
   double value = 0.0;
   int altValue = 0;

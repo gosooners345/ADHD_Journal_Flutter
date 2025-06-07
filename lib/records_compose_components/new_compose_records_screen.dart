@@ -111,6 +111,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
             duration: const Duration(milliseconds: 100), curve: Curves.easeIn);
       },
       children: [
+        /// Title
         uiCard(
             Column(children: [
               const Padding(
@@ -141,6 +142,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
               ),
             ]),
             swapper),
+        /// Thoughts or event
         uiCard(
             Column(children: [
               const Padding(
@@ -178,6 +180,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
               space
             ]),
             swapper),
+        /// Emotions
         uiCard(
             Column(
               children: [
@@ -207,6 +210,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
               ],
             ),
             swapper),
+        /// Surrounding Circumstances
         uiCard(
             Column(
               children: [
@@ -293,6 +297,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
               space
             ]),
             swapper)),
+        /// Related ADHD Symptoms
         uiCard(
             Column(
               children: [
@@ -326,6 +331,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
               ],
             ),
             swapper),
+        /// Rating: How it went
         uiCard(
             Column(
               children: [
@@ -377,6 +383,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
               ],
             ),
             swapper),
+        /// Success/Fail
         uiCard(
             Column(children: [
               const Padding(
@@ -407,6 +414,13 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
               )
             ]),
             swapper),
+        ///Add Pictures or other media here
+        uiCard(Column(children: [
+          Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,children: [GestureDetector(child: GridTile(child: Icon(Icons.camera)),onTap: (){},), GestureDetector(child:GridTile(child: Icon(Icons.mic)),onTap:(){})])],
+
+        ), swapper),
+
+        ///Entry Review
         uiCard(
             ListView(
               padding: const EdgeInsets.only(

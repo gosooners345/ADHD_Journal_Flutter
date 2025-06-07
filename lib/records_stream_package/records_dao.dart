@@ -64,6 +64,7 @@ class RecordsDao {
           rating: maps[index]['rating'],
           symptoms: maps[index]['symptoms'],
           tags: maps[index]['tags'],
+          media: maps[index]['media'] ?? Uint8List(0),
           success: maps[index]['success'] == 0 ? false : true,
           timeCreated:
               DateTime.fromMillisecondsSinceEpoch(maps[index]['time_created']),
@@ -88,6 +89,7 @@ class RecordsDao {
           rating: maps[index]['rating'],
           symptoms: maps[index]['symptoms'],
           tags: maps[index]['tags'],
+          media: convertBytestoList( maps[index]['media']),
           success: maps[index]['success'] == 0 ? false : true,
           timeCreated:
               DateTime.fromMillisecondsSinceEpoch(maps[index]['time_created']),
@@ -134,6 +136,7 @@ class RecordsDao {
           rating: maps[index]['rating'],
           symptoms: maps[index]['symptoms'],
           tags: maps[index]['tags'],
+          media: maps[index]['media'] ?? Uint8List(0),
           success: maps[index]['success'] == 0 ? false : true,
           timeCreated:
               DateTime.fromMillisecondsSinceEpoch(maps[index]['time_created']),
@@ -284,4 +287,17 @@ class RecordsDao {
       }
     }
   }
+
+
+///Required for Media conversion
+
+Uint8List convertBytestoList(dynamic bytedata){
+    if(bytedata!=null){
+    Uint8List list = Uint8List.fromList(bytedata);
+  return list;} else {
+      return Uint8List(0);
+    }
+}
+
+
 }

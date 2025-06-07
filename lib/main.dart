@@ -181,6 +181,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                       symptoms: '',
                       tags: '',
                       rating: 0.0,
+                      media: Uint8List(0),
                       success: false,
                       timeCreated: DateTime.now(),
                       timeUpdated: DateTime.now()),
