@@ -678,7 +678,6 @@ class _LoginScreenState extends State<LoginScreen> {
     readyButton.boolSink.add(value);
   }
 
-  /// Testing after 15 successful tries of simply moving between devices
   void updateValues() async {
     googleIsDoingSomething(true);
     readyButton.boolSink.add(true);
@@ -756,7 +755,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.only(top: 60.0),
+                padding: const EdgeInsets.fromLTRB(15,60,15,10),
                 child: greetingField,
               ),
               Padding(
@@ -929,7 +928,6 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(
                 height: 40,
               ),
-              // Padding(padding: EdgeInsets.all(8),child:testDrive.connectButton() ,),
               SizedBox(
                 height: 50,
                 child: ElevatedButton(

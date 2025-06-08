@@ -64,6 +64,7 @@ dependencies:
   google_sign_in: ^6.1.4
   encrypt: ^5.0.1
   build_runner:
+  image_picker: 
   file_cryptor: ^0.0.3
   pointycastle: ^3.9.1
   connectivity_plus: ^6.0.5
