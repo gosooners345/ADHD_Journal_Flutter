@@ -17,6 +17,7 @@ class RecordsDao {
     final db = await recordsDB.database;
     await db.insert('records', record.toMapForDB(),
         conflictAlgorithm: ConflictAlgorithm.replace);
+    await saveImageToDb(record.id, record.media);
     await db.batch().commit();
     // return result;
   }
@@ -75,12 +76,64 @@ class RecordsDao {
     return list;
   }
 
+
+/*
+  loadImageFromDb(int id) async {
+    final db = await recordsDB.database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'records',
+      columns: ['media'],
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+
+    if (maps.isNotEmpty) {
+      // IMPORTANT: How you access the BLOB data
+      final Object? blobData = maps.first['media'];
+      if (blobData != null && blobData is Uint8List) {
+        print("DB: Loaded ${blobData.lengthInBytes} bytes from BLOB for id $id.");
+        return blobData;
+      } else if (blobData != null) {
+        // This case indicates it's stored in a way that sqflite isn't returning as Uint8List directly
+        print("DB: Loaded data for id $id, but it's not Uint8List. Type: ${blobData.runtimeType}");
+        // You might need manual conversion if it's stored differently,
+        // but if stored correctly, it should be Uint8List.
+        // Example: if it were accidentally stored as List<int> which is not Uint8List
+        if (blobData is List<int>) {
+          return Uint8List.fromList(blobData);
+        }
+      } else {
+        print("DB: No image data in BLOB for id $id or column is null.");
+      }
+    }
+    return null;
+  }
+*/
+
+
+Uint8List testImage(Map<String,dynamic>map)  {
+  final Object? blobData = map['media'];
+  if (blobData != null && blobData is Uint8List) {
+    print("DB: Loaded ${blobData.lengthInBytes} bytes from BLOB .");
+    return blobData;
+  } else if (blobData != null) {
+    print("DB: Loaded data for map,  but it's not Uint8List. Type: ${blobData
+        .runtimeType}");
+    if (blobData is List<int>) {
+      return Uint8List.fromList(blobData);
+    }else {
+      print("DB: No image data in BLOB for id  column is null.");
+    }
+  } return Uint8List(0);
+  }
+
+
   //Get all records
   Future<List<Records>> getRecords() async {
     final database = await recordsDB.database;
     final List<Map<String, dynamic>> maps = await database.query('records');
-    var list = List.generate(maps.length, (index) {
-      return Records(
+    List<Records> list =  List.generate(maps.length, (index)  {
+      Records record = Records(
           id: maps[index]['id'],
           title: maps[index]['title'],
           content: maps[index]['content'],
@@ -89,12 +142,14 @@ class RecordsDao {
           rating: maps[index]['rating'],
           symptoms: maps[index]['symptoms'],
           tags: maps[index]['tags'],
-          media: convertBytestoList( maps[index]['media']),
+          media:convertBytestoList( maps[index]['media']) ?? Uint8List(0) ,
           success: maps[index]['success'] == 0 ? false : true,
           timeCreated:
               DateTime.fromMillisecondsSinceEpoch(maps[index]['time_created']),
           timeUpdated:
               DateTime.fromMillisecondsSinceEpoch(maps[index]['time_updated']));
+      //record.media = id) as Uint8List;
+      return record;
     }, growable: true);
     list.sort((a, b) => a.compareTo(b));
     return list;
@@ -136,7 +191,7 @@ class RecordsDao {
           rating: maps[index]['rating'],
           symptoms: maps[index]['symptoms'],
           tags: maps[index]['tags'],
-          media: maps[index]['media'] ?? Uint8List(0),
+          media:  testImage( maps[index]['media']) ?? Uint8List(0),
           success: maps[index]['success'] == 0 ? false : true,
           timeCreated:
               DateTime.fromMillisecondsSinceEpoch(maps[index]['time_created']),
@@ -151,6 +206,7 @@ class RecordsDao {
 
     await db.update('records', record.toMapForDB(),
         where: 'id =?', whereArgs: [record.id]);
+    await saveImageToDb(record.id, record.media);
     await db.batch().commit();
   }
 
@@ -240,6 +296,14 @@ class RecordsDao {
       close();
     });
   }
+
+  Future<void> saveImageToDb(int id, Uint8List image) async {
+    var db = await recordsDB.database;
+    await db.update('records', {'media': image}, where: 'id =?', whereArgs: [id]);
+    print("DB: Saved ${image.lengthInBytes} bytes to BLOB for id $id.");
+
+  }
+
 
   // Test force the wal into the db and clean it out.
   void writeCheckpoint(Database db) async {

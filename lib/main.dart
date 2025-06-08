@@ -25,13 +25,18 @@ import 'project_resources/project_colors.dart';
 import 'record_data_package/records_data_class_db.dart';
 import 'app_start_package/login_screen_file.dart';
 import 'records_compose_components/new_compose_records_screen.dart';
+import 'package:camera_android_camerax/camera_android_camerax.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+
+
 
 List<Records> recordHolder = [];
 int id = 0;
 
 Future<void> main() async {
   await NotificationController.initializeLocalNotifications();
-
+//  WidgetsFlutterBinding.ensureInitialized();
   runApp(ChangeNotifierProvider<ThemeSwap>(
     create: (_) => ThemeSwap(),
     child: MyApp(),
@@ -106,8 +111,8 @@ class MyAppState extends State<MyApp> {
 
 class ADHDJournalApp extends StatefulWidget {
   const ADHDJournalApp({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<ADHDJournalApp> createState() => ADHDJournalAppHPState();
@@ -129,6 +134,8 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
     try {
       recordsBloc = RecordsBloc();
       buildInfo = packInfo.version;
+      requestStoragePermission();
+
     } on Exception catch (e, s) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -151,6 +158,18 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
   static const List<Widget> screens =
      [RecordDisplayWidget(), DashboardViewWidget()];
 
+  void requestStoragePermission() async {
+    if(!kIsWeb){
+      var status = await Permission.storage.status;
+      if (!status.isGranted) {
+        await Permission.storage.request();
+      }
+      var cameraStatus = await Permission.camera.status;
+      if (!cameraStatus.isGranted) {
+        await Permission.camera.request();
+      }
+    }
+  }
 
   void encryptData() async {
     await Future.sync(() {

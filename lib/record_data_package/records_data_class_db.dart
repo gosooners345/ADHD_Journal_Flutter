@@ -34,19 +34,6 @@ Uint8List media = Uint8List(0);
       required this.timeUpdated,}
   );
 
- /* Records.fromMap(Map<String, dynamic> record)
-      : id = record['id'],
-        title = record['title'],
-        content = record['content'],
-        emotions = record['emotions'],
-        sources = record['sources'],
-        symptoms = record['symptoms'],
-        tags = record['tags'],
-        rating = record['rating'],
-        success = record['success'],
-        media = convertBytestoList(record['media']),
-        timeCreated = record['time_created'],
-        timeUpdated = record['time_updated'];*/
 
 
   @override
@@ -122,9 +109,7 @@ Uint8List media = Uint8List(0);
     }
   }
 
-  void addMedia(Uint8List data){
-   media = data;
-  }
+
 
 
 }

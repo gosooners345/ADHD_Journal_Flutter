@@ -41,7 +41,6 @@ dependencies:
   sqflite_sqlcipher:
   shared_preferences: ^2.0.18
   encrypted_shared_preferences:
-
   in_app_review: ^2.0.10
   url_launcher:
   provider:
@@ -51,11 +50,12 @@ dependencies:
   awesome_notifications: ^0.10.1
   syncfusion_flutter_charts: 29.2.9
   sleek_circular_slider: ^2.0.1
-  #launch_review:
+
   flutter_launcher_icons: ^0.14.3
   flutter_email_sender: ^7.0.0
   flutter_secure_storage: ^9.2.2
   envied: ^1.1.1
+  camera:
   google_fonts:
   smooth_page_indicator:
   package_info_plus:
@@ -68,6 +68,7 @@ dependencies:
   pointycastle: ^3.9.1
   connectivity_plus: ^6.0.5
   extension_google_sign_in_as_googleapis_auth:
+  permission_handler:
 
 flutter_icons:
   image_path_android: "images/appicon_appstore.png"

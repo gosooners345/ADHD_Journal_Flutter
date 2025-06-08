@@ -41,7 +41,7 @@ android {
     namespace "com.activitylogger.release1.adhd_journal_flutter"
     //testNamespace "com.activitylogger.release1.adhd_journal_flutter_test"
     compileSdkVersion localProperties.getProperty('flutter.compileSdkVersion').toInteger()
-    ndkVersion "25.1.8937393"
+    ndkVersion "26.1.10909125"
     aaptOptions {
         noCompress 'tflite'
         noCompress 'lite'

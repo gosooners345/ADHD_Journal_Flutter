@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/painting.dart' as painter;
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../main.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +12,9 @@ import '../project_resources/project_utils.dart';
 import 'symptom_selector_screen.dart';
 import '../record_data_package/records_data_class_db.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+
+//import 'package:bitmap/bitmap.dart';
+
 
 class NewComposeRecordsWidget extends StatefulWidget {
   const NewComposeRecordsWidget(
@@ -45,12 +51,79 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
   SizedBox space = const SizedBox(height: 16);
   SizedBox space2 = const SizedBox(height: 8);
   Text ratingSliderWidget = const Text('');
+  Uint8List pictureBytes = Uint8List(0);
+  ByteData data = ByteData(0);
   String ratingInfo = '';
   String symptomCoverText = "Tap here to add Symptoms";
+  Uint8List convertBytestoList(dynamic bytedata){
+    if(bytedata!=null){
+      Uint8List list = Uint8List.fromList(bytedata);
+      return list;} else {
+      return Uint8List(0);
+    }
+  }
+
+
+
+
+
+Widget journalImage(){
+    if(pictureBytes!=Uint8List(0)) {
+
+
+      return Image.memory(pictureBytes,fit: BoxFit.fill,);
+    } else {
+      return Placeholder();
+    }
+}
+/// Loads OS native camera app
+Future<void> openCamera() async{
+  try{
+    platform.setMethodCallHandler((call)async {
+      if(call.method=="onPictureTaken"){
+        final Uint8List imageBytes = call.arguments as Uint8List;
+        print("Received ${imageBytes.lengthInBytes} bytes from native.");
+        try {
+          final testImage = await decodeImageFromList(imageBytes);
+          print("NATIVE->DART: Bytes are a valid image (${testImage.width}x${testImage.height}) before DB save.");
+        } catch (e) {
+          print("NATIVE->DART: ERROR - Bytes from native are ALREADY INVALID: $e");
+          return; // Don't proceed to save invalid data
+        }
+        setState(() {
+          pictureBytes = imageBytes;
+        });
+
+
+
+
+
+      } else if(call.method == "onPictureTakenError") {
+        print("Native camera error: ${call.arguments}");}
+      else if(call.method == "onPictureCancelled"){
+        print("Native camera cancelled");
+      }
+    });
+  await platform.invokeMethod('openCamera');
+
+
+
+
+  } on PlatformException catch (e) {
+    if (kDebugMode) {
+      print("Failed to open camera: '${e.message}");
+    }
+
+  }
+
+}
+
 
   @override
   void initState() {
     super.initState();
+    WidgetsFlutterBinding.ensureInitialized();
+
     _pageController.addListener(() {
       setState(() {
         currentPage = _pageController.page;
@@ -111,6 +184,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
             duration: const Duration(milliseconds: 100), curve: Curves.easeIn);
       },
       children: [
+
         /// Title
         uiCard(
             Column(children: [
@@ -142,6 +216,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
               ),
             ]),
             swapper),
+
         /// Thoughts or event
         uiCard(
             Column(children: [
@@ -149,9 +224,9 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
                   padding: EdgeInsets.all(10),
                   child: Center(
                       child: Text(
-                    "What's on your mind?",
-                    style: TextStyle(fontSize: 20),
-                  ))),
+                        "What's on your mind?",
+                        style: TextStyle(fontSize: 20),
+                      ))),
               const SizedBox(
                 height: 10,
               ),
@@ -163,11 +238,11 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
                             borderRadius: BorderRadius.circular(4),
                             borderSide: BorderSide(
                                 color:
-                                    Color(swapper.isColorSeed).withOpacity(1.0),
+                                Color(swapper.isColorSeed).withOpacity(1.0),
                                 width:
-                                    1)), //labelText: 'What\'s on your mind? ',
+                                1)), //labelText: 'What\'s on your mind? ',
                         hintText:
-                            "Enter what happened here or what you're thinking about."),
+                        "Enter what happened here or what you're thinking about."),
                     keyboardType: TextInputType.multiline,
                     minLines: 1,
                     maxLines: 3,
@@ -180,6 +255,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
               space
             ]),
             swapper),
+
         /// Emotions
         uiCard(
             Column(
@@ -210,6 +286,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
               ],
             ),
             swapper),
+
         /// Surrounding Circumstances
         uiCard(
             Column(
@@ -229,12 +306,12 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
                               borderRadius: BorderRadius.circular(4),
                               borderSide: BorderSide(
                                   color:
-                                      AppColors.mainAppColor.withOpacity(1.0),
+                                  AppColors.mainAppColor.withOpacity(1.0),
                                   width: 1)),
                           labelText:
-                              'This is where stuff like preexisting triggers, preliminary events, etc. can go.',
+                          'This is where stuff like preexisting triggers, preliminary events, etc. can go.',
                           hintText:
-                              'Add your thoughts or what you think could\'ve triggered this here'),
+                          'Add your thoughts or what you think could\'ve triggered this here'),
                       keyboardType: TextInputType.multiline,
                       minLines: 1,
                       scrollController: ScrollController(),
@@ -250,53 +327,58 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
             ),
             swapper),
         GestureDetector(
-            onTap: (){
+            onTap: () {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (_) => SymptomSelectorScreen(
-                        symptoms: super.widget.record.symptoms,
-                      ))).then((value) {
+                      builder: (_) =>
+                          SymptomSelectorScreen(
+                            symptoms: super.widget.record.symptoms,
+                          ))).then((value) {
                 setState(() {
                   super.widget.record.symptoms = value as String;
                 });
               }).onError((error, stackTrace) {
                 super.widget.record.symptoms = '';
-              });},
+              });
+            },
             child: uiCard(
 
-            Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-              const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    "Related ADHD Symptoms:" "\r\n ",
-                    style: TextStyle(fontSize: 20),
-                  )),
-              ListTile(
-                title: super.widget.record.symptoms == ""
-                    ? Text(symptomCoverText)
-                    : Text(
-                        super.widget.record.symptoms,
-                        style: const TextStyle(fontSize: 15),
-                      ),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => SymptomSelectorScreen(
-                                symptoms: super.widget.record.symptoms,
-                              ))).then((value) {
-                    setState(() {
-                      super.widget.record.symptoms = value as String;
-                    });
-                  }).onError((error, stackTrace) {
-                    super.widget.record.symptoms = '';
-                  });
-                },
-              ),
-              space
-            ]),
-            swapper)),
+                Column(
+                    crossAxisAlignment: CrossAxisAlignment.center, children: [
+                  const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        "Related ADHD Symptoms:" "\r\n ",
+                        style: TextStyle(fontSize: 20),
+                      )),
+                  ListTile(
+                    title: super.widget.record.symptoms == ""
+                        ? Text(symptomCoverText)
+                        : Text(
+                      super.widget.record.symptoms,
+                      style: const TextStyle(fontSize: 15),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) =>
+                                  SymptomSelectorScreen(
+                                    symptoms: super.widget.record.symptoms,
+                                  ))).then((value) {
+                        setState(() {
+                          super.widget.record.symptoms = value as String;
+                        });
+                      }).onError((error, stackTrace) {
+                        super.widget.record.symptoms = '';
+                      });
+                    },
+                  ),
+                  space
+                ]),
+                swapper)),
+
         /// Related ADHD Symptoms
         uiCard(
             Column(
@@ -318,7 +400,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
                             borderRadius: BorderRadius.circular(4),
                             borderSide: BorderSide(
                                 color:
-                                    Color(swapper.isColorSeed).withOpacity(1.0),
+                                Color(swapper.isColorSeed).withOpacity(1.0),
                                 width: 1)),
                         hintText: 'Add event tags here.',
                         labelText: 'What categories does this fall under?',
@@ -331,6 +413,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
               ],
             ),
             swapper),
+
         /// Rating: How it went
         uiCard(
             Column(
@@ -383,6 +466,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
               ],
             ),
             swapper),
+
         /// Success/Fail
         uiCard(
             Column(children: [
@@ -414,9 +498,33 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
               )
             ]),
             swapper),
+
         ///Add Pictures or other media here
-        uiCard(Column(children: [
-          Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,children: [GestureDetector(child: GridTile(child: Icon(Icons.camera)),onTap: (){},), GestureDetector(child:GridTile(child: Icon(Icons.mic)),onTap:(){})])],
+        uiCard(Column(mainAxisAlignment: MainAxisAlignment.center, spacing: 5.0,
+          children: [
+            Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  GestureDetector(
+                    child: GridTile(child: Icon(Icons.camera)), onTap: () async {
+                    await openCamera().then((value) {
+                      setState(() {
+                        super.widget.record.media = pictureBytes;
+                      });
+
+                    });
+                  },),
+                  GestureDetector(child: GridTile(
+                      child: Icon(Icons.photo_size_select_actual_outlined)),
+                      onTap: () {
+
+                      })
+                ]),
+            space,
+         // Row(
+          //  mainAxisAlignment: MainAxisAlignment.center,
+            //children: [journalImage()],)
+journalImage()
+          ],
 
         ), swapper),
 
@@ -438,7 +546,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
                           borderRadius: BorderRadius.circular(4),
                           borderSide: BorderSide(
                               color:
-                                  Color(swapper.isColorSeed).withOpacity(1.0),
+                              Color(swapper.isColorSeed).withOpacity(1.0),
                               width: 1)),
                       labelText: 'What do you want to call this?'),
                   textCapitalization: TextCapitalization.sentences,
@@ -494,7 +602,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
                               width: 1)),
                       labelText: 'Do you have anything to add to this?',
                       hintText:
-                          'Add your thoughts or what you think could\'ve triggered this here'),
+                      'Add your thoughts or what you think could\'ve triggered this here'),
                   keyboardType: TextInputType.multiline,
                   minLines: 1,
                   maxLines: null,
@@ -517,12 +625,15 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
                   ),
                   child: ListTile(
                     title: Text(
-                        'Related ADHD Symptoms: \r\n${super.widget.record.symptoms == '' ? symptomCoverText : super.widget.record.symptoms}'),
+                        'Related ADHD Symptoms: \r\n${super.widget.record
+                            .symptoms == '' ? symptomCoverText : super.widget
+                            .record.symptoms}'),
                     onTap: () {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => SymptomSelectorScreen(
+                              builder: (_) =>
+                                  SymptomSelectorScreen(
                                     symptoms: super.widget.record.symptoms,
                                   ))).then((value) {
                         setState(() {
@@ -617,7 +728,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    const pageCount = 9;
+    const pageCount = 10;
     return Consumer<ThemeSwap>(builder: (context, swapper, child) {
       return Scaffold(
         appBar: AppBar(
@@ -713,6 +824,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
 //Saves the record in the database
   void saveRecord(Records record) async {
     record.timeUpdated = DateTime.now();
+    record.media = pictureBytes;
     if (super.widget.id == 0) {
       quickTimer();
     } else {
@@ -732,7 +844,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
     emotionsController.text = super.widget.record.emotions;
     sourceController.text = super.widget.record.sources;
     tagsController.text = super.widget.record.tags;
-
+    pictureBytes = super.widget.record.media;
     setState(() {
       //Success Switch
       if (super.widget.record.success) {
@@ -744,6 +856,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
         successLabelText = 'Fail';
         successStateWidget = Text(successLabelText);
       }
+pictureBytes = super.widget.record.media;
 
       //Rating slider widget info
       if (super.widget.record.rating == 100.0) {

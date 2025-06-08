@@ -37,6 +37,7 @@ class RecordsBloc {
         .add(await _recordsRepo.getRecordsSortedByType(type));
   }
 
+
   getRecords() async {
     _recordsController.sink.add(await _recordsRepo.getRecords());
     recordHolder = await _recordsRepo.getRecords();
@@ -50,6 +51,7 @@ class RecordsBloc {
       print(maxID);
     }
   }
+
 
   addRecord(Records record) async {
     await _recordsRepo.insertRecord(record);
