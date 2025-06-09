@@ -57,76 +57,85 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
   ByteData data = ByteData(0);
   String ratingInfo = '';
   String symptomCoverText = "Tap here to add Symptoms";
-  Uint8List convertBytestoList(dynamic bytedata){
-    if(bytedata!=null){
+
+  Uint8List convertBytestoList(dynamic bytedata) {
+    if (bytedata != null) {
       Uint8List list = Uint8List.fromList(bytedata);
-      return list;} else {
+      return list;
+    } else {
       return Uint8List(0);
     }
   }
+
   DateTime customDate = DateTime.now();
 
 
-
-/// Image Widget
-Widget journalImage(){
-    try{
-    if(pictureBytes!=Uint8List(0)) {
-      return Image.memory(pictureBytes,fit: BoxFit.fitWidth,alignment: Alignment.center,height: 500,width: 500,);
-    } else {
-      return Placeholder(child: Text("Picture not available"),);
-    }} on Exception catch(e){
-      return Placeholder(child: Text("Picture not available"),);
-    }
-}
-/// Loads OS native camera app, don't forget to implement IOS required code
-Future<void> openCamera() async{
-  try{
-    platform.setMethodCallHandler((call)async {
-      if(call.method=="onPictureTaken"){
-        final Uint8List imageBytes = call.arguments as Uint8List;
-        print("Received ${imageBytes.lengthInBytes} bytes from native.");
-        try {
-          final testImage = await decodeImageFromList(imageBytes);
-          print("NATIVE->DART: Bytes are a valid image (${testImage.width}x${testImage.height}) before DB save.");
-        } catch (e) {
-          print("NATIVE->DART: ERROR - Bytes from native are ALREADY INVALID: $e");
-          return; // Don't proceed to save invalid data
-        }
-        setState(() {
-          pictureBytes = imageBytes;
-        });
-
-
-
-
-
-      } else if(call.method == "onPictureTakenError") {
-        print("Native camera error: ${call.arguments}");}
-      else if(call.method == "onPictureCancelled"){
-        print("Native camera cancelled");
+  /// Image Widget
+  Widget journalImage() {
+    try {
+      if (pictureBytes != Uint8List(0)) {
+        return Image.memory(pictureBytes, fit: BoxFit.contain,
+          alignment: Alignment.center,
+          height: 500,
+          width: 500,);
+      } else {
+        return Container( // Give Placeholder a default size or constraints
+          width: 150,
+          height: 150,
+          color: Colors.grey[300],
+          child: Center(child: Text("No Picture")),
+        );
       }
-    });
-  await platform.invokeMethod('openCamera');
-
-
-
-
-  } on PlatformException catch (e) {
-    if (kDebugMode) {
-      print("Failed to open camera: '${e.message}");
+    } on Exception catch (e) {
+      return Container( // Give Placeholder a default size or constraints
+        width: 150,
+        height: 150,
+        color: Colors.red[100],
+        child: Center(child: Text("Picture Error")),
+      );
     }
-
   }
 
-}
+  /// Loads OS native camera app, don't forget to implement IOS required code
+  Future<void> openCamera() async {
+    try {
+      platform.setMethodCallHandler((call) async {
+        if (call.method == "onPictureTaken") {
+          final Uint8List imageBytes = call.arguments as Uint8List;
+          print("Received ${imageBytes.lengthInBytes} bytes from native.");
+          try {
+            final testImage = await decodeImageFromList(imageBytes);
+            print("NATIVE->DART: Bytes are a valid image (${testImage
+                .width}x${testImage.height}) before DB save.");
+          } catch (e) {
+            print(
+                "NATIVE->DART: ERROR - Bytes from native are ALREADY INVALID: $e");
+            return; // Don't proceed to save invalid data
+          }
+          setState(() {
+            pictureBytes = imageBytes;
+          });
+        } else if (call.method == "onPictureTakenError") {
+          print("Native camera error: ${call.arguments}");
+        }
+        else if (call.method == "onPictureCancelled") {
+          print("Native camera cancelled");
+        }
+      });
+      await platform.invokeMethod('openCamera');
+    } on PlatformException catch (e) {
+      if (kDebugMode) {
+        print("Failed to open camera: '${e.message}");
+      }
+    }
+  }
 
 
   @override
   void initState() {
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
-customDate = super.widget.record.timeCreated;
+    customDate = super.widget.record.timeCreated;
     _pageController.addListener(() {
       setState(() {
         currentPage = _pageController.page;
@@ -137,12 +146,13 @@ customDate = super.widget.record.timeCreated;
       onPressed: () {
         _pageController
             .nextPage(
-                duration: const Duration(milliseconds: 150),
-                curve: Curves.easeInExpo)
-            .whenComplete(() => setState(() {
-                    currentPage = _pageController.page!;
-                  })
-                );
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeInExpo)
+            .whenComplete(() =>
+            setState(() {
+              currentPage = _pageController.page!;
+            })
+        );
       },
       icon: nextArrowIcon,
     );
@@ -151,12 +161,13 @@ customDate = super.widget.record.timeCreated;
       onPressed: () {
         _pageController
             .previousPage(
-                duration: const Duration(milliseconds: 150),
-                curve: Curves.easeInExpo)
-            .whenComplete(() => setState(() {
-                    currentPage = _pageController.page!;
-                  })
-                );
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeInExpo)
+            .whenComplete(() =>
+            setState(() {
+              currentPage = _pageController.page!;
+            })
+        );
       },
       icon: backArrowIcon,
     );
@@ -187,6 +198,32 @@ customDate = super.widget.record.timeCreated;
             duration: const Duration(milliseconds: 100), curve: Curves.easeIn);
       },
       children: [
+        ///When the event took place if not recently
+        uiCard(
+            Column(children: [
+              const Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Center(
+                      child: Text("When did this event take place?",
+                          style: TextStyle(fontSize: 20)))),
+              const SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child:
+                Card(child: ListTile(leading: const Icon(Icons.calendar_today),
+                    title: Text(
+                      "Date: ${customDate.month}/${customDate.day}/${customDate
+                          .year}\r\n Time: ${customDate.hour}:${customDate.minute.toString().padLeft(2, '0')}", style: const TextStyle(fontSize: 20),),
+                    onTap: () async {
+                      selectDate(context);
+                    }),
+
+                ),
+              ),
+            ]),
+            swapper),
 
         /// Title
         uiCard(
@@ -219,45 +256,8 @@ customDate = super.widget.record.timeCreated;
               ),
             ]),
             swapper),
-       ///When the event took place if not recently
-        uiCard(
-            Column(children: [
-              const Padding(
-                  padding: EdgeInsets.all(10),
-                  child: Center(
-                      child: Text("What do you want to call this?",
-                          style: TextStyle(fontSize: 20)))),
-              const SizedBox(
-                height: 10,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child:
-                 Card(child: ListTile(leading: const Icon(Icons.calendar_today),
-                 title: Text("Date: ${customDate.day}/${customDate.month}/${customDate.year}",style: const TextStyle(fontSize: 20),),
-                 onTap: () async { selectDate(context);}),
 
-
-                //Placeholder(child: Text("Adding a DatePicker Here soon",)
-                  /*TextField(
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(4),
-                          borderSide: BorderSide(
-                              color: Color(colorSeed).withOpacity(1.0),
-                              width: 1)),
-                      // labelText: 'What do you want to call this?'
-                      hintText: "Enter the title of this entry here."),
-                  textCapitalization: TextCapitalization.sentences,
-                  controller: titleController,
-                  onChanged: (text) {
-                    super.widget.record.title = text;
-                  },*/
-                ),
-              ),
-            ]),
-            swapper),
-        /// Thoughts or event
+        /// What happened
         uiCard(
             Column(children: [
               const Padding(
@@ -366,6 +366,7 @@ customDate = super.widget.record.timeCreated;
               ],
             ),
             swapper),
+
         /// Related ADHD Symptoms
         GestureDetector(
             onTap: () {
@@ -542,28 +543,58 @@ customDate = super.widget.record.timeCreated;
 
         ///Add Pictures or other media here
         uiCard(Column(mainAxisAlignment: MainAxisAlignment.center, spacing: 5.0,
-          children: [Row(children: [Text("Choose a picture to define this entry")],),space,
+          children: [
+            Row(spacing: 5.0,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Choose a picture to define this entry",
+                  style: TextStyle(fontSize: 20),)
+              ],),
+            space,
             Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   GestureDetector(
-                    child: GridTile(footer: Text("Camera"),child: Icon(Icons.camera)), onTap: () async {
-                    await openCamera().then((value) {
-                      setState(() {
-                        super.widget.record.media = pictureBytes;
+                    child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(children: [
+                          Icon(Icons.camera, size: 40.0, color: Color(swapper
+                              .isColorSeed)),
+                          Text("Camera")
+                        ],)),
+                    onTap: () async {
+                      await openCamera().then((value) {
+                        setState(() {
+                          super.widget.record.media = pictureBytes;
+                        });
                       });
-
-                    });
-                  },),
-                  GestureDetector(child: GridTile(footer: Text("Gallery"),
-                      child: Icon(Icons.photo_size_select_actual_outlined)),
+                    },),
+                  GestureDetector(child:
+                  Padding(padding: const EdgeInsets.all(8.0),
+                      child: Column(children: [
+                        Icon(
+                            Icons.photo_size_select_actual_outlined, size: 40.0,
+                            color: Color(swapper.isColorSeed)),
+                        Text("Gallery")
+                      ],)),
                       onTap: () {
-pickImageFromGallery();
+                        pickImageFromGallery();
                       })
                 ]),
             space,
-          Row(
-           mainAxisAlignment: MainAxisAlignment.center,
-            children: [     FittedBox(fit: BoxFit.fitHeight,child:  journalImage(),),],)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(child: ConstrainedBox(constraints: BoxConstraints(
+                  maxWidth: MediaQuery
+                      .of(context)
+                      .size
+                      .width * 0.8, // Example max width
+                  maxHeight: 300, // Example max height
+                ), child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: journalImage(),
+                ))),
+              ],)
 
           ],
 
@@ -600,8 +631,12 @@ pickImageFromGallery();
 
                 //Content Field
                 Card(child: ListTile(leading: const Icon(Icons.calendar_today),
-                    title: Text("Date: ${customDate.day}/${customDate.month}/${customDate.year}",style: const TextStyle(fontSize: 20),),
-                    onTap: () async { selectDate(context);}),),
+                    title: Text(
+                      "Date: ${customDate.day}/${customDate.month}/${customDate
+                          .year}", style: const TextStyle(fontSize: 20),),
+                    onTap: () async {
+                      selectDate(context);
+                    }),),
                 space,
 
                 TextField(
@@ -775,7 +810,7 @@ pickImageFromGallery();
 
   @override
   Widget build(BuildContext context) {
-    const pageCount = 10;
+    const pageCount = 11;
     return Consumer<ThemeSwap>(builder: (context, swapper, child) {
       return Scaffold(
         appBar: AppBar(
@@ -803,16 +838,16 @@ pickImageFromGallery();
               currentPage! == 0
                   ? const Text("")
                   : Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: prevButton),
+                  alignment: AlignmentDirectional.centerStart,
+                  child: prevButton),
               Padding(
                   padding: const EdgeInsets.fromLTRB(35, 8, 35, 15),
                   child: _buildJournalCards(swapper)),
               currentPage! == pageCount - 1
                   ? const Text("")
                   : Align(
-                      alignment: AlignmentDirectional.centerEnd,
-                      child: nextButton),
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: nextButton),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: SizedBox(
@@ -868,11 +903,11 @@ pickImageFromGallery();
     return Timer(const Duration(milliseconds: 2), updateRecord);
   }
 
-///Saves the record in the database
+  ///Saves the record in the database
   void saveRecord(Records record) async {
     record.timeUpdated = DateTime.now();
     record.media = pictureBytes;
-    if(customDate != record.timeCreated){
+    if (customDate != record.timeCreated) {
       record.timeCreated = customDate;
     }
     if (super.widget.id == 0) {
@@ -907,7 +942,7 @@ pickImageFromGallery();
         successLabelText = 'Fail';
         successStateWidget = Text(successLabelText);
       }
-pictureBytes = super.widget.record.media;
+      pictureBytes = super.widget.record.media;
       customDate = super.widget.record.timeCreated;
 
       //Rating slider widget info
@@ -945,41 +980,59 @@ pictureBytes = super.widget.record.media;
 
 
   /// Image picker code, uses camera and gallery
-Future<void> pickImageFromGallery() async{
-try{
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    if(image != null){
-      final imageBytes = await image.readAsBytes();
+  Future<void> pickImageFromGallery() async {
+    try {
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        final imageBytes = await image.readAsBytes();
+        setState(() {
+          pictureBytes = imageBytes;
+        });
+      } else {
+        print('No image selected');
+      }
+    } on Exception catch (e) {
+      print("Image selection failed");
+    }
+  }
+
+
+  ///Date Picker
+  Future<void> selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: customDate,
+        firstDate: DateTime(2015, 8),
+        lastDate: DateTime(2101));
+    if (picked == null) {
+      return;
+    }
+    if (!context.mounted) return;
+     TimeOfDay? pickedTime = TimeOfDay.fromDateTime(customDate);
+     pickedTime = await showTimePicker(
+      context: context,
+      initialTime: pickedTime,
+      helpText: 'Select time',
+      builder: (BuildContext context, Widget? child){
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+          child: child!,
+        );
+      }
+    );
+    if (picked != null ) {
       setState(() {
-        pictureBytes = imageBytes;
+        customDate =DateTime(
+            picked.year,
+            picked.month,
+            picked.day,
+            pickedTime!.hour,
+            pickedTime.minute,
+
+        );
+        super.widget.record.timeCreated = customDate;
       });
-    } else{
-      print('No image selected');
     }
-    } on Exception catch(e){
-  print("Image selection failed");
-    }
-
-
-
-
-}
-
-
-///Date Picker
-Future<void> selectDate(BuildContext context) async {
- final DateTime? picked = await showDatePicker(
- context: context,
-     initialDate: customDate,
-     firstDate: DateTime(2015, 8),
-     lastDate: DateTime(2101));
- if (picked != null && picked != customDate) {
- setState(() {
- customDate = picked;
- super.widget.record.timeCreated = customDate;
- });
- }
-}
-
+  }
 
 }
