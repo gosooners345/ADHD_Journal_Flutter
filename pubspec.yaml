@@ -47,10 +47,9 @@ dependencies:
   flutter_colorpicker:
   path:
   path_provider:
-  awesome_notifications: ^0.10.1
+  awesome_notifications:
   syncfusion_flutter_charts: 29.2.9
   sleek_circular_slider: ^2.0.1
-
   flutter_launcher_icons: ^0.14.3
   flutter_email_sender: ^7.0.0
   flutter_secure_storage: ^9.2.2

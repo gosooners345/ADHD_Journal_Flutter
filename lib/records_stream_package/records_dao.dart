@@ -77,38 +77,7 @@ class RecordsDao {
   }
 
 
-/*
-  loadImageFromDb(int id) async {
-    final db = await recordsDB.database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      'records',
-      columns: ['media'],
-      where: 'id = ?',
-      whereArgs: [id],
-    );
 
-    if (maps.isNotEmpty) {
-      // IMPORTANT: How you access the BLOB data
-      final Object? blobData = maps.first['media'];
-      if (blobData != null && blobData is Uint8List) {
-        print("DB: Loaded ${blobData.lengthInBytes} bytes from BLOB for id $id.");
-        return blobData;
-      } else if (blobData != null) {
-        // This case indicates it's stored in a way that sqflite isn't returning as Uint8List directly
-        print("DB: Loaded data for id $id, but it's not Uint8List. Type: ${blobData.runtimeType}");
-        // You might need manual conversion if it's stored differently,
-        // but if stored correctly, it should be Uint8List.
-        // Example: if it were accidentally stored as List<int> which is not Uint8List
-        if (blobData is List<int>) {
-          return Uint8List.fromList(blobData);
-        }
-      } else {
-        print("DB: No image data in BLOB for id $id or column is null.");
-      }
-    }
-    return null;
-  }
-*/
 
 
 Uint8List testImage(Map<String,dynamic>map)  {

@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
+import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -58,6 +60,13 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
   String ratingInfo = '';
   String symptomCoverText = "Tap here to add Symptoms";
 
+  ///For iOS Devices
+  List<CameraDescription> cameras=[];
+  CameraController? controller;
+  bool isCamerainitialized = false;
+  String cameraError = '';
+
+
   Uint8List convertBytestoList(dynamic bytedata) {
     if (bytedata != null) {
       Uint8List list = Uint8List.fromList(bytedata);
@@ -96,41 +105,168 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
     }
   }
 
-  /// Loads OS native camera app, don't forget to implement IOS required code
-  Future<void> openCamera() async {
-    try {
-      platform.setMethodCallHandler((call) async {
-        if (call.method == "onPictureTaken") {
-          final Uint8List imageBytes = call.arguments as Uint8List;
-          print("Received ${imageBytes.lengthInBytes} bytes from native.");
-          try {
-            final testImage = await decodeImageFromList(imageBytes);
-            print("NATIVE->DART: Bytes are a valid image (${testImage
-                .width}x${testImage.height}) before DB save.");
-          } catch (e) {
-            print(
-                "NATIVE->DART: ERROR - Bytes from native are ALREADY INVALID: $e");
-            return; // Don't proceed to save invalid data
-          }
-          setState(() {
-            pictureBytes = imageBytes;
-          });
-        } else if (call.method == "onPictureTakenError") {
-          print("Native camera error: ${call.arguments}");
-        }
-        else if (call.method == "onPictureCancelled") {
-          print("Native camera cancelled");
-        }
-      });
-      await platform.invokeMethod('openCamera');
-    } on PlatformException catch (e) {
-      if (kDebugMode) {
-        print("Failed to open camera: '${e.message}");
+
+  ///For iOS Camera
+
+  Future<void> initializeCamera() async{
+    setState(() {
+      isCamerainitialized = false;
+       cameraError = '';
+    });
+    try{
+      cameras = await availableCameras();
+      if(cameras.isEmpty){
+        print("No cameras available");
+        setState(() {
+          cameraError = "No cameras available";
+        });
+        return;
       }
-    }
+      print("Available Cameras");
+      for(var i=0; i<cameras.length; i++) {
+        final camera = cameras[i];
+        print("${camera.name} - ${camera.lensDirection}");
+        CameraDescription? selectedCameraDesc;
+        selectedCameraDesc = cameras.firstWhere(
+                (camera) => camera.lensDirection == CameraLensDirection.back,
+            orElse: () {
+              print("Could not find rear-facing camera on device");
+              return cameras.first;
+            }
+        );
+        controller = CameraController(
+            selectedCameraDesc,
+            ResolutionPreset.medium,
+            enableAudio: false,
+            imageFormatGroup: ImageFormatGroup.jpeg
+        );
+
+        await controller!.initialize();
+        if (!mounted) return;
+        setState(() {
+          isCamerainitialized = true;
+        });
+        print("Camera initialized successfully with ${selectedCameraDesc
+            .name} at medium resolution");
+      }}
+on CameraException catch (e) {
+    if(mounted){
+  setState(() {
+    isCamerainitialized = false;
+    cameraError = e.code;
+  });      }
+    } catch (e){
+      if(mounted){
+        setState(() {
+          isCamerainitialized = false;
+          cameraError = e.toString();
+        });
+    }}
+
+
+
+
+
   }
 
 
+
+  /// Loads OS native camera app, don't forget to implement IOS required code
+  Future<void> openCamera() async {
+    try {
+      if (Platform.isAndroid) {
+        platform.setMethodCallHandler((call) async {
+          if (call.method == "onPictureTaken") {
+            final Uint8List imageBytes = call.arguments as Uint8List;
+            print("Received ${imageBytes.lengthInBytes} bytes from native.");
+            try {
+              final testImage = await decodeImageFromList(imageBytes);
+              print("NATIVE->DART: Bytes are a valid image (${testImage
+                  .width}x${testImage.height}) before DB save.");
+            } catch (e) {
+              print(
+                  "NATIVE->DART: ERROR - Bytes from native are ALREADY INVALID: $e");
+              return; // Don't proceed to save invalid data
+            }
+            setState(() {
+              pictureBytes = imageBytes;
+            });
+          } else if (call.method == "onPictureTakenError") {
+            print("Native camera error: ${call.arguments}");
+          }
+          else if (call.method == "onPictureCancelled") {
+            print("Native camera cancelled");
+          }
+        });
+        await platform.invokeMethod('openCamera');
+      }
+      else {
+      //  await initializeCamera();
+       /* platform.setMethodCallHandler((call) async {
+          if (call.method == "onPictureTaken") {
+            final Uint8List imageBytes = call.arguments as Uint8List;
+            print("Received ${imageBytes.lengthInBytes} bytes from native.");
+            try {
+              final testImage = await decodeImageFromList(imageBytes);
+              print("NATIVE->DART: Bytes are a valid image (${testImage
+                  .width}x${testImage.height}) before DB save.");
+            } catch (e) {
+              print(
+                  "NATIVE->DART: ERROR - Bytes from native are ALREADY INVALID: $e");
+              return; // Don't proceed to save invalid data
+            }
+            setState(() {
+              pictureBytes = imageBytes;
+            });
+          } else if (call.method == "onPictureTakenError") {
+            print("Native camera error: ${call.arguments}");
+          }
+          else if (call.method == "onPictureCancelled") {
+            print("Native camera cancelled");
+          }
+        });
+        await platform.invokeMethod('openCamera');*/
+        final dynamic result = await platform.invokeMethod('openCamera');
+        if(result!=null && result is Uint8List){
+          print("Received ${result.lengthInBytes} bytes from native.");
+          try{
+            final testImage = await decodeImageFromList(result);
+            print("NATIVE->DART: Bytes are a valid image (${testImage.width}x${testImage.height}) before DB save.");
+            setState(() {
+              pictureBytes = result;
+            });
+          }catch(e){
+print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
+          }
+        } else if (result == null){
+          print("Native camera cancelled");
+          setState(() {
+            pictureBytes = Uint8List(0);
+          });
+        } else {
+          print("Native camera error: $result");
+        }
+
+      }
+    }
+    on PlatformException catch (e) {
+      if (kDebugMode) {
+        print("Failed to open camera: '${e.message}");
+      }
+      setState((){
+        pictureBytes = Uint8List(0);
+      });
+
+
+    } catch (e) {
+      if (kDebugMode) {
+        print("Failed to open camera: $e");
+      }
+      setState((){
+        pictureBytes = Uint8List(0);
+    });
+  }
+}
   @override
   void initState() {
     super.initState();

@@ -42,8 +42,48 @@ post_install do |installer|
 
     installer.pods_project.targets.each do |target|
        flutter_additional_ios_build_settings(target)
+       target.build_configurations.each do |config|
+       config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+               '$(inherited)',
+
+               ## dart: PermissionGroup.calendar
+               ##'PERMISSION_EVENTS=1',
+
+               ## dart: PermissionGroup.reminders
+               #'PERMISSION_REMINDERS=0',
+
+               ## dart: PermissionGroup.contacts
+               # 'PERMISSION_CONTACTS=0',
+
+               ## dart: PermissionGroup.camera
+               'PERMISSION_CAMERA=1',
+
+               ## dart: PermissionGroup.microphone
+               #'PERMISSION_MICROPHONE=1',
+
+               ## dart: PermissionGroup.speech
+               #'PERMISSION_SPEECH_RECOGNIZER=0'
+
+               ## dart: PermissionGroup.photos
+               'PERMISSION_PHOTOS=1',
+
+               ## dart: [PermissionGroup.location, PermissionGroup.locationAlways, PermissionGroup.locationWhenInUse]
+               ##'PERMISSION_LOCATION=1',
+
+               ## dart: PermissionGroup.notification
+               ##'PERMISSION_NOTIFICATIONS=1',
+
+               ## dart: PermissionGroup.appTrackingTransparency
+                ##'PERMISSION_APP_TRACKING_TRANSPARENCY=1',
+
+               ## dart: PermissionGroup.mediaLibrary
+                'PERMISSION_MEDIA_LIBRARY=1',
+
+               ## dart: PermissionGroup.sensors
+               #'PERMISSION_SENSORS=0'
+             ]
    end
-    
+    end
     ################  Awesome Notifications pod modification  ###################
       awesome_pod_file = File.expand_path(File.join('plugins', 'awesome_notifications', 'ios', 'Scripts', 'AwesomePodFile'), '.symlinks')
       require awesome_pod_file

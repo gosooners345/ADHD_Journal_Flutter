@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import SQLCipher
+
 
 
 class Flutter_DBHandler{}
