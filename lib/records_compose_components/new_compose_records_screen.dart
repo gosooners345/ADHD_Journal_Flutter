@@ -80,29 +80,14 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
 
 
   /// Image Widget
-  Widget journalImage() {
-    try {
-      if (pictureBytes != Uint8List(0)) {
-        return Image.memory(pictureBytes, fit: BoxFit.contain,
-          alignment: Alignment.center,
-          height: 500,
-          width: 500,);
+  Widget journalImage(ThemeSwap swapper) {
+    //try {
+      if (pictureBytes.isNotEmpty) {
+        return uiCard(SizedBox(height: 500, width: 500,child:Image.memory(pictureBytes, fit: BoxFit.contain,)),swapper);
       } else {
-        return Container( // Give Placeholder a default size or constraints
-          width: 150,
-          height: 150,
-          color: Colors.grey[300],
-          child: Center(child: Text("No Picture")),
-        );
+        return uiCard(SizedBox(height: 500, width: 500,child:Center(child: Text("No Picture, select camera or gallery to add a picture to this entry.", style: TextStyle(fontSize: 30)))),swapper);
       }
-    } on Exception catch (e) {
-      return Container( // Give Placeholder a default size or constraints
-        width: 150,
-        height: 150,
-        color: Colors.red[100],
-        child: Center(child: Text("Picture Error")),
-      );
-    }
+
   }
 
 
@@ -201,31 +186,7 @@ on CameraException catch (e) {
         await platform.invokeMethod('openCamera');
       }
       else {
-      //  await initializeCamera();
-       /* platform.setMethodCallHandler((call) async {
-          if (call.method == "onPictureTaken") {
-            final Uint8List imageBytes = call.arguments as Uint8List;
-            print("Received ${imageBytes.lengthInBytes} bytes from native.");
-            try {
-              final testImage = await decodeImageFromList(imageBytes);
-              print("NATIVE->DART: Bytes are a valid image (${testImage
-                  .width}x${testImage.height}) before DB save.");
-            } catch (e) {
-              print(
-                  "NATIVE->DART: ERROR - Bytes from native are ALREADY INVALID: $e");
-              return; // Don't proceed to save invalid data
-            }
-            setState(() {
-              pictureBytes = imageBytes;
-            });
-          } else if (call.method == "onPictureTakenError") {
-            print("Native camera error: ${call.arguments}");
-          }
-          else if (call.method == "onPictureCancelled") {
-            print("Native camera cancelled");
-          }
-        });
-        await platform.invokeMethod('openCamera');*/
+
         final dynamic result = await platform.invokeMethod('openCamera');
         if(result!=null && result is Uint8List){
           print("Received ${result.lengthInBytes} bytes from native.");
@@ -720,6 +681,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+
                 Expanded(child: ConstrainedBox(constraints: BoxConstraints(
                   maxWidth: MediaQuery
                       .of(context)
@@ -728,7 +690,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                   maxHeight: 300, // Example max height
                 ), child: FittedBox(
                   fit: BoxFit.contain,
-                  child: journalImage(),
+                  child: journalImage(swapper),
                 ))),
               ],)
 
@@ -768,8 +730,8 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                 //Content Field
                 Card(child: ListTile(leading: const Icon(Icons.calendar_today),
                     title: Text(
-                      "Date: ${customDate.day}/${customDate.month}/${customDate
-                          .year}", style: const TextStyle(fontSize: 20),),
+                      "Date: ${customDate.month}/${customDate.day}/${customDate
+                          .year} ${customDate.hour}:${customDate.minute.toString().padLeft(2, '0')}", style: const TextStyle(fontSize: 20),),
                     onTap: () async {
                       selectDate(context);
                     }),),
@@ -1065,7 +1027,11 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
     emotionsController.text = super.widget.record.emotions;
     sourceController.text = super.widget.record.sources;
     tagsController.text = super.widget.record.tags;
-    pictureBytes = super.widget.record.media;
+    if(super.widget.record.media!=Uint8List(0)) {
+      pictureBytes=super.widget.record.media;
+    } else {
+      pictureBytes = Uint8List(0);
+    }
     customDate = super.widget.record.timeCreated;
     setState(() {
       //Success Switch
