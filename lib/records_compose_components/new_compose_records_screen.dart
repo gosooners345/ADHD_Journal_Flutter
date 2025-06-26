@@ -82,12 +82,24 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
   /// Image Widget
   Widget journalImage(ThemeSwap swapper) {
     //try {
-      if (pictureBytes.isNotEmpty) {
-        return uiCard(SizedBox(height: 500, width: 500,child:Image.memory(pictureBytes, fit: BoxFit.contain,)),swapper);
-      } else {
-        return uiCard(SizedBox(height: 500, width: 500,child:Center(child: Text("No Picture, select camera or gallery to add a picture to this entry.", style: TextStyle(fontSize: 30)))),swapper);
-      }
-
+    if (pictureBytes.isNotEmpty) {
+      return uiCard(SizedBox(height: 500,
+          width: 500,
+          child: Image.memory(pictureBytes, fit: BoxFit.contain,)), swapper);
+    } else {
+      return uiCard(SizedBox(height: 500, width: 500, child:
+      Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [ Row(mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(width: 20,),
+                Expanded(child:
+                Text(
+                    "No Picture, select camera or gallery to add a picture to this entry.",
+                    style: TextStyle(fontSize: 30)))
+              ])
+          ])), swapper);
+    }
   }
 
 
@@ -518,7 +530,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                 ]),
                 swapper)),
 
-
+///Event Tags
         uiCard(
             Column(
               children: [
@@ -641,7 +653,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
         ///Add Pictures or other media here
         uiCard(Column(mainAxisAlignment: MainAxisAlignment.center, spacing: 5.0,
           children: [
-            Row(spacing: 5.0,
+            Row(spacing: 8.0,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text("Choose a picture to define this entry",
@@ -678,10 +690,10 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                       })
                 ]),
             space,
+            Expanded(child:
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-
                 Expanded(child: ConstrainedBox(constraints: BoxConstraints(
                   maxWidth: MediaQuery
                       .of(context)
@@ -692,8 +704,8 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                   fit: BoxFit.contain,
                   child: journalImage(swapper),
                 ))),
-              ],)
-
+              ],))
+,space
           ],
 
         ), swapper),
@@ -727,7 +739,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                 ), //x
                 space,
 
-                //Content Field
+                //Date Field
                 Card(child: ListTile(leading: const Icon(Icons.calendar_today),
                     title: Text(
                       "Date: ${customDate.month}/${customDate.day}/${customDate
@@ -736,7 +748,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                       selectDate(context);
                     }),),
                 space,
-
+                // Content Field
                 TextField(
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
@@ -875,6 +887,34 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                     min: 0.0,
                     divisions: 100,
                     label: super.widget.record.rating.toString()),
+                space,
+                //Media Tile
+                GestureDetector(
+                    onTap: () {
+                      _showAlert(context, "Double tap will take you to the Picture selection screen");
+                    },
+                    onDoubleTap:(){
+                  _pageController
+                      .previousPage(
+                      duration: const Duration(milliseconds: 150),
+                      curve: Curves.easeInExpo)
+                      .whenComplete(() =>
+                      setState(() {
+                        currentPage = _pageController.page!;
+                      })
+                  );
+                },
+                    child:
+                Card( borderOnForeground: true,
+                    child:Column(spacing: 5, mainAxisAlignment: MainAxisAlignment.center,
+                    children: [ space,
+                  Row(children: [SizedBox(width:20),Expanded(child: Text("Did you like the picture you selected?"))]),
+                  space,
+                  Row(children: [ Expanded(child:
+                  journalImage(swapper))
+                  ])
+                ])
+               )),
                 space,
                 Padding(
                     padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
