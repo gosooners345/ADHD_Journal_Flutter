@@ -27,7 +27,7 @@ TextEditingController passwordHintController = TextEditingController();
 late TextEditingController searchController;
 
 class RecordDisplayWidgetState extends State<RecordDisplayWidget> with SingleTickerProviderStateMixin{
-late var recordsBloc;
+late RecordsBloc recordsBloc;
 
   @override
   void initState() {
@@ -62,10 +62,7 @@ late var recordsBloc;
           context, "Password Hint Needed", "ADD Hint", enterSettings);
     }
   }
-/*
-  void executeClick() async {
-   recordsBloc.loadLists();
-  }*/
+
 
 
 

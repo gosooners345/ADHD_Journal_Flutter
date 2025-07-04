@@ -801,19 +801,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                         if (loginPassword == userPassword &&
                                             passwordEnabled) {
                                           loginPassword = '';
-                                         // final recordsBloc = Provider.of<RecordsBloc>(context,listen: false);
                                           recordsBloc.getRecords();
                                           Navigator.pushNamed(
                                                   context, '/success')
                                               .then((value) => {
                                                     isThisReturning = true,
-                                                  //  recordsBloc.dispose(),
                                                     stuff.clear(),
-                                                   // recordHolder.clear(),
                                                     refreshPrefs(),
                                                   });
                                         } else if (!passwordEnabled) {
-                                        //  final recordsBloc = Provider.of<RecordsBloc>(context,listen: false);
                                           recordsBloc.getRecords();
                                           loginPassword = '';
                                           stuff.clear();
@@ -821,9 +817,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   context, '/success')
                                               .then((value) => {
                                                     isThisReturning = true,
-                                                 //   recordsBloc.dispose(),
                                                     refreshPrefs(),
-                                                    //recordsBloc..clear(),
                                                   });
                                         }
                                       },
@@ -837,15 +831,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                     return ElevatedButton(
                                       onPressed: () {
                                         if (loginPassword == userPassword) {
-                                        //  final recordsBloc = Provider.of<RecordsBloc>(context,listen: false);
                                           recordsBloc.getRecords();
                                           Navigator.pushNamed(
                                                   context, '/success')
                                               .then((value) => {
                                                     isThisReturning = true,
-                                                    //recordHolder.clear(),
                                                     refreshPrefs(),
-                                                    //recordsBloc.dispose(),
                                                   });
                                           stuff.clear();
                                         }

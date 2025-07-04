@@ -184,12 +184,6 @@ return reversedRatings.slices(30).toList();
     return summaryString;
   }
 
-  List<double> ratingList=[];
-
-  List<String> dateList=[];
-
-  var superList =[];
-
 
   @override
   Widget build(BuildContext context) {
@@ -231,15 +225,15 @@ return reversedRatings.slices(30).toList();
 ///Ratings Card
         StreamBuilder<List<List<RecordRatingStats>>>(
           stream: getPagedRatings(),
+          initialData: [recordsBloc.ratingsList],
           builder: (context, snapshot) {
             if(snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData){
     return uiCard(const SizedBox(height:400, child: Center(child: CircularProgressIndicator())), swapper);
     } if (snapshot.hasError) {
     return uiCard(SizedBox(height:400, child: Center(child: Text("Error: ${snapshot.error}"))), swapper);
     } final pagedData = snapshot.data;
-
     if (pagedData == null || pagedData.isEmpty) {
-    return uiCard(const SizedBox(height:400, child: Center(child: Text("No rating data available."))), swapper);
+    return uiCard(const SizedBox(height:400, child: Center(child: Text("No ratings data available."))), swapper);
     } int pageCount = pagedData.length;
     return uiCard(
       SizedBox( width: double.infinity,height: 400,
@@ -255,8 +249,11 @@ return reversedRatings.slices(30).toList();
 child: PageView.builder(controller: graphController,
       itemCount:pageCount,
       itemBuilder: (BuildContext context,index){
-return Column(
-  children: [ Expanded(child: SfCartesianChart(
+  super.build(context);
+
+  return Column(
+  children: [
+    Expanded(child: SfCartesianChart(
 zoomPanBehavior: zoomPanBehavior,
 borderWidth: 2.0,
 primaryXAxis: CategoryAxis(name: "Dates",labelAlignment: LabelAlignment.center,labelRotation: 285,
@@ -288,7 +285,7 @@ series: <LineSeries<RecordRatingStats, String>>[
             )]
 
               );
-            })),
+            })),space,
         if (currentPage! < pageCount - 1)
             Align(alignment: AlignmentDirectional.centerEnd, child: nextButton),
             Align(
@@ -319,111 +316,7 @@ series: <LineSeries<RecordRatingStats, String>>[
 
 
 
-/*uiCard(SizedBox(width: 300,height: 400,child:
 
-    Stack(children: [
-      currentPage! == 0
-          ? const Text("")
-          : Align(
-          alignment: AlignmentDirectional.centerStart,
-          child: prevButton),
-      Padding(
-      padding: const EdgeInsets.fromLTRB(25, 8, 25, 15),
-      child:
-
-
-
-      PageView.builder(controller: graphController,
-          itemCount: superList.length,
-          itemBuilder: (BuildContext context,index){
-
-return  GridTile(
-    child:
-    Column(children: [
-       SfCartesianChart(
-              zoomPanBehavior: zoomPanBehavior,
-              borderWidth: 2.0,
-              primaryXAxis: CategoryAxis(name: "Dates",labelAlignment: LabelAlignment.center,labelRotation: 285,
-                labelPosition: ChartDataLabelPosition.outside,title: AxisTitle(text: "Dates"),),
-              primaryYAxis: NumericAxis(name: "Ratings",
-                  labelAlignment: LabelAlignment.center,title: AxisTitle(text: "Ratings"),rangePadding: ChartRangePadding.auto),
-
-         series: <LineSeries<RecordRatingStats, String>>[
-                LineSeries(
-                  dataSource: superList[index],
-                  width: 1.0,
-                  xValueMapper: (RecordRatingStats recLbl, _) =>
-                      DateFormat("MM/dd/yyyy")
-                          .format(recLbl.date),
-                  color: Color(swapper.isColorSeed),
-                  yValueMapper: (RecordRatingStats recLbl, _) =>
-                  recLbl.value,
-                  dataLabelSettings:
-                  const DataLabelSettings(isVisible: true,),
-                  xAxisName: 'Dates',
-
-                  yAxisName: 'Ratings',
-                ),
-              ],
-              title: ChartTitle(
-                  text: 'Journal entry ratings'),
-              margin: const EdgeInsets.all(8.0),
-            ),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const SizedBox(
-            width: 15,
-          ),
-          const Text('Reset Zoom'),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () => zoomPanBehavior.reset(),
-          )
-
-        ],)
-    ]));
-          },
-      onPageChanged:(page){
-        graphController.animateToPage(page,
-            duration: const Duration(milliseconds: 100), curve: Curves.easeIn);
-      } ,
-      )
-      ),
-
-      currentPage! == pageCount - 1
-          ? const Text("")
-          : Align(
-          alignment: AlignmentDirectional.centerEnd,
-          child: nextButton),
-
-     Padding(padding: EdgeInsets.all(8.0),child:
-
-      Align(
-        alignment: Alignment.bottomCenter,
-        child: SizedBox(
-            height: 8,
-            child: SmoothPageIndicator(
-              controller: graphController,
-              count: pageCount,
-              effect: WormEffect(
-                dotHeight: 12,
-                dotWidth: 12,
-                dotColor: Color(swapper.isColorSeed),
-              ),
-              onDotClicked: (value) {
-                setState(() {
-                  currentPage = value.toDouble();
-                  graphController.jumpToPage(value);
-                });
-              },
-            )),
-      ),),
-
-    ],),
-
-
-   ),swapper),*/
         /// Success/Fail Card
         Card(
             borderOnForeground: true,

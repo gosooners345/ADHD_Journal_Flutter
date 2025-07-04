@@ -1025,7 +1025,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
         body: SafeArea(
           minimum: const EdgeInsets.fromLTRB(5, 5, 5, 80),
           // Code to examine for ratings dashboard examination
-          child: Stack(
+          child: Stack(fit:StackFit.expand,
             children: [
               currentPage! == 0
                   ? const Text("")
@@ -1033,7 +1033,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                   alignment: AlignmentDirectional.centerStart,
                   child: prevButton),
               Padding(
-                  padding: const EdgeInsets.fromLTRB(35, 8, 35, 15),
+                  padding: const EdgeInsets.fromLTRB(35, 8, 35, 50),
                   child: _buildJournalCards(swapper)),
               currentPage! == pageCount - 1
                   ? const Text("")
@@ -1071,7 +1071,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
     controller?.dispose(); // Dispose camera controller if initialized
     super.dispose();
   }
-  void addRecord() async {
+ /* void addRecord() async {
     _recordsBloc.addRecord(super.widget.record);
   }
 
@@ -1086,7 +1086,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
 
   updateTimer() async {
     return Timer(const Duration(milliseconds: 2), updateRecord);
-  }
+  }*/
   ///Saves the record in the database
   Future<void> _saveRecord(RecordsBloc recordsBloc) async {
     super.widget.record.timeUpdated = DateTime.now();
@@ -1106,7 +1106,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
         //quickTimer();
      } else {
        await recordsBloc.updateRecord(super.widget.record);
-        updateTimer();
+       // updateTimer();
      }
 
      if(mounted){
