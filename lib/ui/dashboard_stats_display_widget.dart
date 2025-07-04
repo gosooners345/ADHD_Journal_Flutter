@@ -1,6 +1,7 @@
 import 'package:adhd_journal_flutter/project_resources/project_utils.dart';
 import 'package:adhd_journal_flutter/record_data_package/record_list_class.dart';
 import 'package:encrypt/encrypt.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:intl/intl.dart';
@@ -64,7 +65,7 @@ recordsBloc=Provider.of<RecordsBloc>(context, listen: false);
       onPressed: () {
         graphController
             .nextPage(
-            duration: const Duration(milliseconds: 150),
+            duration: const Duration(milliseconds: 100),
             curve: Curves.easeInExpo)
             .whenComplete(() => setState(() {
           currentPage = graphController.page!;
@@ -127,7 +128,15 @@ recordsBloc=Provider.of<RecordsBloc>(context, listen: false);
     return symptomList;
   }
 
-  Stream<List<List<RecordRatingStats>>> getPagedRatings(){
+  Future <List<List<RecordRatingStats>>> getPagedRatings() async{
+    final recordsBloc = Provider.of<RecordsBloc>(context, listen: false);
+
+var tempRatings = recordsBloc.ratingsList.reversed.slices(30).toList();
+return tempRatings;
+
+
+  }
+  /*Stream<List<List<RecordRatingStats>>> getPagedRatings(){
     final recordsBloc = Provider.of<RecordsBloc>(context, listen: false);
 return recordsBloc.ratingsStuffs.map((ratingsList){
   if(ratingsList.isNotEmpty){
@@ -138,14 +147,8 @@ return reversedRatings.slices(30).toList();
   }
 
 });
-//ratinglist
 
- //   var tempRtgList = recordsBloc.ratingsList.reversed.slices(30);
-
-  //  ratingList.addAll(tempRtgList.toList());
-
-    //yield ratingList;
-  }
+  }*/
 
   String summaryGen() {
     final recordsBloc = Provider.of<RecordsBloc>(context, listen: false);
@@ -223,12 +226,13 @@ return reversedRatings.slices(30).toList();
 
 
 ///Ratings Card
-        StreamBuilder<List<List<RecordRatingStats>>>(
-          stream: getPagedRatings(),
-          initialData: [recordsBloc.ratingsList],
+       FutureBuilder<List<List<RecordRatingStats>>>(
+
+          future: getPagedRatings(),
+
           builder: (context, snapshot) {
             if(snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData){
-    return uiCard(const SizedBox(height:400, child: Center(child: CircularProgressIndicator())), swapper);
+    return uiCard(const SizedBox(height:100, child: Center(child: CircularProgressIndicator())), swapper);
     } if (snapshot.hasError) {
     return uiCard(SizedBox(height:400, child: Center(child: Text("Error: ${snapshot.error}"))), swapper);
     } final pagedData = snapshot.data;
@@ -236,76 +240,146 @@ return reversedRatings.slices(30).toList();
     return uiCard(const SizedBox(height:400, child: Center(child: Text("No ratings data available."))), swapper);
     } int pageCount = pagedData.length;
     return uiCard(
-      SizedBox( width: double.infinity,height: 400,
-        child: Stack(
+        SizedBox(height:400,width: double.infinity,
+        child:
+        Stack(
           children: [
+          ///Back arrow Widget
             if(currentPage!>0.0)
               Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: prevButton,
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(25, 8, 25, 15),
-child: PageView.builder(controller: graphController,
+
+               alignment: Alignment.centerLeft,
+                child:
+                InkWell(onTap: (){
+                  if(kDebugMode){
+                    print("Back Gesture Tapped");
+                  }
+                  setState(() {
+                    graphController
+                        .previousPage(
+                        duration: const Duration(milliseconds: 150),
+                        curve: Curves.easeInExpo)
+                        .whenComplete(() => setState(() {
+                      currentPage = graphController.page!;
+                    }));
+                  });
+
+                },child:
+                //Icon(backArrowIcon,color: Color(swapper.isColorSeed),)
+               Container(
+                 alignment: Alignment.center,
+width: 40, height: double.infinity,
+//padding: const EdgeInsets.fromLTRB(8.0,double.infinity,8.0,double.infinity),
+child: backArrowIcon,
+//prevButton,
+
+               )
+
+
+              )),
+              //Graph
+               Padding(
+                padding: const EdgeInsets.fromLTRB(25, 8, 25,20 ),
+child:
+PageView.builder(controller: graphController,
       itemCount:pageCount,
       itemBuilder: (BuildContext context,index){
   super.build(context);
 
   return Column(
   children: [
-    Expanded(child: SfCartesianChart(
+     SfCartesianChart(
 zoomPanBehavior: zoomPanBehavior,
-borderWidth: 2.0,
-primaryXAxis: CategoryAxis(name: "Dates",labelAlignment: LabelAlignment.center,labelRotation: 285,
-labelPosition: ChartDataLabelPosition.outside,title: AxisTitle(text: "Dates"),),
+borderWidth: 8.0,
+primaryXAxis: CategoryAxis(name: "Dates",labelAlignment: LabelAlignment.start,labelRotation: 285,
+labelPosition: ChartDataLabelPosition.outside,title: AxisTitle(text: "Dates")),
 primaryYAxis: NumericAxis(name: "Ratings",
-labelAlignment: LabelAlignment.center,title: AxisTitle(text: "Ratings"),rangePadding: ChartRangePadding.auto),
+labelAlignment: LabelAlignment.center,
+    title: AxisTitle(text: "Ratings"),
+    rangePadding: ChartRangePadding.auto),
 
 series: <LineSeries<RecordRatingStats, String>>[
             LineSeries(
             dataSource: pagedData[index],
             width: 1.0,
+
             xValueMapper: (RecordRatingStats recLbl, _) =>
             DateFormat("MM/dd/yyyy")
                 .format(recLbl.date),
             color: Color(swapper.isColorSeed),
             yValueMapper: (RecordRatingStats recLbl, _) =>
             recLbl.value,
+            markerSettings: MarkerSettings(isVisible: true,
+              height: 3,
+              width: 3
+            ),
             dataLabelSettings:
-            const DataLabelSettings(isVisible: true,),
+            const DataLabelSettings(isVisible: true,
+              showZeroValue: true,
+              showCumulativeValues: true,
+             ),
             xAxisName: 'Dates',
-
             yAxisName: 'Ratings',
             ),
             ],
             title: ChartTitle(
             text: 'Journal entry ratings'),
             margin: const EdgeInsets.all(8.0),
-            ),
-            )]
+            )
+            ]
 
               );
-            })),space,
+            }
+            )),
+      //Next Button
         if (currentPage! < pageCount - 1)
-            Align(alignment: AlignmentDirectional.centerEnd, child: nextButton),
+          Align(alignment: Alignment.centerRight,
+              child:   InkWell(onTap: (){
+                if(kDebugMode){
+                  print("Next Gesture Tapped");
+                }
+                setState(() {
+                  graphController
+                      .nextPage(
+                      duration: const Duration(milliseconds: 100),
+                      curve: Curves.easeInExpo)
+                      .whenComplete(() => setState(() {
+                    currentPage = graphController.page!;
+                  }));
+                });
+
+              },child:
+
+             Container(height:double.infinity,width: 40,
+                child:Align(child:nextArrowIcon,alignment: Alignment.center,) ,
+
+
+
+            //  nextButton
+            ))),
             Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SmoothPageIndicator(
-            controller: graphController,
-            count: pageCount,
-            effect: WormEffect(
-            dotHeight: 12,
-            dotWidth: 12,
+            padding: const EdgeInsets.all(10.0),
+            child: AnimatedSmoothIndicator(//SmoothPageIndicator(
+            activeIndex: currentPage?.round() ?? 0,
+              count: pageCount,
+            effect: SlideEffect(
+            dotHeight: 8,
+            dotWidth: 8,
             activeDotColor: Color(swapper.isColorSeed),
             dotColor: Colors.grey.shade400,
             ),
             onDotClicked: (value) {
-            graphController.jumpToPage(value);
-            },))),
+            graphController.animateToPage(value,duration: const Duration(milliseconds: 100),curve: Curves.linear);
+            },)))
           ],
-        )),swapper);
+        )
+
+
+
+
+        ),swapper);
 
 
 
