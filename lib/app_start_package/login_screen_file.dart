@@ -563,6 +563,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void resetLoginFieldState() async {
+    final recordsBloc = Provider.of<RecordsBloc>(context,listen: false);
+
     setState(() {
       if (passwordHint == '' || passwordHint == ' ') {
         hintText = 'Enter secure password';
@@ -592,10 +594,11 @@ class _LoginScreenState extends State<LoginScreen> {
             loginPassword = text;
             if (text.length == userPassword.length) {
               if (text == userPassword) {
-                Navigator.pushNamed(context, '/success').then((value) => {
+                recordsBloc.getRecords();
+                Navigator.pushReplacementNamed(context, '/success').then((value) => {
                       isThisReturning = true,
                       refreshPrefs(),
-                      recordHolder.clear(),
+                      //recordsBloc.currentRecordHolder.clear(),
                       stuff.clear(),
                     });
               } else {
@@ -774,6 +777,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     stream: readyButton.controller.stream,
                     builder:
                         (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                      final recordsBloc = Provider.of<RecordsBloc>(context,listen: false);
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Text("Updating Files on device");
                       } else {
@@ -797,27 +801,29 @@ class _LoginScreenState extends State<LoginScreen> {
                                         if (loginPassword == userPassword &&
                                             passwordEnabled) {
                                           loginPassword = '';
-                                          recordsBloc = RecordsBloc();
+                                         // final recordsBloc = Provider.of<RecordsBloc>(context,listen: false);
+                                          recordsBloc.getRecords();
                                           Navigator.pushNamed(
                                                   context, '/success')
                                               .then((value) => {
                                                     isThisReturning = true,
-                                                    recordsBloc.dispose(),
+                                                  //  recordsBloc.dispose(),
                                                     stuff.clear(),
-                                                    recordHolder.clear(),
+                                                   // recordHolder.clear(),
                                                     refreshPrefs(),
                                                   });
                                         } else if (!passwordEnabled) {
-                                          recordsBloc = RecordsBloc();
+                                        //  final recordsBloc = Provider.of<RecordsBloc>(context,listen: false);
+                                          recordsBloc.getRecords();
                                           loginPassword = '';
                                           stuff.clear();
                                           Navigator.pushNamed(
                                                   context, '/success')
                                               .then((value) => {
                                                     isThisReturning = true,
-                                                    recordsBloc.dispose(),
+                                                 //   recordsBloc.dispose(),
                                                     refreshPrefs(),
-                                                    recordHolder.clear(),
+                                                    //recordsBloc..clear(),
                                                   });
                                         }
                                       },
@@ -831,13 +837,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                     return ElevatedButton(
                                       onPressed: () {
                                         if (loginPassword == userPassword) {
+                                        //  final recordsBloc = Provider.of<RecordsBloc>(context,listen: false);
+                                          recordsBloc.getRecords();
                                           Navigator.pushNamed(
                                                   context, '/success')
                                               .then((value) => {
                                                     isThisReturning = true,
-                                                    recordHolder.clear(),
+                                                    //recordHolder.clear(),
                                                     refreshPrefs(),
-                                                    recordsBloc.dispose(),
+                                                    //recordsBloc.dispose(),
                                                   });
                                           stuff.clear();
                                         }
@@ -975,8 +983,7 @@ class LoginButtonReady {
             ready = true;
             break;
           }
-        default:
-      }
+        }
     });
   }
   dispose() {

@@ -6,7 +6,6 @@ import 'dart:async';
 import 'package:adhd_journal_flutter/project_resources/project_utils.dart';
 import 'package:adhd_journal_flutter/settings_tutorials/backup_and_sync_help.dart';
 import 'package:adhd_journal_flutter/ui/dashboard_stats_display_widget.dart';
-import 'package:adhd_journal_flutter/record_data_package/record_list_class.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
 import 'package:adhd_journal_flutter/settings.dart';
 import 'package:adhd_journal_flutter/settings_link_page/helpful_links.dart';
@@ -25,27 +24,34 @@ import 'project_resources/project_colors.dart';
 import 'record_data_package/records_data_class_db.dart';
 import 'app_start_package/login_screen_file.dart';
 import 'records_compose_components/new_compose_records_screen.dart';
-import 'package:camera_android_camerax/camera_android_camerax.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 
 
 
-List<Records> recordHolder = [];
+//List<Records> recordHolder = [];
 int id = 0;
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await NotificationController.initializeLocalNotifications();
-//  WidgetsFlutterBinding.ensureInitialized();
-  runApp(ChangeNotifierProvider<ThemeSwap>(
-    create: (_) => ThemeSwap(),
-    child: MyApp(),
-  ));
+  runApp(
+      MultiProvider(providers: [
+       ChangeNotifierProvider<ThemeSwap>(
+       create: (_) => ThemeSwap(),),
+       Provider<RecordsBloc>(
+         create: (_) => RecordsBloc(),
+         dispose: (_,bloc) => bloc.dispose(),
+       )
+
+      ],
+      child: MyApp(),)
+  );
 }
 
-late RecordsBloc recordsBloc;
+//late RecordsBloc recordsBloc;
 
-int listSize = 0;
+//int listSize = 0;
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -119,7 +125,7 @@ class ADHDJournalApp extends StatefulWidget {
 }
 
 late ListView recordViews;
-
+///App Widget Most code takes place here
 class ADHDJournalAppHPState extends State<ADHDJournalApp> {
   static Choice selectedChoice = sortOptions[0];
 
@@ -132,7 +138,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
     super.initState();
     title = 'Home';
     try {
-      recordsBloc = RecordsBloc();
+   //   recordsBloc = RecordsBloc();
       buildInfo = packInfo.version;
       requestStoragePermission();
 
@@ -156,7 +162,8 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
   }
 
   static const List<Widget> screens =
-     [RecordDisplayWidget(), DashboardViewWidget()];
+     [RecordDisplayWidget(), DashboardViewWidget(),//NewDashboardStatsWidget()
+     ];
 
   void requestStoragePermission() async {
     if(!kIsWeb){
@@ -185,14 +192,14 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
 
   /// Allows users to create entries for the db and journal. Once submitted, the screen will update on demand.
   /// Checked and passed : true
-  void _createRecord()  {
+  void _createRecord(RecordsBloc bloc)  {
     try {
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (_) => NewComposeRecordsWidget(
                   record: Records(
-                      id: recordsBloc.maxID,
+                      id: bloc.maxID,
                       title: '',
                       content: '',
                       emotions: '',
@@ -206,7 +213,9 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                       timeUpdated: DateTime.now()),
                   id: 0,
                   title: 'Compose New Entry'))).then((value) => {
-            recordsBloc.writeCheckpoint()
+            bloc.writeCheckpoint(),
+        //records
+
           });
     } on Exception catch (ex) {
       if (kDebugMode) {
@@ -220,9 +229,9 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
   ///
 // This is where the Buttons associated with the bottom navigation bar will be located.
 
-  void verifyPasswordChanged() {
+  void verifyPasswordChanged(RecordsBloc bloc) {
     try {
-      int results = getPasswordChangeResults();
+      int results = getPasswordChangeResults(bloc);
       if (results == 0) {
         showAlert(context, "Password Change Successful!");
       } else {
@@ -233,16 +242,16 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
     }
   }
 
-  void sortOption(Choice option) {
+  void sortOption(Choice option, RecordsBloc bloc) {
     setState(() {
       selectedChoice = option;
-      recordsBloc.getSortedRecords(option.title);
+      bloc.getSortedRecords(option.title);
     });
   }
 
-  int getPasswordChangeResults() {
+  int getPasswordChangeResults(RecordsBloc bloc) {
     try {
-      recordsBloc.changeDBPasswords(userPassword);
+      bloc.changeDBPasswords(userPassword);
       return 0;
     } on Exception {
       return 1;
@@ -252,6 +261,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
   /// This compiles the screen display for the application.
   @override
   Widget build(BuildContext context) {
+    final recordsBloc = Provider.of<RecordsBloc>(context,listen: false);
     return Consumer<ThemeSwap>(
       builder: (context, swapper, child) {
         return Scaffold(
@@ -259,7 +269,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
             title:Text( _selectedIndex==0?"Home":"Stats"),
 leading: IconButton(onPressed: (){
   isThisReturning = true;
-  recordsBloc.dispose();
+  //recordsBloc.dispose();
   Navigator.of(context).pop();
 },icon: backArrowIcon,),
             actions: [
@@ -285,8 +295,7 @@ leading: IconButton(onPressed: (){
                         TextButton(
                             onPressed: () {
                               if (searchController.text.isNotEmpty) {
-                                recordsBloc
-                                    .getSearchedRecords(searchController.text);
+                                recordsBloc.getSearchedRecords(searchController.text);
                               } else {
                                 recordsBloc.getRecords();
                               }
@@ -393,7 +402,7 @@ leading: IconButton(onPressed: (){
                     if (userPassword != dbPassword)
                       {
                         recordsBloc.changeDBPasswords(userPassword),
-                        recordsBloc = RecordsBloc(),
+                        //recordsBloc = RecordsBloc(),
                         recordsBloc.getRecords()
                       },
                     userActiveBackup = prefs.getBool("testBackup") ?? false,
@@ -415,7 +424,7 @@ leading: IconButton(onPressed: (){
             onPressed: () {
               setState(() {
                 try {
-                  _createRecord();
+                  _createRecord(recordsBloc);
                 } on Exception catch (ex) {
 
                   if (kDebugMode) {
@@ -429,17 +438,10 @@ leading: IconButton(onPressed: (){
           NavigationBar(selectedIndex: _selectedIndex,
             onDestinationSelected: (int index){
               setState(() {
-                if (recordsBloc.recordHolder.isNotEmpty) {
                   _selectedIndex = index;
-                  if (_selectedIndex == 0) {
-                    title = 'Home';
-                  } else {
-                    title = 'Dashboard';
-                    RecordList.loadLists();
-                  }
-                } else {
-                  _selectedIndex = 0;
-                }
+                 title = (index == 0) ? 'Home' : 'Dashboard';
+recordsBloc.getRecords();
+
               });
             },
             destinations: const [

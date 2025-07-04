@@ -1,5 +1,7 @@
+/*
 // ignore_for_file: prefer_collection_literals, avoid_function_literals_in_foreach_calls
 
+import 'dart:async';
 import 'dart:core';
 
 import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
@@ -16,6 +18,22 @@ import '../main.dart';
 class RecordList {
   static const platform =
       MethodChannel('com.activitylogger.release1/ADHDJournal');
+
+  static StreamController<List<RecordRatingStats>> _ratingsController = StreamController<List<RecordRatingStats>>.broadcast(sync: true);
+  static Stream<List<RecordRatingStats>> get ratingsStuffs => _ratingsController.stream;
+
+  static StreamController<List<RecordDataStats>> _successController = StreamController<List<RecordDataStats>>.broadcast(sync: true);
+  static Stream<List<RecordDataStats>> get successStuffs => _successController.stream;
+
+  static StreamController<List<RecordDataStats>> _symptomController = StreamController<List<RecordDataStats>>.broadcast(sync: true);
+  static Stream<List<RecordDataStats>> get symptomStuffs => _symptomController.stream;
+
+  static StreamController<List<RecordDataStats>> _emotionController = StreamController<List<RecordDataStats>>.broadcast(sync: true);
+  static Stream<List<RecordDataStats>> get emotionStuffs => _emotionController.stream;
+
+
+
+
   static List<RecordDataStats> emotionsList = [];
   static List<RecordDataStats> successList = [];
   static List<RecordRatingStats> ratingsList = [];
@@ -24,20 +42,17 @@ class RecordList {
   static void loadLists() async {
     emotionsList = await _getEmotionCounts();
     symptomList = await _getSymptomCounts();
-    ratingsList = await _getRatingsList();
+    _ratingsController.sink.add(await _getRatingsList().first);
+    //ratingsList = await _getRatingsList().
     successList = getSuccessList();
   }
 
-  //List of Integers and Dates. - Derived from the list without creating a class.
-//What if this was integrated into the master stream class.
-  // 1. Rating value, 2. Date value.
-/*List<dynamic>  ratingList(){
-  var tempratingList = [];
-    Map<String,Object> ratingsMap = {};
-    for(int i =0; i<recordHolder.length; i++){
-      ratingsMap.
-  }*/
-
+ static void dispose() {
+    _ratingsController.close();
+    _successController.close();
+    _symptomController.close();
+    _emotionController.close();
+  }
 
 
 
@@ -171,8 +186,8 @@ class RecordList {
     return symptomList;
   }
 //old ratings list
-//Ratings List Method
-  static Future<List<RecordRatingStats>> _getRatingsList() async {
+//Ratings List Method, Probably using Stream on this instead of
+  static Stream<List<RecordRatingStats>> _getRatingsList() async* {
     List<RecordRatingStats> ratingsData = List.empty(growable: true);
     var testList = recordsBloc.recordHolder;
     testList.sort((a, b) => a.timeCreated.compareTo(b.timeCreated));
@@ -180,42 +195,8 @@ class RecordList {
       ratingsData.add(RecordRatingStats(record.timeCreated, record.rating));
     }
     ratingsData.sort((a, b) => a.compareTo(b));
-    return ratingsData;
+    yield ratingsData;
   }
 }
 
-class RecordRatingStats implements Comparable {
-  DateTime date = DateTime.now();
-  double value = 0.0;
-
-  RecordRatingStats(this.date, this.value);
-  Map<String, Object> toMap() {
-    return {"date": date, "value": value};
-  }
-
-  @override
-  int compareTo(other) {
-    return date.compareTo(other.date);
-  }
-}
-
-class RecordDataStats implements Comparable {
-  String key = '';
-  double value = 0.0;
-  int altValue = 0;
-  RecordDataStats(this.key, this.value);
-
-  Map<String, Object> toMap() {
-    return {"key": key, "value": value};
-  }
-
-  @override
-  int compareTo(other) {
-    final otherRecord = other as RecordDataStats;
-    if (value.compareTo(otherRecord.value) == 0) {
-      return key.toUpperCase().compareTo(otherRecord.key.toUpperCase());
-    } else {
-      return value.compareTo(otherRecord.value);
-    }
-  }
-}
+*/

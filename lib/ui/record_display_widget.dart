@@ -27,7 +27,7 @@ TextEditingController passwordHintController = TextEditingController();
 late TextEditingController searchController;
 
 class RecordDisplayWidgetState extends State<RecordDisplayWidget> with SingleTickerProviderStateMixin{
-
+late var recordsBloc;
 
   @override
   void initState() {
@@ -35,13 +35,12 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> with SingleTic
 
     try {
       searchController = TextEditingController();
-      recordsBloc = RecordsBloc();
-      startTimer();
+      recordsBloc = Provider.of<RecordsBloc>(context,listen: false);
+
+     // startTimer();
       greeting = prefs.getString('greeting') ?? '';
       checkHint();
-      if (kDebugMode) {
-        print('everything is sorted now');
-      }
+
     } catch (e, s) {
       if (kDebugMode) {
         print(s);
@@ -54,7 +53,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> with SingleTic
   startTimer() async {
     var duration = const Duration(seconds: 1);
 
-    return Timer(duration, executeClick);
+    //return Timer(duration, executeClick);
   }
 
   void checkHint() async {
@@ -63,18 +62,20 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> with SingleTic
           context, "Password Hint Needed", "ADD Hint", enterSettings);
     }
   }
-
+/*
   void executeClick() async {
-    RecordList.loadLists();
-  }
+   recordsBloc.loadLists();
+  }*/
 
 
 
   @override
   dispose() {
+
+
     super.dispose();
 
-    recordsBloc.dispose();
+
   }
 
   /// Sorts the list based on what the user prefers to see.
@@ -92,7 +93,7 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> with SingleTic
                     title: 'Edit Entry',
                   ))).then((value) {
         showAlert(context, 'Record Saved');
-        recordsBloc.writeCheckpoint();
+        //recordsBloc.writeCheckpoint();
         showAlert(context, "Changes to DB Saved");
       });
     });
@@ -153,6 +154,8 @@ class RecordDisplayWidgetState extends State<RecordDisplayWidget> with SingleTic
 
   @override
   Widget build(BuildContext context) {
+
+
     return Consumer<ThemeSwap>(builder: (context, swapper, child) {
       return// SafeArea(
         //  minimum: const EdgeInsets.all(5.0),
@@ -180,7 +183,7 @@ SliverChildListDelegate([
 ]),),),
 
       StreamBuilder(
-      stream: recordsBloc.recordStuffs,
+      stream: recordsBloc.recordsStream,
       builder: (BuildContext context, AsyncSnapshot<List<Records>> snapshot){
         if (snapshot.hasData) {
           return snapshot.data!.isNotEmpty

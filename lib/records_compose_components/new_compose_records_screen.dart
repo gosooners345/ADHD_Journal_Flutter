@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
+import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -33,7 +34,7 @@ class NewComposeRecordsWidget extends StatefulWidget {
 }
 
 class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
-  final _formKey = GlobalKey<_NewComposeRecordsWidgetState>();
+  final _formKey = GlobalKey<FormState>();
 
   // Text Controllers for views to contain data from loading in the record or storing data
   late IconButton nextButton;
@@ -46,8 +47,8 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
   late SwitchListTile successSwitch;
   final PageController _pageController = PageController();
   double? currentPage = 0;
-  double ratingValue = 0.0;
-  bool successState = false;
+  //double ratingValue = 0.0;
+ // bool successState = false;
   bool isChecked = false;
   Text successStateWidget = const Text('');
   String successLabelText = '';
@@ -60,11 +61,75 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
   String ratingInfo = '';
   String symptomCoverText = "Tap here to add Symptoms";
 
+
+  late RecordsBloc _recordsBloc;
   ///For iOS Devices
   List<CameraDescription> cameras=[];
   CameraController? controller;
   bool isCamerainitialized = false;
   String cameraError = '';
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsFlutterBinding.ensureInitialized();
+    customDate = super.widget.record.timeCreated;
+    _pageController.addListener(() {
+      setState(() {
+        currentPage = _pageController.page;
+      });
+    });
+    nextButton = IconButton(
+      tooltip: "Next",
+      onPressed: () {
+        _pageController
+            .nextPage(
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeInExpo)
+            .whenComplete(() =>
+            setState(() {
+              currentPage = _pageController.page!;
+            })
+        );
+      },
+      icon: nextArrowIcon,
+    );
+    prevButton = IconButton(
+      tooltip: "Previous",
+      onPressed: () {
+        _pageController
+            .previousPage(
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeInExpo)
+            .whenComplete(() =>
+            setState(() {
+              currentPage = _pageController.page!;
+            })
+        );
+      },
+      icon: backArrowIcon,
+    );
+    titleController = TextEditingController();
+    contentController = TextEditingController();
+    emotionsController = TextEditingController();
+    sourceController = TextEditingController();
+    tagsController = TextEditingController();
+///Loading existing record code
+    if (super.widget.id == 1) {
+      // Load an existing record
+      loadRecord();
+    } else {
+      ratingInfo = 'Rating :';
+      ratingSliderWidget = Text(ratingInfo);
+      //Success Switch
+      successLabelText = 'Success/Fail';
+      successStateWidget = Text(successLabelText);
+    }
+    _updateRatingUI(super.widget.record.rating);
+    _updateSuccessUI(super.widget.record.success);
+
+  }
+
 
 
   Uint8List convertBytestoList(dynamic bytedata) {
@@ -103,8 +168,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
   }
 
 
-  ///For iOS Camera
-
+  ///Camera Code - Don't Touch
   Future<void> initializeCamera() async{
     setState(() {
       isCamerainitialized = false;
@@ -165,10 +229,6 @@ on CameraException catch (e) {
 
 
   }
-
-
-
-  /// Loads OS native camera app, don't forget to implement IOS required code
   Future<void> openCamera() async {
     try {
       if (Platform.isAndroid) {
@@ -240,62 +300,76 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
     });
   }
 }
-  @override
-  void initState() {
-    super.initState();
-    WidgetsFlutterBinding.ensureInitialized();
-    customDate = super.widget.record.timeCreated;
-    _pageController.addListener(() {
-      setState(() {
-        currentPage = _pageController.page;
-      });
-    });
-    nextButton = IconButton(
-      tooltip: "Next",
-      onPressed: () {
-        _pageController
-            .nextPage(
-            duration: const Duration(milliseconds: 150),
-            curve: Curves.easeInExpo)
-            .whenComplete(() =>
-            setState(() {
-              currentPage = _pageController.page!;
-            })
-        );
-      },
-      icon: nextArrowIcon,
-    );
-    prevButton = IconButton(
-      tooltip: "Previous",
-      onPressed: () {
-        _pageController
-            .previousPage(
-            duration: const Duration(milliseconds: 150),
-            curve: Curves.easeInExpo)
-            .whenComplete(() =>
-            setState(() {
-              currentPage = _pageController.page!;
-            })
-        );
-      },
-      icon: backArrowIcon,
-    );
-    titleController = TextEditingController();
-    contentController = TextEditingController();
-    emotionsController = TextEditingController();
-    sourceController = TextEditingController();
-    tagsController = TextEditingController();
 
-    if (super.widget.id == 1) {
-      // Load an existing record
-      loadRecord();
-    } else {
-      ratingInfo = 'Rating :';
-      ratingSliderWidget = Text(ratingInfo);
-      //Success Switch
-      successLabelText = 'Success/Fail';
-      successStateWidget = Text(successLabelText);
+
+///UI Updating code
+  void _updateRatingUI (double newRating){
+    super.widget.record.rating = newRating;
+   // super.widget.record.rating = value;
+
+    if (super.widget.record.rating == 100.0) {
+      ratingInfo = "Rating : Perfect ";
+    } else if (super.widget.record.rating >= 85.0 &&
+        super.widget.record.rating < 100.0) {
+      ratingInfo = 'Rating : Great';
+    } else if (super.widget.record.rating >= 70.0 &&
+        super.widget.record.rating < 85.0) {
+      ratingInfo = 'Rating : Good';
+    } else if (super.widget.record.rating >= 55.0 &&
+        super.widget.record.rating < 70.0) {
+      ratingInfo = 'Rating : Okay';
+    } else if (super.widget.record.rating >= 40.0 &&
+        super.widget.record.rating < 55.0) {
+      ratingInfo = 'Rating : Could be better';
+    } else if (super.widget.record.rating >= 25.0 &&
+        super.widget.record.rating < 40.0) {
+      ratingInfo = 'Rating : Not going well';
+    } else if (super.widget.record.rating < 25.0) {
+      ratingInfo = 'Rating : It\'s a mess';
     }
+    setState(() {
+      ratingSliderWidget = Text(ratingInfo);
+    });
+  }
+
+  void _updateSuccessUI(bool value) {
+    widget.record.success = value;
+    isChecked = value;
+    if(value){
+      successLabelText = 'Success';
+    } else {
+      successLabelText = 'Fail';
+    }
+    setState(() {
+      successStateWidget = Text(successLabelText);
+    });
+  }
+
+  ///Manages the Pages
+  Widget _buildPageIndicator(ThemeSwap swapper,int pageCount) {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 8.0), // Add some padding
+        child: SmoothPageIndicator(
+          controller: _pageController,
+          count: pageCount,
+          effect: WormEffect(
+            dotHeight: 12,
+            dotWidth: 12,
+            activeDotColor: Color(swapper.isColorSeed), // Use activeDotColor
+            dotColor: Colors.grey, // Specify inactive color
+          ),
+          onDotClicked: (value) {
+            _pageController.animateToPage(
+              value,
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+            );
+          },
+        ),
+      ),
+    );
   }
 
   //The Journal cards themselves
@@ -584,31 +658,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                 Slider(
                     value: super.widget.record.rating,
                     onChanged: (double value) {
-                      setState(() {
-                        super.widget.record.rating = value;
-
-                        if (super.widget.record.rating == 100.0) {
-                          ratingInfo = "Rating : Perfect ";
-                        } else if (super.widget.record.rating >= 85.0 &&
-                            super.widget.record.rating < 100.0) {
-                          ratingInfo = 'Rating : Great';
-                        } else if (super.widget.record.rating >= 70.0 &&
-                            super.widget.record.rating < 85.0) {
-                          ratingInfo = 'Rating : Good';
-                        } else if (super.widget.record.rating >= 55.0 &&
-                            super.widget.record.rating < 70.0) {
-                          ratingInfo = 'Rating : Okay';
-                        } else if (super.widget.record.rating >= 40.0 &&
-                            super.widget.record.rating < 55.0) {
-                          ratingInfo = 'Rating : Could be better';
-                        } else if (super.widget.record.rating >= 25.0 &&
-                            super.widget.record.rating < 40.0) {
-                          ratingInfo = 'Rating : Not going well';
-                        } else if (super.widget.record.rating < 25.0) {
-                          ratingInfo = 'Rating : It\'s a mess';
-                        }
-                        ratingSliderWidget = Text(ratingInfo);
-                      });
+                      _updateRatingUI(value);
                     },
                     max: 100.0,
                     min: 0.0,
@@ -631,7 +681,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                 child: SwitchListTile(
                   value: isChecked,
                   onChanged: (bool value) {
-                    super.widget.record.success = value;
+                   /* super.widget.record.success = value;
                     isChecked = value;
                     setState(() {
                       if (value) {
@@ -641,7 +691,8 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                         successLabelText = 'Fail';
                         successStateWidget = Text(successLabelText);
                       }
-                    });
+                    });*/
+                    _updateSuccessUI(value);
                   },
                   title: successStateWidget,
                   activeColor: Color(swapper.isColorSeed),
@@ -948,6 +999,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
 
   @override
   Widget build(BuildContext context) {
+    final recordsBloc = Provider.of<RecordsBloc>(context, listen: false);
     const pageCount = 11;
     return Consumer<ThemeSwap>(builder: (context, swapper, child) {
       return Scaffold(
@@ -955,7 +1007,9 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
           leading: IconButton(
             icon: backArrowIcon,
             onPressed: () {
-              saveRecord(super.widget.record);
+              recordsBloc.getRecords();
+              Navigator.pop(context);
+              //_saveRecord(super.widget.record);
             },
           ),
           title: Text(super.widget.title),
@@ -986,33 +1040,14 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                   : Align(
                   alignment: AlignmentDirectional.centerEnd,
                   child: nextButton),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: SizedBox(
-                    height: 8,
-                    child: SmoothPageIndicator(
-                      controller: _pageController,
-                      count: pageCount,
-                      effect: WormEffect(
-                        dotHeight: 12,
-                        dotWidth: 12,
-                        dotColor: Color(swapper.isColorSeed),
-                      ),
-                      onDotClicked: (value) {
-                        setState(() {
-                          currentPage = value.toDouble();
-                          _pageController.jumpToPage(value);
-                        });
-                      },
-                    )),
-              ),
+              _buildPageIndicator(swapper, pageCount)
             ],
           ),
         ),
         floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {
+          onPressed: () async {
             try {
-              saveRecord(super.widget.record);
+              await _saveRecord(recordsBloc);
             } on Exception {
               _showAlert(context, "Save failed");
             }
@@ -1024,12 +1059,24 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
     });
   }
 
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    contentController.dispose();
+    emotionsController.dispose();
+    sourceController.dispose();
+    tagsController.dispose();
+    _pageController.dispose();
+    controller?.dispose(); // Dispose camera controller if initialized
+    super.dispose();
+  }
   void addRecord() async {
-    recordsBloc.addRecord(super.widget.record);
+    _recordsBloc.addRecord(super.widget.record);
   }
 
   void updateRecord() async {
-    recordsBloc.updateRecord(super.widget.record);
+    _recordsBloc.updateRecord(super.widget.record);
   }
 
   quickTimer() async {
@@ -1040,24 +1087,42 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
   updateTimer() async {
     return Timer(const Duration(milliseconds: 2), updateRecord);
   }
-
   ///Saves the record in the database
-  void saveRecord(Records record) async {
-    record.timeUpdated = DateTime.now();
-    record.media = pictureBytes;
-    if (customDate != record.timeCreated) {
-      record.timeCreated = customDate;
+  Future<void> _saveRecord(RecordsBloc recordsBloc) async {
+    super.widget.record.timeUpdated = DateTime.now();
+    if (customDate != super.widget.record.timeCreated) {
+      super.widget.record.timeCreated = customDate;
     }
-    if (super.widget.id == 0) {
-      quickTimer();
-    } else {
-      updateTimer();
-    }
+    super.widget.record.media = pictureBytes;
+    super.widget.record.title = titleController.text;
+    super.widget.record.content = contentController.text;
+    super.widget.record.emotions = emotionsController.text;
+    super.widget.record.sources = sourceController.text;
+    super.widget.record.tags = tagsController.text;
+   try{
+     if (super.widget.id == 0) {
+       await recordsBloc.addRecord(super.widget.record);
+       //addRecord();
+        //quickTimer();
+     } else {
+       await recordsBloc.updateRecord(super.widget.record);
+        updateTimer();
+     }
 
-    if (kDebugMode) {
-      print(listSize);
-    }
-    Navigator.pop(context, super.widget.record);
+     if(mounted){
+       Navigator.pop(context, super.widget.record);
+     }
+   }
+
+   catch(e){
+     if(mounted){
+       _showAlert(context, "Save failed");
+       Navigator.pop(context);
+     }
+   }
+
+
+
   }
 
   //Loads an already existing record in the database

@@ -155,3 +155,5 @@ void showAlert(BuildContext context, String title) {
     ),
   );}
 
+SizedBox space = const SizedBox(height: 16);
+SizedBox space2 = const SizedBox(height: 8);
