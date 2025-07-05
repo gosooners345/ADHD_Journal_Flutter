@@ -15,6 +15,8 @@ import '../project_resources/network_connectivity_checker.dart';
 import '../backup_providers/google_drive_backup_class.dart';
 import 'login_screen_file.dart';
 
+// Splash Screen Class for application. This page will need examined for performance improvement potential
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
@@ -124,6 +126,7 @@ class _SplashScreenState extends State<SplashScreen> {
           "You have backup and sync enabled! Checking for new files";
       appStatus.value = "Signing into Google Drive!";
       googleDrive = GoogleDrive();
+      // Check to see if the user's Google Drive is active. and hold if sign-in is required.
       googleDrive.client = await Future.sync(() => googleDrive.getHttpClient());
 
       readyButton.boolSink.add(true);
@@ -184,7 +187,8 @@ class _SplashScreenState extends State<SplashScreen> {
     docsLocation = path.join(docDirectory, prefsName);
     keyLocation = docDirectory;
   }
-
+/// This method is responsible for checking the status of files and age of data on both sides.
+  // It is a mess.
   Future<void> checkForAllFiles(String callBack) async {
     //Check for DB on device
     var checkDB = File(dbLocation);
@@ -280,7 +284,7 @@ class _SplashScreenState extends State<SplashScreen> {
               break;
           }
 
-          /*checkFileAge();*/
+
         } else {
           if (checkPrivateKeyOnline == false || checkPublicKeyOnline == false) {
             googleIsDoingSomething(true);
@@ -455,7 +459,6 @@ class _SplashScreenState extends State<SplashScreen> {
       if (!dbFile.existsSync() || !fileCheckAge) {
         readyButton.boolSink.add(true);
         await Future.sync(() => restoreDBFiles().whenComplete(() => {
-
               appStatus.value = "Your Journal is synced on device now",
               readyButton.boolSink.add(false)
             }));
@@ -494,7 +497,9 @@ class _SplashScreenState extends State<SplashScreen> {
       readyButton.boolSink.add(true);
       googleDrive.deleteOutdatedBackups(databaseName);
       googleDrive.uploadFileToGoogleDrive(File(dbLocation));
+      if(File("$dbLocation-wal").existsSync())
       googleDrive.uploadFileToGoogleDrive(File("$dbLocation-wal"));
+      if(File("$dbLocation-shm").existsSync())
       googleDrive.uploadFileToGoogleDrive(File("$dbLocation-shm"));
       await Future.delayed(
           const Duration(seconds: 1), () => readyButton.boolSink.add(false));

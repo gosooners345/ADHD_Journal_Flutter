@@ -9,7 +9,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../project_resources/project_colors.dart';
 
 class HelpfulLinksWidget extends StatelessWidget {
-  //final Divider Divider(
 
   const HelpfulLinksWidget({Key? key}) : super(key: key);
   @override

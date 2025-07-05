@@ -17,7 +17,9 @@ import 'package:adhd_journal_flutter/backup_utils_package/preference_backup_clas
 import '../main.dart';
 import 'dart:io';
 
-/// Required to open the application , simple login form to start
+/// Required to open the application , simple login form to start. The performance of this screen can be examined to test for improvements.
+/// The second point of failure in the bug that results in two journals being uploaded simply because it was opened. If Google Drive permits SHA256 checks, this may allow us to validate if the files are the same.
+///
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({

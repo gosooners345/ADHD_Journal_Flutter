@@ -29,7 +29,6 @@ import 'package:permission_handler/permission_handler.dart';
 
 
 
-//List<Records> recordHolder = [];
 int id = 0;
 
 Future<void> main() async {
@@ -49,9 +48,6 @@ Future<void> main() async {
   );
 }
 
-//late RecordsBloc recordsBloc;
-
-//int listSize = 0;
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -70,7 +66,7 @@ class MyAppState extends State<MyApp> {
     super.initState();
   }
 
-  // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     final swapper = Provider.of<ThemeSwap>(context);
@@ -108,7 +104,7 @@ class MyAppState extends State<MyApp> {
         '/tutorials': (context) => TutorialHelpScreen(),
         '/dashboardhelp': (context) => DashboardHelp(),
         '/searchhelp': (context) => SortHelp(),
-        '/resources': (context) => HelpfulLinksWidget(),
+        //'/resources': (context) => HelpfulLinksWidget(),
         '/backuphelp': (context) => BackupAndSyncdHelp(),
       },
     );
