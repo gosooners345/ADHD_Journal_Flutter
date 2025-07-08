@@ -34,7 +34,7 @@ class NewComposeRecordsWidget extends StatefulWidget {
 }
 
 class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
-  final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<_NewComposeRecordsWidgetState>();
 
   // Text Controllers for views to contain data from loading in the record or storing data
   late IconButton nextButton;
@@ -349,7 +349,8 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
   Widget _buildPageIndicator(ThemeSwap swapper,int pageCount) {
     return Align(
       alignment: Alignment.bottomCenter,
-      child: Padding(
+      child:
+      Padding(
         padding: const EdgeInsets.only(bottom: 8.0), // Add some padding
         child: SmoothPageIndicator(
           controller: _pageController,
@@ -1023,15 +1024,31 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
         ),
         key: _formKey,
         body: SafeArea(
-          minimum: const EdgeInsets.fromLTRB(5, 5, 5, 80),
+          minimum: const EdgeInsets.fromLTRB(15, 15, 15, 80),
           // Code to examine for ratings dashboard examination
-          child: Stack(fit:StackFit.expand,
+          child: Stack(//fit:StackFit.expand,
             children: [
               currentPage! == 0
                   ? const Text("")
                   : Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: prevButton),
+                  alignment: Alignment.centerLeft,
+                  child: InkWell(
+                    onTap: (){
+                      _pageController
+                          .previousPage(
+                          duration: const Duration(milliseconds: 150),
+                          curve: Curves.easeInExpo)
+                          .whenComplete(() =>
+                          setState(() {
+                            currentPage = _pageController.page!;
+                          })
+                      );
+
+                    },
+                    child: Container(alignment: Alignment.center,width: 30, height: double.infinity,
+                      child: backArrowIcon,),
+                  )
+        ),
               Padding(
                   padding: const EdgeInsets.fromLTRB(35, 8, 35, 50),
                   child: _buildJournalCards(swapper)),
@@ -1039,7 +1056,23 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                   ? const Text("")
                   : Align(
                   alignment: AlignmentDirectional.centerEnd,
-                  child: nextButton),
+                  child: InkWell(
+                    onTap: (){
+                      _pageController
+                          .nextPage(
+                          duration: const Duration(milliseconds: 100),
+                          curve: Curves.easeIn).whenComplete(() => setState(() {
+                        currentPage = _pageController.page!;
+                      }));
+                      },
+                  child: Container(alignment: Alignment.center,width: 30, height: double.infinity,
+                    child: nextArrowIcon,),
+
+                  )
+                //nextButton
+
+
+              ),
               _buildPageIndicator(swapper, pageCount)
             ],
           ),
