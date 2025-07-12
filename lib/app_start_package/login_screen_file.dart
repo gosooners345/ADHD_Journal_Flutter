@@ -373,7 +373,7 @@ print("Checking google drive for updates");
           async {
             await checkFilesExistV2(dbLocation, databaseName, "Journal");
             googleIsDoingSomething(false);
-            googleIsDoingSomething(true);
+           // googleIsDoingSomething(true);
             await checkFilesExistV2(docsLocation, prefsName, "Preferences").whenComplete(() {
               googleIsDoingSomething(false);
             });});//3x
