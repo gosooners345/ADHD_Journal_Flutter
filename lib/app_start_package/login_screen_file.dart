@@ -4,17 +4,18 @@ import 'dart:convert';
 import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
 import 'package:flutter/foundation.dart';
-import 'package:googleapis/drive/v3.dart' as ga;
+//import 'package:googleapis/drive/v3.dart' as ga;
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
+import '../backup_providers/google_drive_backup_class.dart';
 import '../backup_utils_package/crypto_utils.dart';
+import '../project_resources/file_manager_helper.dart';
 import '../project_resources/project_colors.dart';
 import 'splash_screendart.dart';
 import 'onboarding_widget_class.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:adhd_journal_flutter/backup_utils_package/preference_backup_class.dart';
-import '../main.dart';
 import 'dart:io';
 
 /// Required to open the application , simple login form to start. The performance of this screen can be examined to test for improvements.
@@ -92,22 +93,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       actions: <Widget>[
                         TextButton(
                           child: const Text("Yes"),
-                          onPressed: () async {
+                          onPressed: () {
                             if (connected == true) {
-                              googleDrive.client = await Future.sync(
-                                  () => googleDrive.getHttpClient());
-                              googleIsDoingSomething(true);
-                              //Check for DB on device ,
-                              await Future.sync(() => checkForAllFiles("Drive"))
-                                  .whenComplete(() => {
-                                        resetLoginFieldState(),
-                                        setState(() {
-                                          Future.sync(
-                                              () => getSyncStateStatus());
-                                          Navigator.of(context).pop();
-                                        }),
+                              //insert google drive method here to work for the app.
+                              logIntoGoogle();
 
-                                      });
+                              //drive. = await  googleDrive.getHttpClient();
+                            //  googleIsDoingSomething(true);
+                              //Check for DB on device ,
 
                             } else {
                               showMessage(connection_Error_Message_String);
@@ -128,14 +121,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   });
             } else {
               if (connected == true) {
-                googleDrive.client =
-                    await Future.sync(() => googleDrive.getHttpClient());
-                await Future.sync(() => checkForAllFiles("Drive"))
-                    .whenComplete(() => {
-                          resetLoginFieldState(),
+               googleDrive.initVariables();
+                /*googleDrive.client =
+                    await Future.sync(() => googleDrive.getHttpClient());*/
+              //  await Future.sync(() => checkForAllFiles("Drive"))
+              await checkGoogleDrive()
+                    .whenComplete(() {
+                          resetLoginFieldState();
                           setState(() {
                             Future.sync(() => getSyncStateStatus());
-                          })
+                          });
                         });
               } else {
                 showMessage(connection_Error_Message_String);
@@ -158,9 +153,25 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  void logIntoGoogle() async{
+    googleDrive=GoogleDrive();
+    googleDrive.initVariables();
+    await checkGoogleDrive()
+        .whenComplete(() {
+      resetLoginFieldState();
+      setState(() async{
+        await getSyncStateStatus();
+        if(mounted) {
+          Navigator.of(context).pop();
+        }
+      });
+
+    });
+
+  }
   //Find a way to migrate most of the code to a single method outside of this class. Probably put it in Google Drive?
 
-  Future<void> checkFileAge() async {
+/*  Future<void> checkFileAge() async {
     isThisReturning = false;
     if (kDebugMode) {
       print("Login Check File Age Called");
@@ -253,9 +264,231 @@ class _LoginScreenState extends State<LoginScreen> {
         googleIsDoingSomething(false);
       }
     }
+  }*/
+  Future<bool> checkPreferences() async {
+    File preferencesFile = File(docsLocation);
+    String decipheredData = CryptoUtils.rsaDecrypt(preferencesFile.readAsStringSync(
+        encoding: Encoding.getByName("utf-8")!),preferenceBackupAndEncrypt.privKey!);
+
+    String dataForEncryption =
+        '$userPassword,$dbPassword,$passwordHint,${passwordEnabled
+        .toString()},$greeting,$colorSeed';
+    googleIsDoingSomething(true);
+    if (dataForEncryption == decipheredData) {
+      setState(() {
+        showMessage( "Preferences are up to date");
+      });
+      return true;
+    }
+    else {
+      setState(() {
+        showMessage(
+        "Preferences are out of date, we will need to update the local version.");
+      });
+      return false;
+    }
+  }
+  Future<void> checkFilesExistV2(String localFileName,String remoteFileName, String fileType)async{
+    var fileChecker = ManagedFile(localFileName,remoteFileName);
+    //Check for existence of files and age.
+    print("Checking $fileType");
+    await fileChecker.checkLocalExistence();
+    await fileChecker.checkRemoteExistence(googleDrive);
+    await fileChecker.checkRemoteIsNewer(googleDrive);
+    //Check file existence first locally then remotely. If file exists in cloud, but not on device, then download it.
+    //Done
+    if(!fileChecker.localExists){
+      //Check if file exists on cloud.
+      if(!fileChecker.remoteExists){
+        if(kDebugMode) {
+          print("File does not exist on device or cloud");
+        }
+
+        showMessage( "$fileType does not exist on device or cloud");
+        showMessage( "You will need to open the journal to create the file");
+
+
+      } //Download if exists in cloud.
+      else{
+        if(kDebugMode){
+          print("File exists on cloud but not on device");
+        }
+
+        showMessage( "$fileType exists on cloud but not on device");
+        showMessage( "Downloading $fileType now");
+
+        //Use Switch Case statement to handle file delivery
+        switch (fileType) {
+          case "Journal":
+            await restoreDBFiles();
+            break;
+          case "Preferences":
+            await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive).whenComplete((){
+              updateValues();
+            });
+            //Process file.
+            break;
+          case "Keys":
+            await preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
+            break;
+        }
+      }
+    }
+    //If cloud copy doesn't exist, then we can upload it.
+    if(!fileChecker.remoteExists && fileChecker.localExists){
+      if(kDebugMode){
+        print("$fileType exists on device but does not exist on device or cloud, uploading to Drive");}
+      setState(() {
+        showMessage( "$fileType does not exist on device or cloud");
+      });
+      //use switch case statement to handle file delivery, uploading here
+      switch (fileType) {
+        case "Journal":
+          await uploadDBFiles();
+          break;
+        case "Preferences":
+          String dataForEncryption =
+              '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
+          googleIsDoingSomething(true);
+          await preferenceBackupAndEncrypt.encryptData(dataForEncryption, googleDrive).whenComplete(() {
+            setState(() {
+              showMessage( "Preferences Uploaded");
+            });
+            googleIsDoingSomething(false);});
+
+          break;
+        case "Keys":
+          await preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive).whenComplete(() {
+            setState(() {
+              showMessage( "Encryption keys Uploaded");
+            });
+            googleIsDoingSomething(false);
+          });
+          break;
+      }
+    }
+    if(fileChecker.localExists && fileChecker.remoteExists){
+      if(fileChecker.localIsNewer!){
+//In future update, integrate file IDs
+        showMessage( "$fileType exists on device and cloud but is newer on device. Replacing file in cloud with new local copy.");
+        //Use switch case statement to handle file delivery,
+        switch (fileType) {
+        // Future update integrate DB ID to reduce frequency of double uploading
+          case "Journal":
+            await uploadDBFiles();
+            break;
+          case "Preferences":
+            String dataForEncryption =
+                '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
+            googleIsDoingSomething(true);
+            await preferenceBackupAndEncrypt.encryptData(dataForEncryption, googleDrive).whenComplete(() {
+              setState(() {
+                showMessage( "Preferences Uploaded");
+              });
+              googleIsDoingSomething(false);});
+            break;
+          case "Keys":
+            await preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive).whenComplete(() {
+              setState(() {
+                showMessage( "Encryption keys Uploaded");
+              });
+              googleIsDoingSomething(false);
+            });
+            break;
+        }
+      }
+      else{
+        showMessage( "$fileType exists on device and cloud but is newer on cloud");
+        showMessage( "Downloading updated $fileType now");
+        googleIsDoingSomething(true);
+        //Use switch case statement to handle file delivery
+        switch (fileType) {
+          case "Journal":
+            await restoreDBFiles().whenComplete(() {
+              showMessage( "Journal Updated");
+            });
+            break;
+          case "Preferences":
+            await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive).whenComplete(() {
+              showMessage( "Updated preferences downloaded, checking for mismatches");
+            });
+            final isDataSame = await checkPreferences();
+            if(!isDataSame){
+              showMessage( "Preferences are out of date, we will need to update the local version.");
+              googleIsDoingSomething(true);
+              await Future.sync(() => updateValues()).whenComplete(() {
+                showMessage( "Preferences Updated");
+                googleIsDoingSomething(false);
+              });
+            }
+            else{showMessage( "Preferences are up to date");}
+
+            break;
+          case "Keys":
+            await preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive).whenComplete(() {
+              showMessage( "Encryption keys Updated");
+            });
+            break;
+        }
+
+      }
+    }
   }
 
-  Future<void> checkForAllFiles(String callBack) async {
+  Future<void> checkGoogleDrive() async{
+    if (connected == true) {
+      userActiveBackup = prefs.getBool('testBackup') ?? false;
+      print("Backup is turned on: $userActiveBackup");
+    }
+    if (userActiveBackup) {
+
+      //showMessage( "You have backup and sync enabled! Signing into Google Drive!");
+
+      //googleDrive = GoogleDrive();
+      try{
+        //googleDrive.initVariables();
+        if(googleDrive.client == null){
+          throw Exception("Google Drive needs initialized");
+        }
+        print("Intialized google drive variables");
+      }
+      on Exception catch(ex){
+        if(kDebugMode){
+          print(ex);
+        }
+        googleDrive.client = await  googleDrive.getHttpClient();
+        googleDrive.initV2();
+      }
+      googleIsDoingSomething(true);
+      if (googleDrive.client != null) {
+        if (userActiveBackup) {
+
+          print("Checking Keys");
+          await checkFilesExistV2(path.join(keyLocation, privateKeyFileName), privateKeyFileName, "Keys").whenComplete(()
+          async {
+            await checkFilesExistV2(path.join(keyLocation, pubKeyFileName), pubKeyFileName, "Keys");
+            print("Checking Journal");
+            await checkFilesExistV2(dbLocation, databaseName, "Journal");
+            print("Checking Preferences");
+            await checkFilesExistV2(docsLocation, prefsName, "Preferences");});//3x
+
+        }
+      }
+      else {
+        userActiveBackup = false;
+    //    showMessage(
+      //  "To protect your data, you'll need to sign into Google Drive and approve application access to backup your stuff!";
+      }
+    }
+    else {
+      showMessage(
+      "You have backup and sync disabled! You can enable this  "
+          "by hitting Sign into Google Drive! You can disable this feature in Settings ");
+    }
+
+  }
+
+/*  Future<void> checkForAllFiles(String callBack) async {
     if (kDebugMode) {
       print("Check all files called");
     }
@@ -353,9 +586,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       );
                     });
                 break;
-// Trying to get the files to sync to device
+// Trying to get the files to sync to device , use splashscreen approach
               default:
-                checkFileAge();
+                await checkGoogleDrive();
                 break;
             }
           } else if (!checkDB.existsSync() ||
@@ -463,7 +696,7 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       }
     }
-  }
+  }*/
 
   Future<bool> getNetStatus() async {
     if (connected) {
@@ -514,13 +747,19 @@ class _LoginScreenState extends State<LoginScreen> {
       if (isThisReturning == true || Platform.isIOS) {
         // if the app is Running on iOS, the app will run this
         if (Platform.isIOS) {
-          while (googleDrive.client == null) {
+          if (googleDrive.client == null) {
             googleIsDoingSomething(true);
           }
         }
         // This is simply checking all files
         if (googleDrive.client != null) {
-          await Future.sync(() => checkForAllFiles(""));
+          await checkGoogleDrive();
+          //await Future.sync(() => checkForAllFiles(""));
+        }
+        else{
+          googleDrive = GoogleDrive();
+          googleDrive.initVariables();
+          await checkGoogleDrive();
         }
       }
       if (isDataSame == false) {
@@ -933,7 +1172,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () async {
-                    await Future.sync(() => checkForAllFiles(""));
+                   await checkGoogleDrive();
+                    // await Future.sync(() => checkForAllFiles(""));
                   },
                   child: const Text(
                     'Update Files',

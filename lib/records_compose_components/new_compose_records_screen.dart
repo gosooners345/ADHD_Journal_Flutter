@@ -1182,7 +1182,9 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
         successLabelText = 'Fail';
         successStateWidget = Text(successLabelText);
       }
+      // Picture
       pictureBytes = super.widget.record.media;
+      //Custom date stamp
       customDate = super.widget.record.timeCreated;
 
       //Rating slider widget info

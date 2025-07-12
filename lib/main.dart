@@ -87,8 +87,8 @@ class MyAppState extends State<MyApp> {
       themeAnimationCurve: Curves.fastEaseInToSlowEaseOut,
       initialRoute: '/',
       routes: {
-        '/': (context) => SplashScreen(),
-        '/notification': (context) => SplashScreen(),
+        '/': (context) => SplashScreen(swapper: swapper),
+        '/notification': (context) => SplashScreen(swapper: swapper),
         '/onboarding': (context) => OnBoardingWidget(),
         '/savePassword': (context) => LoginScreen(
               swapper: swapper,

@@ -521,10 +521,10 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                 ElevatedButton(
                   onPressed: () async {
                     if (savedPasswordValue != '') {
-                      await Future.sync(() => storePrefs()).whenComplete(() => {
-                            dbPassword = savedPasswordValue,
-                            userPassword = savedPasswordValue,
-                            Navigator.pushReplacementNamed(context, '/login')
+                      await Future.sync(() => storePrefs()).whenComplete(() {
+                            dbPassword = savedPasswordValue;
+                            userPassword = savedPasswordValue;
+                            Navigator.pushReplacementNamed(context, '/login');
                           });
                     } else {
                       try {

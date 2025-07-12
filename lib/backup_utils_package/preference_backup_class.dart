@@ -39,7 +39,7 @@ class PreferenceBackupAndEncrypt {
   }
 
   //Assign RSA Keys
-  void assignRSAKeys(GoogleDrive drive) async {
+  Future<void> assignRSAKeys(GoogleDrive drive) async {
     String privKeyFilePath = join(keyLocation, privateKeyFileName);
     io.File privateKeyStorage = io.File(privKeyFilePath);
     String pubKeyFilePath = join(keyLocation, pubKeyFileName);
@@ -56,7 +56,7 @@ class PreferenceBackupAndEncrypt {
       if (checkKeysOnline && checkPrivKey) {
         downloadRSAKeys(drive);
       } else {
-        encryptRsaKeysAndUpload(drive);
+      await  encryptRsaKeysAndUpload(drive);
       }
     }
   }
@@ -72,7 +72,6 @@ class PreferenceBackupAndEncrypt {
     }
   }
 
-  //Download latest Preferences file
   Future<void> downloadPrefsCSVFile(GoogleDrive drive) async {
     try {
       await Future.sync(() => drive.syncBackupFiles(prefsName));
@@ -107,7 +106,7 @@ class PreferenceBackupAndEncrypt {
       }
     }
   }
-
+///Generate new RSA Keys for encryption handling
   void generateRSAKeys() {
     io.File privateKeyStorage = io.File(join(keyLocation, privateKeyFileName));
     io.File publicKeyStorage = io.File(join(keyLocation, pubKeyFileName));
@@ -134,7 +133,7 @@ class PreferenceBackupAndEncrypt {
   }
 
   //Encrypt RSA Keys and assign the values to the variables
-  void encryptRsaKeysAndUpload(GoogleDrive drive) async {
+ Future<void> encryptRsaKeysAndUpload(GoogleDrive drive) async {
     try {
       io.File privateKeyStorage =
           io.File(join(keyLocation, privateKeyFileName));
@@ -162,7 +161,6 @@ class PreferenceBackupAndEncrypt {
     }
   }
 
-// We will need to Add in OneDrive and iCloud integration here
   //Replace RSA Keys with new keys
   void replaceRsaKeys(GoogleDrive drive) async {
     bool checkPubKey = await drive.checkForFile(pubKeyFileName);
@@ -175,11 +173,11 @@ class PreferenceBackupAndEncrypt {
   }
 
 // Encrypt the Preferences file for secure uploading
-  void encryptData(String data, GoogleDrive drive) {
+  Future<void> encryptData(String data, GoogleDrive drive) async{
     assignRSAKeys(drive);
     var testBytes = CryptoUtils.rsaEncrypt(data, pubKey!);
     print("data encrypted, uploading now");
-    uploadPrefsCSVFile(testBytes, drive);
+   await  uploadPrefsCSVFile(testBytes, drive);
     print("Preferences uploaded");
   }
 
