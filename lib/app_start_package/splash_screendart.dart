@@ -399,16 +399,26 @@ if(newLoginPW != userPassword || newDBPW != dbPassword){
        if (userActiveBackup) {
    ///See if we can unify this code to only execute once.
      ///    if (Platform.isAndroid) {
-
+         var pubKeyLocation = path.join(keyLocation, pubKeyFileName);
+var docLIst=[pubKeyLocation,dbLocation,docsLocation];
          print("Checking Keys");
-         await checkFilesExistV2(path.join(keyLocation, privateKeyFileName), privateKeyFileName, "Keys").whenComplete(()
+         // Make this a for loop statement and initialize an array for the file locations.
+         for(int i=0;i<3;i++){
+         await checkFilesExistV2(docLIst[i], files_list_names[i], files_list_types[i]).onError((error, stackTrace) {
+           print("Tis but a scratch");
+         }).whenComplete(() {
+           print(files_list_types[i] + "check complete.");
+         });
+          }
+
+/*         await checkFilesExistV2(path.join(keyLocation, privateKeyFileName), privateKeyFileName, "Keys").whenComplete(()
 async {
 
          await checkFilesExistV2(path.join(keyLocation, pubKeyFileName), pubKeyFileName, "Keys");
          print("Checking Journal");
          await checkFilesExistV2(dbLocation, databaseName, "Journal");
 print("Checking Preferences");
-         await checkFilesExistV2(docsLocation, prefsName, "Preferences");});//3x
+         await checkFilesExistV2(docsLocation, prefsName, "Preferences");});//3x*/
 
          }
        }

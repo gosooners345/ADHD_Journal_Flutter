@@ -148,7 +148,8 @@ const String backup_and_sync_2nd_paragraph_string =
 const String link_how_to_ADHD_YT = 'https://www.youtube.com/c/HowtoADHD';
 const String link_chadd_website = 'https://www.chadd.org';
 const String link_additudemag_website = 'https://www.additudemag.com/';
-
+final files_list_types=['Keys','Journal','Preferences'];
+final files_list_names=[privateKeyFileName,databaseName,prefsName];
 final anger_emotion_cluster = [
   'angry',
   'anger',

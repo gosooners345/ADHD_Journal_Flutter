@@ -364,27 +364,51 @@ if(appfolderID==null){
  // return false;
 }
     String query = "name contains '$fileName' and '$appfolderID' in parents and trashed = false";
-
+try{
+  var queryDrive = await drive.files.list(
+    q: query,
+    $fields: "files(id, name,createdTime,modifiedTime)",
+  );
+  var files = queryDrive.files;
+  if(files!.isEmpty){
+  throw Exception("File not found");
+  } else{
+    return true;
+  }
+} on Exception catch (ex) {
+  if (kDebugMode) {
+    print(ex);
+  }
+  Future.delayed(const Duration(seconds: 1), () {
+    print("Delaying for response from Google Drive");
+  });
+  var queryDrive = await drive.files.list(
+    q: query,
+    $fields: "files(id, name,createdTime,modifiedTime)",
+  );
+  var files = queryDrive.files;
+  if (files!.isEmpty) {
     var queryDrive = await drive.files.list(
       q: query,
       $fields: "files(id, name,createdTime,modifiedTime)",
     );
-    var files = queryDrive.files;
-   return files!.isNotEmpty ? true : false;
-
-
+    files = queryDrive.files;
+    print("${files!.length} File(s) found");
     if (files!.isEmpty) {
-      var queryDrive = await drive.files.list(
-        q: "name contains '$driveStoreDirectory/$fileName'",
-        $fields: "files(id, name,createdTime,modifiedTime)",
-      );
-      files = queryDrive.files;
-    }
-    if (files!.isNotEmpty) {
-      return true;
-    } else {
       return false;
+    } else {
+      return true;
     }
+  }
+  else {
+    return true;
+  }
+}
+
+
+
+
+
   }
 // Delete only if the file in the cloud is older and ensure the device's DB is newer before upload.
   deleteOutdatedBackups(String fileName) async {
