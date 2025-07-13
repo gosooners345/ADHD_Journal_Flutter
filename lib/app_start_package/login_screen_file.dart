@@ -67,13 +67,13 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     getNetStatus();
     loadStateStuff();
-    if(googleDrive.client==null){
+   /* if(googleDrive.client==null){
       print("Login Screen sign in called");
       signInToGoogle();
     } else{
       //checkGoogleDrive();
 //print("Checking google drive for updates");
-    }
+    }*/
     // Migrate check code to separate class and have it called from either place IOS : Login, Android: Splashscreen
     if (passwordHint == '') {
       hintText = 'Enter secure password';
@@ -124,13 +124,14 @@ class _LoginScreenState extends State<LoginScreen> {
             } else {
               if (connected == true) {
                googleDrive.initVariables();
-
               await checkGoogleDrive()
                     .whenComplete(() {
                           resetLoginFieldState();
                           setState(() {
                             Future.sync(() => getSyncStateStatus());
                           });
+                          if(mounted)
+                          Navigator.of(context).pop();
                         });
               } else {
                 showMessage(connection_Error_Message_String);
@@ -154,25 +155,24 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void signInToGoogle() async{
- //   googleDrive=GoogleDrive();
     googleDrive.initVariables();
     if(fileCheckCompleted==false){
     await checkDataFiles();
-    }//checkGoogleDrive();
+    }
 
   }
 
   void logIntoGoogle() async{
    // googleDrive=GoogleDrive();
     googleDrive.initVariables();
-    await checkGoogleDrive()
+    await checkDataFiles()
         .whenComplete(() {
       resetLoginFieldState();
       setState(() async{
         await getSyncStateStatus();
-        if(mounted) {
+       /* if(mounted) {
           Navigator.of(context).pop();
-        }
+        }*/
       });
 
     });
@@ -442,7 +442,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       resetLoginFieldState();
     });
-    if(fileCheckCompleted==false){
+    if(fileCheckCompleted==false || isThisReturning==true){
     await checkDataFiles;
     }
     googleIsDoingSomething(false);
