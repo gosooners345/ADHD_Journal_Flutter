@@ -347,7 +347,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> checkGoogleDrive() async{
-  //if(userActiveBackup==null)
+
 
     if (connected == true) {
       userActiveBackup = prefs.getBool('testBackup') ?? false;
@@ -369,14 +369,25 @@ class _LoginScreenState extends State<LoginScreen> {
       }
       if (googleDrive.client != null) {
         if (userActiveBackup) {
-          await checkFilesExistV2(path.join(keyLocation, privateKeyFileName), privateKeyFileName, "Keys").whenComplete(()
+          var pubKeyLocation = path.join(keyLocation, pubKeyFileName);
+          var docLIst=[pubKeyLocation,dbLocation,docsLocation];
+          print("Checking Keys");
+          // Make this a for loop statement and initialize an array for the file locations.
+          for(int i=0;i<3;i++){
+            await checkFilesExistV2(docLIst[i], files_list_names[i], files_list_types[i]).onError((error, stackTrace) {
+              print("Tis but a scratch");
+            }).whenComplete(() {
+              print(files_list_types[i] + "check complete.");
+            });
+          }
+          /*  await checkFilesExistV2(path.join(keyLocation, privateKeyFileName), privateKeyFileName, "Keys").whenComplete(()
           async {
             await checkFilesExistV2(dbLocation, databaseName, "Journal");
             googleIsDoingSomething(false);
            // googleIsDoingSomething(true);
             await checkFilesExistV2(docsLocation, prefsName, "Preferences").whenComplete(() {
               googleIsDoingSomething(false);
-            });});//3x
+            });});*///3x
 
         }
       }

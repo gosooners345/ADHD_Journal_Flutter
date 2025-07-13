@@ -121,16 +121,6 @@ await initPrefs().whenComplete(()async {
     //await checkGoogleDrive();
   //}).whenComplete(()async {
     Future.delayed(Duration(seconds: 10), route);//});
-
-   //await loadPreferences();
-  //await checkPreferences();
-//  await checkGoogleDrive();
-    //getPackageInfo();
-    // see if these can be futures and then chained in await statements to hold up UI for all transactions to complete.
-    //for IOS
-
-
-
   }
  Future<void> initPrefs() async{
     appStatus.value = "Loading preferences now";
@@ -148,12 +138,9 @@ await initPrefs().whenComplete(()async {
       userActiveBackup = prefs.getBool('testBackup') ?? false;
       print("Backup is turned on: $userActiveBackup");
     }
-    //await Future.delayed(Duration(seconds: 2));
-   // do {
     try{
       print("SplashScreen Sign in called");
       googleDrive.initVariables();
-   //   print("Intialized google drive variables");
     }
     on Exception catch(ex){
       if(kDebugMode){
@@ -383,17 +370,7 @@ if(newLoginPW != userPassword || newDBPW != dbPassword){
 
        appStatus.value = "You have backup and sync enabled! Signing into Google Drive!";
 
-    /* try{
-       googleDrive.initVariables();
-       print("Intialized google drive variables");
-     }
-     on Exception catch(ex){
-       if(kDebugMode){
-         print(ex);
-       }
-       googleDrive.client = await  googleDrive.getHttpClient();
-       googleDrive.initV2();
-     }*/
+
      googleIsDoingSomething(true);
      if (googleDrive.client != null) {
        if (userActiveBackup) {
