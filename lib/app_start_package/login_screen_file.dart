@@ -67,13 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     getNetStatus();
     loadStateStuff();
-   /* if(googleDrive.client==null){
-      print("Login Screen sign in called");
-      signInToGoogle();
-    } else{
-      //checkGoogleDrive();
-//print("Checking google drive for updates");
-    }*/
+
     // Migrate check code to separate class and have it called from either place IOS : Login, Android: Splashscreen
     if (passwordHint == '') {
       hintText = 'Enter secure password';
@@ -443,7 +437,7 @@ class _LoginScreenState extends State<LoginScreen> {
       resetLoginFieldState();
     });
     if(fileCheckCompleted==false || isThisReturning==true){
-    await checkDataFiles;
+    await checkDataFiles();
     }
     googleIsDoingSomething(false);
     fileCheckCompleted = false;
