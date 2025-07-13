@@ -65,7 +65,8 @@ class _SplashScreenState extends State<SplashScreen> {
           Icon(Icons.arrow_back, color: AppColors.mainAppColor);
       onboardingForwardIcon =
           Icon(Icons.arrow_forward, color: AppColors.mainAppColor);
-    } else {
+    }
+    else{
       //redirectOneDriveURL = oneDriveiOSRedirect;
       backArrowIcon = const Icon(Icons.arrow_back_ios);
       nextArrowIcon = const Icon(Icons.arrow_forward_ios);
@@ -80,19 +81,46 @@ class _SplashScreenState extends State<SplashScreen> {
         "Welcome to ADHD Journal! We're getting your stuff ready!";
 
     getNetStatus();
-     initPrefs();
     finishTimer();
   }
   finishTimer() async {
-    //var duration = const Duration(seconds: 10);
     setState(() {
       appStatus.value = "Getting Build and App Version info";
     });
 
-  await initPrefs().whenComplete(() async { await loadPreferences();await getPackageInfo(); print("done");}).whenComplete(() async {
-    print("Checking Google Drive");
-    await checkGoogleDrive();
-  }).whenComplete(()async {Future.delayed(Duration(seconds: 10), route);});
+await initPrefs().whenComplete(()async {
+
+      if(googleDrive.client==null){
+        googleDrive.initVariables();
+        if(googleDrive.client!=null){
+          print("Google Drive client is not null");
+          //break;
+        }
+        else{
+          print("Google Drive client is null");
+        }
+      }
+      await getPackageInfo().whenComplete(() =>
+          loadPreferences().whenComplete(() {
+            checkGoogleDrive();
+          }));
+
+      if(kDebugMode){
+        if(fileCheckCompleted==true){
+          print("File check completed");
+        }else{
+          print("File check not completed");
+  //      }
+      }
+    }});
+    //await loadPreferences();
+
+    //print("done");
+  //}).whenComplete(()async {
+   // print("Checking Google Drive");
+    //await checkGoogleDrive();
+  //}).whenComplete(()async {
+    Future.delayed(Duration(seconds: 10), route);//});
 
    //await loadPreferences();
   //await checkPreferences();
@@ -104,7 +132,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
 
   }
- Future< void> initPrefs() async{
+ Future<void> initPrefs() async{
     appStatus.value = "Loading preferences now";
     prefs = await SharedPreferences.getInstance();
    try{
@@ -115,6 +143,37 @@ class _SplashScreenState extends State<SplashScreen> {
       print("prefs null currently");
       encryptedSharedPrefs = EncryptedSharedPreferences();
     }
+    //Testing google sign in
+    if (connected == true) {
+      userActiveBackup = prefs.getBool('testBackup') ?? false;
+      print("Backup is turned on: $userActiveBackup");
+    }
+    //await Future.delayed(Duration(seconds: 2));
+   // do {
+    try{
+      print("SplashScreen Sign in called");
+      googleDrive.initVariables();
+   //   print("Intialized google drive variables");
+    }
+    on Exception catch(ex){
+      if(kDebugMode){
+        print(ex);
+      }
+      print("Backup google sign in called");
+      googleDrive.client = await  googleDrive.getHttpClient();
+      googleDrive.initV2();
+    }
+    while(googleDrive.client==null){
+      await Future.delayed(const Duration(seconds:2),(){
+        print("Delay loading for sign in to complete");
+      });
+if(googleDrive.client!=null){
+  break;
+}
+    }
+
+
+
    }on Exception catch(ex){
      print(ex);
    }
@@ -236,7 +295,7 @@ class _SplashScreenState extends State<SplashScreen> {
     }
   }
 
-
+//Missing Color seed prefs.
   Future<void> updatePreferences() async{
     File preferencesFile = File(docsLocation);
     var tempHint="";
@@ -316,16 +375,15 @@ if(newLoginPW != userPassword || newDBPW != dbPassword){
   }
   //Call before doing anything with update preferences.
  Future<void> checkGoogleDrive() async{
-   if (connected == true) {
+   /*if (connected == true) {
      userActiveBackup = prefs.getBool('testBackup') ?? false;
      print("Backup is turned on: $userActiveBackup");
-   }
+   }*/
    if (userActiveBackup) {
 
        appStatus.value = "You have backup and sync enabled! Signing into Google Drive!";
 
-     googleDrive = GoogleDrive();
-     try{
+    /* try{
        googleDrive.initVariables();
        print("Intialized google drive variables");
      }
@@ -335,13 +393,13 @@ if(newLoginPW != userPassword || newDBPW != dbPassword){
        }
        googleDrive.client = await  googleDrive.getHttpClient();
        googleDrive.initV2();
-     }
+     }*/
      googleIsDoingSomething(true);
      if (googleDrive.client != null) {
        if (userActiveBackup) {
    ///See if we can unify this code to only execute once.
      ///    if (Platform.isAndroid) {
-       //    checkForAllFiles("");
+
          print("Checking Keys");
          await checkFilesExistV2(path.join(keyLocation, privateKeyFileName), privateKeyFileName, "Keys").whenComplete(()
 async {
@@ -434,7 +492,6 @@ print("Checking Preferences");
     if(kDebugMode) {
       print("File does not exist on device or cloud");
     }
-
         appStatus.value = "$fileType does not exist on device or cloud";
         appStatus.value = "You will need to open the journal to create the file";
 
@@ -464,6 +521,7 @@ print("Checking Preferences");
         break;
     }
   }
+
 }
     //If cloud copy doesn't exist, then we can upload it.
 if(!fileChecker.remoteExists && fileChecker.localExists){
@@ -565,6 +623,7 @@ googleIsDoingSomething(false);
 
   }
 }
+fileCheckCompleted = true;
 }
 
 
@@ -691,3 +750,4 @@ late String redirectOneDriveURL;
 NetworkConnectivity networkConnectivityChecker = NetworkConnectivity.instance;
 
 bool connected = false;
+bool fileCheckCompleted= false;

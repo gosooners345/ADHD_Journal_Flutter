@@ -69,7 +69,8 @@ class GoogleDrive {
     firstUse = true;
     prefs.setBool("authenticated", firstUse);
     account = await googleSignIn.signIn();
-    var authenticateClient = googleSignIn.authenticatedClient();
+
+    var authenticateClient = await googleSignIn.authenticatedClient();
     return authenticateClient;
   }
 

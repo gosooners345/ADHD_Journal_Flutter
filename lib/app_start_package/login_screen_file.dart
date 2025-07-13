@@ -67,11 +67,12 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     getNetStatus();
     loadStateStuff();
-    if(googleDrive==null){
+    if(googleDrive.client==null){
+      print("Login Screen sign in called");
       signInToGoogle();
     } else{
-      checkGoogleDrive();
-print("Checking google drive for updates");
+      //checkGoogleDrive();
+//print("Checking google drive for updates");
     }
     // Migrate check code to separate class and have it called from either place IOS : Login, Android: Splashscreen
     if (passwordHint == '') {
@@ -102,6 +103,7 @@ print("Checking google drive for updates");
                           onPressed: () {
                             if (connected == true) {
                               logIntoGoogle();
+                              //Set Navigator.Pop to execute when authenticated.
                             } else {
                               showMessage(connection_Error_Message_String);
                             }
@@ -152,14 +154,16 @@ print("Checking google drive for updates");
   }
 
   void signInToGoogle() async{
-    googleDrive=GoogleDrive();
+ //   googleDrive=GoogleDrive();
     googleDrive.initVariables();
-    await checkGoogleDrive();
+    if(fileCheckCompleted==false){
+    await checkDataFiles();
+    }//checkGoogleDrive();
 
   }
 
   void logIntoGoogle() async{
-    googleDrive=GoogleDrive();
+   // googleDrive=GoogleDrive();
     googleDrive.initVariables();
     await checkGoogleDrive()
         .whenComplete(() {
@@ -349,6 +353,8 @@ print("Checking google drive for updates");
   }
 
   Future<void> checkGoogleDrive() async{
+  //if(userActiveBackup==null)
+
     if (connected == true) {
       userActiveBackup = prefs.getBool('testBackup') ?? false;
       print("Backup is turned on: $userActiveBackup");
@@ -401,7 +407,7 @@ print("Checking google drive for updates");
     }
     return connected;
   }
-
+// in case Splash Screen doesn't load things in time because it moves so fast.
   void loadStateStuff() async {
 
     if(prefs == null){
@@ -410,7 +416,6 @@ print("Checking google drive for updates");
     passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
     greeting = prefs.getString("greeting") ?? '';
     loginGreeting = await  getGreeting();
-
     userPassword = await encryptedSharedPrefs.getString('loginPassword');
     //Dumb bug flutter imposed on shared prefs with index out of range exceptions
     try {
@@ -437,9 +442,11 @@ print("Checking google drive for updates");
     setState(() {
       resetLoginFieldState();
     });
-
+    if(fileCheckCompleted==false){
     await checkDataFiles;
+    }
     googleIsDoingSomething(false);
+    fileCheckCompleted = false;
   }
 
   Future<void> checkDataFiles() async {
@@ -449,7 +456,6 @@ print("Checking google drive for updates");
       } else{
         checkGoogleDrive();
       }
-
       if (isDataSame == false) {
         googleIsDoingSomething(true);
         updateValues();
