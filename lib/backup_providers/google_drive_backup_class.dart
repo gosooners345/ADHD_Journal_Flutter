@@ -68,8 +68,9 @@ class GoogleDrive {
     userActiveBackup = prefs.getBool("testBackup") ?? false;
     firstUse = true;
     prefs.setBool("authenticated", firstUse);
-    account = await googleSignIn.signIn();
 
+      account = await googleSignIn.signInSilently(suppressErrors: true,reAuthenticate: true);
+    
     var authenticateClient = await googleSignIn.authenticatedClient();
     return authenticateClient;
   }
