@@ -117,41 +117,11 @@ class GoogleDrive {
     }
   }
 
-  //This is an alternate method in case I didn't feel like passing the file Variable in
-  // Delete method after the final testing of the main method is completed.
-  /*uploadFileToGoogleDriveString(String fileName) async {
-    File file = File(fileName);
-    drive = ga.DriveApi(client!);
-    String? folderId = await _getFolderId(drive);
-    if (folderId == null) {
-      if (kDebugMode) {
-        print("Sign-in first Error");
-      }
-    } else {
-      ga.File fileToUpload = ga.File();
-      fileToUpload.parents = [folderId];
-      fileToUpload.name = p.basename(file.absolute.path);
-      try {
-        var response = await drive.files.create(
-          fileToUpload,
-          uploadMedia: ga.Media(file.openRead(), file.lengthSync()),
-        );
-        return 1;
-      } on Exception catch (ex) {
-        if (kDebugMode) {
-          print(ex);
-        }
-        return 0;
-      }
-    }
-  }*/
 
   // Original method
   // See if there's a way to validate SHA256 cryptography.
   uploadFileToGoogleDrive(File file) async {
 
-    //appfolderID = await _getFolderId(drive);
-    //String? folderId = await _getFolderId(drive);
     if (appfolderID == null)
     {
       if (kDebugMode) {

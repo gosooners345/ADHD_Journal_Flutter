@@ -380,14 +380,6 @@ class _LoginScreenState extends State<LoginScreen> {
               print(files_list_types[i] + "check complete.");
             });
           }
-          /*  await checkFilesExistV2(path.join(keyLocation, privateKeyFileName), privateKeyFileName, "Keys").whenComplete(()
-          async {
-            await checkFilesExistV2(dbLocation, databaseName, "Journal");
-            googleIsDoingSomething(false);
-           // googleIsDoingSomething(true);
-            await checkFilesExistV2(docsLocation, prefsName, "Preferences").whenComplete(() {
-              googleIsDoingSomething(false);
-            });});*///3x
 
         }
       }
@@ -403,7 +395,8 @@ class _LoginScreenState extends State<LoginScreen> {
           "by hitting Sign into Google Drive! You can disable this feature in Settings ");
     }
 
-  }
+  }//Add method to watch for any hanging buttons\
+
 
 
   Future<bool> getNetStatus() async {
