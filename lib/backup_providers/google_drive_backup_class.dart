@@ -27,14 +27,14 @@ class GoogleDrive {
   /// Variable for checking activity on Google Drive API
   bool isDoingSomething = false;
 
- // Functional, see why IOS keeps prompting sign in
+
   GoogleSignIn googleSignIn =
       GoogleSignIn(signInOption: SignInOption.standard, scopes: [
     ga.DriveApi.driveAppdataScope,
     ga.DriveApi.driveFileScope,
   ]);
   // Assign variables here, and reduce assignments in class. Also reduce usage in the other classes.
-  void initVariables() async {
+   initVariables() async {
     // Drive, appFolderID
     try{
       client ??= await getHttpClient();
@@ -63,13 +63,23 @@ class GoogleDrive {
  // Must be initialized before any other variable related to Google Drive or else the rest will fail
   Future<auth.AuthClient?> getHttpClient() async {
     userActiveBackup = true;
-    prefs.setBool('testBackup', userActiveBackup);
+   await prefs.setBool('testBackup', userActiveBackup);
+    userActiveBackup = prefs.getBool("testBackup") ?? false;
+print("userActiveBackup: $userActiveBackup");
     prefs.reload();
     userActiveBackup = prefs.getBool("testBackup") ?? false;
     firstUse = true;
     prefs.setBool("authenticated", firstUse);
 
-      account = await googleSignIn.signInSilently(suppressErrors: true,reAuthenticate: true);
+      account = await googleSignIn.signInSilently(suppressErrors:true,reAuthenticate: true).onError((error, stackTrace) {
+        print(error);
+        print(stackTrace);
+        return null;
+      });
+      if(account==null){
+        account = await googleSignIn.signIn().whenComplete((){print("Sign in complete"); print("${account!=null ? true : false}");});
+      }
+  
     
     var authenticateClient = await googleSignIn.authenticatedClient();
     return authenticateClient;
@@ -150,12 +160,10 @@ class GoogleDrive {
   // Double check to see if this method is doing it's job properly, method checks file age on device vs. Drive.
   //Improvements here could be using file IDs and SHA256 checking
   Future<bool> checkFileAge(String fileName, String directoryName) async {
-    //client ??= await getHttpClient();
     if(drive==null){
       initVariables();
     }
     try {
-     // drive = ga.DriveApi(client!);
 
       File file = File(directoryName);
       if (file.existsSync() == true) {
@@ -215,18 +223,7 @@ Future<void> _saveDriveFileIds(String fileName, String driveID) async{
     await prefs.setString(_driveFileIDsPrefKey, convert.json.encode(_driveFileIDs));
 }
 
-//Get remote file metadata to validate SHA Hash and timestamps
-  /*Future<ga.File?> _getRemoteMetadata(String fileName) async{
-    if( drive==null) return null;
-    final driveID = _driveFileIDs[fileName];
-    if(driveID!=null){
-      try{
-        //return await drive.files.get(driveID,);
-      }
-    }
 
-
-  }*/
   /// If file doesn't exist, check cloud, if false there, that file needs created.
 Future<bool> isLocalFileNewer(String driveFileName, String localFile) async{
   if(drive==null){
@@ -426,7 +423,7 @@ try{
         List<int> dataStore = [];
         file.stream.listen((data) {
           dataStore.insertAll(dataStore.length, data);
-        }, onDone: () {
+        }, onDone: ()  {
           if (kDebugMode) {
             print("Task Done");
           }

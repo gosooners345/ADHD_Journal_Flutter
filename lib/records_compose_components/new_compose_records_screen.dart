@@ -1008,7 +1008,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
           leading: IconButton(
             icon: backArrowIcon,
             onPressed: () {
-              recordsBloc.getRecords();
+              recordsBloc.getRecords(false);
               Navigator.pop(context);
               //_saveRecord(super.widget.record);
             },

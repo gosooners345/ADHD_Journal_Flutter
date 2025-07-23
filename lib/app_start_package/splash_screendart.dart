@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'dart:io';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
@@ -17,6 +18,7 @@ import '../project_resources/file_manager_helper.dart';
 import '../project_resources/network_connectivity_checker.dart';
 import '../backup_providers/google_drive_backup_class.dart';
 
+import '../records_stream_package/records_bloc_class.dart';
 import 'login_screen_file.dart';
 
 // Splash Screen Class for application. This page will need examined for performance improvement potential
@@ -54,11 +56,7 @@ class _SplashScreenState extends State<SplashScreen> {
     networkConnectivityChecker.initialise();
 //Icon Assignments
     if (Platform.isAndroid) {
- /*     if (kDebugMode) {
-        redirectOneDriveURL = oneDriveAndroidProdRedirect;
-      } else {
-        redirectOneDriveURL = oneDriveAndroidProdRedirect;
-      }*/
+
       backArrowIcon = const Icon(Icons.arrow_back);
       nextArrowIcon = const Icon(Icons.arrow_forward);
       onboardingBackIcon =
@@ -80,16 +78,19 @@ class _SplashScreenState extends State<SplashScreen> {
     appStatus.value =
         "Welcome to ADHD Journal! We're getting your stuff ready!";
 
-    getNetStatus();
+   getNetStatus();
     finishTimer();
   }
   finishTimer() async {
+    prefs = await SharedPreferences.getInstance();
+if(connected==false)
+     getNetStatus();
     setState(() {
       appStatus.value = "Getting Build and App Version info";
     });
 
-await initPrefs().whenComplete(()async {
-
+initPrefs();
+if(userActiveBackup){
       if(googleDrive.client==null){
         googleDrive.initVariables();
         if(googleDrive.client!=null){
@@ -100,6 +101,7 @@ await initPrefs().whenComplete(()async {
           print("Google Drive client is null");
         }
       }
+}
       await getPackageInfo().whenComplete(() =>
           loadPreferences().whenComplete(() {
             checkGoogleDrive();
@@ -110,21 +112,14 @@ await initPrefs().whenComplete(()async {
           print("File check completed");
         }else{
           print("File check not completed");
-  //
       }
-    }});
-    //await loadPreferences();
+    }
 
-    //print("done");
-  //}).whenComplete(()async {
-   // print("Checking Google Drive");
-    //await checkGoogleDrive();
-  //}).whenComplete(()async {
-    Future.delayed(Duration(seconds: 10), route);//});
+  await  Future.delayed(Duration(seconds: 10), route);
   }
- Future<void> initPrefs() async{
+  initPrefs() async{
     appStatus.value = "Loading preferences now";
-    prefs = await SharedPreferences.getInstance();
+
    try{
     encryptedSharedPrefs = EncryptedSharedPreferences();
     print("prefs not null currently");
@@ -135,14 +130,28 @@ await initPrefs().whenComplete(()async {
     }
     //Testing google sign in
     if (connected == true) {
-      userActiveBackup = prefs.getBool('testBackup') ?? false;
+      userActiveBackup = prefs.getBool('testBackup')!; //?? false;
+      if(userActiveBackup==false){
+        userActiveBackup = prefs.getBool('testBackup') ?? false;
+
+      }
       print("Backup is turned on: $userActiveBackup");
     }
     try{
-      print("SplashScreen Sign in called");
-      googleDrive.initVariables();
-    }
-    on Exception catch(ex){
+      if (kDebugMode) {
+        print("SplashScreen Sign in called");
+      }
+     // await Future.delayed(Duration(seconds: 5));
+      userActiveBackup = (await prefs.getBool('testBackup'))!;
+      if(userActiveBackup==true) {
+        googleDrive.initVariables();
+      } else{
+        if(kDebugMode){
+          print("Google Drive backups aren't activated. User can activate them upon sign in or upon setup");
+        }
+        appStatus.value ="Google Drive backups aren't activated. You  can activate them upon sign in or upon setup";
+      }
+    } on Exception catch(ex){
       if(kDebugMode){
         print(ex);
       }
@@ -150,13 +159,15 @@ await initPrefs().whenComplete(()async {
       googleDrive.client = await  googleDrive.getHttpClient();
       googleDrive.initV2();
     }
+    if(userActiveBackup==true) {
     while(googleDrive.client==null){
       await Future.delayed(const Duration(seconds:2),(){
         print("Delay loading for sign in to complete");
       });
 if(googleDrive.client!=null){
   break;
-}
+}}
+
     }
 
 
@@ -164,9 +175,10 @@ if(googleDrive.client!=null){
    }on Exception catch(ex){
      print(ex);
    }
+   }
 
 
-  }
+
 
  Future< void> loadPreferences() async {
     print("Loading Prefs");
@@ -242,16 +254,6 @@ if(googleDrive.client!=null){
     passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
     notificationsAllowed = prefs.getBool('notifications') ?? false;
     isPasswordChecked = passwordEnabled;
-    //Move code below to another method.
- //   var i = 0;
-    //getNetStatus(); Unnecessary code due to the call in initState()
-    /*while (connected == false && i < 10) {
-      await Future.delayed(const Duration(milliseconds: 100));
-      i++;
-      if (kDebugMode) {
-        print(i);
-      }
-    }*/
 // Give option to work around if user doesn't want to use Google Drive before publishing update
 
   }
@@ -334,7 +336,6 @@ if(newLoginPW != userPassword || newDBPW != dbPassword){
     }
     dbPassword = userPassword;
     await encryptedSharedPrefs.setString('dbPassword', dbPassword);
-  //  didThingsChange = true;
   }
 }
   if(newHint != passwordHint){
@@ -362,10 +363,7 @@ if(newLoginPW != userPassword || newDBPW != dbPassword){
   }
   //Call before doing anything with update preferences.
  Future<void> checkGoogleDrive() async{
-   /*if (connected == true) {
-     userActiveBackup = prefs.getBool('testBackup') ?? false;
-     print("Backup is turned on: $userActiveBackup");
-   }*/
+
    if (userActiveBackup) {
 
        appStatus.value = "You have backup and sync enabled! Signing into Google Drive!";
@@ -374,8 +372,7 @@ if(newLoginPW != userPassword || newDBPW != dbPassword){
      googleIsDoingSomething(true);
      if (googleDrive.client != null) {
        if (userActiveBackup) {
-   ///See if we can unify this code to only execute once.
-     ///    if (Platform.isAndroid) {
+
          var pubKeyLocation = path.join(keyLocation, pubKeyFileName);
 var docLIst=[pubKeyLocation,dbLocation,docsLocation];
          print("Checking Keys");
@@ -387,16 +384,6 @@ var docLIst=[pubKeyLocation,dbLocation,docsLocation];
            print(files_list_types[i] + "check complete.");
          });
           }
-
-/*         await checkFilesExistV2(path.join(keyLocation, privateKeyFileName), privateKeyFileName, "Keys").whenComplete(()
-async {
-
-         await checkFilesExistV2(path.join(keyLocation, pubKeyFileName), pubKeyFileName, "Keys");
-         print("Checking Journal");
-         await checkFilesExistV2(dbLocation, databaseName, "Journal");
-print("Checking Preferences");
-         await checkFilesExistV2(docsLocation, prefsName, "Preferences");});//3x*/
-
          }
        }
       else {
@@ -422,9 +409,12 @@ print("Checking Preferences");
     networkConnectivityChecker.myStream.listen((source) {
       if (source == true) {
         connected = true;
+        print("Connected");
       }
     }).onData((data) {
+      print(data);
       if (data == false) {
+
         userActiveBackup = false;
         connected = false;
         appStatus.value =
@@ -616,13 +606,15 @@ fileCheckCompleted = true;
 
 
   Future<void> restoreDBFiles() async {
+
     try {
       googleIsDoingSomething(true);
-    //  readyButton.boolSink.add(true);
       appStatus.value = downloading_journal_files_message_string;
       await  googleDrive.syncBackupFiles(databaseName).whenComplete((){
         appStatus.value = "Your Journal is synced on device now";
+      // recordsBloc.handleDBSwapRefresh();
         googleIsDoingSomething(false);
+
       });
     } on Exception catch (ex) {
       showMessage(ex.toString());

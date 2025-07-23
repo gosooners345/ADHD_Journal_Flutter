@@ -169,7 +169,14 @@ Uint8List testImage(Map<String,dynamic>map)  {
     }, growable: true);
     return list;
   }
-
+ Future<bool> isOpen() async{
+    final db = await recordsDB.database;
+    if(db.isOpen){
+      return true;
+    } else {
+      return false;
+    }
+ }
   updateRecords(Records record) async {
     final db = await recordsDB.database;
 
@@ -258,13 +265,18 @@ Uint8List testImage(Map<String,dynamic>map)  {
     }
   }
 
-  void close() async {
-    var db = await recordsDB.database;
-    await Future.sync(() {
-      writeCheckpoint(db);
-      close();
-    });
-  }
+ Future<void> closeDBConnection()async{
+    if(kDebugMode){
+      print("RecordsDAO: Requesting DB Close from RecordsDB");
+    }
+    await recordsDB.closeCurrentDBInstance();
+ }
+ Future<void> replaceAndOpenDBConnection()async{
+    if(kDebugMode){
+      print("RecordsDAO: Requesting DB Close from RecordsDB");
+    }
+    await recordsDB.replaceandReOpenDBInstance();
+ }
 
   Future<void> saveImageToDb(int id, Uint8List image) async {
     var db = await recordsDB.database;

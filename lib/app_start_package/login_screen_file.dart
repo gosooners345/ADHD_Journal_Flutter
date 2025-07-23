@@ -49,6 +49,9 @@ bool isThisReturning = false;
 
 ///Handles the states of the application.
 class _LoginScreenState extends State<LoginScreen> {
+  //Make sure the journal uploads upon closing and
+ // RecordsBloc recordsBloc = Provider.of<RecordsBloc>(context);
+  bool loggedInState=false;
   String loginPassword = '';
   String loginGreeting = '';
   var encryptedOrNot = false;
@@ -78,8 +81,9 @@ class _LoginScreenState extends State<LoginScreen> {
       hintText = 'Password Hint is : $passwordHint';
     }
     setState(() {
+      // Review Dialog submission. This part is the most fragile part of the app.
       driveButton = ElevatedButton(
-          onPressed: () async {
+          onPressed: ()  {
             var authenticated = prefs.getBool("authenticated") ?? false;
             if (authenticated == false) {
               showDialog(
@@ -97,6 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {
                             if (connected == true) {
                               logIntoGoogle();
+
                               //Set Navigator.Pop to execute when authenticated.
                             } else {
                               showMessage(connection_Error_Message_String);
@@ -118,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
             } else {
               if (connected == true) {
                googleDrive.initVariables();
-              await checkGoogleDrive()
+               checkGoogleDrive()
                     .whenComplete(() {
                           resetLoginFieldState();
                           setState(() {
@@ -150,26 +155,32 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void signInToGoogle() async{
     googleDrive.initVariables();
-    if(fileCheckCompleted==false){
+  /*  if(fileCheckCompleted==false){
     await checkDataFiles();
-    }
+    }*/
 
   }
 
   void logIntoGoogle() async{
-   // googleDrive=GoogleDrive();
-    googleDrive.initVariables();
-    await checkDataFiles()
-        .whenComplete(() {
-      resetLoginFieldState();
-      setState(() async{
-        await getSyncStateStatus();
-       /* if(mounted) {
-          Navigator.of(context).pop();
-        }*/
-      });
+    if(mounted) {
+      Navigator.of(context).pop();
+    }
+    await
+        googleDrive.initVariables().whenComplete(()async{
+loggedInState=true;
+      await checkDataFiles()
+          .whenComplete(() {
+        resetLoginFieldState();
+       // setState(() async{
+           getSyncStateStatus();
 
+        //});
+
+      });
     });
+
+
+     //});
 
   }
   //Find a way to migrate most of the code to a single method outside of this class. Probably put it in Google Drive?
@@ -201,6 +212,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
   Future<void> checkFilesExistV2(String localFileName,String remoteFileName, String fileType)async{
     var fileChecker = ManagedFile(localFileName,remoteFileName);
+   // final recordsBloc = Provider.of<RecordsBloc>(context, listen: false);
     //Check for existence of files and age.
     print("Checking $fileType");
     await fileChecker.checkLocalExistence();
@@ -231,7 +243,17 @@ class _LoginScreenState extends State<LoginScreen> {
         //Use Switch Case statement to handle file delivery
         switch (fileType) {
           case "Journal":
-            await restoreDBFiles();
+            await restoreDBFiles().then((value) {
+              print("DB Swap Successful");
+              var getFileTime = File(dbLocation);
+
+              showMessage(
+                  'Your journal is synced as of ${getFileTime
+                      .lastModifiedSync()
+                      .toLocal()}');
+            }
+              )
+              ;
             break;
           case "Preferences":
             await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive).whenComplete((){
@@ -279,7 +301,30 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     }
     if(fileChecker.localExists && fileChecker.remoteExists){
-      if(fileChecker.localIsNewer!){
+      if(loggedInState==true){
+        switch (fileType) {
+          case "Journal":
+            await restoreDBFiles().then((value) async {
+              var getFileTime = File(dbLocation);
+
+              showMessage(
+                  'Your journal is synced as of ${getFileTime
+                      .lastModifiedSync()
+                      .toLocal()}');
+            });
+            break;
+          case "Preferences":
+            await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive).whenComplete((){
+              updateValues();
+            });
+            //Process file.
+break;
+          case "Keys":
+            await preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
+            break;
+        }
+      }
+       else if(fileChecker.localIsNewer!&& loggedInState==false){
 //In future update, integrate file IDs
         showMessage( "$fileType exists on device and cloud but is newer on device. Replacing file in cloud with new local copy.");
         //Use switch case statement to handle file delivery,
@@ -323,7 +368,7 @@ class _LoginScreenState extends State<LoginScreen> {
             await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive).whenComplete(() {
               showMessage( "Updated preferences downloaded, checking for mismatches");
             });
-            final isDataSame = await checkPreferences();
+             isDataSame = await checkPreferences();
             if(!isDataSame){
               showMessage( "Preferences are out of date, we will need to update the local version.");
               googleIsDoingSomething(true);
@@ -347,14 +392,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> checkGoogleDrive() async{
-
-
     if (connected == true) {
       userActiveBackup = prefs.getBool('testBackup') ?? false;
       print("Backup is turned on: $userActiveBackup");
     }
     if (userActiveBackup) {
-
       try{
         if(googleDrive.client == null){
           throw Exception("Google Drive needs initialized");
@@ -370,23 +412,27 @@ class _LoginScreenState extends State<LoginScreen> {
       if (googleDrive.client != null) {
         if (userActiveBackup) {
           var pubKeyLocation = path.join(keyLocation, pubKeyFileName);
-          var docLIst=[pubKeyLocation,dbLocation,docsLocation];
-          print("Checking Keys");
+          var docLIst=[dbLocation,pubKeyLocation,docsLocation];
+          //print("Checking Keys");
           // Make this a for loop statement and initialize an array for the file locations.
           for(int i=0;i<3;i++){
+            //await Future.delayed(Duration(seconds: 1));
+            googleIsDoingSomething(true);
             await checkFilesExistV2(docLIst[i], files_list_names[i], files_list_types[i]).onError((error, stackTrace) {
               print("Tis but a scratch");
             }).whenComplete(() {
-              print(files_list_types[i] + "check complete.");
+              print(files_list_types[i] + " check complete.");
+              googleIsDoingSomething(false);
             });
+            googleIsDoingSomething(false);
           }
-
+fileCheckCompleted=true;
         }
       }
       else {
         userActiveBackup = false;
-    //    showMessage(
-      //  "To protect your data, you'll need to sign into Google Drive and approve application access to backup your stuff!";
+        showMessage(
+        "To protect your data, you'll need to sign into Google Drive and approve application access to backup your stuff!");
       }
     }
     else {
@@ -440,11 +486,51 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       resetLoginFieldState();
     });
-    if(fileCheckCompleted==false || isThisReturning==true){
+    if(fileCheckCompleted==false){
     await checkDataFiles();
     }
     googleIsDoingSomething(false);
-    fileCheckCompleted = false;
+  //  fileCheckCompleted = false;
+  }
+  void reloadStateStuff() async {
+loggedInState=false;
+    if(prefs == null){
+      prefs = await SharedPreferences.getInstance();
+    }
+    passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
+    greeting = prefs.getString("greeting") ?? '';
+    loginGreeting = await  getGreeting();
+    userPassword = await encryptedSharedPrefs.getString('loginPassword');
+    //Dumb bug flutter imposed on shared prefs with index out of range exceptions
+    try {
+      dbPassword = await encryptedSharedPrefs.getString('dbPassword')??'';
+    } on Exception catch (ex) {
+      if (kDebugMode) {
+        print(ex);
+      }
+      try {
+        await encryptedSharedPrefs.remove('dbPassword');
+      } on Exception catch (ex) {
+        if (kDebugMode) {
+          print(ex);
+        }
+      }
+      dbPassword = userPassword;
+      await encryptedSharedPrefs.setString('dbPassword', dbPassword);
+    }
+    passwordHint = await getPasswordHint();
+    isPasswordChecked = passwordEnabled;
+    if (userPassword != dbPassword) {
+      dbPassword = userPassword;
+    }
+    setState(() {
+      resetLoginFieldState();
+    });
+if(isThisReturning==true){
+  await checkDataFiles();
+}
+    googleIsDoingSomething(false);
+   // fileCheckCompleted = false;
   }
 
   Future<void> checkDataFiles() async {
@@ -454,11 +540,7 @@ class _LoginScreenState extends State<LoginScreen> {
       } else{
         checkGoogleDrive();
       }
-      if (isDataSame == false) {
-        googleIsDoingSomething(true);
-        updateValues();
-        googleIsDoingSomething(false);
-      }
+
     } else {
       googleIsDoingSomething(false);
     }
@@ -489,11 +571,16 @@ class _LoginScreenState extends State<LoginScreen> {
   void refreshPrefs() async {
     prefs.reload();
     await Future.sync(() => encryptedSharedPrefs.reload());
-    await Future.delayed(const Duration(seconds: 1), loadStateStuff);
+    await Future.delayed(const Duration(seconds: 1), reloadStateStuff);
   }
 
   void resetLoginFieldState() async {
-    final recordsBloc = Provider.of<RecordsBloc>(context,listen: false);
+
+    var recordsBloc = Provider.of<RecordsBloc>(context,listen: false);
+/*if(loggedInState==true){
+  recordsBloc.handleDBSwapRefresh();
+}*/
+    //recordsBloc.getRecords(true);
 
     setState(() {
       if (passwordHint == '' || passwordHint == ' ') {
@@ -524,11 +611,10 @@ class _LoginScreenState extends State<LoginScreen> {
             loginPassword = text;
             if (text.length == userPassword.length) {
               if (text == userPassword) {
-                recordsBloc.getRecords();
+                recordsBloc.getRecords(true);
                 Navigator.pushReplacementNamed(context, '/success').then((value) => {
                       isThisReturning = true,
                       refreshPrefs(),
-                      //recordsBloc.currentRecordHolder.clear(),
                       stuff.clear(),
                     });
               } else {
@@ -577,7 +663,6 @@ class _LoginScreenState extends State<LoginScreen> {
   /// Check the user's Google Drive for age of file or even if the file exists
 
 
-//Experimental
   Future<void> uploadDBFiles() async {
     googleIsDoingSomething(true);
 
@@ -587,20 +672,16 @@ class _LoginScreenState extends State<LoginScreen> {
       googleIsDoingSomething(false);
       showMessage('Your journal is now uploaded!');
     });
-   // googleDrive.uploadFileToGoogleDrive(File("$dbLocation-wal"));
-    //googleDrive.uploadFileToGoogleDrive(File("$dbLocation-shm"));
 
   }
 
   //Experimental
   Future<void> restoreDBFiles() async {
     try {
-      googleIsDoingSomething(true);
-      await Future.sync(() => googleDrive.syncBackupFiles(databaseName))
-          .whenComplete(() => googleIsDoingSomething(false));
-      var getFileTime = File(dbLocation);
-      var time = getFileTime.lastModifiedSync();
-      showMessage('Your journal is synced as of ${time.toLocal()}');
+      //googleIsDoingSomething(true);
+      await googleDrive.syncBackupFiles(databaseName).then((value) async{
+        googleIsDoingSomething(false);
+      });
     } on Exception {
       showMessage('You need to open up the journal once to back it up.');
     }
@@ -617,19 +698,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void updateValues() async {
     googleIsDoingSomething(true);
-    //readyButton.boolSink.add(true);
     showMessage("Updating preferences");
     if (decipheredData == '') {
       File prefsFile = File(docsLocation);
-      googleIsDoingSomething(true);
+     // googleIsDoingSomething(true);
       if (prefsFile.existsSync()) {
         decipheredData = CryptoUtils.rsaDecrypt(
             prefsFile.readAsStringSync(encoding: Encoding.getByName("utf-8")!),
             preferenceBackupAndEncrypt.privKey!);
+        await Future.delayed(Duration(milliseconds: 200));
       } else {
-        preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
+    await    preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
       }
     }
+
+    await Future.delayed(Duration(milliseconds: 200));
     var newValues = decipheredData.split(',');
     dlUserPassword = newValues[0];
     dlDBPassword = newValues[1];
@@ -711,7 +794,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     stream: readyButton.controller.stream,
                     builder:
                         (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                      final recordsBloc = Provider.of<RecordsBloc>(context,listen: false);
+                      var recordsBloc = Provider.of<RecordsBloc>(context,listen: false);
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Text("Updating Files on device");
                       } else {
@@ -730,12 +813,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                         'Error returning password  information');
                                   } else if (snapshot.hasData) {
                                     return ElevatedButton(
-                                      onPressed: () {
+                                      onPressed: () async {
                                         callingCard = true;
                                         if (loginPassword == userPassword &&
                                             passwordEnabled) {
                                           loginPassword = '';
-                                          recordsBloc.getRecords();
+                                           recordsBloc.handleDBSwapRefresh();
+                                          //await Future.delayed(Duration(seconds: 1));
+                                          recordsBloc.getRecords(true);
                                           Navigator.pushNamed(
                                                   context, '/success')
                                               .then((value) => {
@@ -744,7 +829,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                                     refreshPrefs(),
                                                   });
                                         } else if (!passwordEnabled) {
-                                          recordsBloc.getRecords();
+                                           recordsBloc.handleDBSwapRefresh();
+                                         // await Future.delayed(Duration(seconds: 1));
+
+                                          recordsBloc.getRecords(true);
                                           loginPassword = '';
                                           stuff.clear();
                                           Navigator.pushNamed(
@@ -765,12 +853,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                     return ElevatedButton(
                                       onPressed: () {
                                         if (loginPassword == userPassword) {
-                                          recordsBloc.getRecords();
+                                          recordsBloc.getRecords(true);
                                           Navigator.pushNamed(
                                                   context, '/success')
                                               .then((value) => {
                                                     isThisReturning = true,
+                                            recordsBloc.dispose(),
                                                     refreshPrefs(),
+                                             recordsBloc = Provider.of<RecordsBloc>(context,listen: false)
                                                   });
                                           stuff.clear();
                                         }
@@ -807,6 +897,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         return const Text("Getting Connection Status");
                       } else {
                         if (snapshot.hasData) {
+                         /// Refers to connection status
                           if (snapshot.data == true) {
                             return Center(
                               child: FutureBuilder(
@@ -815,6 +906,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     BuildContext context,
                                     AsyncSnapshot<bool> snapshot,
                                   ) {
+                                    // Refers to Drive button status
                                     if (snapshot.hasError) {
                                       return const Text("Error");
                                     } else if (snapshot.hasData) {
@@ -866,7 +958,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: ElevatedButton(
                   onPressed: () async {
                    await checkGoogleDrive();
-                    // await Future.sync(() => checkForAllFiles(""));
                   },
                   child: const Text(
                     'Update Files',

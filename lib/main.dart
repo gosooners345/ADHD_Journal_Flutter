@@ -39,7 +39,7 @@ Future<void> main() async {
        ChangeNotifierProvider<ThemeSwap>(
        create: (_) => ThemeSwap(),),
        Provider<RecordsBloc>(
-         create: (_) => RecordsBloc(),
+         create: (_) => RecordsBloc(false),
          dispose: (_,bloc) => bloc.dispose(),
        )
 
@@ -293,7 +293,7 @@ leading: IconButton(onPressed: (){
                               if (searchController.text.isNotEmpty) {
                                 recordsBloc.getSearchedRecords(searchController.text);
                               } else {
-                                recordsBloc.getRecords();
+                                recordsBloc.getRecords(false);
                               }
                               Navigator.pop(context);
                             },
@@ -317,7 +317,7 @@ leading: IconButton(onPressed: (){
                         ],
                       ),
                       onTap: () {
-                        recordsBloc.getRecords();
+                        recordsBloc.getRecords(false);
                       },
                     ),
                     PopupMenuItem(
@@ -398,8 +398,7 @@ leading: IconButton(onPressed: (){
                     if (userPassword != dbPassword)
                       {
                         recordsBloc.changeDBPasswords(userPassword),
-                        //recordsBloc = RecordsBloc(),
-                        recordsBloc.getRecords()
+                        recordsBloc.getRecords(false)
                       },
                     userActiveBackup = prefs.getBool("testBackup") ?? false,
                     if (userActiveBackup) {
@@ -436,7 +435,7 @@ leading: IconButton(onPressed: (){
               setState(() {
                   _selectedIndex = index;
                  title = (index == 0) ? 'Home' : 'Dashboard';
-recordsBloc.getRecords();
+recordsBloc.getRecords(false);
 
               });
             },

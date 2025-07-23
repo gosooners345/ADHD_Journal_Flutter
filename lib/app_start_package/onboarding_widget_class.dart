@@ -58,10 +58,15 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
 
   void storePrefs() async {
     await encryptedSharedPrefs.setString('passwordHint', passwordHint);
+    print("Password Hint was saved");
     await encryptedSharedPrefs.setString('loginPassword', savedPasswordValue);
+    print("Login Password was saved");
     await encryptedSharedPrefs.setString(
         'passwordHint', passwordHintValueSaved);
+
     await encryptedSharedPrefs.setString('dbPassword', savedPasswordValue);
+    print("DB Password was saved");
+    //await encryptedSharedPrefs.setBool('passwordEnabled', isSaved);
     prefs.setBool('passwordEnabled', isSaved);
     prefs.setString('greeting', greetingValueSaved);
     prefs.setBool('firstVisit', false);

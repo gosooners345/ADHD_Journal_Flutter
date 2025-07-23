@@ -1,4 +1,5 @@
 import 'package:adhd_journal_flutter/record_data_package/records_data_class_db.dart';
+import 'package:flutter/foundation.dart';
 import 'records_dao.dart';
 
 class RecordsRepository {
@@ -21,5 +22,20 @@ class RecordsRepository {
     recordsDao.writemoreCheckpoint();
   }
 
-  void close() {}
+  Future<void> prepareForDBSwap() async{
+    if(kDebugMode){
+      print("RecordsRepository: Requesting DB Close from RecordsDB");
+    }
+    await recordsDao.replaceAndOpenDBConnection();
+  }
+  Future<void> finalizeDBSwap() async{
+    await recordsDao.replaceAndOpenDBConnection();
+  }
+
+
+
+
+  void close() {
+ //   recordsDao.close();
+  }
 }

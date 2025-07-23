@@ -16,7 +16,7 @@ class RecordsBloc {
 
 
 
-  //Master stream controller, hopefully performant
+
   final _recordsController = StreamController<List<Records>>.broadcast(sync: false);
   List<Records> _recordHolder = [];
   get recordStuffs => _recordsController.stream;
@@ -27,13 +27,13 @@ class RecordsBloc {
 
 
 
-  RecordsBloc() {
-    getRecords();
+  RecordsBloc(bool googleDrive) {
+    getRecords(googleDrive);
   }
   RecordsBloc.changePasswords(String newPassword) {
-    getRecords();
+    getRecords(false);
     changeDBPasswords(newPassword);
-    getRecords();
+    getRecords(false);
   }
 
   RecordsBloc.searchedList(String query) {
@@ -50,9 +50,11 @@ class RecordsBloc {
   }
 
 
-  Future<void> getRecords() async {
+  Future<void> getRecords(bool googleDrive) async {
     try{
-      final records = await _recordsRepo.getRecords();
+      var records = await _recordsRepo.getRecords();
+
+      // records = await _recordsRepo.getRecords();
       _recordHolder=records;
       if(!_recordsController.isClosed){
 
@@ -106,24 +108,53 @@ class RecordsBloc {
   }
 
 
+  // Testing close and reopen Methods here:
+   handleDBSwapRefresh() async{
+    if(kDebugMode){
+      print("RecordsBloc: Attempting db swap and refresh process");
+    }
+    try{
+      await _recordsRepo.prepareForDBSwap().whenComplete(() async{
+       if(kDebugMode){
+         print("RecordsBloc: Finalizing DB Swap");
+       }
+
+        await _recordsRepo.finalizeDBSwap().whenComplete((){
+          if(kDebugMode){
+            print("RecordsBloc: DB swap and refresh complete");
+          }
+          getRecords(false);
+        });
+      });
+
+    }    on Exception catch(e,s){
+print(e);
+print(s);
+    }
+
+  }
+
+
+
+
  Future<void> addRecord(Records record) async {
     await _recordsRepo.insertRecord(record);
-    getRecords();
+    getRecords(false);
   }
 
   Future<void> updateRecord(Records record) async {
     await _recordsRepo.updateRecord(record);
-    getRecords();
+    getRecords(false);
   }
 
   Future<void> deleteRecordByID(int ID) async {
     await _recordsRepo.deleteRecord(ID);
-    getRecords();
+    getRecords(false);
   }
 
   changeDBPasswords(String newPassword) {
     _recordsRepo.changePassword(newPassword);
-    getRecords();
+    getRecords(false);
   }
 
   void writeCheckpoint() {
