@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:adhd_journal_flutter/app_start_package/login_screen_file.dart';
 import 'package:flutter/foundation.dart';
@@ -41,7 +42,9 @@ class RecordsDB {
       },
       onOpen: (database) {
         //database.execute("DROP TABLE IF EXISTS android_metadata; DROP TABLE IF EXISTS room_master_table;");
+    if(Platform.isAndroid) {
       database.execute( "DROP TABLE IF EXISTS android_metadata; DROP TABLE IF EXISTS room_master_table; ");
+    }
         },
       singleInstance: true,
       version: 7,
