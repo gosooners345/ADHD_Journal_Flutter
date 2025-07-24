@@ -97,7 +97,6 @@ if(connected==false) {
           googleDrive.initVariables();
           if(googleDrive.client!=null){
             print("Google Drive client is not null");
-            //break;
           }
           else{
             print("Google Drive client is null");
@@ -109,24 +108,6 @@ if(connected==false) {
             checkGoogleDrive();
           }));
     });
-//Test code 2
-/*initPrefs().then((value){});
-if(userActiveBackup){
-      if(googleDrive.client==null){
-        googleDrive.initVariables();
-        if(googleDrive.client!=null){
-          print("Google Drive client is not null");
-          //break;
-        }
-        else{
-          print("Google Drive client is null");
-        }
-      }
-}
-      await getPackageInfo().whenComplete(() =>
-          loadPreferences().whenComplete(() {
-            checkGoogleDrive();
-          }));*/
 
       if(kDebugMode){
         if(fileCheckCompleted==true){
@@ -152,21 +133,14 @@ if(userActiveBackup){
     }
     //Testing google sign in
     if (connected == true) {
-
-      //Weak spot for tab S6 Should only need one initialization.
       await Future.delayed(const Duration(milliseconds: 100),(){userActiveBackup = prefs.getBool('testBackup')?? false;});
-// Old code
-     // userActiveBackup = prefs.getBool('testBackup')?? false;
-   /*   if(prefs.getBool('testBackup')==null){
-        userActiveBackup = prefs.getBool('testBackup')!;
-      }*/
+
       print("Backup is turned on: $userActiveBackup");
     }
     try{
       if (kDebugMode) {
         print("SplashScreen Sign in called");
       }
-     // await Future.delayed(Duration(seconds: 5));
       if(userActiveBackup==false){
       userActiveBackup = prefs.getBool('testBackup')!;
       }
