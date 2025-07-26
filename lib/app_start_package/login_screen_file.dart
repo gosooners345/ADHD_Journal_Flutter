@@ -805,7 +805,7 @@ if(isThisReturning==true){
                                         if (loginPassword == userPassword &&
                                             passwordEnabled) {
                                           loginPassword = '';
-                                          if(Global.dbDownloaded == true)
+
                                            recordsBloc.handleDBSwapRefresh();
                                           recordsBloc.getRecords(true);
                                           Global.dbDownloaded = false;
@@ -817,7 +817,6 @@ if(isThisReturning==true){
                                                     refreshPrefs(),
                                                   });
                                         } else if (!passwordEnabled) {
-                                          if(Global.dbDownloaded == true)
                                            recordsBloc.handleDBSwapRefresh();
 Global.dbDownloaded = false;
                                           recordsBloc.getRecords(true);
