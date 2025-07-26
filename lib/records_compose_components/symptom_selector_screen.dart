@@ -2,6 +2,7 @@ import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../project_resources/global_vars_andpaths.dart';
 
 import '../project_resources/project_strings_file.dart';
 import '../project_resources/project_utils.dart';
@@ -165,7 +166,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
                           });
                         },
                         title: Text(
-                            '${inattentiveSymptomListSelection[index].symptom} - ${inattentiveSymptomDefinitionList[index]}.')),
+                            '${inattentiveSymptomListSelection[index].symptom} - ${Global.inattentiveSymptomDefinitionList[index]}.')),
                     swapper);
               }, childCount: inattentiveSymptomListSelection.length),
             ),
@@ -200,7 +201,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
                           });
                         },
                         title: Text(
-                            "${executiveDysfunctionSelection[index].symptom} - ${executiveSymptomDefinitionList[index]}.")),
+                            "${executiveDysfunctionSelection[index].symptom} - ${Global.executiveSymptomDefinitionList[index]}.")),
                     swapper);
               }, childCount: executiveDysfunctionSelection.length),
             ),
@@ -235,7 +236,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
                         },
                         title: Text(emotionalListSelection[index].symptom +
                             ' - ' +
-                            emotionalRegDefinitionList[index] +
+                            Global.emotionalRegDefinitionList[index] +
                             ".")),
                     swapper);
               }, childCount: emotionalListSelection.length),
@@ -270,7 +271,7 @@ class _SymptomSelectorScreen extends State<SymptomSelectorScreen> {
                             }
                           });
                         },
-                        title: Text("${stressorSymptomsSelection[index].symptom} - ${stressDefinitionList[index]}")),
+                        title: Text("${stressorSymptomsSelection[index].symptom} - ${Global.stressDefinitionList[index]}")),
                     swapper);
               }, childCount: stressorSymptomsSelection.length),
             ),
@@ -297,7 +298,7 @@ class Symptoms {
   ///This will need modified where all four lists are used instead of the original.
   static List<Symptoms> getPositiveSymptoms() {
     List<Symptoms> symptomsList = List.empty(growable: true);
-    for (String element in positiveSymptomList) {
+    for (String element in Global.positiveSymptomList) {
       symptomsList.add(Symptoms(element, false));
     }
     return symptomsList;
@@ -305,7 +306,7 @@ class Symptoms {
 
   static List<Symptoms> getEmotionalSymptoms() {
     List<Symptoms> emotionSymptoms = List.empty(growable: true);
-    for (String element in emotionalSymptomList) {
+    for (String element in Global.emotionalSymptomList) {
       emotionSymptoms.add(Symptoms(element, false));
     }
     return emotionSymptoms;
@@ -313,7 +314,7 @@ class Symptoms {
 
   static List<Symptoms> getInattentiveSymptoms() {
     List<Symptoms> inattentiveSymptoms = List.empty(growable: true);
-    for (String element in inattentiveSymptomsList) {
+    for (String element in Global.inattentiveSymptomsList) {
       inattentiveSymptoms.add(Symptoms(element, false));
     }
     return inattentiveSymptoms;
@@ -321,7 +322,7 @@ class Symptoms {
 
   static List<Symptoms> getExecutiveDysfuntionSymptoms() {
     List<Symptoms> crazySymptoms = List.empty(growable: true);
-    for (String element in executiveDysfunctionSymptomList) {
+    for (String element in Global.executiveDysfunctionSymptomList) {
       crazySymptoms.add(Symptoms(element, false));
     }
     return crazySymptoms;
@@ -329,7 +330,7 @@ class Symptoms {
 
   static List<Symptoms> getStressorSymptomList() {
     List<Symptoms> stressSypmtoms = List.empty(growable: true);
-    for (String element in stressorSymptomList) {
+    for (String element in Global.stressorSymptomList) {
       stressSypmtoms.add(Symptoms(element, false));
     }
     return stressSypmtoms;

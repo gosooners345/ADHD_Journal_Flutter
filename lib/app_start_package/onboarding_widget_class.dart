@@ -8,6 +8,7 @@ import 'package:adhd_journal_flutter/project_resources/project_utils.dart';
 import '../app_start_package/splash_screendart.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../backup_providers/google_drive_backup_class.dart';
+import '../project_resources/global_vars_andpaths.dart';
 import '../project_resources/project_strings_file.dart';
 
 class OnBoardingWidget extends StatefulWidget {
@@ -46,7 +47,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
   @override
   void initState() {
     super.initState();
-    encryptedSharedPrefs = EncryptedSharedPreferences();
+    //encryptedSharedPrefs = EncryptedSharedPreferences();
     index = 0;
     _pageController.addListener(() {
       currentPage = _pageController.page;
@@ -57,21 +58,21 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
   }
 
   void storePrefs() async {
-    await encryptedSharedPrefs.setString('passwordHint', passwordHint);
+    await Global.encryptedSharedPrefs.setString('passwordHint', passwordHint);
     print("Password Hint was saved");
-    await encryptedSharedPrefs.setString('loginPassword', savedPasswordValue);
+    await Global.encryptedSharedPrefs.setString('loginPassword', savedPasswordValue);
     print("Login Password was saved");
-    await encryptedSharedPrefs.setString(
+    await Global.encryptedSharedPrefs.setString(
         'passwordHint', passwordHintValueSaved);
 
-    await encryptedSharedPrefs.setString('dbPassword', savedPasswordValue);
+    await Global.encryptedSharedPrefs.setString('dbPassword', savedPasswordValue);
     print("DB Password was saved");
     //await encryptedSharedPrefs.setBool('passwordEnabled', isSaved);
-    prefs.setBool('passwordEnabled', isSaved);
-    prefs.setString('greeting', greetingValueSaved);
-    prefs.setBool('firstVisit', false);
+    Global.prefs.setBool('passwordEnabled', isSaved);
+    Global.prefs.setString('greeting', greetingValueSaved);
+    Global.prefs.setBool('firstVisit', false);
   }
-
+//Add Google Drive button to last page to activate drive sync.
   PageView _buildOnboardingCards(ThemeSwap swapper) {
     return PageView(
       controller: _pageController,
@@ -107,7 +108,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        first_intro_paragraph_string,
+                        Global.first_intro_paragraph_string,
                         style: pageInfoStyle,
                         textAlign: TextAlign.left,
                       ),
@@ -157,7 +158,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        security_paragraph_intro_string,
+                        Global.security_paragraph_intro_string,
                         style: pageInfoStyle,
                         textAlign: TextAlign.left,
                       ),
@@ -208,7 +209,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        home_page_intro_paragraph_string,
+                        Global.home_page_intro_paragraph_string,
                         style: pageInfoStyle,
                         textAlign: TextAlign.left,
                       ),
@@ -259,7 +260,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        dashboard_paragraph_intro_string,
+                        Global.dashboard_paragraph_intro_string,
                         style: pageInfoStyle,
                         textAlign: TextAlign.left,
                       ),
@@ -310,7 +311,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        records_intro_paragraph_string,
+                        Global.records_intro_paragraph_string,
                         style: pageInfoStyle,
                         textAlign: TextAlign.left,
                       ),
@@ -357,7 +358,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      settings_paragraph_intro_string,
+                      Global.settings_paragraph_intro_string,
                       style: pageInfoStyle,
                       textAlign: TextAlign.left,
                     ),
@@ -406,7 +407,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        backup_and_sync_intro_paragraph_string,
+                        Global.backup_and_sync_intro_paragraph_string,
                         style: pageInfoStyle,
                         textAlign: TextAlign.left,
                       ),
@@ -418,7 +419,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        backup_and_sync_2nd_paragraph_string,
+                        Global.backup_and_sync_2nd_paragraph_string,
                         style: pageInfoStyle,
                         textAlign: TextAlign.left,
                       ),
@@ -465,7 +466,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      sixth_paragraph_intro_string,
+                      Global.sixth_paragraph_intro_string,
                       style: pageInfoStyle,
                       textAlign: TextAlign.left,
                     ),
@@ -538,7 +539,7 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
                             builder: (BuildContext context) => AlertDialog(
                                   title: const Text('Password Required!'),
                                   content: const Text(
-                                      password_Required_Message_String),
+                                      Global.password_Required_Message_String),
                                   actions: [
                                     TextButton(
                                         onPressed: () async {

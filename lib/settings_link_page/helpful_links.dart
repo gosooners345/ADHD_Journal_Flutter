@@ -1,3 +1,4 @@
+/*
 import 'dart:io';
 
 import 'package:adhd_journal_flutter/settings_link_page/link_tile_class.dart';
@@ -120,7 +121,8 @@ class HelpfulLinksWidget extends StatelessWidget {
               ),
             ),
             //Podcasts
-            /*      SliverList(delegate: SliverChildListDelegate([Divider(
+            */
+/*      SliverList(delegate: SliverChildListDelegate([Divider(
     height: 2.0,
     thickness: 1.5,
     color: Color(swapper.isColorSeed),
@@ -139,7 +141,8 @@ class HelpfulLinksWidget extends StatelessWidget {
                  })
             );
 
-           }),)*/
+           }),)*//*
+
           ],
         ),
       );
@@ -157,3 +160,4 @@ class HelpfulLinksWidget extends StatelessWidget {
     }
   }
 }
+*/

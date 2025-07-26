@@ -2,11 +2,8 @@
 import 'package:adhd_journal_flutter/record_data_package/records_data_class_db.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import '../main.dart';
-import '../project_resources/project_strings_file.dart';
-import '../record_data_package/record_list_class.dart';
 import 'records_repository.dart';
-
+import '../project_resources/global_vars_andpaths.dart';
 import 'dart:async';
 
 class RecordsBloc {
@@ -53,8 +50,6 @@ class RecordsBloc {
   Future<void> getRecords(bool googleDrive) async {
     try{
       var records = await _recordsRepo.getRecords();
-
-      // records = await _recordsRepo.getRecords();
       _recordHolder=records;
       if(!_recordsController.isClosed){
 
@@ -65,7 +60,7 @@ class RecordsBloc {
         print('RecordsBloc getRecords: this instance hash: ${this.hashCode}');
 
       }
-       if (kDebugMode) { // <--- ADD THIS BLOCK
+       if (kDebugMode) {
          print("RecordsBloc: Data added to sink. Controller closed? ${_recordsController.isClosed}. Has listener? ${_recordsController.hasListener}");
        }
 
@@ -280,43 +275,43 @@ print(s);
     emotionCounts.forEach((element) {
       var sanitizedElement = element.trimLeft().trimRight().toLowerCase();
 
-      if (anger_emotion_cluster.contains(sanitizedElement)) {
+      if (Global.anger_emotion_cluster.contains(sanitizedElement)) {
         countMap['Anger']++;
-      } else if (fear_emotion_cluster.contains(sanitizedElement)) {
+      } else if (Global.fear_emotion_cluster.contains(sanitizedElement)) {
         countMap['Anxiety']++;
-      } else if (joy_emotion_cluster.contains(sanitizedElement)) {
+      } else if (Global.joy_emotion_cluster.contains(sanitizedElement)) {
         countMap['Joy']++;
-      } else if (apathetic_emotion_cluster.contains(sanitizedElement)) {
+      } else if (Global.apathetic_emotion_cluster.contains(sanitizedElement)) {
         countMap['Apathetic']++;
-      } else if (peaceful_emotion_cluster.contains(sanitizedElement)) {
+      } else if (Global.peaceful_emotion_cluster.contains(sanitizedElement)) {
         countMap['Peace']++;
-      } else if (confidence_emotion_cluster.contains(sanitizedElement)) {
+      } else if (Global.confidence_emotion_cluster.contains(sanitizedElement)) {
         countMap['Confident']++;
-      } else if (sorrow_emotion_cluster.contains(sanitizedElement)) {
+      } else if (Global.sorrow_emotion_cluster.contains(sanitizedElement)) {
         countMap['Sad']++;
-      } else if (body_pain_emotion_cluster.contains(sanitizedElement)) {
+      } else if (Global.body_pain_emotion_cluster.contains(sanitizedElement)) {
         countMap['Physical pain']++;
-      } else if (conviction_based_emotion_cluster.contains(sanitizedElement)) {
+      } else if (Global.conviction_based_emotion_cluster.contains(sanitizedElement)) {
         countMap['Convicted']++;
-      } else if (stress_based_emotion_cluster.contains(sanitizedElement)) {
+      } else if (Global.stress_based_emotion_cluster.contains(sanitizedElement)) {
         countMap['Stressed']++;
-      } else if (mindful_state_emotion_cluster.contains(sanitizedElement)) {
+      } else if (Global.mindful_state_emotion_cluster.contains(sanitizedElement)) {
         countMap['Mindful']++;
-      } else if (hurt_emotion_cluster.contains(sanitizedElement)) {
+      } else if (Global.hurt_emotion_cluster.contains(sanitizedElement)) {
         countMap['Hurt']++;
-      } else if (wanting_emotion_cluster.contains(sanitizedElement)) {
+      } else if (Global.wanting_emotion_cluster.contains(sanitizedElement)) {
         countMap['Wanting']++;
-      } else if (shame_emotion_cluster.contains(sanitizedElement)) {
+      } else if (Global.shame_emotion_cluster.contains(sanitizedElement)) {
         countMap['Shame']++;
-      } else if (love_emotion_cluster.contains(sanitizedElement)) {
+      } else if (Global.love_emotion_cluster.contains(sanitizedElement)) {
         countMap['Love']++;
-      } else if (surprised_emotion_cluster.contains(sanitizedElement)) {
+      } else if (Global.surprised_emotion_cluster.contains(sanitizedElement)) {
         countMap['Surprised']++;
-      } else if (body_exhaustion_cluster.contains(sanitizedElement)) {
+      } else if (Global.body_exhaustion_cluster.contains(sanitizedElement)) {
         countMap['Physically tired']++;
-      } else if (weak_emotional_cluster.contains(sanitizedElement)) {
+      } else if (Global.weak_emotional_cluster.contains(sanitizedElement)) {
         countMap['Weak']++;
-      } else if (confused_emotion_cluster.contains(sanitizedElement)) {
+      } else if (Global.confused_emotion_cluster.contains(sanitizedElement)) {
         countMap['Confused']++;
       } else if (!countMap.containsKey(sanitizedElement)) {
         countMap[sanitizedElement] = 1;

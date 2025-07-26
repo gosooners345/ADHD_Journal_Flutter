@@ -1,3 +1,4 @@
+/*
 import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +36,9 @@ var youtube_LinksArray = [
       title: const Text('How to ADHD Youtube Channel'),
       url: Uri.parse(link_how_to_ADHD_YT)),
 ];
+*/
 /*
 var podcast_LinksArray =[PodcastTilesDataClass(title: Text('ADHD reWired'),host: Text('Dr. Eric Tivers'), serviceTitles:['Apple Podcasts',
   "Spotify",] , urlLinks:link_adhd_rewired ) ];
 */
+

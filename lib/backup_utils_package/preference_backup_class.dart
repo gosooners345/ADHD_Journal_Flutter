@@ -1,14 +1,16 @@
 import 'dart:convert';
-import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
-import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
+//import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
+//import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
 import 'package:flutter/foundation.dart' as kriss;
-import 'package:path/path.dart';
+//import 'package:path/path.dart';
 import 'package:pointycastle/export.dart';
 import 'package:pointycastle/src/platform_check/platform_check.dart';
 import '../app_start_package/login_screen_file.dart';
 import '../backup_providers/google_drive_backup_class.dart';
+import '../project_resources/global_vars_andpaths.dart';
 import 'crypto_utils.dart';
 import 'dart:io' as io;
+//import ''
 
 //ICloud and OneDrive Integration here
 
@@ -18,10 +20,10 @@ class PreferenceBackupAndEncrypt {
   RSAPublicKey? pubKey;
 
   void assignRSAKeysOffline() {
-    String privKeyFilePath = join(keyLocation, privateKeyFileName);
-    io.File privateKeyStorage = io.File(privKeyFilePath);
-    String pubKeyFilePath = join(keyLocation, pubKeyFileName);
-    io.File publicKeyStorage = io.File(pubKeyFilePath);
+    //String privKeyFilePath = join(keyLocation, privateKeyFileName);
+    io.File privateKeyStorage = io.File(Global.fullDevicePrivKeyPath);
+    //String pubKeyFilePath = join(keyLocation, pubKeyFileName);
+    io.File publicKeyStorage = io.File(Global.fullDevicePubKeyPath);
     try {
       if (privateKeyStorage.existsSync()) {
         var privKeyReader = privateKeyStorage.readAsStringSync();
@@ -40,10 +42,10 @@ class PreferenceBackupAndEncrypt {
 
   //Assign RSA Keys
   Future<void> assignRSAKeys(GoogleDrive drive) async {
-    String privKeyFilePath = join(keyLocation, privateKeyFileName);
-    io.File privateKeyStorage = io.File(privKeyFilePath);
-    String pubKeyFilePath = join(keyLocation, pubKeyFileName);
-    io.File publicKeyStorage = io.File(pubKeyFilePath);
+   // String privKeyFilePath = join(keyLocation, privateKeyFileName);
+    io.File privateKeyStorage = io.File(Global.fullDevicePrivKeyPath);
+    //String pubKeyFilePath = join(keyLocation, pubKeyFileName);
+    io.File publicKeyStorage = io.File(Global.fullDevicePubKeyPath);
     try {
       if (privateKeyStorage.existsSync() && publicKeyStorage.existsSync()) {
         assignRSAKeysOffline();
@@ -51,8 +53,8 @@ class PreferenceBackupAndEncrypt {
         throw Exception("No File");
       }
     } on Exception {
-      var checkKeysOnline = await drive.checkForFile(pubKeyFileName);
-      var checkPrivKey = await drive.checkForFile(privateKeyFileName);
+      var checkKeysOnline = await drive.checkForFile(Global.pubKeyFileName);
+      var checkPrivKey = await drive.checkForFile(Global.privateKeyFileName);
       if (checkKeysOnline && checkPrivKey) {
         downloadRSAKeys(drive);
       } else {
@@ -64,8 +66,8 @@ class PreferenceBackupAndEncrypt {
   //Download and  Assign RSA Keys
   Future<void> downloadRSAKeys(GoogleDrive drive) async {
     try {
-      await drive.syncBackupFiles(pubKeyFileName);
-      await drive.syncBackupFiles(privateKeyFileName);
+      await drive.syncBackupFiles(Global.pubKeyFileName,Global.fullDeviceDocsPath);
+      await drive.syncBackupFiles(Global.privateKeyFileName,Global.fullDeviceDocsPath);
       assignRSAKeys(drive);
     } on Exception catch (ex) {
       print(ex);
@@ -74,11 +76,11 @@ class PreferenceBackupAndEncrypt {
 
   Future<void> downloadPrefsCSVFile(GoogleDrive drive) async {
     try {
-      await Future.sync(() => drive.syncBackupFiles(prefsName));
+      await Future.sync(() => drive.syncBackupFiles(Global.prefsName,Global.fullDeviceDocsPath));
       if (privKey == null) {
         assignRSAKeys(drive);
       }
-      io.File csvFile = io.File(docsLocation);
+      io.File csvFile = io.File(Global.fullDevicePrefsPath);
       if (csvFile.existsSync()) {
         await Future.delayed(const Duration(seconds: 1), () {
           decipheredData = CryptoUtils.rsaDecrypt(
@@ -108,8 +110,8 @@ class PreferenceBackupAndEncrypt {
   }
 ///Generate new RSA Keys for encryption handling
   void generateRSAKeys() {
-    io.File privateKeyStorage = io.File(join(keyLocation, privateKeyFileName));
-    io.File publicKeyStorage = io.File(join(keyLocation, pubKeyFileName));
+    io.File privateKeyStorage = io.File(Global.fullDevicePrivKeyPath);
+    io.File publicKeyStorage = io.File(Global.fullDevicePubKeyPath);
     int bitLength = 2048;
     SecureRandom random = exampleSecureRandom();
 
@@ -136,19 +138,19 @@ class PreferenceBackupAndEncrypt {
  Future<void> encryptRsaKeysAndUpload(GoogleDrive drive) async {
     try {
       io.File privateKeyStorage =
-          io.File(join(keyLocation, privateKeyFileName));
-      io.File publicKeyStorage = io.File(join(keyLocation, pubKeyFileName));
+          io.File(Global.fullDevicePrivKeyPath);
+      io.File publicKeyStorage = io.File(Global.fullDevicePubKeyPath);
       if (privateKeyStorage.existsSync() == false ||
           publicKeyStorage.existsSync() == false) {
         generateRSAKeys();
       }
-      bool checkPubKey = await drive.checkForFile(pubKeyFileName);
-      bool checkPrivKey = await drive.checkForFile(privateKeyFileName);
+      bool checkPubKey = await drive.checkForFile(Global.pubKeyFileName);
+      bool checkPrivKey = await drive.checkForFile(Global.privateKeyFileName);
       if (checkPubKey && checkPrivKey) {
         throw Exception("We have keys in the cloud already");
       } else {
-        drive.uploadFileToGoogleDrive(privateKeyStorage);
-        drive.uploadFileToGoogleDrive(publicKeyStorage);
+        drive.uploadFileToGoogleDrive(privateKeyStorage,Global.privateKeyFileName);
+        drive.uploadFileToGoogleDrive(publicKeyStorage,Global.pubKeyFileName);
         print("RSA Keys Generated and uploaded");
         if (kriss.kDebugMode) {
           print("data encrypted");
@@ -163,11 +165,11 @@ class PreferenceBackupAndEncrypt {
 
   //Replace RSA Keys with new keys
   void replaceRsaKeys(GoogleDrive drive) async {
-    bool checkPubKey = await drive.checkForFile(pubKeyFileName);
+    bool checkPubKey = await drive.checkForFile(Global.pubKeyFileName);
     if (checkPubKey) {
       print("Keys exist, just clearing them out now");
-      drive.deleteOutdatedBackups(pubKeyFileName);
-      drive.deleteOutdatedBackups(privateKeyFileName);
+      drive.deleteOutdatedBackups(Global.pubKeyFileName);
+      drive.deleteOutdatedBackups(Global.privateKeyFileName);
     }
     encryptRsaKeysAndUpload(drive);
   }
@@ -183,13 +185,13 @@ class PreferenceBackupAndEncrypt {
 
   Future<void> uploadPrefsCSVFile(String cipherText, GoogleDrive drive) async {
     try {
-      io.File csvFile = io.File(docsLocation);
+      io.File csvFile = io.File(Global.fullDevicePrefsPath);
       if (!csvFile.existsSync()) {
         csvFile.createSync();
       }
       csvFile.writeAsStringSync(cipherText);
-      drive.deleteOutdatedBackups(prefsName);
-      drive.uploadFileToGoogleDrive(csvFile);
+      drive.deleteOutdatedBackups(Global.prefsName);
+      drive.uploadFileToGoogleDrive(csvFile,Global.prefsName);
     } on Exception catch (ex) {
       print(ex);
     }

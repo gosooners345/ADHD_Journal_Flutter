@@ -3,6 +3,7 @@
 import 'dart:async';
 
 //import 'package:adhd_journal_flutter/adhd_ml_engine_package/ml_kit_class.dart';
+import 'package:adhd_journal_flutter/project_resources/global_vars_andpaths.dart';
 import 'package:adhd_journal_flutter/project_resources/project_utils.dart';
 import 'package:adhd_journal_flutter/settings_tutorials/backup_and_sync_help.dart';
 import 'package:adhd_journal_flutter/ui/dashboard_stats_display_widget.dart';
@@ -176,9 +177,9 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
 
   void encryptData() async {
     await Future.sync(() {
-      preferenceBackupAndEncrypt.encryptData(
+      Global.preferenceBackupAndEncrypt.encryptData(
           "$userPassword,$dbPassword,$passwordHint,$passwordEnabled,$greeting,$colorSeed",
-          googleDrive);
+          Global.googleDrive);
     });
   }
 
@@ -393,15 +394,15 @@ leading: IconButton(onPressed: (){
 
                               SettingsPage())).then((value) => {
                     setState(() {
-                      greeting = prefs.getString('greeting')!;
+                      greeting = Global.prefs.getString('greeting')!;
                     }),
                     if (userPassword != dbPassword)
                       {
                         recordsBloc.changeDBPasswords(userPassword),
                         recordsBloc.getRecords(false)
                       },
-                    userActiveBackup = prefs.getBool("testBackup") ?? false,
-                    if (userActiveBackup) {
+                    Global.userActiveBackup = Global.prefs.getBool("testBackup") ?? false,
+                    if (Global.userActiveBackup) {
                       encryptData()
                     },
                   });

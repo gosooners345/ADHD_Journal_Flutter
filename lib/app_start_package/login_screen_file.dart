@@ -1,21 +1,17 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
 import 'package:flutter/foundation.dart';
-//import 'package:googleapis/drive/v3.dart' as ga;
-import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
-import '../backup_providers/google_drive_backup_class.dart';
 import '../backup_utils_package/crypto_utils.dart';
 import '../project_resources/file_manager_helper.dart';
+import '../project_resources/global_vars_andpaths.dart';
 import '../project_resources/project_colors.dart';
 import 'splash_screendart.dart';
 import 'onboarding_widget_class.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:adhd_journal_flutter/backup_utils_package/preference_backup_class.dart';
 import 'dart:io';
 
 /// Required to open the application , simple login form to start. The performance of this screen can be examined to test for improvements.
@@ -84,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
       // Review Dialog submission. This part is the most fragile part of the app.
       driveButton = ElevatedButton(
           onPressed: ()  {
-            var authenticated = prefs.getBool("authenticated") ?? false;
+            var authenticated = Global.prefs.getBool("authenticated") ?? false;
             if (authenticated == false) {
               showDialog(
                   context: context,
@@ -104,14 +100,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
                               //Set Navigator.Pop to execute when authenticated.
                             } else {
-                              showMessage(connection_Error_Message_String);
+                              showMessage(Global.connection_Error_Message_String);
                             }
                           },
                         ),
                         TextButton(
                             onPressed: () {
-                              userActiveBackup = false;
-                              prefs.setBool("testBackup", userActiveBackup);
+                              Global.userActiveBackup = false;
+                              Global.prefs.setBool("testBackup", Global.userActiveBackup);
                               showMessage(
                                   "To turn Backup & Sync on, simply hit Backup to Google Drive and hit Yes next time!");
                               Navigator.of(context).pop();
@@ -122,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   });
             } else {
               if (connected == true) {
-               googleDrive.initVariables();
+               Global.googleDrive.initVariables();
                checkGoogleDrive()
                     .whenComplete(() {
                           resetLoginFieldState();
@@ -133,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Navigator.of(context).pop();
                         });
               } else {
-                showMessage(connection_Error_Message_String);
+                showMessage(Global.connection_Error_Message_String);
               }
             }
           },
@@ -154,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void signInToGoogle() async{
-    googleDrive.initVariables();
+    Global.googleDrive.initVariables();
   /*  if(fileCheckCompleted==false){
     await checkDataFiles();
     }*/
@@ -166,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.of(context).pop();
     }
     await
-        googleDrive.initVariables().whenComplete(()async{
+        Global.googleDrive.initVariables().whenComplete(()async{
 loggedInState=true;
       await checkDataFiles()
           .whenComplete(() {
@@ -188,9 +184,9 @@ loggedInState=true;
 
 
   Future<bool> checkPreferences() async {
-    File preferencesFile = File(docsLocation);
+    File preferencesFile = File(Global.fullDevicePrefsPath);
     String decipheredData = CryptoUtils.rsaDecrypt(preferencesFile.readAsStringSync(
-        encoding: Encoding.getByName("utf-8")!),preferenceBackupAndEncrypt.privKey!);
+        encoding: Encoding.getByName("utf-8")!),Global.preferenceBackupAndEncrypt.privKey!);
 
     String dataForEncryption =
         '$userPassword,$dbPassword,$passwordHint,${passwordEnabled
@@ -216,8 +212,8 @@ loggedInState=true;
     //Check for existence of files and age.
     print("Checking $fileType");
     await fileChecker.checkLocalExistence();
-    await fileChecker.checkRemoteExistence(googleDrive);
-    await fileChecker.checkRemoteIsNewer(googleDrive);
+    await fileChecker.checkRemoteExistence(Global.googleDrive);
+    await fileChecker.checkRemoteIsNewer(Global.googleDrive);
     //Check file existence first locally then remotely. If file exists in cloud, but not on device, then download it.
     //Done
     if(!fileChecker.localExists){
@@ -245,24 +241,22 @@ loggedInState=true;
           case "Journal":
             await restoreDBFiles().then((value) {
               print("DB Swap Successful");
-              var getFileTime = File(dbLocation);
+              var getFileTime = File(Global.fullDeviceDBPath);
 
               showMessage(
                   'Your journal is synced as of ${getFileTime
                       .lastModifiedSync()
                       .toLocal()}');
-            }
-              )
-              ;
+            });
             break;
           case "Preferences":
-            await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive).whenComplete((){
+            await Global.preferenceBackupAndEncrypt.downloadPrefsCSVFile(Global.googleDrive).whenComplete((){
               updateValues();
             });
             //Process file.
             break;
           case "Keys":
-            await preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
+            await Global.preferenceBackupAndEncrypt.downloadRSAKeys(Global.googleDrive);
             break;
         }
       }
@@ -283,7 +277,7 @@ loggedInState=true;
           String dataForEncryption =
               '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
           googleIsDoingSomething(true);
-          await preferenceBackupAndEncrypt.encryptData(dataForEncryption, googleDrive).whenComplete(() {
+          await Global.preferenceBackupAndEncrypt.encryptData(dataForEncryption, Global.googleDrive).whenComplete(() {
             setState(() {
               showMessage( "Preferences Uploaded");
             });
@@ -291,7 +285,7 @@ loggedInState=true;
 
           break;
         case "Keys":
-          await preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive).whenComplete(() {
+          await Global.preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(Global.googleDrive).whenComplete(() {
             setState(() {
               showMessage( "Encryption keys Uploaded");
             });
@@ -305,7 +299,7 @@ loggedInState=true;
         switch (fileType) {
           case "Journal":
             await restoreDBFiles().then((value) async {
-              var getFileTime = File(dbLocation);
+              var getFileTime = File(Global.fullDeviceDBPath);
 
               showMessage(
                   'Your journal is synced as of ${getFileTime
@@ -314,13 +308,13 @@ loggedInState=true;
             });
             break;
           case "Preferences":
-            await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive).whenComplete((){
+            await Global.preferenceBackupAndEncrypt.downloadPrefsCSVFile(Global.googleDrive).whenComplete((){
               updateValues();
             });
             //Process file.
 break;
           case "Keys":
-            await preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
+            await Global.preferenceBackupAndEncrypt.downloadRSAKeys(Global.googleDrive);
             break;
         }
       }
@@ -337,14 +331,14 @@ break;
             String dataForEncryption =
                 '$userPassword,$dbPassword,$passwordHint,${passwordEnabled.toString()},$greeting,$colorSeed';
             googleIsDoingSomething(true);
-            await preferenceBackupAndEncrypt.encryptData(dataForEncryption, googleDrive).whenComplete(() {
+            await Global.preferenceBackupAndEncrypt.encryptData(dataForEncryption, Global.googleDrive).whenComplete(() {
               setState(() {
                 showMessage( "Preferences Uploaded");
               });
               googleIsDoingSomething(false);});
             break;
           case "Keys":
-            await preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive).whenComplete(() {
+            await Global.preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(Global.googleDrive).whenComplete(() {
               setState(() {
                 showMessage( "Encryption keys Uploaded");
               });
@@ -365,7 +359,7 @@ break;
             });
             break;
           case "Preferences":
-            await preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive).whenComplete(() {
+            await Global.preferenceBackupAndEncrypt.downloadPrefsCSVFile(Global.googleDrive).whenComplete(() {
               showMessage( "Updated preferences downloaded, checking for mismatches");
             });
              isDataSame = await checkPreferences();
@@ -381,7 +375,7 @@ break;
 
             break;
           case "Keys":
-            await preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive).whenComplete(() {
+            await Global.preferenceBackupAndEncrypt.downloadRSAKeys(Global.googleDrive).whenComplete(() {
               showMessage( "Encryption keys Updated");
             });
             break;
@@ -393,12 +387,12 @@ break;
 
   Future<void> checkGoogleDrive() async{
     if (connected == true) {
-      userActiveBackup = prefs.getBool('testBackup') ?? false;
-      print("Backup is turned on: $userActiveBackup");
+      Global.userActiveBackup = Global.prefs.getBool('testBackup') ?? false;
+      print("Backup is turned on: $Global.userActiveBackup");
     }
-    if (userActiveBackup) {
+    if (Global.userActiveBackup) {
       try{
-        if(googleDrive.client == null){
+        if(Global.googleDrive.client == null){
           throw Exception("Google Drive needs initialized");
         }
       }
@@ -406,22 +400,20 @@ break;
         if(kDebugMode){
           print(ex);
         }
-        googleDrive.client = await  googleDrive.getHttpClient();
-        googleDrive.initV2();
+        Global.googleDrive.client = await  Global.googleDrive.getHttpClient();
+        Global.googleDrive.initV2();
       }
-      if (googleDrive.client != null) {
-        if (userActiveBackup) {
-          var pubKeyLocation = path.join(keyLocation, pubKeyFileName);
-          var docLIst=[dbLocation,pubKeyLocation,docsLocation];
-          //print("Checking Keys");
+      if (Global.googleDrive.client != null) {
+        if (Global.userActiveBackup) {
+          var docLIst=[Global.fullDeviceDBPath,Global.fullDevicePubKeyPath,Global.fullDevicePrefsPath];
           // Make this a for loop statement and initialize an array for the file locations.
           for(int i=0;i<3;i++){
             //await Future.delayed(Duration(seconds: 1));
             googleIsDoingSomething(true);
-            await checkFilesExistV2(docLIst[i], files_list_names[i], files_list_types[i]).onError((error, stackTrace) {
+            await checkFilesExistV2(docLIst[i], Global.files_list_names[i], Global.files_list_types[i]).onError((error, stackTrace) {
               print("Tis but a scratch");
             }).whenComplete(() {
-              print(files_list_types[i] + " check complete.");
+              print(Global.files_list_types[i] + " check complete.");
               googleIsDoingSomething(false);
             });
             googleIsDoingSomething(false);
@@ -430,7 +422,7 @@ fileCheckCompleted=true;
         }
       }
       else {
-        userActiveBackup = false;
+        Global.userActiveBackup = false;
         showMessage(
         "To protect your data, you'll need to sign into Google Drive and approve application access to backup your stuff!");
       }
@@ -447,36 +439,36 @@ fileCheckCompleted=true;
 
   Future<bool> getNetStatus() async {
     if (connected) {
-      userActiveBackup = prefs.getBool('testBackup') ?? false;
+      Global.userActiveBackup = Global.prefs.getBool('testBackup') ?? false;
     }
     return connected;
   }
 // in case Splash Screen doesn't load things in time because it moves so fast.
   void loadStateStuff() async {
 
-    if(prefs == null){
-      prefs = await SharedPreferences.getInstance();
+    if(Global.prefs == null){
+      Global.prefs = await SharedPreferences.getInstance();
     }
-    passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
-    greeting = prefs.getString("greeting") ?? '';
+    passwordEnabled = Global.prefs.getBool('passwordEnabled') ?? true;
+    greeting = Global.prefs.getString("greeting") ?? '';
     loginGreeting = await  getGreeting();
-    userPassword = await encryptedSharedPrefs.getString('loginPassword');
-    //Dumb bug flutter imposed on shared prefs with index out of range exceptions
+    userPassword = await Global.encryptedSharedPrefs.getString('loginPassword');
+    //Dumb bug flutter imposed on shared Global.prefs with index out of range exceptions
     try {
-      dbPassword = await encryptedSharedPrefs.getString('dbPassword');
+      dbPassword = await Global.encryptedSharedPrefs.getString('dbPassword');
     } on Exception catch (ex) {
       if (kDebugMode) {
         print(ex);
       }
       try {
-        await encryptedSharedPrefs.remove('dbPassword');
+        await Global.encryptedSharedPrefs.remove('dbPassword');
       } on Exception catch (ex) {
         if (kDebugMode) {
           print(ex);
         }
       }
       dbPassword = userPassword;
-      await encryptedSharedPrefs.setString('dbPassword', dbPassword);
+      await Global.encryptedSharedPrefs.setString('dbPassword', dbPassword);
     }
     passwordHint = await getPasswordHint();
     isPasswordChecked = passwordEnabled;
@@ -494,29 +486,29 @@ fileCheckCompleted=true;
   }
   void reloadStateStuff() async {
 loggedInState=false;
-    if(prefs == null){
-      prefs = await SharedPreferences.getInstance();
+    if(Global.prefs == null){
+      Global.prefs = await SharedPreferences.getInstance();
     }
-    passwordEnabled = prefs.getBool('passwordEnabled') ?? true;
-    greeting = prefs.getString("greeting") ?? '';
+    passwordEnabled = Global.prefs.getBool('passwordEnabled') ?? true;
+    greeting = Global.prefs.getString("greeting") ?? '';
     loginGreeting = await  getGreeting();
-    userPassword = await encryptedSharedPrefs.getString('loginPassword');
-    //Dumb bug flutter imposed on shared prefs with index out of range exceptions
+    userPassword = await Global.encryptedSharedPrefs.getString('loginPassword');
+    //Dumb bug flutter imposed on shared Global.prefs with index out of range exceptions
     try {
-      dbPassword = await encryptedSharedPrefs.getString('dbPassword')??'';
+      dbPassword = await Global.encryptedSharedPrefs.getString('dbPassword')??'';
     } on Exception catch (ex) {
       if (kDebugMode) {
         print(ex);
       }
       try {
-        await encryptedSharedPrefs.remove('dbPassword');
+        await Global.encryptedSharedPrefs.remove('dbPassword');
       } on Exception catch (ex) {
         if (kDebugMode) {
           print(ex);
         }
       }
       dbPassword = userPassword;
-      await encryptedSharedPrefs.setString('dbPassword', dbPassword);
+      await Global.encryptedSharedPrefs.setString('dbPassword', dbPassword);
     }
     passwordHint = await getPasswordHint();
     isPasswordChecked = passwordEnabled;
@@ -530,12 +522,12 @@ if(isThisReturning==true){
   await checkDataFiles();
 }
     googleIsDoingSomething(false);
-   // fileCheckCompleted = false;
+
   }
 
   Future<void> checkDataFiles() async {
-    if (userActiveBackup) {
-      if(googleDrive.client==null){
+    if (Global.userActiveBackup) {
+      if(Global.googleDrive.client==null){
         signInToGoogle();
       } else{
         checkGoogleDrive();
@@ -547,7 +539,7 @@ if(isThisReturning==true){
   }
 
   Future<String> getGreeting() async {
-    greeting = prefs.getString('greeting') ?? '';
+    greeting = Global.prefs.getString('greeting') ?? '';
     String opener = 'Welcome ';
     String closer = (passwordEnabled == true)
         ? '! Sign in with your password below.'
@@ -557,30 +549,27 @@ if(isThisReturning==true){
   }
 
   Future<String> getPasswordHint() async {
-    return encryptedSharedPrefs.getString("passwordHint");
+    return Global.encryptedSharedPrefs.getString("passwordHint");
   }
 
   Future<bool> getSyncStateStatus() async {
-    return userActiveBackup;
+    return Global.userActiveBackup;
   }
 
   Future<bool> getPasswordEnabledState() async {
-    return prefs.getBool('passwordEnabled') ?? true;
+    return Global.prefs.getBool('passwordEnabled') ?? true;
   }
 
   void refreshPrefs() async {
-    prefs.reload();
-    await Future.sync(() => encryptedSharedPrefs.reload());
+    Global.prefs.reload();
+    await Future.sync(() => Global.encryptedSharedPrefs.reload());
     await Future.delayed(const Duration(seconds: 1), reloadStateStuff);
   }
 
   void resetLoginFieldState() async {
 
     var recordsBloc = Provider.of<RecordsBloc>(context,listen: false);
-/*if(loggedInState==true){
-  recordsBloc.handleDBSwapRefresh();
-}*/
-    //recordsBloc.getRecords(true);
+
 
     setState(() {
       if (passwordHint == '' || passwordHint == ' ') {
@@ -665,10 +654,8 @@ if(isThisReturning==true){
 
   Future<void> uploadDBFiles() async {
     googleIsDoingSomething(true);
-
-    googleDrive.deleteOutdatedBackups(databaseName);
-
-    await googleDrive.uploadFileToGoogleDrive(File(dbLocation)).whenComplete((){
+    Global.googleDrive.deleteOutdatedBackups(Global.databaseName);
+    await Global.googleDrive.uploadFileToGoogleDrive(File(Global.fullDeviceDBPath),Global.databaseName).whenComplete((){
       googleIsDoingSomething(false);
       showMessage('Your journal is now uploaded!');
     });
@@ -679,9 +666,9 @@ if(isThisReturning==true){
   Future<void> restoreDBFiles() async {
     try {
       //googleIsDoingSomething(true);
-      await googleDrive.syncBackupFiles(databaseName).then((value) async{
+      await Global.googleDrive.syncBackupFiles(Global.databaseName, Global.fullDeviceDocsPath).then((value) async{
         googleIsDoingSomething(false);
-      });
+      }); Global.dbDownloaded = true;
     } on Exception {
       showMessage('You need to open up the journal once to back it up.');
     }
@@ -693,22 +680,22 @@ if(isThisReturning==true){
   }
 
   void googleIsDoingSomething(bool value) {
-    readyButton.boolSink.add(value);
+    Global.readyButton.boolSink.add(value);
   }
 
   void updateValues() async {
     googleIsDoingSomething(true);
     showMessage("Updating preferences");
     if (decipheredData == '') {
-      File prefsFile = File(docsLocation);
+      File prefsFile = File(Global.fullDevicePrefsPath);
      // googleIsDoingSomething(true);
       if (prefsFile.existsSync()) {
         decipheredData = CryptoUtils.rsaDecrypt(
             prefsFile.readAsStringSync(encoding: Encoding.getByName("utf-8")!),
-            preferenceBackupAndEncrypt.privKey!);
+            Global.preferenceBackupAndEncrypt.privKey!);
         await Future.delayed(Duration(milliseconds: 200));
       } else {
-    await    preferenceBackupAndEncrypt.downloadPrefsCSVFile(googleDrive);
+    await    Global.preferenceBackupAndEncrypt.downloadPrefsCSVFile(Global.googleDrive);
       }
     }
 
@@ -722,7 +709,7 @@ if(isThisReturning==true){
     dlColorSeed = int.parse(newValues[5]);
     if (userPassword != dlUserPassword || userPassword != dbPassword) {
       userPassword = dlUserPassword;
-      var test = await encryptedSharedPrefs.getString('dbPassword');
+      var test = await Global.encryptedSharedPrefs.getString('dbPassword');
       if (test != dbPassword) {
         if (kDebugMode) {
           print(test);
@@ -731,25 +718,25 @@ if(isThisReturning==true){
       if (dbPassword != userPassword) {
         dbPassword = userPassword;
       }
-      await encryptedSharedPrefs.setString('loginPassword', userPassword);
+      await Global.encryptedSharedPrefs.setString('loginPassword', userPassword);
     }
     if (passwordEnabled != dlPasswordEnabled) {
       passwordEnabled = dlPasswordEnabled;
-      prefs.setBool('passwordEnabled', passwordEnabled);
+      Global.prefs.setBool('passwordEnabled', passwordEnabled);
       getPasswordEnabledState();
     }
     if (passwordHint != dlPasswordHint) {
       passwordHint = dlPasswordHint;
       await Future.sync(
-          () => encryptedSharedPrefs.setString('passwordHint', passwordHint));
+          () => Global.encryptedSharedPrefs.setString('passwordHint', passwordHint));
     }
     if (greeting != dlGreeting) {
       greeting = dlGreeting;
-      prefs.setString('greeting', greeting);
+      Global.prefs.setString('greeting', greeting);
     }
     if (colorSeed != dlColorSeed) {
       colorSeed = dlColorSeed;
-      prefs.setInt('apptheme', colorSeed);
+      Global.prefs.setInt('apptheme', colorSeed);
       setState(() {
         super.widget.swapper?.themeColor = colorSeed;
       });
@@ -760,7 +747,7 @@ if(isThisReturning==true){
     isDataSame = true;
     decipheredData = '';
     googleIsDoingSomething(false);
-    readyButton.boolSink.add(false);
+    googleIsDoingSomething(false);
     refreshPrefs();
   }
 
@@ -791,7 +778,7 @@ if(isThisReturning==true){
                 height: 50,
                 width: 250,
                 child: StreamBuilder<bool>(
-                    stream: readyButton.controller.stream,
+                    stream: Global.readyButton.controller.stream,
                     builder:
                         (BuildContext context, AsyncSnapshot<bool> snapshot) {
                       var recordsBloc = Provider.of<RecordsBloc>(context,listen: false);
@@ -818,9 +805,10 @@ if(isThisReturning==true){
                                         if (loginPassword == userPassword &&
                                             passwordEnabled) {
                                           loginPassword = '';
+                                          if(Global.dbDownloaded == true)
                                            recordsBloc.handleDBSwapRefresh();
-                                          //await Future.delayed(Duration(seconds: 1));
                                           recordsBloc.getRecords(true);
+                                          Global.dbDownloaded = false;
                                           Navigator.pushNamed(
                                                   context, '/success')
                                               .then((value) => {
@@ -829,9 +817,9 @@ if(isThisReturning==true){
                                                     refreshPrefs(),
                                                   });
                                         } else if (!passwordEnabled) {
+                                          if(Global.dbDownloaded == true)
                                            recordsBloc.handleDBSwapRefresh();
-                                         // await Future.delayed(Duration(seconds: 1));
-
+Global.dbDownloaded = false;
                                           recordsBloc.getRecords(true);
                                           loginPassword = '';
                                           stuff.clear();
@@ -922,7 +910,7 @@ if(isThisReturning==true){
                             );
                           } else {
                             return const Center(
-                              child: Text(connection_Error_Message_String),
+                              child: Text(Global.connection_Error_Message_String),
                             );
                           }
                         } else {
@@ -975,9 +963,9 @@ if(isThisReturning==true){
 
 }
 
-PreferenceBackupAndEncrypt preferenceBackupAndEncrypt =
-    PreferenceBackupAndEncrypt();
-LoginButtonReady readyButton = LoginButtonReady();
+//PreferenceBackupAndEncrypt Global.preferenceBackupAndEncrypt =
+  //  PreferenceBackupAndEncrypt();
+//LoginButtonReady readyButton = LoginButtonReady();
 
 class LoginButtonReady {
   StreamController<bool> controller =

@@ -1,3 +1,4 @@
+/*
 // ignore_for_file: constant_identifier_names
 
 /// These arrays are sorted by severity and type.
@@ -429,3 +430,4 @@ final weak_emotional_cluster = [
   'despairing',
   'broken'
 ];
+*/

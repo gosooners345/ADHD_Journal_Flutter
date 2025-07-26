@@ -7,6 +7,8 @@ import 'package:path/path.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart' as sqlCipher;
 import 'package:flutter/services.dart';
 
+import '../project_resources/global_vars_andpaths.dart';
+
 class RecordsDB {
   static const platform =
       MethodChannel('com.activitylogger.release1/ADHDJournal');
@@ -16,20 +18,20 @@ class RecordsDB {
   sqlCipher.Database? _database;
 
   Future<sqlCipher.Database> get database async {
-   // return await openOrCreateDatabase();
     if(_database == null&&_database!.isOpen){
       return _database!;
     } else {
       _database = await openOrCreateDatabase();
       return _database!;
-      //return await openOrCreateDatabase();
     }
 
   }
 
   openOrCreateDatabase() async {
     return await sqlCipher.openDatabase(
-      join(await sqlCipher.getDatabasesPath(), 'activitylogger_db.db'),
+      //Path code v //
+      /*join(await sqlCipher.getDatabasesPath(), 'activitylogger_db.db')*/
+    Global.fullDeviceDBPath,
       password: dbPassword,
       onCreate: (database, version) {
         return database.execute(
@@ -41,7 +43,6 @@ class RecordsDB {
         }
       },
       onOpen: (database) {
-        //database.execute("DROP TABLE IF EXISTS android_metadata; DROP TABLE IF EXISTS room_master_table;");
     if(Platform.isAndroid) {
       database.execute( "DROP TABLE IF EXISTS android_metadata; DROP TABLE IF EXISTS room_master_table; ");
     }

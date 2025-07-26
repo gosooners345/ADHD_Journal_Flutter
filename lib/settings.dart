@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:adhd_journal_flutter/project_resources/global_vars_andpaths.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'notifications_packages/notification_controller.dart';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
@@ -73,7 +74,7 @@ final InAppReview inAppReview = InAppReview.instance;
     if (passwordHint == " ") {
       passwordHint = '';
     }
-    notificationsAllowed = prefs.getBool('notifications') ?? false;
+    notificationsAllowed = Global.prefs.getBool('notifications') ?? false;
     setState(() {
       if (notificationsAllowed) {
         notifyText =
@@ -107,7 +108,7 @@ final InAppReview inAppReview = InAppReview.instance;
         passwordLabelText = "Password Disabled";
       }
       passwordLabelWidget = Text(passwordLabelText);
-      if (userActiveBackup) {
+      if (Global.userActiveBackup) {
         syncIcon = Icon(
           Icons.sync,
           color: Color(colorSeed),
@@ -126,13 +127,13 @@ final InAppReview inAppReview = InAppReview.instance;
 
   ///Save string values into the preferences
   void saveSettings(String value, String key) async {
-    encryptedSharedPrefs.setString(key, value);
-    await encryptedSharedPrefs.setString(key, value);
-    encryptedSharedPrefs.reload();
+    Global.encryptedSharedPrefs.setString(key, value);
+    await Global.encryptedSharedPrefs.setString(key, value);
+    Global.encryptedSharedPrefs.reload();
   }
 
   void saveSettings2(bool value, String key) async {
-    prefs.setBool(key, value);
+    Global.prefs.setBool(key, value);
   }
 
   void saveColorSettings(ThemeSwap swapper, int colorValue) async {
@@ -151,17 +152,17 @@ final InAppReview inAppReview = InAppReview.instance;
   // USE ONLY IF YOU NEED TO RESET KEYS ON DEVICE. A FILE WILL BE ON THE DRIVE WARNING OF OLD KEYS
 // This will need to be modified to permit multiple services to be used
   void resetRSAKeys() async {
-    await Future.sync(() => googleDrive.deleteOutdatedBackups(prefsName));
+    await Future.sync(() => Global.googleDrive.deleteOutdatedBackups(Global.prefsName));
 
-    await Future.sync(() => googleDrive.deleteOutdatedBackups(".pem"))
+    await Future.sync(() => Global.googleDrive.deleteOutdatedBackups(".pem"))
         .whenComplete(
-      () => preferenceBackupAndEncrypt.generateRSAKeys(),
+      () => Global.preferenceBackupAndEncrypt.generateRSAKeys(),
     );
     await Future.delayed(const Duration(seconds: 2), () {
-      preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(googleDrive);
+      Global.preferenceBackupAndEncrypt.encryptRsaKeysAndUpload(Global.googleDrive);
     });
     await Future.delayed(const Duration(seconds: 5), () {
-      preferenceBackupAndEncrypt.downloadRSAKeys(googleDrive);
+      Global.preferenceBackupAndEncrypt.downloadRSAKeys(Global.googleDrive);
     });
   }
 
@@ -174,14 +175,14 @@ final InAppReview inAppReview = InAppReview.instance;
           title: const Text('Settings'),
           leading: IconButton(
               onPressed: () {
-                prefs.setBool('passwordEnabled', isPasswordChecked);
+                Global.prefs.setBool('passwordEnabled', isPasswordChecked);
                 if (passwordHint == '') {
                   passwordHint = ' ';
                 }
                 passwordEnabled = isPasswordChecked;
                 saveSettings(passwordHint, 'passwordHint');
                 saveSettings(userPassword, 'loginPassword');
-                prefs.setString('greeting', greeting);
+                Global.prefs.setString('greeting', greeting);
                 if (kDebugMode) {
                   print(passwordHint);
                 }
@@ -296,7 +297,7 @@ final InAppReview inAppReview = InAppReview.instance;
                                             .requestPermissionToSendNotifications()
                                             .then(
                                           (_) async {
-                                            prefs.setBool(
+                                            Global.prefs.setBool(
                                                 "notifications", true);
                                             notifyText =
                                                 'Notifications Turned on, Click here to change the schedule or turn them off.\r\n'
@@ -314,7 +315,7 @@ final InAppReview inAppReview = InAppReview.instance;
                                       child: const Text("Allow")),
                                   TextButton(
                                     onPressed: () {
-                                      prefs.setBool("notifications", false);
+                                      Global.prefs.setBool("notifications", false);
                                       notifyText =
                                           'Click here to turn on notification reminders';
                                       setState(() {
@@ -332,9 +333,9 @@ final InAppReview inAppReview = InAppReview.instance;
                                 ],
                               ));
                     } else {
-                      prefs.setBool("notifications", true);
+                      Global.prefs.setBool("notifications", true);
                       notificationsAllowed =
-                          prefs.getBool('notifications') ?? true;
+                          Global.prefs.getBool('notifications') ?? true;
                       NotificationController.cancelNotifications()
                           .then((_) async {
                         TimeOfDay? scheduleReminder = await showTimePicker(
@@ -363,9 +364,9 @@ final InAppReview inAppReview = InAppReview.instance;
                               'adhd_journal_scheduled');
                           showMessage("Notification schedule cancelled");
 
-                          prefs.setBool("notifications", false);
+                          Global.prefs.setBool("notifications", false);
                           notificationsAllowed =
-                              prefs.getBool('notifications') ?? false;
+                              Global.prefs.getBool('notifications') ?? false;
                           notifyText =
                               'Click here to turn on notification reminders';
                           setState(() {
@@ -459,7 +460,7 @@ final InAppReview inAppReview = InAppReview.instance;
                       color: Color(swapper.isColorSeed),
                     );
                     passwordLabelText = "Password Enabled";
-                    prefs.setBool('passwordEnabled', value);
+                    Global.prefs.setBool('passwordEnabled', value);
                     if (kDebugMode) {
                       print(value);
                     }
@@ -469,7 +470,7 @@ final InAppReview inAppReview = InAppReview.instance;
                       color: Color(swapper.isColorSeed),
                     );
                     passwordLabelText = "Password Disabled";
-                    prefs.setBool('passwordEnabled', value);
+                    Global.prefs.setBool('passwordEnabled', value);
                     if (kDebugMode) {
                       print(value);
                     }
@@ -499,11 +500,11 @@ final InAppReview inAppReview = InAppReview.instance;
                       title: const Text(
                         "Reset RSA Keys for backup and sync.",
                       ),
-                      content: const Text(reset_RSA_Key_Dialog_Message_String),
+                      content: const Text(Global.reset_RSA_Key_Dialog_Message_String),
                       actions: [
                         ElevatedButton(
                             onPressed: () async {
-                              if (userActiveBackup == true) {
+                              if (Global.userActiveBackup == true) {
                                 Navigator.of(context).pop();
                                 await Future.sync(() => resetRSAKeys())
                                     .whenComplete(() {
@@ -535,10 +536,10 @@ final InAppReview inAppReview = InAppReview.instance;
             spacer,
             // Backup & Sync Section , OneDrive & iCloud will need to be added here
             SwitchListTile(
-              value: userActiveBackup,
+              value: Global.userActiveBackup,
               onChanged: (bool value) {
-                userActiveBackup = value;
-                userActiveBackup = value;
+                Global.userActiveBackup = value;
+                Global.userActiveBackup = value;
                 setState(() {
                   if (value == true) {
                     syncIcon = Icon(
@@ -546,7 +547,7 @@ final InAppReview inAppReview = InAppReview.instance;
                       color: Color(swapper.isColorSeed),
                     );
                     syncTextLabelText = "Backup and Sync to Drive Enabled";
-                    prefs.setBool('testBackup', value);
+                    Global.prefs.setBool('testBackup', value);
                     if (kDebugMode) {
                       print("Backup and sync is $value");
                     }
@@ -557,7 +558,7 @@ final InAppReview inAppReview = InAppReview.instance;
                       color: Color(swapper.isColorSeed),
                     );
                     syncTextLabelText = "Backup and Sync to Drive Disabled";
-                    prefs.setBool('testBackup', value);
+                    Global.prefs.setBool('testBackup', value);
                     print("Backup and Sync is $value");
                   }
                   syncTextWidget = Text(syncTextLabelText);
@@ -670,7 +671,7 @@ final InAppReview inAppReview = InAppReview.instance;
               thickness: 0.5,
               color: Color(swapper.isColorSeed),
             ),
-            ListTile(
+           /* ListTile(
               iconColor: Color(swapper.isColorSeed),
               leading: const Icon(Icons.book),
               title: const Text('Resources'),
@@ -678,7 +679,7 @@ final InAppReview inAppReview = InAppReview.instance;
               onTap: () {
                 Navigator.pushNamed(context, '/resources');
               },
-            ),
+            ),*/
             Divider(
               height: 1.0,
               thickness: 0.5,
@@ -709,7 +710,7 @@ final InAppReview inAppReview = InAppReview.instance;
 
 //Onedrive agent method needed
   void getDriveAgent() async {
-    googleDrive.client = await googleDrive.getHttpClient();
+    Global.googleDrive.client = await Global.googleDrive.getHttpClient();
   }
 
   void showMessage(String message) {

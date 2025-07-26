@@ -6,6 +6,7 @@ import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart
 import 'package:flutter/foundation.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 
+import '../project_resources/global_vars_andpaths.dart';
 import 'records_db_class.dart';
 import 'package:adhd_journal_flutter/record_data_package/records_data_class_db.dart';
 
@@ -219,20 +220,20 @@ Uint8List testImage(Map<String,dynamic>map)  {
 // Replacing old files
 
       //if(Platform.isAndroid){
-      File walfile = File("$dbLocation-wal");
-      File shmFile = File("$dbLocation-shm");
+      File walfile = File("${Global.databaseName}-wal");
+     File shmFile = File("${Global.databaseName}-shm");
 
-      googleDrive.deleteOutdatedBackups(databaseName);
-      googleDrive.uploadFileToGoogleDrive(File(dbLocation));
+      Global.googleDrive.deleteOutdatedBackups(Global.databaseName);
+      Global.googleDrive.uploadFileToGoogleDrive(File(Global.fullDeviceDBPath),Global.databaseName);
 
       if (walfile.existsSync()) {
         if (kDebugMode) {
           print(walfile.existsSync());
         }
-        googleDrive.uploadFileToGoogleDrive(File("$dbLocation-wal"));
+        Global.googleDrive.uploadFileToGoogleDrive(File("${Global.databaseName}-wal"),walfile.path);
       }
       if (shmFile.existsSync()) {
-        googleDrive.uploadFileToGoogleDrive(File("$dbLocation-shm"));
+        Global.googleDrive.uploadFileToGoogleDrive(File("${Global.databaseName}-shm"),shmFile.path);
       }
 
       query = "PRAGMA key = $newPassword;";
@@ -256,7 +257,7 @@ Uint8List testImage(Map<String,dynamic>map)  {
       if (kDebugMode) {
         print("Success");
       }
-      await encryptedSharedPrefs.setString("dbPassword", newPassword);
+      await Global.encryptedSharedPrefs.setString("dbPassword", newPassword);
       dbPassword = newPassword;
     } on Exception catch (e) {
       if (kDebugMode) {

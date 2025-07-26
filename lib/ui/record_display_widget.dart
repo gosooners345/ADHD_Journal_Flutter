@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import '../main.dart';
 import 'package:flutter/material.dart';
+import '../project_resources/global_vars_andpaths.dart';
 import '../project_resources/project_colors.dart';
 import '../app_start_package/splash_screendart.dart';
 import '../project_resources/project_utils.dart';
@@ -38,7 +39,7 @@ late RecordsBloc recordsBloc;
       recordsBloc = Provider.of<RecordsBloc>(context,listen: false);
 
      // startTimer();
-      greeting = prefs.getString('greeting') ?? '';
+      greeting = Global.prefs.getString('greeting') ?? '';
       checkHint();
 
     } catch (e, s) {
@@ -106,7 +107,7 @@ late RecordsBloc recordsBloc;
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             content: ListTile(
-              title: const Text(password_hint_needed),
+              title: const Text(Global.password_hint_needed),
               subtitle: ListTile(
                 title: TextField(
                   obscureText: false,
@@ -143,8 +144,8 @@ late RecordsBloc recordsBloc;
   }
 
   void saveSettings(String value, String key) async {
-    encryptedSharedPrefs.setString(key, value);
-    await encryptedSharedPrefs.setString(key, value);
+    Global.encryptedSharedPrefs.setString(key, value);
+    await Global.encryptedSharedPrefs.setString(key, value);
   }
 // Go by date
   // Custom ScrollView, SliverList, Delegate, Child List Delegate
