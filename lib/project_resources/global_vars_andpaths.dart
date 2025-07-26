@@ -456,15 +456,17 @@ static String appDocumentsDirectoryPath = '';
 static String dbLocation = "";
 static String docsLocation = "";
 static String keyLocation="";
-
+static String dbPath="";
 // File names
   static const String prefsName = 'journalStuff.txt';
   static  const String databaseName = "activitylogger_db.db";
   static  const String privateKeyFileName = "journ_privkey.pem";
   static const String pubKeyFileName = "journ_pubKey.pem";
   static const String dbWal = "activitylogger_db.db-wal";
+
 //File paths
   static String get fullDeviceDocsPath => docsLocation;
+  static String get DBPathNOFile=> dbPath;
   static String get fullDevicePubKeyPath => '$docsLocation/$pubKeyFileName';
   static String get fullDevicePrivKeyPath => '$docsLocation/$privateKeyFileName';
   static String get fullDeviceDBPath => dbLocation;
@@ -489,7 +491,7 @@ static String keyLocation="";
          appDocumentsDirectoryPath = directory.path;
          docsLocation = directory.path;
          dbLocation = join (await sqlCipher.getDatabasesPath(),databaseName);
-
+dbPath = await sqlCipher.getDatabasesPath();
          if(kDebugMode){
           print("Global variables initialized, anything that needs more than a single class should be started here except for Google Drive");
          }

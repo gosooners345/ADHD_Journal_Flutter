@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:adhd_journal_flutter/app_start_package/login_screen_file.dart';
-import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
-import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
 
@@ -196,7 +194,6 @@ Uint8List testImage(Map<String,dynamic>map)  {
   // Possible replacement for old method if things don't work properly
   changePasswords(String newPassword) async {
     var db = await recordsDB.database;
-
     var query = "PRAGMA key = $dbPassword;";
 
     var query2 = "PRAGMA rekey = $newPassword;";
@@ -226,7 +223,7 @@ Uint8List testImage(Map<String,dynamic>map)  {
       Global.googleDrive.deleteOutdatedBackups(Global.databaseName);
       Global.googleDrive.uploadFileToGoogleDrive(File(Global.fullDeviceDBPath),Global.databaseName);
 
-      if (walfile.existsSync()) {
+    /*  if (walfile.existsSync()) {
         if (kDebugMode) {
           print(walfile.existsSync());
         }
@@ -234,7 +231,7 @@ Uint8List testImage(Map<String,dynamic>map)  {
       }
       if (shmFile.existsSync()) {
         Global.googleDrive.uploadFileToGoogleDrive(File("${Global.databaseName}-shm"),shmFile.path);
-      }
+      }*/
 
       query = "PRAGMA key = $newPassword;";
       dbPassword = newPassword;

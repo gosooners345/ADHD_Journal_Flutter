@@ -94,7 +94,7 @@ if(connected==false) {
     setState(() {
       appStatus.value = "Getting Build and App Version info";
     });
-   //Test Code 1
+
     initPrefs().then((value) async{
       if(Global.userActiveBackup){
         if(Global.googleDrive.client==null){
@@ -107,10 +107,14 @@ if(connected==false) {
           }
         }
       }
-      await getPackageInfo().whenComplete(() =>
-          loadPreferences().whenComplete(() {
+      await getPackageInfo();
+       await   loadPreferences().then((value) {
             checkG00gleDrive();
-          }));
+          }).onError((error, stackTrace) {
+            print(error);
+            print(stackTrace);
+       });
+      //);
     });
 
       if(kDebugMode){
@@ -121,7 +125,7 @@ if(connected==false) {
       }
     }
 
-  await  Future.delayed(Duration(seconds: 10), route);
+  await  Future.delayed(Duration(seconds: 15), route);
   }
   //Initialize Preferences
   initPrefs() async{
@@ -176,9 +180,6 @@ if(Global.googleDrive.client!=null){
 }}
 
     }
-
-
-
    }on Exception catch(ex){
      print(ex);
    }
@@ -390,6 +391,8 @@ var docLIst=[pubKeyLocation,Global.fullDeviceDBPath,Global.fullDevicePrefsPath];
          for(int i=0;i<3;i++){
          await checkFilesExistV2(docLIst[i], Global.files_list_names[i], Global.files_list_types[i]).onError((error, stackTrace) {
            print("Tis but a scratch");
+           print(error);
+           print(stackTrace);
          }).whenComplete(() {
            print("${Global.files_list_types[i]} check complete.");
          });
@@ -440,28 +443,7 @@ var docLIst=[pubKeyLocation,Global.fullDeviceDBPath,Global.fullDevicePrefsPath];
  Future< void> getPackageInfo() async {
     packInfo = await PackageInfo.fromPlatform();
     buildInfo = packInfo.version;
-   /* try {
-      String docDirectory = await getDatabasesPath();
-    if(docDirectory==""){
-      docDirectory = await Future.delayed(const Duration(seconds: 1), (){
-        return getDatabasesPath();
-      });
-      if(docDirectory==""){
-        throw Exception("Could not get database path");
-      }
-    }
-      else{
-      dbLocation = path.join(docDirectory, databaseName);
-      docsLocation = path.join(docDirectory, Global.prefsName);
-      keyLocation = docDirectory;
-    }
-    } on Exception catch(ex){
-    setState(() {
-      appStatus.value = "Could not get database path";
-    });
- if(kDebugMode){
-        print(ex);}
-    }*/
+
   }
 /// This method is responsible for checking the status of files and age of data on both sides.
   Future<void> checkFilesExistV2(String localFileName,String remoteFileName, String fileType)async{
@@ -622,7 +604,7 @@ fileCheckCompleted = true;
     try {
       googleIsDoingSomething(true);
       appStatus.value = Global.downloading_journal_files_message_string;
-      await  Global.googleDrive.syncBackupFiles(Global.databaseName,Global.fullDeviceDocsPath).whenComplete((){
+      await  Global.googleDrive.syncBackupFiles(Global.databaseName,Global.DBPathNOFile).whenComplete((){
         appStatus.value = "Your Journal is synced on device now";
         googleIsDoingSomething(false);
 

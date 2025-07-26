@@ -239,7 +239,7 @@ loggedInState=true;
         //Use Switch Case statement to handle file delivery
         switch (fileType) {
           case "Journal":
-            await restoreDBFiles().then((value) {
+            await restoreDBFiles().then((value ) {
               print("DB Swap Successful");
               var getFileTime = File(Global.fullDeviceDBPath);
 
@@ -412,6 +412,8 @@ break;
             googleIsDoingSomething(true);
             await checkFilesExistV2(docLIst[i], Global.files_list_names[i], Global.files_list_types[i]).onError((error, stackTrace) {
               print("Tis but a scratch");
+              print(error);
+              print(stackTrace);
             }).whenComplete(() {
               print(Global.files_list_types[i] + " check complete.");
               googleIsDoingSomething(false);
@@ -666,7 +668,7 @@ if(isThisReturning==true){
   Future<void> restoreDBFiles() async {
     try {
       //googleIsDoingSomething(true);
-      await Global.googleDrive.syncBackupFiles(Global.databaseName, Global.fullDeviceDocsPath).then((value) async{
+      await Global.googleDrive.syncBackupFiles(Global.databaseName, Global.DBPathNOFile).then((value) async{
         googleIsDoingSomething(false);
       }); Global.dbDownloaded = true;
     } on Exception {

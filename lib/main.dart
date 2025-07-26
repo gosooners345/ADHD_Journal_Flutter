@@ -391,7 +391,7 @@ leading: IconButton(onPressed: (){
 
                       MaterialPageRoute(
                           builder: (_) =>
-
+// The password test needs to happen on the settings page so that the UI flow doesn't get messed up.
                               SettingsPage())).then((value) => {
                     setState(() {
                       greeting = Global.prefs.getString('greeting')!;

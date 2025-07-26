@@ -401,7 +401,7 @@ final InAppReview inAppReview = InAppReview.instance;
               color: Color(swapper.isColorSeed),
             ),
             spacer,
-            //Password tile
+            //Password tile, should be an alert dialog due to the nature of the program. Saving this will change passwords.
             ListTile(
               title: TextField(
                 obscureText: false,
