@@ -151,9 +151,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void signInToGoogle() async{
     Global.googleDrive.initVariables();
-  /*  if(fileCheckCompleted==false){
-    await checkDataFiles();
-    }*/
 
   }
 
@@ -161,22 +158,16 @@ class _LoginScreenState extends State<LoginScreen> {
     if(mounted) {
       Navigator.of(context).pop();
     }
-    await
-        Global.googleDrive.initVariables().whenComplete(()async{
+    await        Global.googleDrive.initVariables().whenComplete(() async {
 loggedInState=true;
       await checkDataFiles()
           .whenComplete(() {
         resetLoginFieldState();
-       // setState(() async{
            getSyncStateStatus();
-
-        //});
-
       });
     });
 
 
-     //});
 
   }
   //Find a way to migrate most of the code to a single method outside of this class. Probably put it in Google Drive?
@@ -208,9 +199,10 @@ loggedInState=true;
   }
   Future<void> checkFilesExistV2(String localFileName,String remoteFileName, String fileType)async{
     var fileChecker = ManagedFile(localFileName,remoteFileName);
-   // final recordsBloc = Provider.of<RecordsBloc>(context, listen: false);
     //Check for existence of files and age.
-    print("Checking $fileType");
+    if (kDebugMode) {
+      print("Checking $fileType");
+    }
     await fileChecker.checkLocalExistence();
     await fileChecker.checkRemoteExistence(Global.googleDrive);
     await fileChecker.checkRemoteIsNewer(Global.googleDrive);
@@ -240,7 +232,9 @@ loggedInState=true;
         switch (fileType) {
           case "Journal":
             await restoreDBFiles().then((value ) {
-              print("DB Swap Successful");
+              if (kDebugMode) {
+                print("DB Swap Successful");
+              }
               var getFileTime = File(Global.fullDeviceDBPath);
 
               showMessage(

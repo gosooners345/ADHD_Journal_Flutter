@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import '../project_resources/global_vars_andpaths.dart';
 import '../app_start_package/splash_screendart.dart';
 
 class Styles {}

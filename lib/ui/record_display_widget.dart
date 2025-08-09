@@ -1,12 +1,9 @@
 import 'dart:async';
 
-import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
-import 'package:adhd_journal_flutter/record_data_package/record_list_class.dart';
 import 'package:adhd_journal_flutter/ui_components/record_view_card_class.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
-import '../main.dart';
 import 'package:flutter/material.dart';
 import '../project_resources/global_vars_andpaths.dart';
 import '../project_resources/project_colors.dart';
@@ -38,7 +35,6 @@ late RecordsBloc recordsBloc;
       searchController = TextEditingController();
       recordsBloc = Provider.of<RecordsBloc>(context,listen: false);
 
-     // startTimer();
       greeting = Global.prefs.getString('greeting') ?? '';
       checkHint();
 
@@ -51,11 +47,6 @@ late RecordsBloc recordsBloc;
 //Animations
 
 // For updating the list when its opening. this
-  startTimer() async {
-    var duration = const Duration(seconds: 1);
-
-    //return Timer(duration, executeClick);
-  }
 
   void checkHint() async {
     if (passwordHint == '' || passwordHint == ' ') {

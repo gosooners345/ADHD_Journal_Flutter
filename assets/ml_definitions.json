@@ -1,0 +1,8 @@
+{
+    "output_label_vocab": [
+        "0",
+        "1"
+    ],
+    "keyword_sequence_length": 64,
+    "content_sequence_length": 256
+}

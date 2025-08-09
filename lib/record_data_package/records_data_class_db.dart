@@ -31,7 +31,8 @@ Uint8List media = Uint8List(0);
       required this.success,
         required this.media,
       required this.timeCreated,
-      required this.timeUpdated,}
+      required this.timeUpdated,
+      }
   );
 
 

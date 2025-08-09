@@ -266,7 +266,6 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
             title:Text( _selectedIndex==0?"Home":"Stats"),
 leading: IconButton(onPressed: (){
   isThisReturning = true;
-  //recordsBloc.dispose();
   Navigator.of(context).pop();
 },icon: backArrowIcon,),
             actions: [
@@ -304,7 +303,7 @@ leading: IconButton(onPressed: (){
                   );
                 },
               ):Text(""),
-              _selectedIndex==0?PopupMenuButton(
+              _selectedIndex==0? PopupMenuButton(
                 itemBuilder: (BuildContext context) {
                   return <PopupMenuItem>[
                     PopupMenuItem(

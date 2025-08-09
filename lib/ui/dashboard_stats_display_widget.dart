@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../app_start_package/splash_screendart.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:collection/collection.dart';
 import '../records_stream_package/records_bloc_class.dart';
 

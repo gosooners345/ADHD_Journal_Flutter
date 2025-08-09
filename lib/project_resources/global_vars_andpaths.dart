@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:adhd_journal_flutter/adhd_machine_learning/adhd_feature_service.dart';
+import 'package:adhd_journal_flutter/adhd_machine_learning/personalization_data.dart';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:path/path.dart';
@@ -7,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart' as sqlCipher;
 
+import '../adhd_machine_learning/personalization_service.dart';
 import '../app_start_package/login_screen_file.dart';
 import '../backup_providers/google_drive_backup_class.dart';
 import '../backup_utils_package/preference_backup_class.dart';
@@ -478,11 +481,19 @@ static String dbPath="";
    static String userGreeting='Hello';
    static bool passwordRequired=false;
    static int colorSeed=AppColors.mainAppColor.value;
-
+static late final AdhdMlService adhdMlService;
+  static late final PersonalizationService personalizationService;
    // Handles paths so the app can simply load the files
    static Future<bool> initializeAppPaths() async{
      try{
        final directory = await getApplicationDocumentsDirectory();
+       await PersonalizationDbHelper.instance.database;
+       print ("Database is ready");
+       personalizationService = PersonalizationService();
+       final mlService = AdhdMlService();
+       await mlService.initialize();
+       adhdMlService = mlService;
+print("ML Service is ready");
        if(directory==null){
          throw Exception('Directory is null');
        } else {

@@ -14,8 +14,10 @@ import 'symptom_selector_screen.dart';
 import '../record_data_package/records_data_class_db.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:image_picker/image_picker.dart';
-
-
+import 'package:adhd_journal_flutter/project_resources/global_vars_andpaths.dart';
+// ML Stuff
+import 'package:adhd_journal_flutter/adhd_machine_learning/adhd_feature_service.dart';
+import 'package:adhd_journal_flutter/project_resources/debouncer_utility.dart';
 
 //import 'package:bitmap/bitmap.dart';
 
@@ -62,7 +64,15 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
   String symptomCoverText = "Tap here to add Symptoms";
 
 
-  late RecordsBloc _recordsBloc;
+
+  //final AdhdMlService _inferenceService = AdhdMlService();
+  final Debouncer _debouncer = Debouncer(milliseconds: 700); // Adjust debounce time as needed
+
+  String? _livePrediction;
+  //bool _isServiceReady = false;
+  Map<String,double>? _lastmodelprediction;
+
+  //late RecordsBloc _recordsBloc;
   ///For iOS Devices
   List<CameraDescription> cameras=[];
   CameraController? controller;
@@ -73,6 +83,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
   void initState() {
     super.initState();
     WidgetsFlutterBinding.ensureInitialized();
+
     customDate = super.widget.record.timeCreated;
     _pageController.addListener(() {
       setState(() {
@@ -118,6 +129,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
     if (super.widget.id == 1) {
       // Load an existing record
       loadRecord();
+      Future.delayed(const Duration(milliseconds: 100),_onInputChanged);
     } else {
       ratingInfo = 'Rating :';
       ratingSliderWidget = Text(ratingInfo);
@@ -129,6 +141,9 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
     _updateSuccessUI(super.widget.record.success);
 
   }
+  
+
+
 
 
 
@@ -167,7 +182,29 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
     }
   }
 
-
+//Predictive advice
+  String _getPredictionAdvice(String label) {
+    switch (label) {
+      case 'peak_performance_day':
+        return 'Insight: This looks like a highly productive day! What strategies are working well?';
+      case 'successful_day':
+        return 'Insight: Trending towards a successful outcome. What positive steps are you taking?';
+      case 'emotional_challenge_day':
+        return 'Insight: Emotions are a key factor today. Consider mindfulness or emotional regulation strategies.';
+      case 'inattentive_struggle_day':
+        return 'Insight: This may be an inattentive day. Break tasks down, minimize distractions, or try a Pomodoro.';
+      case 'executive_dysfunction_day':
+        return 'Insight: Facing executive challenges? Try the "5-minute rule" or prioritize the most daunting task.';
+      case 'high_stress_day':
+        return 'Insight: Stress appears high. Remember to breathe, hydrate, and take short breaks.';
+      case 'difficult_day':
+        return 'Insight: A challenging day is predicted. Be kind to yourself and focus on small wins.';
+      case 'neutral_day':
+        return 'Insight: A balanced day predicted. Continue tracking your patterns!';
+      default:
+        return 'Insight: Your entry is being analyzed.';
+    }
+  }
   ///Camera Code - Don't Touch
   Future<void> initializeCamera() async{
     setState(() {
@@ -301,6 +338,58 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
   }
 }
 
+//ML Code
+void _onInputChanged() {
+    print("Debug #5, Bouncer will bounce.");
+    _debouncer.run(() {
+      _predictOutcome();
+    });
+  }
+  Future<void> _predictOutcome() async {
+
+
+    // 1. Create a temporary Records object from current UI state
+    // Ensure all fields used for prediction are included.
+    final tempRecord = Records(
+      title: titleController.text,
+      content: contentController.text,
+      emotions: emotionsController.text, // Use text from controller
+      symptoms: widget.record.symptoms,  // Use the record's current symptoms string
+      tags: tagsController.text,         // Use text from controller
+      // Dummy values for the fields that are part of the model's LABEL, not its input.
+      rating: 50.0,
+      success: false,
+      timeCreated: DateTime.now(),
+      timeUpdated: DateTime.now(),
+      media: pictureBytes,
+      sources: sourceController.text,
+      id: widget.id,
+
+    );
+
+    // 2. Run the prediction
+    final predictions = await Global.adhdMlService.predict(tempRecord);//_inferenceService.predict(tempRecord);
+_lastmodelprediction = predictions;
+    // 3. Find the most likely outcome
+    if (predictions.isNotEmpty) {
+      final topPrediction = predictions.entries.reduce((a, b) => a.value > b.value ? a : b);
+
+      // Get the advice/explanation for the prediction
+      final advice = _getPredictionAdvice(topPrediction.key);
+      final String confidence = (topPrediction.value * 100).toStringAsFixed(1);
+      // 4. Update the UI state with the result
+      setState(() {
+        _livePrediction = "Predicted Day Type: '${topPrediction.key}'\n$advice ($confidence% confidence)";
+        showMessage(_livePrediction!);
+      });
+    } else {
+      setState(() {
+        _livePrediction = null; // Clear if no prediction is made (e.g., empty input)
+      });
+    return;
+    }
+
+  }
 
 ///UI Updating code
   void _updateRatingUI (double newRating){
@@ -435,6 +524,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                   controller: titleController,
                   onChanged: (text) {
                     super.widget.record.title = text;
+                    _onInputChanged();
                   },
                 ),
               ),
@@ -474,6 +564,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                     controller: contentController,
                     onChanged: (text) {
                       super.widget.record.content = text;
+                      _onInputChanged();
                     },
                   )),
               space
@@ -505,6 +596,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                       controller: emotionsController,
                       onChanged: (text) {
                         super.widget.record.emotions = text;
+                        _onInputChanged();
                       },
                     )),
               ],
@@ -544,6 +636,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                       controller: sourceController,
                       onChanged: (text) {
                         super.widget.record.sources = text;
+                        _onInputChanged();
                       },
                     )),
                 space
@@ -563,6 +656,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                           ))).then((value) {
                 setState(() {
                   super.widget.record.symptoms = value as String;
+
                 });
               }).onError((error, stackTrace) {
                 super.widget.record.symptoms = '';
@@ -634,6 +728,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                       controller: tagsController,
                       onChanged: (text) {
                         super.widget.record.tags = text;
+                        _onInputChanged();
                       },
                     )),
               ],
@@ -682,18 +777,9 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                 child: SwitchListTile(
                   value: isChecked,
                   onChanged: (bool value) {
-                   /* super.widget.record.success = value;
-                    isChecked = value;
-                    setState(() {
-                      if (value) {
-                        successLabelText = 'Success';
-                        successStateWidget = Text(successLabelText);
-                      } else {
-                        successLabelText = 'Fail';
-                        successStateWidget = Text(successLabelText);
-                      }
-                    });*/
+
                     _updateSuccessUI(value);
+                    _onInputChanged();
                   },
                   title: successStateWidget,
                   activeColor: Color(swapper.isColorSeed),
@@ -787,6 +873,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                   controller: titleController,
                   onChanged: (text) {
                     super.widget.record.title = text;
+                    _onInputChanged();
                   },
                 ), //x
                 space,
@@ -817,6 +904,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                   controller: contentController,
                   onChanged: (text) {
                     super.widget.record.content = text;
+                    _onInputChanged();
                   },
                 ), //x
                 space,
@@ -833,6 +921,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                   controller: emotionsController,
                   onChanged: (text) {
                     super.widget.record.emotions = text;
+                    _onInputChanged();
                   },
                 ), //x
                 space,
@@ -854,6 +943,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                   controller: sourceController,
                   onChanged: (text) {
                     super.widget.record.sources = text;
+                    _onInputChanged();
                   },
                 ), //x
                 space,
@@ -901,6 +991,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
                   controller: tagsController,
                   onChanged: (text) {
                     super.widget.record.tags = text;
+                    _onInputChanged();
                   },
                 ),
                 space,
@@ -1010,7 +1101,6 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
             onPressed: () {
               recordsBloc.getRecords(false);
               Navigator.pop(context);
-              //_saveRecord(super.widget.record);
             },
           ),
           title: Text(super.widget.title),
@@ -1028,6 +1118,15 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
           // Code to examine for ratings dashboard examination
           child: Stack(//fit:StackFit.expand,
             children: [
+             /* if (_livePrediction != null)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    _livePrediction!,
+                    style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                    textAlign: TextAlign.center,
+                  ),
+                ),*/
               currentPage! == 0
                   ? const Text("")
                   : Align(
@@ -1095,6 +1194,8 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
 
   @override
   void dispose() {
+    _debouncer.dispose();
+
     titleController.dispose();
     contentController.dispose();
     emotionsController.dispose();
@@ -1104,22 +1205,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
     controller?.dispose(); // Dispose camera controller if initialized
     super.dispose();
   }
- /* void addRecord() async {
-    _recordsBloc.addRecord(super.widget.record);
-  }
 
-  void updateRecord() async {
-    _recordsBloc.updateRecord(super.widget.record);
-  }
-
-  quickTimer() async {
-    var duration = const Duration(milliseconds: 2);
-    return Timer(duration, addRecord);
-  }
-
-  updateTimer() async {
-    return Timer(const Duration(milliseconds: 2), updateRecord);
-  }*/
   ///Saves the record in the database
   Future<void> _saveRecord(RecordsBloc recordsBloc) async {
     super.widget.record.timeUpdated = DateTime.now();
@@ -1132,14 +1218,26 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
     super.widget.record.emotions = emotionsController.text;
     super.widget.record.sources = sourceController.text;
     super.widget.record.tags = tagsController.text;
+
+    //Test prediction logic
+    if(_lastmodelprediction!=null){
+      print("Calling learning function before saving...");
+      await Global.personalizationService.learnFromCorrection(
+        modelPrediction: _lastmodelprediction!,
+        userProvidedSuccess: super.widget.record.success,
+        record: super.widget.record,
+      );
+    }
+
+
+
    try{
      if (super.widget.id == 0) {
        await recordsBloc.addRecord(super.widget.record);
-       //addRecord();
-        //quickTimer();
+
      } else {
        await recordsBloc.updateRecord(super.widget.record);
-       // updateTimer();
+
      }
 
      if(mounted){
@@ -1276,5 +1374,8 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
       });
     }
   }
-
+  void showMessage(String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
 }

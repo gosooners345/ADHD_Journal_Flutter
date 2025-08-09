@@ -1,18 +1,13 @@
 import 'dart:convert';
-//import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
-//import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
-import 'package:flutter/foundation.dart' as kriss;
-//import 'package:path/path.dart';
+import 'package:flutter/foundation.dart';
 import 'package:pointycastle/export.dart';
-import 'package:pointycastle/src/platform_check/platform_check.dart';
+import 'package:pointycastle/src/platform_check/platform_check.dart' as encrypter;
 import '../app_start_package/login_screen_file.dart';
 import '../backup_providers/google_drive_backup_class.dart';
 import '../project_resources/global_vars_andpaths.dart';
 import 'crypto_utils.dart';
 import 'dart:io' as io;
-//import ''
 
-//ICloud and OneDrive Integration here
 
 class PreferenceBackupAndEncrypt {
   RSAKeyGenerator keyGen = RSAKeyGenerator();
@@ -20,9 +15,7 @@ class PreferenceBackupAndEncrypt {
   RSAPublicKey? pubKey;
 
   void assignRSAKeysOffline() {
-    //String privKeyFilePath = join(keyLocation, privateKeyFileName);
     io.File privateKeyStorage = io.File(Global.fullDevicePrivKeyPath);
-    //String pubKeyFilePath = join(keyLocation, pubKeyFileName);
     io.File publicKeyStorage = io.File(Global.fullDevicePubKeyPath);
     try {
       if (privateKeyStorage.existsSync()) {
@@ -36,15 +29,15 @@ class PreferenceBackupAndEncrypt {
         pubKey = CryptoUtils.rsaPublicKeyFromPemPkcs1(prePubKeyString);
       }
     } on Exception catch (ex) {
-      print(ex);
+      if (kDebugMode) {
+        print(ex);
+      }
     }
   }
 
   //Assign RSA Keys
   Future<void> assignRSAKeys(GoogleDrive drive) async {
-   // String privKeyFilePath = join(keyLocation, privateKeyFileName);
     io.File privateKeyStorage = io.File(Global.fullDevicePrivKeyPath);
-    //String pubKeyFilePath = join(keyLocation, pubKeyFileName);
     io.File publicKeyStorage = io.File(Global.fullDevicePubKeyPath);
     try {
       if (privateKeyStorage.existsSync() && publicKeyStorage.existsSync()) {
@@ -70,7 +63,9 @@ class PreferenceBackupAndEncrypt {
       await drive.syncBackupFiles(Global.privateKeyFileName,Global.fullDeviceDocsPath);
       assignRSAKeys(drive);
     } on Exception catch (ex) {
-      print(ex);
+      if (kDebugMode) {
+        print(ex);
+      }
     }
   }
 
@@ -103,7 +98,7 @@ class PreferenceBackupAndEncrypt {
         throw Exception("File not found");
       }
     } on Exception catch (ex) {
-      if (kriss.kDebugMode) {
+      if (kDebugMode) {
         print(ex);
       }
     }
@@ -151,13 +146,12 @@ class PreferenceBackupAndEncrypt {
       } else {
         drive.uploadFileToGoogleDrive(privateKeyStorage,Global.privateKeyFileName);
         drive.uploadFileToGoogleDrive(publicKeyStorage,Global.pubKeyFileName);
-        print("RSA Keys Generated and uploaded");
-        if (kriss.kDebugMode) {
-          print("data encrypted");
+        if (kDebugMode) {
+          print("RSA Keys Generated and uploaded");
         }
       }
     } on Exception {
-      if (kriss.kDebugMode) {
+      if (kDebugMode) {
         print("Keys already exist in cloud");
       }
     }
@@ -167,7 +161,9 @@ class PreferenceBackupAndEncrypt {
   void replaceRsaKeys(GoogleDrive drive) async {
     bool checkPubKey = await drive.checkForFile(Global.pubKeyFileName);
     if (checkPubKey) {
-      print("Keys exist, just clearing them out now");
+      if (kDebugMode) {
+        print("Keys exist, just clearing them out now");
+      }
       drive.deleteOutdatedBackups(Global.pubKeyFileName);
       drive.deleteOutdatedBackups(Global.privateKeyFileName);
     }
@@ -178,9 +174,13 @@ class PreferenceBackupAndEncrypt {
   Future<void> encryptData(String data, GoogleDrive drive) async{
     assignRSAKeys(drive);
     var testBytes = CryptoUtils.rsaEncrypt(data, pubKey!);
-    print("data encrypted, uploading now");
+    if (kDebugMode) {
+      print("data encrypted, uploading now");
+    }
    await  uploadPrefsCSVFile(testBytes, drive);
-    print("Preferences uploaded");
+    if (kDebugMode) {
+      print("Preferences uploaded");
+    }
   }
 
   Future<void> uploadPrefsCSVFile(String cipherText, GoogleDrive drive) async {
@@ -193,14 +193,16 @@ class PreferenceBackupAndEncrypt {
       drive.deleteOutdatedBackups(Global.prefsName);
       drive.uploadFileToGoogleDrive(csvFile,Global.prefsName);
     } on Exception catch (ex) {
-      print(ex);
+      if (kDebugMode) {
+        print(ex);
+      }
     }
   }
 
   SecureRandom exampleSecureRandom() {
     final secureRandom = SecureRandom('Fortuna')
       ..seed(
-          KeyParameter(Platform.instance.platformEntropySource().getBytes(32)));
+          KeyParameter(encrypter.Platform.instance.platformEntropySource().getBytes(32)));
     return secureRandom;
   }
 }

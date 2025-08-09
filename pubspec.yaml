@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.9.1+71
+version: 2.9.2+72
 
 environment:
   sdk: ">=3.5.0 "
@@ -60,7 +60,7 @@ dependencies:
   package_info_plus:
   googleapis: ^14.0.0
   googleapis_auth: ^2.0.0
-  google_sign_in: ^6.1.4
+  google_sign_in: ^6.3.0
   encrypt: ^5.0.1
   build_runner:
   image_picker: 
@@ -69,6 +69,7 @@ dependencies:
   connectivity_plus: ^6.0.5
   extension_google_sign_in_as_googleapis_auth:
   permission_handler:
+  tflite_flutter: ^0.11.0
 
 flutter_icons:
   image_path_android: "images/appicon_appstore.png"
@@ -109,6 +110,10 @@ flutter:
     - images/testphoto.png
     - images/app_icon_demo.png
     - images/
+    - assets/adhd_predictor_v2.tflite
+    - assets/ml_definitions.json
+    - assets/vocab_content.txt
+    - assets/vocab_keywords.txt
      #- images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

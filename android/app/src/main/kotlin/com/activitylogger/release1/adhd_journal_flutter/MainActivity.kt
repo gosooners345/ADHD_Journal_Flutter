@@ -22,8 +22,10 @@ import android.graphics.Bitmap
 import java.lang.SecurityException
 
 
+
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "com.activitylogger.release1/ADHDJournal"
+   // private var flexDelegate: FlexDelegate? = null
     //private lateinit var sharePreferences : SharedPreferences
 companion object{
     private const val REQUEST_IMAGE_CAPTURE = 1
@@ -50,9 +52,18 @@ private lateinit var channel: MethodChannel
 //                        val data = intent.data
                         //result.success(data)
                     }
+                  /* "flexDelegate" ->{
+                       try {
+                           flexDelegate = FlexDelegate()
+                           result.success(1)
+                       } catch (e:Exception){
+                           result.error("FLEX_INIT_FAILED","Failed to initialize FlexDelegate",e.localizedMessage)
+                       }
+                   }*/
                     else -> {
                         result.notImplemented()
                     }
+
                 }
 
         }
