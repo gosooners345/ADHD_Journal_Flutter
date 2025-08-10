@@ -466,7 +466,7 @@ static String dbPath="";
   static  const String privateKeyFileName = "journ_privkey.pem";
   static const String pubKeyFileName = "journ_pubKey.pem";
   static const String dbWal = "activitylogger_db.db-wal";
-
+static const String PLATFORMCHANNEL_PATH = "com.activitylogger.release1/ADHDJournal";
 //File paths
   static String get fullDeviceDocsPath => docsLocation;
   static String get DBPathNOFile=> dbPath;
@@ -480,6 +480,7 @@ static String dbPath="";
   static String userPasswordHint='';
    static String userGreeting='Hello';
    static bool passwordRequired=false;
+   static bool isInitialized = false;
    static int colorSeed=AppColors.mainAppColor.value;
 static late final AdhdMlService adhdMlService;
   static late final PersonalizationService personalizationService;
@@ -490,9 +491,6 @@ static late final AdhdMlService adhdMlService;
        await PersonalizationDbHelper.instance.database;
        print ("Database is ready");
        personalizationService = PersonalizationService();
-       final mlService = AdhdMlService();
-       await mlService.initialize();
-       adhdMlService = mlService;
 print("ML Service is ready");
        if(directory==null){
          throw Exception('Directory is null');
@@ -507,7 +505,7 @@ dbPath = await sqlCipher.getDatabasesPath();
           print("Global variables initialized, anything that needs more than a single class should be started here except for Google Drive");
          }
 
-
+isInitialized=true;
 return true;
 
        }

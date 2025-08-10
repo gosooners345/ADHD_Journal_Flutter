@@ -7,9 +7,11 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../adhd_machine_learning/prediction_ui_state.dart';
 import '../main.dart';
 import 'package:flutter/material.dart';
 import '../project_resources/project_utils.dart';
+import '../tokenizer.dart';
 import 'symptom_selector_screen.dart';
 import '../record_data_package/records_data_class_db.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -48,6 +50,12 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
   late TextEditingController tagsController;
   late SwitchListTile successSwitch;
   final PageController _pageController = PageController();
+  //Prediction stuff
+  var _predictionStatus = PredictionIdle;
+  Map<String,double>_predictionResults={};
+  String _predictionError='';
+
+
   double? currentPage = 0;
   //double ratingValue = 0.0;
  // bool successState = false;
@@ -63,6 +71,10 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
   String ratingInfo = '';
   String symptomCoverText = "Tap here to add Symptoms";
 
+// Add these controllers at the top of your _NewComposeRecordsWidgetState class
+  final TextEditingController _keywordController = TextEditingController(); // For keywords
+  final TextEditingController _contentController = TextEditingController(); // For main content (already there, ensure it's used)
+  double _currentRating = 50.0; // Default rating
 
 
   //final AdhdMlService _inferenceService = AdhdMlService();
@@ -121,7 +133,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
       icon: backArrowIcon,
     );
     titleController = TextEditingController();
-    contentController = TextEditingController();
+    contentController = TextEditingController(); // This is the original content controller
     emotionsController = TextEditingController();
     sourceController = TextEditingController();
     tagsController = TextEditingController();
@@ -139,10 +151,102 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
     }
     _updateRatingUI(super.widget.record.rating);
     _updateSuccessUI(super.widget.record.success);
+    // Initialize _keywordController and _contentController if loading existing data
+    _keywordController.text = super.widget.record.symptoms; // Example: or another field for keywords
+    _contentController.text = super.widget.record.content; // Already initialized if id == 1
+    _currentRating = super.widget.record.rating;
 
   }
   
 
+
+//Prediction Methods
+// In _NewComposeRecordsWidgetState
+    Future<void> _runPrediction() async {
+      String keywordText = _keywordController.text.trim();
+      String contentText = _contentController.text.trim();
+
+      // --- VALIDATION ---
+      if (keywordText.isEmpty) {
+        print("Validation Error: Keywords cannot be empty.");
+        // Optionally, show a SnackBar or alert to the user
+        return; // Don't proceed
+      }
+      if (contentText.isEmpty) {
+        print("Validation Error: Content cannot be empty.");
+        return; // Don't proceed
+      }
+      // Assuming _currentRating is always a valid double from your UI (e.g., Slider)
+
+      List<int> keywordTokens;
+      try {
+        final int keywordLength = Global.adhdMlService.keywordSequenceLength;
+        keywordTokens = MyTokenizer.tokenize(keywordText, vocabularyType: VocabularyType.keywords,maxLength: keywordLength); // Replace with your actual tokenizer
+        if (keywordTokens.isEmpty && keywordText.isNotEmpty) { // Tokenizer failed for non-empty text
+            print("Tokenization Warning: Keywords resulted in empty tokens for non-empty text.");
+            // Decide if this is an error or acceptable. For now, let's treat it as potentially problematic.
+             keywordTokens = []; // Or handle as an error
+        }
+      } catch (e) {
+        print("Error during keyword tokenization: $e");
+        return; // Don't proceed
+      }
+
+      List<int> contentTokens;
+      try {
+        final int contentLength = Global.adhdMlService.contentSequenceLength;
+        contentTokens = MyTokenizer.tokenize(contentText, vocabularyType: VocabularyType.content,maxLength: contentLength); // Replace with your actual tokenizer
+         if (contentTokens.isEmpty && contentText.isNotEmpty) {
+            print("Tokenization Warning: Content resulted in empty tokens for non-empty text.");
+            contentTokens = [];
+        }
+      } catch (e) {
+        print("Error during content tokenization: $e");
+        return; // Don't proceed
+      }
+      
+      // Ensure your model can handle empty token lists if they are possible,
+      // otherwise, you might need a check here too.
+      // For now, we are allowing empty lists to be sent if tokenization results in them.
+      // The Kotlin side currently handles empty lists by creating empty IntArrays.
+
+      List<double> ratingList = [_currentRating]; // Always send as a list
+final List<double> normalizedRatingList = Global.adhdMlService.publicNormalizeRating(userRating: ratingList[0]);
+      print('Dart (Validated): Sending keywords (count: ${keywordTokens.length}) type: ${keywordTokens.runtimeType}');
+      print('Dart (Validated): Sending content (count: ${contentTokens.length}) type: ${contentTokens.runtimeType}');
+      print('Dart (Validated): Sending rating (count: ${ratingList.length}) type: ${ratingList.runtimeType}');
+
+Map<String,double> result = {};
+      // --- CALL NATIVE ---
+
+      try {
+        result = await Global.adhdMlService.predict(widget.record,
+          keywords: keywordTokens,
+          content: contentTokens,
+          rating: normalizedRatingList,
+        );
+      }catch (e) {
+        print("Error during prediction: $e");
+       // return; // Don't proceed
+      }
+      if (result.isEmpty) {
+        print("Prediction returned no results (check native logs for PlatformException).");
+        setState(() {
+          _livePrediction = "Insight: Could not generate a prediction";
+        });
+        return;
+      } else {
+        print("Prediction successful: $result");
+        setState(() {
+          _lastmodelprediction = result;
+          final topPrediction = result.entries.reduce((a, b) => a.value > b.value ? a : b);
+          final advice = _getPredictionAdvice(topPrediction.key);
+          final String confidence = (topPrediction.value * 100).toStringAsFixed(1);
+          _livePrediction = "Predicted Day Type: '${topPrediction.key}'\n$advice ($confidence% confidence)";
+        });
+        // Use the result
+      }
+    }
 
 
 
@@ -247,7 +351,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
         print("Camera initialized successfully with ${selectedCameraDesc
             .name} at medium resolution");
       }}
-on CameraException catch (e) {
+  on CameraException catch (e) {
     if(mounted){
   setState(() {
     isCamerainitialized = false;
@@ -342,7 +446,7 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
 void _onInputChanged() {
     print("Debug #5, Bouncer will bounce.");
     _debouncer.run(() {
-      _predictOutcome();
+    _runPrediction();
     });
   }
   Future<void> _predictOutcome() async {
@@ -351,24 +455,25 @@ void _onInputChanged() {
     // 1. Create a temporary Records object from current UI state
     // Ensure all fields used for prediction are included.
     final tempRecord = Records(
+      //id: super.widget.record.id,
       title: titleController.text,
       content: contentController.text,
       emotions: emotionsController.text, // Use text from controller
       symptoms: widget.record.symptoms,  // Use the record's current symptoms string
       tags: tagsController.text,         // Use text from controller
       // Dummy values for the fields that are part of the model's LABEL, not its input.
-      rating: 50.0,
-      success: false,
+      rating: widget.record.rating,
+      success: widget.record.success!=null ? widget.record.success! : false,
       timeCreated: DateTime.now(),
       timeUpdated: DateTime.now(),
       media: pictureBytes,
       sources: sourceController.text,
-      id: widget.id,
+      id: widget.record.id,
 
     );
 
     // 2. Run the prediction
-    final predictions = await Global.adhdMlService.predict(tempRecord);//_inferenceService.predict(tempRecord);
+    final predictions = await Global.adhdMlService.predictRecord(tempRecord); // Changed to predictRecord
 _lastmodelprediction = predictions;
     // 3. Find the most likely outcome
     if (predictions.isNotEmpty) {
@@ -394,7 +499,7 @@ _lastmodelprediction = predictions;
 ///UI Updating code
   void _updateRatingUI (double newRating){
     super.widget.record.rating = newRating;
-   // super.widget.record.rating = value;
+    _currentRating = newRating; // Update _currentRating
 
     if (super.widget.record.rating == 100.0) {
       ratingInfo = "Rating : Perfect ";
@@ -419,6 +524,7 @@ _lastmodelprediction = predictions;
     setState(() {
       ratingSliderWidget = Text(ratingInfo);
     });
+    _onInputChanged();
   }
 
   void _updateSuccessUI(bool value) {
@@ -432,6 +538,7 @@ _lastmodelprediction = predictions;
     setState(() {
       successStateWidget = Text(successLabelText);
     });
+    _onInputChanged();
   }
 
   ///Manages the Pages
@@ -531,7 +638,7 @@ _lastmodelprediction = predictions;
             ]),
             swapper),
 
-        /// What happened
+        /// What happened (using _contentController for main text)
         uiCard(
             Column(children: [
               const Padding(
@@ -561,7 +668,7 @@ _lastmodelprediction = predictions;
                     minLines: 1,
                     maxLines: 3,
                     textCapitalization: TextCapitalization.sentences,
-                    controller: contentController,
+                    controller: _contentController, // Use _contentController here
                     onChanged: (text) {
                       super.widget.record.content = text;
                       _onInputChanged();
@@ -644,41 +751,37 @@ _lastmodelprediction = predictions;
             ),
             swapper),
 
-        /// Related ADHD Symptoms
-        GestureDetector(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) =>
-                          SymptomSelectorScreen(
-                            symptoms: super.widget.record.symptoms,
-                          ))).then((value) {
-                setState(() {
-                  super.widget.record.symptoms = value as String;
-
-                });
-              }).onError((error, stackTrace) {
-                super.widget.record.symptoms = '';
-              });
-            },
-            child: uiCard(
-
-                Column(
-                    crossAxisAlignment: CrossAxisAlignment.center, children: [
-                  const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text(
-                        "Related ADHD Symptoms:" "\r\n ",
-                        style: TextStyle(fontSize: 20),
-                      )),
-                  ListTile(
-                    title: super.widget.record.symptoms == ""
-                        ? Text(symptomCoverText)
-                        : Text(
-                      super.widget.record.symptoms,
-                      style: const TextStyle(fontSize: 15),
-                    ),
+        /// Related ADHD Symptoms (Keywords - using _keywordController)
+        uiCard(
+            Column(
+              children: [
+                const Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Center(
+                        child: Text("Keywords/Symptoms for Prediction",
+                            style: TextStyle(fontSize: 20)))),
+                space,
+                Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: TextField(
+                      decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(4),
+                              borderSide: BorderSide(
+                                  color: Color(swapper.isColorSeed)
+                                      .withOpacity(1.0),
+                                  width: 1)),
+                          hintText: "Enter keywords/symptoms (e.g., inattentive, meeting, focused)",
+                          labelText: "Prediction Keywords"),
+                      controller: _keywordController, // Use _keywordController here
+                      onChanged: (text) {
+                        // super.widget.record.symptoms = text; // Or a new field if symptoms is used elsewhere
+                        _onInputChanged();
+                      },
+                    )),
+                 // Existing SymptomSelectorScreen logic (optional, can be removed or adapted)
+                 ListTile(
+                    title: Text(super.widget.record.symptoms == "" ? symptomCoverText : "Current Symptoms: ${super.widget.record.symptoms}"),
                     onTap: () {
                       Navigator.push(
                           context,
@@ -689,15 +792,15 @@ _lastmodelprediction = predictions;
                                   ))).then((value) {
                         setState(() {
                           super.widget.record.symptoms = value as String;
+                          // Optionally update _keywordController if they should be linked
+                          // _keywordController.text = value as String;
                         });
-                      }).onError((error, stackTrace) {
-                        super.widget.record.symptoms = '';
                       });
                     },
                   ),
-                  space
-                ]),
-                swapper)),
+              ],
+            ),
+            swapper),
 
 ///Event Tags
         uiCard(
@@ -735,7 +838,7 @@ _lastmodelprediction = predictions;
             ),
             swapper),
 
-        /// Rating: How it went
+        /// Rating: How it went (using _currentRating)
         uiCard(
             Column(
               children: [
@@ -752,14 +855,14 @@ _lastmodelprediction = predictions;
                     padding: const EdgeInsets.all(10),
                     child: Center(child: ratingSliderWidget)),
                 Slider(
-                    value: super.widget.record.rating,
+                    value: _currentRating, // Use _currentRating here
                     onChanged: (double value) {
                       _updateRatingUI(value);
                     },
                     max: 100.0,
                     min: 0.0,
                     divisions: 100,
-                    label: super.widget.record.rating.toString()),
+                    label: _currentRating.toStringAsFixed(1)), // Use _currentRating here
               ],
             ),
             swapper),
@@ -784,7 +887,16 @@ _lastmodelprediction = predictions;
                   title: successStateWidget,
                   activeColor: Color(swapper.isColorSeed),
                 ),
-              )
+              ),
+               if (_livePrediction != null)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    _livePrediction!,
+                    style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
             ]),
             swapper),
 
@@ -887,7 +999,7 @@ _lastmodelprediction = predictions;
                       selectDate(context);
                     }),),
                 space,
-                // Content Field
+                // Content Field (using _contentController)
                 TextField(
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
@@ -901,7 +1013,7 @@ _lastmodelprediction = predictions;
                   minLines: 1,
                   maxLines: null,
                   textCapitalization: TextCapitalization.sentences,
-                  controller: contentController,
+                  controller: _contentController, // Use _contentController here
                   onChanged: (text) {
                     super.widget.record.content = text;
                     _onInputChanged();
@@ -947,36 +1059,22 @@ _lastmodelprediction = predictions;
                   },
                 ), //x
                 space,
-                //Symptom Field,
-                Card(
-                  borderOnForeground: true,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4), // if you need this
-                    side: BorderSide(
-                      color: Color(swapper.isColorSeed).withOpacity(1.0),
-                      width: 1,
-                    ),
-                  ),
-                  child: ListTile(
-                    title: Text(
-                        'Related ADHD Symptoms: \r\n${super.widget.record
-                            .symptoms == '' ? symptomCoverText : super.widget
-                            .record.symptoms}'),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) =>
-                                  SymptomSelectorScreen(
-                                    symptoms: super.widget.record.symptoms,
-                                  ))).then((value) {
-                        setState(() {
-                          super.widget.record.symptoms = value as String;
-                        });
-                      });
-                    },
-                  ),
-                ), //x
+                //Symptom Field (Keywords - using _keywordController)
+                TextField(
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(4),
+                          borderSide: BorderSide(
+                              color: Color(swapper.isColorSeed).withOpacity(1.0),
+                              width: 1)),
+                      labelText: 'Prediction Keywords/Symptoms',
+                       hintText: "Keywords used for prediction"),
+                  controller: _keywordController, // Use _keywordController here
+                  onChanged: (text) {
+                   // super.widget.record.symptoms = text; // Or a new field
+                    _onInputChanged();
+                  },
+                ), 
                 space,
                 TextField(
                   decoration: InputDecoration(
@@ -998,38 +1096,14 @@ _lastmodelprediction = predictions;
                 ratingSliderWidget,
                 space2,
                 Slider(
-                    value: super.widget.record.rating,
+                    value: _currentRating, // Use _currentRating here
                     onChanged: (double value) {
-                      setState(() {
-                        super.widget.record.rating = value;
-
-                        if (super.widget.record.rating == 100.0) {
-                          ratingInfo = "Rating : Perfect ";
-                        } else if (super.widget.record.rating >= 85.0 &&
-                            super.widget.record.rating < 100.0) {
-                          ratingInfo = 'Rating : Great';
-                        } else if (super.widget.record.rating >= 70.0 &&
-                            super.widget.record.rating < 85.0) {
-                          ratingInfo = 'Rating : Good';
-                        } else if (super.widget.record.rating >= 55.0 &&
-                            super.widget.record.rating < 70.0) {
-                          ratingInfo = 'Rating : Okay';
-                        } else if (super.widget.record.rating >= 40.0 &&
-                            super.widget.record.rating < 55.0) {
-                          ratingInfo = 'Rating : Could be better';
-                        } else if (super.widget.record.rating >= 25.0 &&
-                            super.widget.record.rating < 40.0) {
-                          ratingInfo = 'Rating : Not going well';
-                        } else if (super.widget.record.rating < 25.0) {
-                          ratingInfo = 'Rating : It\'s a mess';
-                        }
-                        ratingSliderWidget = Text(ratingInfo);
-                      });
+                      _updateRatingUI(value);
                     },
                     max: 100.0,
                     min: 0.0,
                     divisions: 100,
-                    label: super.widget.record.rating.toString()),
+                    label: _currentRating.toStringAsFixed(1)), // Use _currentRating here
                 space,
                 //Media Tile
                 GestureDetector(
@@ -1064,17 +1138,7 @@ _lastmodelprediction = predictions;
                     child: SwitchListTile(
                       value: isChecked,
                       onChanged: (bool value) {
-                        super.widget.record.success = value;
-                        isChecked = value;
-                        setState(() {
-                          if (value) {
-                            successLabelText = 'Success';
-                            successStateWidget = Text(successLabelText);
-                          } else {
-                            successLabelText = 'Fail';
-                            successStateWidget = Text(successLabelText);
-                          }
-                        });
+                        _updateSuccessUI(value);
                       },
                       title: successStateWidget,
                       activeColor: Color(swapper.isColorSeed),
@@ -1118,15 +1182,7 @@ _lastmodelprediction = predictions;
           // Code to examine for ratings dashboard examination
           child: Stack(//fit:StackFit.expand,
             children: [
-             /* if (_livePrediction != null)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    _livePrediction!,
-                    style: TextStyle(color: Theme.of(context).colorScheme.secondary),
-                    textAlign: TextAlign.center,
-                  ),
-                ),*/
+
               currentPage! == 0
                   ? const Text("")
                   : Align(
@@ -1195,9 +1251,9 @@ _lastmodelprediction = predictions;
   @override
   void dispose() {
     _debouncer.dispose();
-
+    _keywordController.dispose();
+    _contentController.dispose(); // Already here, ensure it's the one used for prediction
     titleController.dispose();
-    contentController.dispose();
     emotionsController.dispose();
     sourceController.dispose();
     tagsController.dispose();
@@ -1214,10 +1270,13 @@ _lastmodelprediction = predictions;
     }
     super.widget.record.media = pictureBytes;
     super.widget.record.title = titleController.text;
-    super.widget.record.content = contentController.text;
+    super.widget.record.content = _contentController.text; // Use _contentController for saving
     super.widget.record.emotions = emotionsController.text;
     super.widget.record.sources = sourceController.text;
     super.widget.record.tags = tagsController.text;
+    // Ensure these are also set for the record object being saved, if they are meant to persist
+    super.widget.record.symptoms = _keywordController.text; // Or keep separate if 'symptoms' is different
+    super.widget.record.rating = _currentRating;
 
     //Test prediction logic
     if(_lastmodelprediction!=null){
@@ -1259,10 +1318,13 @@ _lastmodelprediction = predictions;
   //Loads an already existing record in the database
   void loadRecord() {
     titleController.text = super.widget.record.title;
-    contentController.text = super.widget.record.content;
+    _contentController.text = super.widget.record.content; // Use _contentController for loading
     emotionsController.text = super.widget.record.emotions;
     sourceController.text = super.widget.record.sources;
     tagsController.text = super.widget.record.tags;
+    _keywordController.text = super.widget.record.symptoms; // Or appropriate field for keywords
+    _currentRating = super.widget.record.rating;
+
     if(super.widget.record.media!=Uint8List(0)) {
       pictureBytes=super.widget.record.media;
     } else {
@@ -1377,5 +1439,60 @@ _lastmodelprediction = predictions;
   void showMessage(String message) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
+  }
+}
+
+
+class RecordsScreenNotifier extends ChangeNotifier {
+  final AdhdMlService _adhdMlService;
+
+  RecordsScreenNotifier(this._adhdMlService) {
+    // You can load initial data here if needed.
+    // E.g., fetchRecords();
+  }
+
+  // --- STATE PROPERTIES ---
+
+  /// The list of records to be displayed.
+  List<Records> _records = [];
+  List<Records> get records => _records;
+
+  /// The current state of the prediction process.
+  PredictionUiState _predictionState = PredictionIdle();
+  PredictionUiState get predictionState => _predictionState;
+
+  // --- BUSINESS LOGIC ---
+
+  /// Runs a prediction for a given record by calling the ML service.
+  Future<void> runPredictionForRecord(Records record) async {
+    // Prevent starting a new prediction if one is already in progress.
+    if (_predictionState is PredictionLoading) return;
+
+    // 1. Set state to Loading and notify UI to update.
+    _predictionState = PredictionLoading();
+    notifyListeners();
+
+    try {
+      // 2. Call the asynchronous service method.
+      final predictionResults = await _adhdMlService.predictRecord(record,); // Changed to predictRecord
+
+      // 3. Update state based on the result.
+      if (predictionResults.isNotEmpty) {
+        _predictionState = PredictionSuccess(predictionResults);
+      } else {
+        _predictionState = PredictionError("Prediction returned no results.");
+      }
+    } catch (e) {
+      _predictionState = PredictionError(e.toString());
+    }
+
+    // 4. Notify UI again with the final result (Success or Error).
+    notifyListeners();
+  }
+
+  /// Resets the prediction state back to idle.
+  void resetPredictionState() {
+    _predictionState = PredictionIdle();
+    notifyListeners();
   }
 }

@@ -17,6 +17,7 @@ import 'package:adhd_journal_flutter/settings_tutorials/tutorial_help_guide.dart
 import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
+import 'adhd_machine_learning/adhd_feature_service.dart';
 import 'app_start_package/onboarding_widget_class.dart';
 import 'notifications_packages/notification_controller.dart';
 import 'ui/record_display_widget.dart';
@@ -35,6 +36,7 @@ int id = 0;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationController.initializeLocalNotifications();
+  _initMLServiceinBG();
   runApp(
       MultiProvider(providers: [
        ChangeNotifierProvider<ThemeSwap>(
@@ -48,7 +50,23 @@ Future<void> main() async {
       child: MyApp(),)
   );
 }
+Future<void> _initMLServiceinBG() async{
+  try{
+    print("Beginning ADHD Journal ML Service Initialization");
+    Global.adhdMlService = AdhdMlService();
+    await Global.adhdMlService.initialize();
 
+    if (kDebugMode) {
+      if (Global.adhdMlService.isInitialized) {
+        print("MAIN: ML Service initialized successfully in background.");
+      } else {
+        print("MAIN: ML Service initialization completed in background, but reported not initialized.");
+      }
+  }
+} catch(e){
+    print("MAIN: ML Service initialization failed in background.");
+  }
+}
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});

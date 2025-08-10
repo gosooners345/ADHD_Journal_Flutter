@@ -1,8 +1,10 @@
 {
     "output_label_vocab": [
-        "0",
-        "1"
+        "false",
+        "true"
     ],
     "keyword_sequence_length": 64,
-    "content_sequence_length": 256
+    "content_sequence_length": 256,
+    "RATING_MIN": 0,
+    "RATING_MAX": 100
 }

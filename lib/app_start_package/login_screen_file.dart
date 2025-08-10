@@ -661,7 +661,6 @@ if(isThisReturning==true){
   //Experimental
   Future<void> restoreDBFiles() async {
     try {
-      //googleIsDoingSomething(true);
       await Global.googleDrive.syncBackupFiles(Global.databaseName, Global.DBPathNOFile).then((value) async{
         googleIsDoingSomething(false);
       }); Global.dbDownloaded = true;
@@ -810,6 +809,7 @@ if(isThisReturning==true){
                                               .then((value) => {
                                                     isThisReturning = true,
                                                     stuff.clear(),
+
                                                     refreshPrefs(),
                                                   });
                                         } else if (!passwordEnabled) {

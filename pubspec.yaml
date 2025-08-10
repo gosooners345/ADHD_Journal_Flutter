@@ -70,7 +70,8 @@ dependencies:
   extension_google_sign_in_as_googleapis_auth:
   permission_handler:
   tflite_flutter: ^0.11.0
-
+ # tflite_flutter_helper_plus:
+  #google_ml_kit:
 flutter_icons:
   image_path_android: "images/appicon_appstore.png"
   image_path_ios: "images/appicon_appstore.png"
