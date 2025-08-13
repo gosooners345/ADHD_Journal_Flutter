@@ -86,8 +86,9 @@ class GoogleDrive {
     });
     if (account == null) {
       account = await googleSignIn.signIn().whenComplete(() {
+     if(kDebugMode){
         print("Sign in complete");
-        print("${account != null ? true : false}");
+        print("${account != null ? true : false}");}
       });
     }
 

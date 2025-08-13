@@ -801,29 +801,31 @@ if(isThisReturning==true){
                                             passwordEnabled) {
                                           loginPassword = '';
 
-                                           recordsBloc.handleDBSwapRefresh();
+                                          recordsBloc.handleDBSwapRefresh();
                                           recordsBloc.getRecords(true);
                                           Global.dbDownloaded = false;
                                           Navigator.pushNamed(
-                                                  context, '/success')
-                                              .then((value) => {
-                                                    isThisReturning = true,
-                                                    stuff.clear(),
+                                              context, '/success')
+                                              .then((value) =>
+                                          {
+                                            isThisReturning = true,
+                                            stuff.clear(),
 
-                                                    refreshPrefs(),
-                                                  });
+                                            refreshPrefs(),
+                                          });
                                         } else if (!passwordEnabled) {
-                                           recordsBloc.handleDBSwapRefresh();
-Global.dbDownloaded = false;
+                                          recordsBloc.handleDBSwapRefresh();
+                                          Global.dbDownloaded = false;
                                           recordsBloc.getRecords(true);
                                           loginPassword = '';
                                           stuff.clear();
                                           Navigator.pushNamed(
-                                                  context, '/success')
-                                              .then((value) => {
-                                                    isThisReturning = true,
-                                                    refreshPrefs(),
-                                                  });
+                                              context, '/success')
+                                              .then((value) =>
+                                          {
+                                            isThisReturning = true,
+                                            refreshPrefs(),
+                                          });
                                         }
                                       },
                                       child: const Text(
@@ -958,9 +960,6 @@ Global.dbDownloaded = false;
 
 }
 
-//PreferenceBackupAndEncrypt Global.preferenceBackupAndEncrypt =
-  //  PreferenceBackupAndEncrypt();
-//LoginButtonReady readyButton = LoginButtonReady();
 
 class LoginButtonReady {
   StreamController<bool> controller =

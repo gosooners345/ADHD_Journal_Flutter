@@ -5,6 +5,9 @@
     ],
     "keyword_sequence_length": 64,
     "content_sequence_length": 256,
+    "medication_sequence_length": 16,
     "RATING_MIN": 0,
-    "RATING_MAX": 100
+    "RATING_MAX": 100,
+    "SLEEP_MIN": 70.0,
+    "SLEEP_MAX": 70.0
 }

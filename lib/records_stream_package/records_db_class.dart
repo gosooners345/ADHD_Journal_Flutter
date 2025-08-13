@@ -29,17 +29,30 @@ class RecordsDB {
 
   openOrCreateDatabase() async {
     return await sqlCipher.openDatabase(
-      //Path code v //
-      /*join(await sqlCipher.getDatabasesPath(), 'activitylogger_db.db')*/
     Global.fullDeviceDBPath,
       password: dbPassword,
       onCreate: (database, version) {
         return database.execute(
-            'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT,symptoms TEXT,rating DOUBLE, tags TEXT,success INT,time_updated INT, time_created INT, media BLOB)');
+            'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT,symptoms TEXT,rating DOUBLE, tags TEXT,success INT,time_updated INT, time_created INT, media BLOB, sleep DOUBLE, medication TEXT)');
       },
       onUpgrade: (database, oldVersion, newVersion) async {
         if(oldVersion <= 6){
           await database.execute("ALTER TABLE records ADD COLUMN media BLOB;");
+          if (kDebugMode) {
+            print("DB: Added media column to records table.");
+          }
+        }
+        if(oldVersion <= 7){
+          await database.execute("ALTER TABLE records ADD COLUMN sleep DOUBLE;");
+          if (kDebugMode) {
+            print("DB: Added sleep column to records table.");
+          }
+        }
+        if(oldVersion <= 8){
+          await database.execute("ALTER TABLE records ADD COLUMN medication TEXT;");
+          if (kDebugMode) {
+            print("DB: Added medication column to records table.");
+          }
         }
       },
       onOpen: (database) {
@@ -48,7 +61,7 @@ class RecordsDB {
     }
         },
       singleInstance: true,
-      version: 7,
+      version: 9,
     );
   }
 

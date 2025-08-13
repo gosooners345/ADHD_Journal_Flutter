@@ -78,7 +78,9 @@ class MainActivity : FlutterActivity() {
                         val keywordInput: IntArray? = arguments["keywords"] as? IntArray
                         val contentInput: IntArray? = arguments["content"] as? IntArray
                         val ratingInput: FloatArray? = arguments["rating"] as? FloatArray
-
+                        // NEW
+                        val sleepInput: FloatArray? = arguments["sleep"] as? FloatArray
+                        val medicationInput: IntArray? = arguments["medication"] as? IntArray
 
 
 
@@ -90,6 +92,8 @@ class MainActivity : FlutterActivity() {
                             if (keywordInput == null) errorMsg += "Keywords expected IntArray. "
                             if (contentInput == null) errorMsg += "Content expected IntArray. "
                             if (ratingInput == null) errorMsg += "Rating expected FloatArray."
+                            if (sleepInput == null) errorMsg += "Sleep expected FloatArray. " // NEW
+                            if (medicationInput == null) errorMsg += "Medication expected IntArray. " // NEW
                             Log.e("MainActivity", errorMsg)
                             result.error("INVALID_ARGS", errorMsg, null)
                             return@setMethodCallHandler
@@ -99,6 +103,8 @@ class MainActivity : FlutterActivity() {
                         Log.d("MainActivity", "Successfully parsed keywordInput size: ${keywordInput.size}")
                         Log.d("MainActivity", "Successfully parsed contentInput size: ${contentInput.size}")
                         Log.d("MainActivity", "Successfully parsed ratingInput size: ${ratingInput.size}")
+                        Log.d("MainActivity", "Received arguments['sleep']: ${arguments["sleep"]?.javaClass?.name})")
+                        Log.d("MainActivity", "Received arguments['medication']: ${arguments["medication"]?.javaClass?.name})")
 
 
                         // --- PREPARE BUFFERS AND RUN INFERENCE ---
@@ -119,27 +125,21 @@ class MainActivity : FlutterActivity() {
                         ratingBuffer.asFloatBuffer().put(ratingInput)
                         ratingBuffer.rewind() // Or .position(0)
 
+                        //New Arrays
+                        val sleepBuffer = ByteBuffer.allocateDirect(sleepInput!!.size * Float.SIZE_BYTES)
+                            .order(ByteOrder.nativeOrder())
+                        sleepBuffer.asFloatBuffer().put(sleepInput)
+                        sleepBuffer.rewind()
+
+                        val medicationBuffer = ByteBuffer.allocateDirect(medicationInput!!.size * Int.SIZE_BYTES)
+                            .order(ByteOrder.nativeOrder())
+                        medicationBuffer.asIntBuffer().put(medicationInput)
+                        medicationBuffer.rewind()
+
+
                         // The 'inputs' array for the interpreter
-                        val inputs = arrayOf<Any>(keywordBuffer,  ratingBuffer,contentBuffer)
-//val inputs = arrayOfNulls<Any>(3)
-               /*         // --- EXPLICIT ARRAY CREATION FOR DEBUGGING ---
-                        Log.d("MainActivity", "DEBUG: Creating inputs array of size 3.")
-                        val inputs = arrayOfNulls<Any>(3) // Create an empty array
+                        val inputs = arrayOf<Any>(sleepBuffer,keywordBuffer,  ratingBuffer,contentBuffer,medicationBuffer)
 
-                        Log.d("MainActivity", "DEBUG: Assigning keywordBuffer to index 0.")
-                        inputs[0] = keywordBuffer
-
-                        Log.d("MainActivity", "DEBUG: Assigning ratingBuffer (size: ${ratingBuffer.capacity()}) to index 1.")
-                        inputs[1] = ratingBuffer
-
-                        Log.d("MainActivity", "DEBUG: Assigning contentBuffer to index 2.")
-                        inputs[2] = contentBuffer
-
-                        Log.d("MainActivity", "DEBUG: Final inputs array created. Now running inference.")
-// --- END OF DEBUGGING BLOCK ---
-*/
-
-// Prepare output buffer...
                         // Prepare output buffer
                         val outputTensor = interpreter!!.getOutputTensor(0)
                         val outputShape = outputTensor.shape()
@@ -149,9 +149,9 @@ class MainActivity : FlutterActivity() {
                         val outputMap = mapOf(0 to outputBuffer)
 
                         // Run inference using the native interpreter
+                        /// Remember to implement the iOS equivalent of this so the code is consistenly executed
                         interpreter?.runForMultipleInputsOutputs(inputs, outputMap)
 
-                        // Process and send results back to Dart
                         outputBuffer.rewind()
                         val predictionResults = FloatArray(outputElementCount)
                         outputBuffer.asFloatBuffer().get(predictionResults)

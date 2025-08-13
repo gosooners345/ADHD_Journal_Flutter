@@ -87,19 +87,7 @@ class RecordsBloc {
         _recordsController.sink.addError(e);
       }
     }
-   // final records = await _recordsRepo.getRecords();
-    //_recordHolder=records;
-    //_recordsController.sink.add(List.unmodifiable(records));
-    //recordHolder = await _recordsRepo.getRecords();
-   // if (_recordHolder.isNotEmpty) {
-    //  maxID = getMaxID();
-    //} else {
-      //maxID = 0;
-    //}
-//await _updateDerivedDataStream();
-  //  if (kDebugMode) {
-    //  print(maxID);
-    //}
+
   }
 
 

@@ -1,5 +1,6 @@
 import 'package:adhd_journal_flutter/record_data_package/records_data_class_db.dart';
 import 'package:adhd_journal_flutter/adhd_machine_learning/personalization_data.dart';
+import 'package:flutter/foundation.dart';
 
 /// PersonalizationService is responsible for the "learning" part of the on-device AI.
 ///
@@ -29,9 +30,8 @@ class PersonalizationService {
     required Records record,
   }) async {
     // 1. Determine what the model predicted based on the highest score.
-    // The model's labels are '1' for success and '0' for failure.
-    final double successScore = modelPrediction['1'] ?? 0.0;
-    final double failureScore = modelPrediction['0'] ?? 0.0;
+    final double successScore = modelPrediction['true'] ?? 0.0;
+    final double failureScore = modelPrediction['false'] ?? 0.0;
     final String predictedLabel = (successScore > failureScore) ? '1' : '0';
 
     // 2. Convert the user's boolean choice into the same label format.
@@ -39,7 +39,9 @@ class PersonalizationService {
 
     // 3. If the model's prediction matches the user's choice, no learning is needed.
     if (predictedLabel == userLabel) {
-      print("✅ Model was correct. No correction needed.");
+      if (kDebugMode) {
+        print("✅ Model was correct. No correction needed.");
+      }
       return;
     }
 

@@ -16,11 +16,15 @@ class Records implements Comparable {
   String tags;
   double rating;
   bool success;
+ String medication="";
+ double sleep=0.0;
   DateTime timeCreated;
   DateTime timeUpdated;
 Uint8List media = Uint8List(0);
   Records(
-      {required this.id,
+      { sleep=0.0,
+        medication ="",
+        required this.id,
       required this.title,
       required this.content,
       required this.emotions,
@@ -32,6 +36,7 @@ Uint8List media = Uint8List(0);
         required this.media,
       required this.timeCreated,
       required this.timeUpdated,
+
       }
   );
 
@@ -40,7 +45,7 @@ Uint8List media = Uint8List(0);
   @override
   String toString() {
     return 'Title: $title \r\nDetails: $content \r\nEmotions: $emotions\r\nSources: $sources'
-        '\r\nSymptoms: $symptoms\r\nRating: $rating\r\nTime Created: $timeCreated\r\n'
+        '\r\nSymptoms: $symptoms\r\nRating: $rating\r\nTime Created: $timeCreated\r\n'//'Medication: $medication\r\nSleep: $sleep\r\n'
         'Time Updated: $timeUpdated';
   }
 
@@ -57,7 +62,10 @@ Uint8List media = Uint8List(0);
       'media': media,
       'success': success ? 1 : 0,
       'time_created': timeCreated.millisecondsSinceEpoch,
-      'time_updated': timeUpdated.millisecondsSinceEpoch
+      'time_updated': timeUpdated.millisecondsSinceEpoch,
+      'sleep': sleep,
+      'medication': medication,
+
     };
   }
 

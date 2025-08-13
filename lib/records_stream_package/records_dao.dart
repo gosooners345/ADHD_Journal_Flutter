@@ -18,7 +18,6 @@ class RecordsDao {
         conflictAlgorithm: ConflictAlgorithm.replace);
     await saveImageToDb(record.id, record.media);
     await db.batch().commit();
-    // return result;
   }
 
   Future<List<Records>> getSearchedRecords({required String query}) async {
@@ -66,6 +65,8 @@ class RecordsDao {
           tags: maps[index]['tags'],
           media: maps[index]['media'] ?? Uint8List(0),
           success: maps[index]['success'] == 0 ? false : true,
+          medication: maps[index]['medication']??'',
+          sleep: maps[index]['sleep']??'',
           timeCreated:
               DateTime.fromMillisecondsSinceEpoch(maps[index]['time_created']),
           timeUpdated:
@@ -112,6 +113,8 @@ Uint8List testImage(Map<String,dynamic>map)  {
           tags: maps[index]['tags'],
           media:convertBytestoList( maps[index]['media']) ?? Uint8List(0) ,
           success: maps[index]['success'] == 0 ? false : true,
+          medication: maps[index]['medication']??'',
+          sleep: maps[index]['sleep']??0.0,
           timeCreated:
               DateTime.fromMillisecondsSinceEpoch(maps[index]['time_created']),
           timeUpdated:
@@ -159,6 +162,8 @@ Uint8List testImage(Map<String,dynamic>map)  {
           rating: maps[index]['rating'],
           symptoms: maps[index]['symptoms'],
           tags: maps[index]['tags'],
+          sleep: maps[index]['sleep']??0.0,
+          medication: maps[index]['medication']??'',
           media:  testImage( maps[index]['media']) ?? Uint8List(0),
           success: maps[index]['success'] == 0 ? false : true,
           timeCreated:

@@ -47,7 +47,6 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
   @override
   void initState() {
     super.initState();
-    //encryptedSharedPrefs = EncryptedSharedPreferences();
     index = 0;
     _pageController.addListener(() {
       currentPage = _pageController.page;
@@ -59,14 +58,20 @@ class _OnBoardingWidgetState extends State<OnBoardingWidget> {
 
   void storePrefs() async {
     await Global.encryptedSharedPrefs.setString('passwordHint', passwordHint);
-    print("Password Hint was saved");
+    if (kDebugMode) {
+      print("Password Hint was saved");
+    }
     await Global.encryptedSharedPrefs.setString('loginPassword', savedPasswordValue);
-    print("Login Password was saved");
+    if (kDebugMode) {
+      print("Login Password was saved");
+    }
     await Global.encryptedSharedPrefs.setString(
         'passwordHint', passwordHintValueSaved);
 
     await Global.encryptedSharedPrefs.setString('dbPassword', savedPasswordValue);
-    print("DB Password was saved");
+    if (kDebugMode) {
+      print("DB Password was saved");
+    }
     //await encryptedSharedPrefs.setBool('passwordEnabled', isSaved);
     Global.prefs.setBool('passwordEnabled', isSaved);
     Global.prefs.setString('greeting', greetingValueSaved);
