@@ -14,7 +14,8 @@ class AdhdMlService {
   late Map<String, int> _keywordVocab;
   late Map<String, int> _contentVocab;
   late Map<String, int> _medicationVocab;
-  late List<String> _outputLabels;
+  late List<String> _successLabels;
+  late List<String> _dayTypeLabels;
   late int _keywordSequenceLength;
   late int _contentSequenceLength;
   late int _medicationSequenceLength;
@@ -27,7 +28,8 @@ class AdhdMlService {
   Map<String,int> get medicationVocabulary => _isInitialized?_medicationVocab:{};
   Map<String, int> get keywordVocabulary => _isInitialized ? _keywordVocab : {}; // Public getter
   Map<String, int> get contentVocabulary => _isInitialized ? _contentVocab : {}; // Public getter
-  List<String> get outputLabels => _isInitialized ? _outputLabels : []; // Public getter
+  List<String> get successLabels => _isInitialized ? _successLabels : []; // Public getter
+  List<String> get dayTypeLabels => _isInitialized ? _dayTypeLabels : []; // Public getter
   int get keywordSequenceLength => _isInitialized ? _keywordSequenceLength : 0; // Public getter
   int get contentSequenceLength => _isInitialized ? _contentSequenceLength : 0;
   int get medicationSequenceLength => _isInitialized ? _medicationSequenceLength : 0;
@@ -120,7 +122,9 @@ Future<void> _loadDartAssets() async{
     final definitionsString =
     await rootBundle.loadString('assets/ml_definitions.json');
     final definitions = json.decode(definitionsString);
-    _outputLabels = List<String>.from(definitions['output_label_vocab']);
+    _successLabels = List<String>.from(definitions['success_labels']);
+    _dayTypeLabels = List<String>.from(definitions['day_type_labels']);
+    // Keywords and content
     // Symptoms and emotions?
     _keywordSequenceLength = definitions['keyword_sequence_length'];
     // Content context
@@ -149,7 +153,8 @@ Future<void> _loadDartAssets() async{
     required String text,
     required Map<String, int> vocab,
     required int sequenceLength,
-  }) {
+  })
+  {
     final vector = List<int>.filled(sequenceLength, 0); // 0 for padding (PAD token)
     final punctuationRegex = RegExp(r'[!"#$%&()*+,-./:;<=>?@\[\\\]^_`{|}~]');
     final textWithSpaces = text.toLowerCase().replaceAll(punctuationRegex, ' ');
@@ -171,7 +176,8 @@ Future<void> _loadDartAssets() async{
     required String text,
     required Map<String, int> vocab,
     required int sequenceLength,
-  }) {
+  })
+  {
     final vector =
     List<int>.filled(sequenceLength, 0); // Use double for Float32List
     final punctuationRegex = RegExp(r'[!"#$%&()*+,-./:;<=>?@\[\\\]^_`{|}~]');
@@ -194,7 +200,8 @@ Future<void> _loadDartAssets() async{
     required String text,
     required Map<String, int> vocab,
     required int sequenceLength,
-  }) {
+  })
+  {
     final vector =
         List<double>.filled(sequenceLength, 0.0); // Use double for Float32List
     final punctuationRegex = RegExp(r'[!"#$%&()*+,-./:;<=>?@\[\\\]^_`{|}~]');
@@ -213,7 +220,8 @@ Future<void> _loadDartAssets() async{
     return vector;
   }
 
-  List<double> publicNormalizeRating({required double userRating}) {
+  List<double> publicNormalizeRating({required double userRating})
+  {
     if (!_isInitialized) { // Ensure params are loaded
       print("Error: Rating normalization called before service initialized.");
       return [0.0]; // Default or throw error
@@ -337,11 +345,7 @@ if(kDebugMode) {
   }
 
 
-  Future<Map<String, double>> _predictWithCoreML({
-    required Map<String, dynamic> inputs
-  }) async
-  {
-
+  Future<Map<String, double>> _predictWithCoreML({required Map<String, dynamic> inputs}) async{
     try {
       final Map<dynamic, dynamic>? rawOutput = await _channel.invokeMethod('predict', inputs);
       final Map<String, double> successLogits =
@@ -368,44 +372,62 @@ if(kDebugMode) {
   }
 
   // --- Android Logic ---
-  Future<Map<String, double>> _predictWithTFLite ({
-    required List<int> keywords,
-    required List<int> content,
-    required List<int> medication,
-    required List<double> rating,
-    required List<double> sleep,
-  }) async
-  {
+  Future<Map<String, double>> _predictWithTFLite ({required Map<String, dynamic> inputs}) async{
     if ( !_isInitialized) throw StateError("Android interpreter is not initialized.");
-
-    final tfliteInputs = [
-      Int32List.fromList(keywords),
-    Int32List.fromList(content),
-    Float32List.fromList(rating),
-    Float32List.fromList(sleep),
-    Int32List.fromList(medication),
-    ];
 
     try
     {
       // 3. Invoke the 'predict' method on the native side and await the results // The native side will return a list of probabilities.
-      final List<dynamic>? predictionsList = await _channel.invokeMethod('predict', tfliteInputs);
-      if (predictionsList == null) {
-        if (kDebugMode) {
+      final Map<dynamic, dynamic>? rawOutput = await _channel.invokeMethod('predict', inputs);
+
+      if(rawOutput==null){
+        if(kDebugMode){
           print("❌ Native prediction returned null.");
         }
         return {};
       }
+      final Map<String, List<double>>? typedOutputMap = rawOutput
+          .map((key, value) => MapEntry(key.toString(), (value as List<dynamic>).cast<double>()));
 
-// 4. Process the results received from the native side
-      final Map<String, double> predictions = {};
-      final List<double> probabilities = predictionsList.cast<double>();
-
-      for (int i = 0; i < _outputLabels.length; i++) {
-        predictions[_outputLabels[i]] = probabilities[i];
+      if (typedOutputMap == null) {
+        if (kDebugMode) {
+          print("❌ Failed to cast native output map.");
+        }
+        return {};
+      }
+      final List<double>? successProbabilities = typedOutputMap['success_probabilities'];
+      final List<double>? dayTypeProbabilities = typedOutputMap['day_type_probabilities'];
+      if (successProbabilities == null || dayTypeProbabilities == null) {
+        if (kDebugMode) {
+          print("❌ Missing 'success_probabilities' or 'day_type_probabilities' in native output.");
+        }
+        return {};
+      }
+      if (dayTypeProbabilities.length != _dayTypeLabels.length) {
+        if (kDebugMode) {
+          print("❌ Mismatch between day_type_probabilities length (${dayTypeProbabilities.length}) and _dayTypeLabels length (${_dayTypeLabels.length}).");
+        }
+        // Handle this error: maybe return empty, or throw, or try to take min length
+        return {};
+      }
+      final Map<String, double> dayTypePredictions = {};
+      for (int i = 0; i < _dayTypeLabels.length; i++) {
+        dayTypePredictions[_dayTypeLabels[i]] = dayTypeProbabilities[i];
       }
 
-      return predictions;
+      if (kDebugMode) {
+        final Map<String, double> successPredictionsForDebug = {};
+        if (successProbabilities.length == _successLabels.length) {
+          for (int i = 0; i < _successLabels.length; i++) {
+            successPredictionsForDebug[_successLabels[i]] = successProbabilities[i];
+          }
+          print("✅ Android Success Probabilities (labeled): $successPredictionsForDebug");
+        } else {
+          print("⚠️ Android Success Probabilities (raw): $successProbabilities (Label count mismatch)");
+        }
+        print("✅ Android Day Type Probabilities (labeled): $dayTypePredictions");
+      }
+      return dayTypePredictions;
     } catch (e, s) {
       if(kDebugMode) {
         print("❌ NATIVE INFERENCE FAILED: $e");
@@ -413,20 +435,17 @@ if(kDebugMode) {
       }
       return {};
     }
-    /* final outputShape = _androidInterpreter!.getOutputTensor(0).shape;
-    final outputBuffer = Float32List(outputShape.reduce((a, b) => a * b)).reshape(outputShape);
-    final outputMap = {0: outputBuffer};
 
-    _androidInterpreter!.runForMultipleInputs(tfliteInputs, outputMap);
 
-    final List<double> logitsList = outputMap[0]![0];
-    return Map.fromIterables(_outputLabels, logitsList);*/
+
+
   }
 
 
 // Reduce unused variables in this method to make it more readable
   Future<Map<String, double>> predict(  Records record ,{
-    required List<int> keywords, required List<int> content, required List<double> rating, required List<double> sleep, required List<int> medication }) async {
+    required List<int> keywords, required List<int> content, required List<double> rating, required List<double> sleep, required List<int> medication }) async
+  {
     if (!_isInitialized) {
       print("⚠️ Prediction called before service was initialized.");
       return {};
@@ -434,71 +453,35 @@ if(kDebugMode) {
 
 else {
       // 1. Prepare all inputs in Dart (this part is the same)
-      final String keywordString =
-          "${record.symptoms ?? ''} ${record.emotions ?? ''}";
-      final String contentString =
-          "${record.title ?? ''} ${record.content ?? ''}";
-/*      final keywordVector = _vectorizeContentText(
-          text: keywordString,
-          vocab: _keywordVocab,
-          sequenceLength: _keywordSequenceLength);
-      final medicationVector = _vectorizeContentText(
-          text: record.medication,
-          vocab: _medicationVocab,
-          sequenceLength: _medicationSequenceLength);
-      final contentVector = _vectorizeContentText(
-          text: contentString,
-          vocab: _contentVocab,
-          sequenceLength: _contentSequenceLength);
-      double currentRating =
-          record.rating ?? ((_ratingScaleMin + _ratingScaleMax) / 2.0);
-      double normalizedRating = _normalizeRating(currentRating);
-      // 2. Package the inputs into a map to send over the method channel*/
-      final Map<String, dynamic> inputs = {
-        'keywords': Int32List.fromList(keywords),
-        'content': Int32List.fromList(content),
-        'rating': Float32List.fromList(rating),
-        'sleep': Float32List.fromList(sleep),
-        'medication': Int32List.fromList(medication),
-      };
+      final String keywordString =          "${record.symptoms ?? ''} ${record.emotions ?? ''}";
+      final String contentString =          "${record.title ?? ''} ${record.content ?? ''}";
+
       if(Platform.isIOS){
+        final Map<String, dynamic> inputs = {
+          'keywords': Int32List.fromList(keywords),
+          'content': Int32List.fromList(content),
+          'rating': Float32List.fromList(rating),
+          'sleep': Float32List.fromList(sleep),
+          'medication': Int32List.fromList(medication),
+        };
         return await _predictWithCoreML(inputs:inputs);
       }
       else if(Platform.isAndroid){
-        return await _predictWithTFLite(keywords:  Int32List.fromList(keywords), content: Int32List.fromList(content), medication: Int32List.fromList(medication), rating: Float32List.fromList(rating), sleep:Float32List.fromList(sleep) );
+        final Map<String, dynamic> inputs = {
+          'keywords': Int32List.fromList(keywords),
+          'content': Int32List.fromList(content),
+          'rating': Float32List.fromList(rating),
+          'sleep': Float32List.fromList(sleep),
+          'medication': Int32List.fromList(medication),
+        };
+        return await _predictWithTFLite(
+          inputs:inputs);//keywords:  Int32List.fromList(keywords), content: Int32List.fromList(content), medication: Int32List.fromList(medication), rating: Float32List.fromList(rating), sleep:Float32List.fromList(sleep) );
       }
       else{
         return {};
       }
 //Address this 8/27
-      /* try
-    {
-      // 3. Invoke the 'predict' method on the native side and await the results // The native side will return a list of probabilities.
-      final List<dynamic>? predictionsList = await _channel.invokeMethod('predict', inputs);
-      if (predictionsList == null) {
-        if (kDebugMode) {
-          print("❌ Native prediction returned null.");
-        }
-        return {};
-      }
 
-// 4. Process the results received from the native side
-      final Map<String, double> predictions = {};
-      final List<double> probabilities = predictionsList.cast<double>();
-
-      for (int i = 0; i < _outputLabels.length; i++) {
-        predictions[_outputLabels[i]] = probabilities[i];
-      }
-
-      return predictions;
-    } catch (e, s) {
-      if(kDebugMode) {
-        print("❌ NATIVE INFERENCE FAILED: $e");
-        print("   StackTrace: $s");
-      }
-      return {};
-    }
-  }*/
     }
 }
 

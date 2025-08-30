@@ -1,7 +1,17 @@
 {
-    "output_label_vocab": [
+    "success_labels": [
         "false",
         "true"
+    ],
+    "day_type_labels": [
+        "peak_performance_day",
+        "successful_day",
+        "emotional_challenge_day",
+        "inattentive_struggle_day",
+        "executive_dysfunction_day",
+        "high_stress_day",
+        "difficult_day",
+        "neutral_day"
     ],
     "keyword_sequence_length": 64,
     "content_sequence_length": 256,

@@ -8,9 +8,6 @@ import android.content.res.AssetFileDescriptor
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.annotation.NonNull
-//import androidx.compose.ui.semantics.error
-//import com.google.android.gms.tflite.java.TfLite
-//import com.google.android.gms.tflite.client.TfLiteClient
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -24,9 +21,7 @@ import java.io.FileNotFoundException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.MappedByteBuffer
-//import java.nio.channels.FileChanne
 import java.lang.SecurityException
-//import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 
 class MainActivity : FlutterActivity() {
@@ -53,9 +48,10 @@ class MainActivity : FlutterActivity() {
                     setupInterpreter(result)
                    // setupInterpreterWithFlex(result)
                 }
-                // ADD THIS ENTIRE 'predict' BLOCK
+                //Created Predict method to keep code cleaner
                 "predict" -> {
-                    if (interpreter == null) {
+                    predict(call.arguments, result)
+                    /*if (interpreter == null) {
                         result.error("NOT_INITIALIZED", "Interpreter is not ready.", null)
                         return@setMethodCallHandler
                     }
@@ -162,7 +158,7 @@ class MainActivity : FlutterActivity() {
 
                     } catch (e: Exception) {
                         result.error("PREDICTION_FAILED", "Native prediction failed", e.localizedMessage)
-                    }
+                    }*/
                 }
 
 
@@ -202,9 +198,43 @@ class MainActivity : FlutterActivity() {
             result.error("INIT_FAILED", "A critical error occurred during interpreter creation.", e.localizedMessage)
         }
     }
+    private fun createFloatBuffer(data: FloatArray): ByteBuffer =
+        ByteBuffer.allocateDirect(data.size * java.lang.Float.BYTES)
+            .order(ByteOrder.nativeOrder())
+            .apply {
+                asFloatBuffer().put(data)
+                rewind()
+            }
+
+    private fun createIntBuffer(data: IntArray): ByteBuffer =
+        ByteBuffer.allocateDirect(data.size * java.lang.Integer.BYTES)
+            .order(ByteOrder.nativeOrder())
+            .apply {
+                asIntBuffer().put(data)
+                rewind()
+            }
 
 
-
+    private fun logTensorDetails() {
+        if (interpreter == null) return
+        Log.d("MainActivity", "--- TFLite Model Tensor Details ---")
+        val inputCount = interpreter!!.inputTensorCount
+        for (i in 0 until inputCount) {
+            val tensor = interpreter!!.getInputTensor(i)
+            Log.d("MainActivity", "Input[$i]: Name=${tensor.name()}, Shape=${tensor.shape().joinToString(",")}")
+        }
+        val outputCount = interpreter!!.outputTensorCount
+        for (i in 0 until outputCount) {
+            val tensor = interpreter!!.getOutputTensor(i)
+            Log.d("MainActivity", "Output[$i]: Name=${tensor.name()}, Shape=${tensor.shape().joinToString(",")}")
+        }
+        Log.d("MainActivity", "------------------------------------")
+    }
+    // Helper: report missing/invalid arg
+    private fun invalidArg(result: MethodChannel.Result, key: String): Nothing {
+        result.error("INVALID_ARG_$key", "Missing or invalid '$key'.", null)
+        throw IllegalArgumentException("Missing or invalid '$key'")
+    }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
@@ -228,10 +258,196 @@ class MainActivity : FlutterActivity() {
             }
         }
     }
+    private fun predict(arguments: Any?, result: MethodChannel.Result) {
+        // 1) Check interpreter
+        interpreter ?: run {
+            result.error("NOT_INITIALIZED", "Interpreter is not ready.", null)
+            return
+        }
+
+        // 2) Unpack & validate arguments
+        val args = (arguments as? Map<String, Any>) ?: run {
+            result.error("INVALID_ARGS", "Expected a Map<String, Any>.", null)
+            return
+        }
+        val kwArr  = args["keywords"]   as? IntArray   ?: invalidArg(result, "keywords")
+        val coArr  = args["content"]    as? IntArray   ?: invalidArg(result, "content")
+        val raArr  = args["rating"]     as? FloatArray ?: invalidArg(result, "rating")
+        val slArr  = args["sleep"]      as? FloatArray ?: invalidArg(result, "sleep")
+        val mdArr  = args["medication"] as? IntArray   ?: invalidArg(result, "medication")
+
+        try {
+            // 3) Build input buffers in interpreter’s input order
+            val inputs = Array<Any>(interpreter!!.inputTensorCount) { idx ->
+                val t = interpreter!!.getInputTensor(idx)
+                when {
+                    t.name().contains("sleep")      -> createFloatBuffer(slArr)
+                    t.name().contains("keyword")    -> createIntBuffer(kwArr)
+                    t.name().contains("rating")     -> createFloatBuffer(raArr)
+                    t.name().contains("content")    -> createIntBuffer(coArr)
+                    t.name().contains("medication") -> createIntBuffer(mdArr)
+                    else -> throw IllegalArgumentException("Unexpected input tensor: ${t.name()}")
+                }
+            }
+
+            // 4) Allocate outputs based on shape → element count
+            data class OutputInfo(val index: Int, val count: Int, val buffer: ByteBuffer)
+
+            val outputsInfo = (0 until interpreter!!.outputTensorCount).map { idx ->
+                val shape = interpreter!!.getOutputTensor(idx).shape()
+                val count = shape.fold(1) { acc, dim -> acc * dim }
+                val buf   = ByteBuffer
+                    .allocateDirect(count * Float.SIZE_BYTES)
+                    .order(ByteOrder.nativeOrder())
+                OutputInfo(idx, count, buf)
+            }
+
+            // 5) Run inference
+            val outputsMap = outputsInfo.associate { it.index to it.buffer }
+            interpreter!!.runForMultipleInputsOutputs(inputs, outputsMap)
+
+            // 6) Partition results by expected count
+            //    We know day_type has 8 floats, success has 2 floats
+            val dayTypeInfo =
+                outputsInfo.firstOrNull { it.count > 2 }
+                    ?: throw IllegalStateException("No output with >2 elements found")
+            val successInfo =
+                outputsInfo.firstOrNull { it.count <= 2 }
+                    ?: throw IllegalStateException("No output with ≤2 elements found")
+
+            // 7) Extract FloatArrays
+            fun readFloats(info: OutputInfo): List<Double> {
+                info.buffer.rewind()
+                val arr = FloatArray(info.count)
+                info.buffer.asFloatBuffer().get(arr)
+                return arr.map(Float::toDouble)
+            }
+            val dayTypeProbs = readFloats(dayTypeInfo)
+            val successProbs = readFloats(successInfo)
+
+            // 8) Return to Dart
+            result.success(
+                mapOf(
+                    "day_type_probabilities" to dayTypeProbs,
+                    "success_probabilities"  to successProbs
+                )
+            )
+
+        } catch (e: Exception) {
+            Log.e("PredictDebug", "Prediction failed", e)
+            result.error("PREDICTION_FAILED", "Native prediction failed", e.localizedMessage)
+        }
+    }
+ /*   private fun predict(arguments: Any?, result: MethodChannel.Result){
+    if (interpreter == null) {
+        result.error("NOT_INITIALIZED", "Interpreter is not ready.", null)
+        return
+    }
+    try{
+        val args = arguments as? Map<String, Any> ?: run{
+            result.error("INVALID_ARGS", "Arguments map is null", null)
+            return
+        }
+        val keywords = args["keywords"] as IntArray
+        val content = args["content"] as IntArray
+        val rating = args["rating"] as FloatArray
+        val sleep = args["sleep"] as FloatArray
+        val medication = args["medication"] as IntArray
+
+        val inputs = arrayOf<Any>( createFloatBuffer(sleep),
+            createIntBuffer(keywords),
+            createFloatBuffer(rating),
+            createIntBuffer(content),
+            createIntBuffer(medication)
+        )
+        //Two outputs
 
 
 
 
+
+        // Output 1: Day Type prediction (shape [1, 8])
+// Verify that the sizing is correct
+        val successOutputTensor = interpreter!!.getOutputTensor(0)
+        val successOutputShape = successOutputTensor.shape()
+        val successElementCount = successOutputShape.fold(1) { acc, i -> acc * i }
+        val successOutputBuffer = ByteBuffer.allocateDirect(8 * Float.SIZE_BYTES).order(ByteOrder.nativeOrder())
+
+        android.util.Log.d("PredictDebug", "Output Tensor 0 (Success) Shape: ${successOutputShape.joinToString()}, Calculated Element Count: $successElementCount")
+
+        val dayTypeOutputTensor = interpreter!!.getOutputTensor(1)
+        val dayTypeOutputShape = dayTypeOutputTensor.shape()
+        val dayTypeElementCount = dayTypeOutputShape.fold(1) { acc, i -> acc * i }
+        val dayTypeOutputBuffer = ByteBuffer.allocateDirect(8 * Float.SIZE_BYTES).order(ByteOrder.nativeOrder())
+
+        android.util.Log.d("PredictDebug", "Output Tensor 1 (Day Type) Shape: ${dayTypeOutputShape.joinToString()}, Calculated Element Count: $dayTypeElementCount")
+
+      //  val successOutputBuffer =ByteBuffer.allocateDirect(2 * 4).order(ByteOrder.nativeOrder())
+//        val dayTypeOutputBuffer = ByteBuffer.allocateDirect(8 * 4).order(ByteOrder.nativeOrder())
+        android.util.Log.d("PredictDebug", "successOutputBuffer capacity: ${successOutputBuffer.capacity()} bytes")
+        android.util.Log.d("PredictDebug", "dayTypeOutputBuffer capacity: ${dayTypeOutputBuffer.capacity()} bytes")
+
+
+
+        val outputMap = mapOf(
+            0 to successOutputBuffer,
+            1 to dayTypeOutputBuffer
+
+        )
+
+
+
+
+
+
+
+        interpreter!!.runForMultipleInputsOutputs(inputs, outputMap)
+
+
+
+
+
+
+
+        successOutputBuffer.rewind()
+        dayTypeOutputBuffer.rewind()
+        val successPredictionResults = FloatArray(successElementCount)
+        val dayTypePredictionResults = FloatArray(dayTypeElementCount)
+        android.util.Log.d("PredictDebug", "successPredictionResults length: ${successPredictionResults.size}")
+        android.util.Log.d("PredictDebug", "dayTypePredictionResults length: ${dayTypePredictionResults.size}")
+try {
+    successOutputBuffer.asFloatBuffer().get(successPredictionResults)
+    android.util.Log.d("PredictDebug", "successPredictionResults: ${successPredictionResults.toList()} from Buffer")
+} catch (e: Exception) {
+    android.util.Log.e("PredictDebug", "Error getting successPredictionResults", e)
+}
+try {
+
+    dayTypeOutputBuffer.asFloatBuffer().get(dayTypePredictionResults)
+    android.util.Log.d("PredictDebug", "dayTypePredictionResults: ${dayTypePredictionResults.toList()} from Buffer")
+} catch (e: Exception) {
+    android.util.Log.e("PredictDebug", "Error getting dayTypePredictionResults", e)
+    result.error("PREDICTION_FAILED", "Native prediction failed", e.localizedMessage)
+    return
+}
+
+        //Combine results
+        val successResultMap = mapOf(
+            "success_probabilities" to successPredictionResults.map { it.toDouble() },
+            "day_type_probabilities" to dayTypePredictionResults.map { it.toDouble() }
+
+
+        )
+        result.success(successResultMap)
+
+    }
+    catch(e:Exception){
+        result.error("PREDICTION_FAILED", "Native prediction failed", e.localizedMessage)
+    }
+
+    }
+
+*/
     private fun initInterpreterWithFlex(assetModelName: String): Boolean {
         // If able to load, then this will be true
         val model = loadModelFromAssets(assetModelName)
@@ -294,7 +510,12 @@ class MainActivity : FlutterActivity() {
         super.onDestroy()
         closeInterpreter()
     }
-
+    private data class OutInfo(
+        val name: String,
+        val index: Int,
+        val count: Int,
+        val buffer: ByteBuffer
+    )
     private fun closeInterpreter() {
         interpreter?.close()
         interpreter = null
