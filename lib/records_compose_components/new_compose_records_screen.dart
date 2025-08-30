@@ -260,107 +260,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
       showMessage(_livePrediction!);
     }
   }
-/*    Future<void> _runPrediction() async {
-      String keywordText = emotionsController.text.trim();
-      String contentText = contentController.text.trim();
-      String medicationText = medicationController.text.trim();
-      // --- VALIDATION ---
-      if (keywordText.isEmpty) {
-        print("Validation Error: Keywords cannot be empty.");
-        // Optionally, show a SnackBar or alert to the user
-        return; // Don't proceed
-      }
-      if (contentText.isEmpty) {
-        print("Validation Error: Content cannot be empty.");
-        return; // Don't proceed
-      }
-      // Assuming _currentRating is always a valid double from your UI (e.g., Slider)
 
-      List<int> keywordTokens;
-      try {
-        final int keywordLength = Global.adhdMlService.keywordSequenceLength;
-        keywordTokens = MyTokenizer.tokenize(keywordText, vocabularyType: VocabularyType.keywords,maxLength: keywordLength); // Replace with your actual tokenizer
-        if (keywordTokens.isEmpty && keywordText.isNotEmpty) { // Tokenizer failed for non-empty text
-            print("Tokenization Warning: Keywords resulted in empty tokens for non-empty text.");
-            // Decide if this is an error or acceptable. For now, let's treat it as potentially problematic.
-             keywordTokens = []; // Or handle as an error
-        }
-      } catch (e) {
-        print("Error during keyword tokenization: $e");
-        return; // Don't proceed
-      }
-
-      List<int> contentTokens;
-      try {
-        final int contentLength = Global.adhdMlService.contentSequenceLength;
-        contentTokens = MyTokenizer.tokenize(contentText, vocabularyType: VocabularyType.content,maxLength: contentLength); // Replace with your actual tokenizer
-         if (contentTokens.isEmpty && contentText.isNotEmpty) {
-            print("Tokenization Warning: Content resulted in empty tokens for non-empty text.");
-            contentTokens = [];
-        }
-      } catch (e) {
-        print("Error during content tokenization: $e");
-        return; // Don't proceed
-      }
-      List<int> medicationTokens;
-      try{
-        final int medicationLength = Global.adhdMlService.medicationSequenceLength;
-        medicationTokens = MyTokenizer.tokenize(medicationText, vocabularyType: VocabularyType.medication,maxLength: medicationLength); // Replace with your actual tokenizer
-        if (medicationTokens.isEmpty && medicationText.isNotEmpty) {
-            print("Tokenization Warning: Medication resulted in empty tokens for non-empty text.");
-            medicationTokens = [];
-        }
-      }catch(e){
-        print("Error during medication tokenization: $e");
-      }
-      // Ensure your model can handle empty token lists if they are possible,
-      // otherwise, you might need a check here too.
-      // For now, we are allowing empty lists to be sent if tokenization results in them.
-      // The Kotlin side currently handles empty lists by creating empty IntArrays.
-
-      List<double> ratingList = [_currentRating]; // Always send as a list
-final List<double> normalizedRatingList = Global.adhdMlService.publicNormalizeRating(userRating: ratingList[0]);
-     if(kDebugMode) {
-       print('Dart (Validated): Sending keywords (count: ${keywordTokens
-           .length}) type: ${keywordTokens.runtimeType}');
-       print('Dart (Validated): Sending content (count: ${contentTokens
-           .length}) type: ${contentTokens.runtimeType}');
-       print('Dart (Validated): Sending rating (count: ${ratingList
-           .length}) type: ${ratingList.runtimeType}');
-     }
-Map<String,double> result = {};
-      // --- CALL NATIVE ---
-
-      try {
-        result = await Global.adhdMlService.predict(widget.record,
-          keywords: keywordTokens,
-          content: contentTokens,
-          rating: normalizedRatingList,
-        );
-      }catch (e) {
-        print("Error during prediction: $e");
-       // return; // Don't proceed
-      }
-      if (result.isEmpty) {
-        if (kDebugMode) {
-          print("Prediction returned no results (check native logs for PlatformException).");
-        }
-        setState(() {
-          _livePrediction = "Insight: Could not generate a prediction";
-        });
-        return;
-      } else {
-        print("Prediction successful: $result");
-        setState(() {
-          _lastmodelprediction = result;
-          final topPrediction = result.entries.reduce((a, b) => a.value > b.value ? a : b);
-          final advice = _getPredictionAdvice(topPrediction.key);
-          final String confidence = (topPrediction.value * 100).toStringAsFixed(1);
-          _livePrediction = "Predicted Day Type: '${topPrediction.key}'\n$advice ($confidence% confidence)";
-        });
-        showMessage(_livePrediction!);
-      }
-    }*/
 
 
 
@@ -403,6 +303,7 @@ Map<String,double> result = {};
 
 //Predictive advice
   String _getPredictionAdvice(String label) {
+    print(label);
     switch (label) {
       case 'peak_performance_day':
         return 'Insight: This looks like a highly productive day! What strategies are working well?';
@@ -562,6 +463,7 @@ void _onInputChanged() {
     print("Debug #5, Bouncer will bounce.");
     _debouncer.run(() {
     _runPrediction();
+    _predictOutcome();
     });
   }
   Future<void> _predictOutcome() async {
@@ -584,14 +486,15 @@ void _onInputChanged() {
       media: pictureBytes,
       sources: sourceController.text,
       id: widget.record.id,
-      sleep: sleepController.text,
-      medication: medicationTextController.text,
+      sleep: sleepRating,
+      medication: widget.record.medication,
 
     );
 
     // 2. Run the prediction
     final predictions = await Global.adhdMlService.predictRecord(tempRecord); // Changed to predictRecord
 _lastmodelprediction = predictions;
+print(_lastmodelprediction);
     // 3. Find the most likely outcome
     if (predictions.isNotEmpty) {
       final topPrediction = predictions.entries.reduce((a, b) => a.value > b.value ? a : b);
@@ -608,6 +511,7 @@ _lastmodelprediction = predictions;
       setState(() {
         _livePrediction = null; // Clear if no prediction is made (e.g., empty input)
       });
+      print("Live Prediction is null");
     return;
     }
 
@@ -642,6 +546,7 @@ _lastmodelprediction = predictions;
       ratingSliderWidget = Text(ratingInfo);
     });
     _onInputChanged();
+    //_predictOutcome();
   }
 
   void _updateSleepUI(double newSleepRating) {
@@ -665,7 +570,8 @@ _lastmodelprediction = predictions;
     setState(() {
       sleepRatingWidget = Text(sleepInfo);
     });
-    _onInputChanged(); // Assuming you want to trigger prediction on sleep change as well
+    _onInputChanged();
+    //_predictOutcome();// Assuming you want to trigger prediction on sleep change as well
   }
   void _updateSuccessUI(bool value) {
     widget.record.success = value;
@@ -679,6 +585,7 @@ _lastmodelprediction = predictions;
       successStateWidget = Text(successLabelText);
     });
     _onInputChanged();
+    //_predictOutcome();
   }
 
   ///Manages the Pages
@@ -718,7 +625,7 @@ _lastmodelprediction = predictions;
             duration: const Duration(milliseconds: 100), curve: Curves.easeIn);
       },
       children: [
-        ///When the event took place if not recently
+        ///When the event took place if not recently 1.
         uiCard(
             Column(children: [
               const Padding(
@@ -745,7 +652,7 @@ _lastmodelprediction = predictions;
             ]),
             swapper),
 
-        /// Title
+        /// Title 2.
         uiCard(
             Column(children: [
               const Padding(
@@ -771,14 +678,14 @@ _lastmodelprediction = predictions;
                   controller: titleController,
                   onChanged: (text) {
                     super.widget.record.title = text;
-                    _onInputChanged();
+                    //_onInputChanged();
                   },
                 ),
               ),
             ]),
             swapper),
 
-       //Content
+       //Content 3.
         uiCard(
             Column(children: [
               const Padding(
@@ -811,14 +718,14 @@ _lastmodelprediction = predictions;
                     controller: contentController, // Use _contentController here
                     onChanged: (text) {
                       super.widget.record.content = text;
-                      _onInputChanged();
+                      //_onInputChanged();
                     },
                   )),
               space
             ]),
             swapper),
 
-        /// Emotions
+        /// Emotions 4.
         uiCard(
             Column(
               children: [
@@ -850,7 +757,7 @@ _lastmodelprediction = predictions;
             ),
             swapper),
 
-        /// Surrounding Circumstances
+        /// Surrounding Circumstances 5.
         uiCard(
             Column(
               children: [
@@ -883,7 +790,7 @@ _lastmodelprediction = predictions;
                       controller: sourceController,
                       onChanged: (text) {
                         super.widget.record.sources = text;
-                        _onInputChanged();
+                        //_onInputChanged();
                       },
                     )),
                 space
@@ -891,7 +798,7 @@ _lastmodelprediction = predictions;
             ),
             swapper),
 
-        /// Related ADHD Symptoms
+        /// Related ADHD Symptoms 6.
         uiCard(
             Column(
               children: [
@@ -909,7 +816,6 @@ _lastmodelprediction = predictions;
                                   ))).then((value) {
                         setState(() {
                           super.widget.record.symptoms = value as String;
-
                         });
              _onInputChanged();
                       });
@@ -918,7 +824,7 @@ _lastmodelprediction = predictions;
               ],
             ),
             swapper),
-       //Sleep
+       //Sleep 7.
         uiCard(Column(children: [Padding(padding: EdgeInsets.all(10),child: Text("How well did you sleep last night?"),),
         space,
           Padding(
@@ -934,7 +840,7 @@ _lastmodelprediction = predictions;
               divisions: 100,
               label: sleepRating.toStringAsFixed(1)), // Display sleepRating value
         ],),swapper),
-        //Medication
+        //Medication 8.
         uiCard(Column(children: [Padding(padding: EdgeInsets.all(10),child: Text("Medication Taken?"),),
         space,
           Padding(padding: const EdgeInsets.all(10),
@@ -951,12 +857,12 @@ _lastmodelprediction = predictions;
               controller: medicationTextController,
               onChanged: (text) {
                 super.widget.record.medication = text;
-                _onInputChanged();
+                //_onInputChanged();
               },
             ),)
         ],),swapper),
 
-//Tags
+//Tags 9.
         uiCard(
             Column(
               children: [
@@ -985,14 +891,14 @@ _lastmodelprediction = predictions;
                       controller: tagsController,
                       onChanged: (text) {
                         super.widget.record.tags = text;
-                        _onInputChanged();
+                        //_onInputChanged();
                       },
                     )),
               ],
             ),
             swapper),
 
-       //Rating
+       //Rating 10.
         uiCard(
             Column(
               children: [
@@ -1012,6 +918,7 @@ _lastmodelprediction = predictions;
                     value: _currentRating, // Use _currentRating here
                     onChanged: (double value) {
                       _updateRatingUI(value);
+                      _onInputChanged();
                     },
                     max: 100.0,
                     min: 0.0,
@@ -1021,7 +928,7 @@ _lastmodelprediction = predictions;
             ),
             swapper),
 
-        /// Success/Fail
+        /// Success/Fail 11.
         uiCard(
             Column(children: [
               const Padding(
@@ -1034,7 +941,6 @@ _lastmodelprediction = predictions;
                 child: SwitchListTile(
                   value: isChecked,
                   onChanged: (bool value) {
-
                     _updateSuccessUI(value);
                     _onInputChanged();
                   },
@@ -1054,7 +960,7 @@ _lastmodelprediction = predictions;
             ]),
             swapper),
 
-        ///Add Pictures or other media here
+        ///Add Pictures or other media here 12.
         uiCard(Column(mainAxisAlignment: MainAxisAlignment.center, spacing: 5.0,
           children: [
             Row(spacing: 8.0,
@@ -1114,7 +1020,7 @@ _lastmodelprediction = predictions;
 
         ), swapper),
 
-        ///Entry Review
+        ///Entry Review 13.
         uiCard(
             ListView(
               padding: const EdgeInsets.only(
@@ -1139,7 +1045,7 @@ _lastmodelprediction = predictions;
                   controller: titleController,
                   onChanged: (text) {
                     super.widget.record.title = text;
-                    _onInputChanged();
+
                   },
                 ), //x
                 space,
@@ -1153,7 +1059,7 @@ _lastmodelprediction = predictions;
                       selectDate(context);
                     }),),
                 space,
-                // Content Field (using _contentController)
+                // Content Field
                 TextField(
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
@@ -1170,7 +1076,7 @@ _lastmodelprediction = predictions;
                   controller: contentController, // Use _contentController here
                   onChanged: (text) {
                     super.widget.record.content = text;
-                    _onInputChanged();
+                    //_onInputChanged();
                   },
                 ), //x
                 space,
@@ -1188,6 +1094,7 @@ _lastmodelprediction = predictions;
                   onChanged: (text) {
                     super.widget.record.emotions = text;
                     _onInputChanged();
+                    //_predictOutcome();
                   },
                 ), //x
                 space,
@@ -1209,7 +1116,7 @@ _lastmodelprediction = predictions;
                   controller: sourceController,
                   onChanged: (text) {
                     super.widget.record.sources = text;
-                    _onInputChanged();
+                  //  _onInputChanged();
                   },
                 ), //x
                 space,
@@ -1229,6 +1136,7 @@ _lastmodelprediction = predictions;
 
                       });
                       _onInputChanged();
+                      //_predictOutcome();
                     });
                   },
                 )
@@ -1246,7 +1154,7 @@ _lastmodelprediction = predictions;
                   controller: tagsController,
                   onChanged: (text) {
                     super.widget.record.tags = text;
-                    _onInputChanged();
+                  //  _onInputChanged();
                   },
                 ),
                 space,
@@ -1272,13 +1180,14 @@ _lastmodelprediction = predictions;
                             borderSide: BorderSide(
                                 color: Color(swapper.isColorSeed).withOpacity(1.0),
                                 width: 1)),
-                        // labelText: 'What do you want to call this?'
+                         //labelText: '',
                         hintText: "Enter your medication here."),
                     textCapitalization: TextCapitalization.sentences,
                     controller: medicationTextController,
                     onChanged: (text) {
+                      medicationTextController.text = text;
                       super.widget.record.medication = text;
-                      _onInputChanged();
+                      //_onInputChanged();
                     },
                   ),),
 
@@ -1346,7 +1255,7 @@ _lastmodelprediction = predictions;
   @override
   Widget build(BuildContext context) {
     final recordsBloc = Provider.of<RecordsBloc>(context, listen: false);
-    const pageCount = 11;
+    const pageCount = 13;
     return Consumer<ThemeSwap>(builder: (context, swapper, child) {
       return Scaffold(
         appBar: AppBar(

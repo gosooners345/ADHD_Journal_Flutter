@@ -69,7 +69,8 @@ dependencies:
   connectivity_plus: ^6.0.5
   extension_google_sign_in_as_googleapis_auth:
   permission_handler:
-  tflite_flutter: ^0.11.0
+  tflite_flutter:
+
  # tflite_flutter_helper_plus:
   #google_ml_kit:
 flutter_icons:
@@ -83,11 +84,11 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 dependency_overrides:
- # sqflite:
-  #  git:
+  #sqflite:
+   # git:
    #   url: https://www.github.com/davidmartos96/sqflite_sqlcipher.git
     #  path: sqflite
-     # ref: fmdb_override
+    #  ref: fmdb_override
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your

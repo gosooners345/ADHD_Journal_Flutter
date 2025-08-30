@@ -1,7 +1,9 @@
 // lib/adhd_machine_learning/adhd_feature_service.dart
 import 'dart:convert';
+import 'dart:math';
+import 'dart:io';
 import 'dart:typed_data';
-import 'package:flutter/services.dart' show rootBundle, MethodChannel;
+import 'package:flutter/services.dart' show rootBundle, MethodChannel, PlatformException;
 import 'package:adhd_journal_flutter/record_data_package/records_data_class_db.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import '../project_resources/global_vars_andpaths.dart';
@@ -38,13 +40,17 @@ class AdhdMlService {
   static const MethodChannel _channel =
       MethodChannel(Global.PLATFORMCHANNEL_PATH);
 
-  // This is the correct initialization flow for a model requiring FlexDelegate
+  // This code is fine as is
   Future<void> initialize() async {
-    if (_isInitialized) return;
+    bool isNativeInterpreterReady = false;
     const int maxRetries = 5;
     const Duration retryDelay = Duration(seconds: 2);
+    if (_isInitialized) return;
+
+    if(Platform.isAndroid){
+
     int attempt = 0;
-    bool isNativeInterpreterReady = false;
+
     while (attempt < maxRetries && !isNativeInterpreterReady) {
       attempt++;
       if (kDebugMode) {
@@ -59,6 +65,10 @@ class AdhdMlService {
           }
           await Future.delayed(retryDelay);
         }
+        if (isNativeInterpreterReady) {
+          break;
+        }
+
       } catch (e) {
         if (kDebugMode) {
           print("Error initializing native interpreter: $e");
@@ -67,56 +77,66 @@ class AdhdMlService {
         break;
       }
     }
-    if (isNativeInterpreterReady) {
-      try {
-        _keywordVocab = await _loadVocab('assets/vocab_keywords.txt');
-        _contentVocab = await _loadVocab('assets/vocab_content.txt');
-        _medicationVocab = await _loadVocab('assets/vocab_medication.txt');
-        if (kDebugMode) {
-          print("✅ Vocabularies loaded.");
-        }
+    if(isNativeInterpreterReady){
+      await _loadDartAssets();
+      _isInitialized = true;
 
-        final definitionsString =
-            await rootBundle.loadString('assets/ml_definitions.json');
-        final definitions = json.decode(definitionsString);
-        _outputLabels = List<String>.from(definitions['output_label_vocab']);
-        // Symptoms and emotions?
-        _keywordSequenceLength = definitions['keyword_sequence_length'];
-        // Content context
-        _contentSequenceLength = definitions['content_sequence_length'];
-        // Ratings
-        _ratingScaleMin = (definitions['RATING_MIN'] as num).toDouble();
-        _ratingScaleMax = (definitions['RATING_MAX'] as num).toDouble();
-        _sleepScaleMin = (definitions['RATING_MIN'] as num).toDouble();
-        _sleepScaleMax = (definitions['RATING_MAX'] as num).toDouble();
-        _medicationSequenceLength = definitions['medication_sequence_length'];
-
-        if (kDebugMode) {
-          print( "✅ Definitions loaded. Rating scale [$_ratingScaleMin, $_ratingScaleMax]");
-        }
-
-        _isInitialized = true;
-
-        if (kDebugMode) {
-          print("✅ AdhdMlService initialized successfully.");
-        }
-      } catch (e, s) {
-        if(kDebugMode){
-        print("Failed loading Dart-side assets $e");
-        print("StackTrace: $s");
-        }
-        rethrow;
+      if (kDebugMode) {
+        print("✅ AdhdMlService initialized successfully.");
       }
+
+
+
     } else {
-      if(kDebugMode) {
-        print("Failed to initialize native interpreter after $maxRetries attempts.");
-      }
-      throw Exception(
-          'Failed to initialize ML Service after $maxRetries attempts.');
+    if(kDebugMode) {
+    print("Failed to initialize native interpreter after $maxRetries attempts.");
     }
+    throw Exception(
+    'Failed to initialize ML Service after $maxRetries attempts.');
+    }}
+
+
+    else if (Platform.isIOS){
+      _isInitialized =   await _channel.invokeMethod('init');
+      await _loadDartAssets();
+
+      if(kDebugMode) {
+        print("✅ AdhdMlService initialized $_isInitialized.");
+      }
+    }
+
   }
 
 
+
+Future<void> _loadDartAssets() async{
+    _keywordVocab = await _loadVocab('assets/vocab_keywords.txt');
+  _contentVocab = await _loadVocab('assets/vocab_content.txt');
+  _medicationVocab = await _loadVocab('assets/vocab_medication.txt');
+    if (kDebugMode) {
+      print("✅ Vocabularies loaded.");
+    }
+
+    final definitionsString =
+    await rootBundle.loadString('assets/ml_definitions.json');
+    final definitions = json.decode(definitionsString);
+    _outputLabels = List<String>.from(definitions['output_label_vocab']);
+    // Symptoms and emotions?
+    _keywordSequenceLength = definitions['keyword_sequence_length'];
+    // Content context
+    _contentSequenceLength = definitions['content_sequence_length'];
+    // Ratings
+    _ratingScaleMin = (definitions['RATING_MIN'] as num).toDouble();
+    _ratingScaleMax = (definitions['RATING_MAX'] as num).toDouble();
+    _sleepScaleMin = (definitions['RATING_MIN'] as num).toDouble();
+    _sleepScaleMax = (definitions['RATING_MAX'] as num).toDouble();
+    _medicationSequenceLength = definitions['medication_sequence_length'];
+
+    if (kDebugMode) {
+      print( "✅ Definitions loaded. Rating scale [$_ratingScaleMin, $_ratingScaleMax]");
+    }
+
+}
 
   Future<Map<String, int>> _loadVocab(String path) async {
     final vocabString = await rootBundle.loadString(path);
@@ -147,7 +167,28 @@ class AdhdMlService {
     }
     return vector;
   }
+  List<int> _vectorizeContentText({
+    required String text,
+    required Map<String, int> vocab,
+    required int sequenceLength,
+  }) {
+    final vector =
+    List<int>.filled(sequenceLength, 0); // Use double for Float32List
+    final punctuationRegex = RegExp(r'[!"#$%&()*+,-./:;<=>?@\[\\\]^_`{|}~]');
+    final textWithSpaces = text.toLowerCase().replaceAll(punctuationRegex, ' ');
 
+    final words = textWithSpaces.trim().split(RegExp(r'\s+'));
+    int index = 0;
+    for (final word in words) {
+      if (index >= sequenceLength) break;
+      if (word.isEmpty) continue;
+      final sanitizedWord = word.replaceAll(punctuationRegex, '');
+      if (sanitizedWord.isEmpty) continue;
+      // Use 1 for OOV/Unknown token
+      vector[index++] = (vocab[sanitizedWord] ?? 1);
+    }
+    return vector;
+  }
   // FIX: This should return a List<double> for easier use with Float32List
   List<double> _vectorizeText({
     required String text,
@@ -202,6 +243,20 @@ List<double> publicNormalizeSleep({required double userSleep}) {
     return [normalized]; // Return as List<double> as your predict method expects
 }
 
+  Map<String, double> softmax(Map<String, double> logits) {
+    // Find the maximum logit value for numerical stability
+    final double maxLogit = logits.values.reduce(max);
+
+    // Exponentiate and normalize
+    final Map<String, double> expScores = logits.map((key, value) => MapEntry(key, exp(value - maxLogit)));
+    final double sumExpScores = expScores.values.reduce((a, b) => a + b);
+
+    if (sumExpScores == 0) return logits; // Avoid division by zero
+
+    final Map<String, double> probabilities = expScores.map((key, value) => MapEntry(key, value / sumExpScores));
+
+    return probabilities;
+  }
 
 
 
@@ -280,40 +335,61 @@ if(kDebugMode) {
     return (clampedRating - _ratingScaleMin) /
         (_ratingScaleMax - _ratingScaleMin);
   }
-// Reduce unused variables in this method to make it more readable
-  Future<Map<String, double>> predict(  Records record ,{
-    required List<int> keywords, required List<int> content, required List<double> rating, required List<double> sleep, required List<int> medication }) async {
-    if (!_isInitialized) {
-      print("⚠️ Prediction called before service was initialized.");
-      return {};
-    } // 1. Prepare all inputs in Dart (this part is the same)
-    final String keywordString =
-        "${record.symptoms ?? ''} ${record.emotions ?? ''}";
-    final String contentString =
-        "${record.title ?? ''} ${record.content ?? ''}";
-    final keywordVector = _vectorizeText(
-        text: keywordString,
-        vocab: _keywordVocab,
-        sequenceLength: _keywordSequenceLength);
-    final contentVector = _vectorizeText(
-        text: contentString,
-        vocab: _contentVocab,
-        sequenceLength: _contentSequenceLength);
-    double currentRating =
-        record.rating ?? ((_ratingScaleMin + _ratingScaleMax) / 2.0);
-    double normalizedRating = _normalizeRating(currentRating);
-    // 2. Package the inputs into a map to send over the method channel
-    final Map<String, dynamic> inputs = {
-      'keywords': Int32List.fromList(keywords),
-      'content': Int32List.fromList(content),
-      'rating': Float32List.fromList(rating),
-      'sleep': Float32List.fromList(sleep),
-      'medication': Int32List.fromList(medication),
-    };
+
+
+  Future<Map<String, double>> _predictWithCoreML({
+    required Map<String, dynamic> inputs
+  }) async
+  {
+
     try {
+      final Map<dynamic, dynamic>? rawOutput = await _channel.invokeMethod('predict', inputs);
+      final Map<String, double> successLogits =
+          (rawOutput!['success_probabilities'] as Map<dynamic, dynamic>?)?.cast<String, double>() ?? {};
+      final Map<String, double> dayTypeLogits =
+          (rawOutput['day_type_probabilities'] as Map<dynamic, dynamic>?)?.cast<String, double>() ?? {};
+
+      // 3. Apply the softmax function to convert logits to probabilities.
+      final Map<String, double> successProbabilities = softmax(successLogits);
+      final Map<String, double> dayTypeProbabilities = softmax(dayTypeLogits);
+
+      if (kDebugMode) {
+        print("✅ Success Probabilities: $successProbabilities");
+        print("✅ Day Type Probabilities: $dayTypeProbabilities");
+      }
+
+      // 4. Return the day type probabilities for the advice logic.
+      return dayTypeProbabilities;
+
+    } on PlatformException catch (e) {
+      if (kDebugMode) print("❌ Failed to get Core ML prediction: '${e.message}'.");
+      return {};
+    }
+  }
+
+  // --- Android Logic ---
+  Future<Map<String, double>> _predictWithTFLite ({
+    required List<int> keywords,
+    required List<int> content,
+    required List<int> medication,
+    required List<double> rating,
+    required List<double> sleep,
+  }) async
+  {
+    if ( !_isInitialized) throw StateError("Android interpreter is not initialized.");
+
+    final tfliteInputs = [
+      Int32List.fromList(keywords),
+    Int32List.fromList(content),
+    Float32List.fromList(rating),
+    Float32List.fromList(sleep),
+    Int32List.fromList(medication),
+    ];
+
+    try
+    {
       // 3. Invoke the 'predict' method on the native side and await the results // The native side will return a list of probabilities.
-      final List<dynamic>? predictionsList =
-          await _channel.invokeMethod('predict', inputs);
+      final List<dynamic>? predictionsList = await _channel.invokeMethod('predict', tfliteInputs);
       if (predictionsList == null) {
         if (kDebugMode) {
           print("❌ Native prediction returned null.");
@@ -328,9 +404,7 @@ if(kDebugMode) {
       for (int i = 0; i < _outputLabels.length; i++) {
         predictions[_outputLabels[i]] = probabilities[i];
       }
-      if (kDebugMode) {
-        print("✅ Prediction results from native: $predictions");
-      }
+
       return predictions;
     } catch (e, s) {
       if(kDebugMode) {
@@ -339,56 +413,95 @@ if(kDebugMode) {
       }
       return {};
     }
+    /* final outputShape = _androidInterpreter!.getOutputTensor(0).shape;
+    final outputBuffer = Float32List(outputShape.reduce((a, b) => a * b)).reshape(outputShape);
+    final outputMap = {0: outputBuffer};
+
+    _androidInterpreter!.runForMultipleInputs(tfliteInputs, outputMap);
+
+    final List<double> logitsList = outputMap[0]![0];
+    return Map.fromIterables(_outputLabels, logitsList);*/
   }
 
-/*  Map<String, double> predict(Records record) {
-    if (!_isInitialized) return {};
 
-    // 1. Prepare all inputs
-    final String keywordString = "${record.symptoms ?? ''} ${record.emotions ?? ''}";
-    final String contentString = "${record.title ?? ''} ${record.content ?? ''}";
-
-    // These are now List<double>
-    final keywordVector = _vectorizeText(
-        text: keywordString, vocab: _keywordVocab, sequenceLength: _keywordSequenceLength);
-    final contentVector = _vectorizeText(
-        text: contentString, vocab: _contentVocab, sequenceLength: _contentSequenceLength);
-
-    double currentRating = record.rating ?? ((_ratingScaleMin + _ratingScaleMax) / 2.0);
-    double normalizedRating = _normalizeRating(currentRating);
-
-    // 2. Create buffers with the correct shape and type
-    final keywordInput = Float32List.fromList(keywordVector).reshape([1, _keywordSequenceLength]);
-    final contentInput = Float32List.fromList(contentVector).reshape([1, _contentSequenceLength]);
-    // FIX: Correct shape for the rating input
-    final ratingInput = Float32List.fromList([normalizedRating]).reshape([1, 1]);
-
-    final inputs = [keywordInput, contentInput, ratingInput];
-
-    // 3. Prepare output buffer
-    final outputShape = _interpreter.getOutputTensor(0).shape;
-    final outputBuffer = Float32List(outputShape.reduce((a, b) => a * b)).reshape(outputShape);
-    final output = {0: outputBuffer};
-
-    // 4. Run inference
-    try {
-      _interpreter.runForMultipleInputs(inputs, output);
-    } catch (e, s) {
-      print("❌ TFLITE INFERENCE FAILED: $e");
-      print("   StackTrace: $s");
+// Reduce unused variables in this method to make it more readable
+  Future<Map<String, double>> predict(  Records record ,{
+    required List<int> keywords, required List<int> content, required List<double> rating, required List<double> sleep, required List<int> medication }) async {
+    if (!_isInitialized) {
+      print("⚠️ Prediction called before service was initialized.");
       return {};
     }
 
-    // 5. Process results
-    final Map<String, double> predictions = {};
-    // FIX: Correct way to access the output. It's already a List<double> or similar.
-    final List<double> probabilities = outputBuffer[0];
-    for (int i = 0; i < _outputLabels.length; i++) {
-      predictions[_outputLabels[i]] = probabilities[i];
+else {
+      // 1. Prepare all inputs in Dart (this part is the same)
+      final String keywordString =
+          "${record.symptoms ?? ''} ${record.emotions ?? ''}";
+      final String contentString =
+          "${record.title ?? ''} ${record.content ?? ''}";
+/*      final keywordVector = _vectorizeContentText(
+          text: keywordString,
+          vocab: _keywordVocab,
+          sequenceLength: _keywordSequenceLength);
+      final medicationVector = _vectorizeContentText(
+          text: record.medication,
+          vocab: _medicationVocab,
+          sequenceLength: _medicationSequenceLength);
+      final contentVector = _vectorizeContentText(
+          text: contentString,
+          vocab: _contentVocab,
+          sequenceLength: _contentSequenceLength);
+      double currentRating =
+          record.rating ?? ((_ratingScaleMin + _ratingScaleMax) / 2.0);
+      double normalizedRating = _normalizeRating(currentRating);
+      // 2. Package the inputs into a map to send over the method channel*/
+      final Map<String, dynamic> inputs = {
+        'keywords': Int32List.fromList(keywords),
+        'content': Int32List.fromList(content),
+        'rating': Float32List.fromList(rating),
+        'sleep': Float32List.fromList(sleep),
+        'medication': Int32List.fromList(medication),
+      };
+      if(Platform.isIOS){
+        return await _predictWithCoreML(inputs:inputs);
+      }
+      else if(Platform.isAndroid){
+        return await _predictWithTFLite(keywords:  Int32List.fromList(keywords), content: Int32List.fromList(content), medication: Int32List.fromList(medication), rating: Float32List.fromList(rating), sleep:Float32List.fromList(sleep) );
+      }
+      else{
+        return {};
+      }
+//Address this 8/27
+      /* try
+    {
+      // 3. Invoke the 'predict' method on the native side and await the results // The native side will return a list of probabilities.
+      final List<dynamic>? predictionsList = await _channel.invokeMethod('predict', inputs);
+      if (predictionsList == null) {
+        if (kDebugMode) {
+          print("❌ Native prediction returned null.");
+        }
+        return {};
+      }
+
+// 4. Process the results received from the native side
+      final Map<String, double> predictions = {};
+      final List<double> probabilities = predictionsList.cast<double>();
+
+      for (int i = 0; i < _outputLabels.length; i++) {
+        predictions[_outputLabels[i]] = probabilities[i];
+      }
+
+      return predictions;
+    } catch (e, s) {
+      if(kDebugMode) {
+        print("❌ NATIVE INFERENCE FAILED: $e");
+        print("   StackTrace: $s");
+      }
+      return {};
     }
-    print("✅ Prediction results: $predictions");
-    return predictions;
   }*/
+    }
+}
+
 
   void dispose() {
     _interpreter.close();
@@ -397,171 +510,3 @@ if(kDebugMode) {
 
 }
 
-/*class AdhdMlService {
-  late Interpreter _interpreter;
-  late Map<String, int> _keywordVocab;
-  late Map<String, int> _contentVocab;
-  late List<String> _outputLabels;
-  late int _keywordSequenceLength;
-  late int _contentSequenceLength;
-  late double _ratingScaleMin;
-  late double _ratingScaleMax;
-  List<String>? _inputTensorNames;
-  bool _isInitialized = false;
-  bool get isInitialized => _isInitialized;
-static const MethodChannel _channel = MethodChannel(Global.PLATFORMCHANNEL_PATH);
-
-  Future<void> _ensureFlexReady() async {
-    try {
-      final ok = await _channel.invokeMethod("warmUpFlex");
-      if (ok == true) {
-        print("✅ Flex warm-up succeeded.");
-      } else {
-        print("⚠️ Flex warm-up returned non-true; proceeding anyway.");
-      }
-    } catch (e) {
-      // Not fatal if Android deps are correct, but this helps detect integration gaps early.
-      print("⚠️ Flex warm-up channel call failed: $e");
-    }
-  }
-
-Future<void> initialize() async {
-    if (_isInitialized) return;
-    try {
-            print("--- Initializing AdhdMlService (v4) with Native FlexDelegate---");
-
-await _ensureFlexReady();
-      // Load vocabularies
-      _keywordVocab = await _loadVocab('assets/vocab_keywords.txt');
-      _contentVocab = await _loadVocab('assets/vocab_content.txt');
-      print("✅ Vocabularies loaded.");
-
-      // Load definitions
-      final definitionsString = await rootBundle.loadString('assets/ml_definitions.json');
-      final definitions = json.decode(definitionsString);
-      _outputLabels = List<String>.from(definitions['output_label_vocab']);
-      _keywordSequenceLength = definitions['keyword_sequence_length'];
-      _contentSequenceLength = definitions['content_sequence_length'];
-      _ratingScaleMin = (definitions['RATING_MIN'] as num).toDouble();
-      _ratingScaleMax = (definitions['RATING_MAX'] as num).toDouble();
-      if (definitions.containsKey('input_names')) {
-        _inputTensorNames = List<String>.from(definitions['input_names']);
-      }
-  _interpreter = await Interpreter.fromAsset('assets/adhd_predictor_v2.tflite'
-  , options: InterpreterOptions()
-  ..threads = 4
-  ..useNnApiForAndroid = false
-  );
-
-      print("✅ Definitions loaded.");
-
-      // Load TFLite model
-  //    _interpreter = await Interpreter.fromAsset('assets/adhd_predictor_v2.tflite');
-      print("✅ TFLite model loaded.");
-
-      _isInitialized = true;
-      print("✅ AdhdMlService initialized successfully.");
-    } catch (e, s) {
-      print("❌ Failed to initialize AdhdMlService: $e");
-      print("   StackTrace: $s");
-    }
-  }
-
-  Future<Map<String, int>> _loadVocab(String path) async {
-    final vocabString = await rootBundle.loadString(path);
-    final vocabList = vocabString.split('\n');
-    final Map<String, int> vocabMap = {};
-    for (int i = 0; i < vocabList.length; i++) {
-      vocabMap[vocabList[i]] = i;
-    }
-    return vocabMap;
-  }
-
-  List<int> _vectorizeText({
-    required String text,
-    required Map<String, int> vocab,
-    required int sequenceLength,
-  })
-  {
-    final vector = List<int>.filled(sequenceLength, 0); // 0 is padding
-    final punctuationRegex = RegExp(r'[!"#$%&()*+,-./:;<=>?@\[\\\]^_`{|}~]');
-    final textWithSpaces = text.toLowerCase().replaceAll(punctuationRegex, ' ');
-
-    final words = textWithSpaces.toLowerCase().trim().split(RegExp(r'\s+'));
-    int index = 0;
-    for (final word in words) {
-      if (index >= sequenceLength) break;
-      if (word.isEmpty) continue;
-      final sanitizedWord = word.replaceAll(punctuationRegex, '');
-      if (sanitizedWord.isEmpty) continue;
-      vector[index++] = vocab[sanitizedWord] ?? 1; // 1 is OOV/Unknown
-    }
-    return vector;
-  }
-
-/// New Rating method to help with newer training.
-  double _normalizeRating(double userRating) {
-    var clampedRating = userRating.clamp(_ratingScaleMin, _ratingScaleMax);
-    if ((_ratingScaleMax - _ratingScaleMin).abs() < 1e-6) return 0.0; // Avoid division by zero for identical min/max
-    return (clampedRating - _ratingScaleMin) / (_ratingScaleMax - _ratingScaleMin);
-  }
-
-  Map<String, double> predict(Records record) {
-    if (!_isInitialized) return {};
-
-    final String keywordString = "${record.symptoms ?? ''} ${record.emotions ?? ''}";
-    final String contentString = "${record.title ?? ''} ${record.content ?? ''}";
-
-    final keywordVector = _vectorizeText(
-        text: keywordString,
-        vocab: _keywordVocab,
-        sequenceLength: _keywordSequenceLength);
-//final keywordInputForModel = [keywordVector];
-    final contentVector = _vectorizeText(
-        text: contentString,
-        vocab: _contentVocab,
-        sequenceLength: _contentSequenceLength);
-//final contentInputForModel = [contentVector];
-    double currentRating = record.rating ?? ((_ratingScaleMin + _ratingScaleMax) / 2.0); // Default if null
-    double normalizedRating = _normalizeRating(currentRating);
-    // TFLite expects Float32List for float inputs. Shape [1, 1]
-   // final ratingInputForModel = [Float32List.fromList([normalizedRating])];
-
-    // The model now expects three inputs.
-    // The order must match the Keras model's input layer definition.
-    // Typically: keywords, content, rating.
-    final inputs = [
-      [keywordVector],
-      [contentVector],
-      [normalizedRating]
-    ];
-
-    final outputShape = _interpreter!.getOutputTensor(0).shape;
-    final outputBuffer = List.generate(outputShape[0], (_) =>Float32List(outputShape[1]));
-
-
-    // The output is a list of probabilities, shape [1, num_labels]
-    final output = {0: outputBuffer};
-
-    try {
-      _interpreter.runForMultipleInputs(inputs, output);
-    } catch (e, s) {
-      print("❌ TFLITE INFERENCE FAILED: $e");
-      print("   StackTrace: $s");
-      return {};
-    }
-
-    final Map<String, double> predictions = {};
-    final probabilities = output[0]![0] as List<double>;
-    //final probabilities = output[0]![0].map((e) => e.toDouble()).toList();
-    for (int i = 0; i < _outputLabels.length; i++) {
-      predictions[_outputLabels[i]] = probabilities[i];
-    }
-    print("✅ Prediction results: $predictions");
-    return predictions;
-  }
-
-  void dispose() {
-    _interpreter.close();
-  }
-}*/

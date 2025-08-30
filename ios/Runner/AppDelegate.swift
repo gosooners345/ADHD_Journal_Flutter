@@ -1,147 +1,113 @@
+
+
+
+// AppDelegate.swift
 import UIKit
 import Flutter
 import Photos
 import AVFoundation
 
-
-
-
 @main
 @objc class AppDelegate: FlutterAppDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    //var controller : FlutterViewController = window?.rootViewController as! FlutterViewController
-    var flutterResult: FlutterResult?
-    
-    
-    
-    
+
+//    private let tfLiteManager = TFLiteManager()
+    private let coreMLManager = CoreMLManager()
+    private var cameraResult: FlutterResult? // A dedicated result for the async camera operation
+
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         GeneratedPluginRegistrant.register(with: self)
-        /// calls upon the flutter method channel to execute native code for tasks like changing passwords and more.
-       
-        
-        guard let controller = window?.rootViewController as? FlutterViewController else {
-                  fatalError("rootViewController is not type FlutterViewController")
-              }
-        var appChannel = FlutterMethodChannel(name: "com.activitylogger.release1/ADHDJournal",
-                                              binaryMessenger: controller.binaryMessenger)
-        
-        appChannel.setMethodCallHandler({
-           [weak self] (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
-            guard let self = self else { return }
-            
-            if call.method == "openCamera" {
-                                self.checkPermission()
-                self.flutterResult = result
 
-            } else{
+        guard let controller = window?.rootViewController as? FlutterViewController else {
+            fatalError("rootViewController is not type FlutterViewController")
+        }
+
+        let channel = FlutterMethodChannel(
+            name: "com.activitylogger.release1/ADHDJournal",
+            binaryMessenger: controller.binaryMessenger
+        )
+
+        channel.setMethodCallHandler { [weak self] (call: FlutterMethodCall, result: @escaping FlutterResult) in
+            guard let self = self else { return }
+
+            switch call.method {
+            case "init": return self.coreMLManager.initialized ? result(true) : result(false)
+            case "predict":
+                            // All prediction logic is now handled by the CoreMLManager
+                            self.coreMLManager.predict(arguments: call.arguments, result: result)
+
+
+            case "openCamera":
+                // Store the result callback and start the camera flow
+                self.cameraResult = result
+                self.checkCameraPermission()
+
+            default:
                 result(FlutterMethodNotImplemented)
-                return
             }
-        })
+        }
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
-    
-    ///Check Permissions first
-    func checkPermission() {
-        let cameraPermission = AVCaptureDevice.authorizationStatus(for: .video)
-        switch cameraPermission {
+
+    // MARK: - Camera Logic (Remains mostly the same, but uses `cameraResult`)
+
+    private func checkCameraPermission() {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
-            self.openCamera()
-            break
+            openCamera()
         case .notDetermined:
             AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
-                DispatchQueue.main.async{
-                    if granted{
-                        self!.openCamera()
-                    } else{
-                        self?.flutterResult?(FlutterError(code:"CAMERA_PERMISSION_DENIED", message:"Camera permission denied", details: nil))
-                        self?.flutterResult=nil
+                DispatchQueue.main.async {
+                    if granted {
+                        self?.openCamera()
+                    } else {
+                        self?.sendCameraError(code: "PERMISSION_DENIED", message: "Camera permission was denied.")
                     }
                 }
             }
-            break
         case .denied, .restricted:
-            self.flutterResult?(FlutterError(code: "CAMERA_PERMISSION_DENIED_OR_RESTRICTED",
-                                             message: "Camera access is denied or restricted. Please enable it in Settings.",
-                                             details: nil))
-            self.flutterResult = nil
-            break
+            sendCameraError(code: "PERMISSION_RESTRICTED", message: "Camera access is denied or restricted. Please enable it in Settings.")
         @unknown default:
-                    self.flutterResult?(FlutterError(code: "UNKNOWN_CAMERA_PERMISSION",
-                                                      message: "Unknown camera permission status.",
-                                                      details: nil))
-                    self.flutterResult = nil
-                
-            
-            
+            sendCameraError(code: "UNKNOWN_PERMISSION", message: "Unknown camera permission status.")
         }
-        
     }
-    /// This method should launch the iOS Camera App and return the image back to the application
-    func openCamera() {
+    
+    private func openCamera() {
         guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
-            self.flutterResult?(FlutterError(code: "CAMERA_NOT_AVAILABLE",
-                                             message: "Camera is not available on this device.",
-                                             details: nil))
-            self.flutterResult = nil
+            sendCameraError(code: "NOT_AVAILABLE", message: "Camera is not available on this device.")
             return
         }
-        DispatchQueue.main.async{
-            let imagePicker=UIImagePickerController()
-            imagePicker.delegate=self
-            imagePicker.sourceType = .camera
-            imagePicker.allowsEditing=false
-            
-            if let rootVC = self.window?.rootViewController{
-                rootVC.present(imagePicker,animated: true,completion: nil)
-            } else{
-                self.flutterResult?(FlutterError(code:"VIEW_CONTROLLER_ERROR",message:"Could not get root view controller to present camera",details:nil))
-                self.flutterResult=nil
-            }
-        }
         
-        
+        let picker = UIImagePickerController()
+        picker.delegate = self
+        picker.sourceType = .camera
+        picker.allowsEditing = false
+        window?.rootViewController?.present(picker, animated: true)
     }
+    
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            picker.dismiss(animated: true, completion: nil)
-
-            guard let image = info[.originalImage] as? UIImage else {
-                self.flutterResult?(FlutterError(code: "IMAGE_PICKING_ERROR",
-                                                  message: "Could not get the picked image.",
-                                                  details: nil))
-                self.flutterResult = nil
-                return
-            }
-
-            // Convert UIImage to Data (e.g., JPEG)
-            // Adjust compressionQuality as needed (0.0 to 1.0)
-            guard let imageData = image.jpegData(compressionQuality: 0.8) else {
-                self.flutterResult?(FlutterError(code: "IMAGE_CONVERSION_ERROR",
-                                                  message: "Could not convert image to JPEG data.",
-                                                  details: nil))
-                self.flutterResult = nil
-                return
-            }
-
-            // Send data back to Flutter
-            self.flutterResult?(FlutterStandardTypedData(bytes: imageData))
-            self.flutterResult = nil // Clear the stored result
+        picker.dismiss(animated: true)
+        
+        guard let image = info[.originalImage] as? UIImage,
+              let imageData = image.jpegData(compressionQuality: 0.8) else {
+            sendCameraError(code: "PROCESSING_ERROR", message: "Could not process the captured image.")
+            return
         }
+        
+        cameraResult?(FlutterStandardTypedData(bytes: imageData))
+        cameraResult = nil
+    }
 
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            picker.dismiss(animated: true, completion: nil)
-            self.flutterResult?(nil) // Send nil or a specific error for cancellation
-            // self.flutterResult?(FlutterError(code: "USER_CANCELLED", message: "User cancelled the camera.", details: nil))
-            self.flutterResult = nil // Clear the stored result
-        }
-    
-    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true)
+        cameraResult?(nil) // User cancelled
+        cameraResult = nil
+    }
+
+    private func sendCameraError(code: String, message: String) {
+        cameraResult?(FlutterError(code: code, message: message, details: nil))
+        cameraResult = nil
+    }
 }
-
-    
-
-    
-

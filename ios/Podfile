@@ -1,5 +1,5 @@
 # Uncomment this line to define a global platform for your project
- platform :ios, '15.0'
+platform :ios, '15.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -30,75 +30,58 @@ flutter_ios_podfile_setup
 target 'Runner' do
   use_frameworks!
   use_modular_headers!
-  #pod 'SQLCipher', '~>4.0'
+  
   pod 'MSAL'
   pod 'SQLite.swift/SQLCipher', '~> 0.13.3'
   pod 'GTMSessionFetcher', :modular_headers => true
   pod 'Firebase/Messaging'
+  
+  # Add the necessary TensorFlow Lite pods for your native implementation
+  pod 'TensorFlowLiteSwift'
+  pod 'TensorFlowLiteSelectTfOps'
+
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
 
 post_install do |installer|
-
-    installer.pods_project.targets.each do |target|
-       flutter_additional_ios_build_settings(target)
-       target.build_configurations.each do |config|
-       config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
-               '$(inherited)',
-
-               ## dart: PermissionGroup.calendar
-               ##'PERMISSION_EVENTS=1',
-
-               ## dart: PermissionGroup.reminders
-               #'PERMISSION_REMINDERS=0',
-
-               ## dart: PermissionGroup.contacts
-               # 'PERMISSION_CONTACTS=0',
-
-               ## dart: PermissionGroup.camera
-               'PERMISSION_CAMERA=1',
-
-               ## dart: PermissionGroup.microphone
-               #'PERMISSION_MICROPHONE=1',
-
-               ## dart: PermissionGroup.speech
-               #'PERMISSION_SPEECH_RECOGNIZER=0'
-
-               ## dart: PermissionGroup.photos
-               'PERMISSION_PHOTOS=1',
-
-               ## dart: [PermissionGroup.location, PermissionGroup.locationAlways, PermissionGroup.locationWhenInUse]
-               ##'PERMISSION_LOCATION=1',
-
-               ## dart: PermissionGroup.notification
-               ##'PERMISSION_NOTIFICATIONS=1',
-
-               ## dart: PermissionGroup.appTrackingTransparency
-                ##'PERMISSION_APP_TRACKING_TRANSPARENCY=1',
-
-               ## dart: PermissionGroup.mediaLibrary
-                'PERMISSION_MEDIA_LIBRARY=1',
-
-               ## dart: PermissionGroup.sensors
-               #'PERMISSION_SENSORS=0'
-             ]
-   end
-    end
-    ################  Awesome Notifications pod modification  ###################
-      awesome_pod_file = File.expand_path(File.join('plugins', 'awesome_notifications', 'ios', 'Scripts', 'AwesomePodFile'), '.symlinks')
-      require awesome_pod_file
-      update_awesome_pod_build_settings(installer)
-      ################  Awesome Notifications pod modification  ###################
-    end
-      
-    ################  Awesome Notifications pod modification  ###################
-    awesome_pod_file = File.expand_path(File.join('plugins', 'awesome_notifications', 'ios', 'Scripts', 'AwesomePodFile'), '.symlinks')
+  # --- Awesome Notifications Setup ---
+  awesome_pod_file = File.expand_path(File.join('plugins', 'awesome_notifications', 'ios', 'Scripts', 'AwesomePodFile'), '.symlinks')
+  if File.exist?(awesome_pod_file)
     require awesome_pod_file
-    update_awesome_main_target_settings('Runner', File.dirname(File.realpath(__FILE__)), flutter_root)
+    update_awesome_pod_build_settings(installer)
+  end
 
-    ################  Awesome Notifications pod modification  ###################
-#post_install do |installer|
-#  installer.pods_project.targets.each do |target|
-#    flutter_additional_ios_build_settings(target)
-#  end
-#end
+  installer.pods_project.targets.each do |target|
+    # Standard Flutter settings
+    flutter_additional_ios_build_settings(target)
+
+    # --- FIX FOR TENSORFLOWLITESELECTTFOPS ---
+    # Find the specific pod target that's causing the issue.
+    if target.name == 'TensorFlowLiteSelectTfOps'
+      target.build_configurations.each do |config|
+        # Get the existing linker flags.
+        flags = config.build_settings['OTHER_LDFLAGS'] ||= ['$(inherited)']
+        # Remove any flags that contain the problematic '-force_load'.
+        flags.reject! { |flag| flag.include?('-force_load') }
+        # Update the build settings with the cleaned flags.
+        config.build_settings['OTHER_LDFLAGS'] = flags
+      end
+    end
+    # --- END OF FIX ---
+
+    # Your custom preprocessor definitions
+    target.build_configurations.each do |config|
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+        '$(inherited)',
+        'PERMISSION_CAMERA=1',
+        'PERMISSION_PHOTOS=1',
+        'PERMISSION_MEDIA_LIBRARY=1',
+      ]
+    end
+  end
+
+  # --- Awesome Notifications Main Target Settings ---
+  if File.exist?(awesome_pod_file)
+    update_awesome_main_target_settings('Runner', File.dirname(File.realpath(__FILE__)), flutter_root)
+  end
+end
