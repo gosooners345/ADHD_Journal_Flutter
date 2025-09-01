@@ -2,9 +2,7 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
 import 'package:adhd_journal_flutter/backup_utils_package/authextension.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:googleapis/drive/v3.dart' as ga;
 import 'package:http/http.dart' as http;
@@ -12,7 +10,6 @@ import 'package:path/path.dart' as p;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis_auth/googleapis_auth.dart' as auth show AuthClient;
 import '../project_resources/global_vars_andpaths.dart';
-import '../project_resources/project_strings_file.dart';
 import 'dart:convert' as convert;
 import '../exceptions/primaryexceptions.dart';
 import 'package:crypto/crypto.dart' as crypto;
@@ -42,7 +39,8 @@ class GoogleDrive {
   ]);
 
   // Assign variables here, and reduce assignments in class. Also reduce usage in the other classes.
-  initVariables() async {
+  ///This method could be improved with an await type
+  Future<void> initVariables() async {
     // Drive, appFolderID
     try {
       client ??= await getHttpClient();
@@ -60,8 +58,8 @@ class GoogleDrive {
       }
     }
   }
-
-  void initV2() async {
+//This method could be awaited.
+  Future<void> initV2() async {
     drive = ga.DriveApi(client!);
     appfolderID = await _getFolderId(drive);
   }
@@ -233,9 +231,10 @@ class GoogleDrive {
 
 
   /// If file doesn't exist, check cloud, if false there, that file needs created.
+  /// Update recommended: Use an await method with a completer type function (delay further execution until completion)
   Future<bool> isLocalFileNewer(String driveFileName, String localFile) async {
     if (drive == null) {
-      initVariables();
+     await initVariables();
       if (drive == null) {
         throw GoogleAuthException(
             "Drive API is inaccessible or cannot be initialized");
@@ -308,11 +307,11 @@ class GoogleDrive {
   ///If multiple versions exist, then delete the older copies
   Future<bool> checkForOutdatedFiles(String fileName) async {
     if (drive == null) {
-      initVariables();
+    await  initVariables();
     }
     if (appfolderID == null) {
-      initV2();
-      // return false;
+     await initV2();
+
     }
     String query = "name contains '$fileName' and '$appfolderID' in parents and trashed = false";
     var queryDrive = await drive.files.list(
@@ -332,13 +331,11 @@ class GoogleDrive {
 
 
   Future<bool> checkForFile(String fileName) async {
-    //drive = ga.DriveApi(client!);
     if (drive == null) {
-      initVariables();
+    await  initVariables();
     }
     if (appfolderID == null) {
-      initV2();
-      // return false;
+     await initV2();
     }
     String query = "name contains '$fileName' and '$appfolderID' in parents and trashed = false";
     try {
@@ -356,7 +353,7 @@ class GoogleDrive {
       if (kDebugMode) {
         print(ex);
       }
-      Future.delayed(const Duration(seconds: 1), () {
+    await  Future.delayed(const Duration(seconds: 1), () {
         print("Delaying for response from Google Drive");
       });
       var queryDrive = await drive.files.list(

@@ -79,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       // Review Dialog submission. This part is the most fragile part of the app.
       driveButton = ElevatedButton(
-          onPressed: ()  {
+          onPressed: ()  async {
             var authenticated = Global.prefs.getBool("authenticated") ?? false;
             if (authenticated == false) {
               showDialog(
@@ -97,7 +97,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {
                             if (connected == true) {
                               logIntoGoogle();
-
                               //Set Navigator.Pop to execute when authenticated.
                             } else {
                               showMessage(Global.connection_Error_Message_String);
@@ -118,15 +117,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   });
             } else {
               if (connected == true) {
-               Global.googleDrive.initVariables();
+              await Global.googleDrive.initVariables();
                checkGoogleDrive()
                     .whenComplete(() {
                           resetLoginFieldState();
                           setState(() {
                             Future.sync(() => getSyncStateStatus());
                           });
-                          if(mounted)
-                          Navigator.of(context).pop();
+                          if(mounted) {
+                            Navigator.of(context).pop();
+                          }
                         });
               } else {
                 showMessage(Global.connection_Error_Message_String);
@@ -150,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void signInToGoogle() async{
-    Global.googleDrive.initVariables();
+   await Global.googleDrive.initVariables();
 
   }
 
@@ -395,7 +395,7 @@ break;
           print(ex);
         }
         Global.googleDrive.client = await  Global.googleDrive.getHttpClient();
-        Global.googleDrive.initV2();
+      await  Global.googleDrive.initV2();
       }
       if (Global.googleDrive.client != null) {
         if (Global.userActiveBackup) {

@@ -189,7 +189,7 @@ class _SplashScreenState extends State<SplashScreen> {
         }
         print("Backup google sign in called");
         Global.googleDrive.client = await Global.googleDrive.getHttpClient();
-        Global.googleDrive.initV2();
+      await  Global.googleDrive.initV2();
       }
       if (Global.userActiveBackup == true) {
         while (Global.googleDrive.client == null) {
@@ -375,7 +375,6 @@ class _SplashScreenState extends State<SplashScreen> {
           //Temp hint to replace logged one due to password change.
           tempHint = "Use $dbPassword to login";
           await Global.encryptedSharedPrefs.setString('passwordHint', tempHint);
-          // didThingsChange = true;
 
         } else {
           throw Exception("DB is not open, db password is incorrect");
@@ -426,7 +425,7 @@ class _SplashScreenState extends State<SplashScreen> {
       if (Global.googleDrive.client != null) {
         if (Global.userActiveBackup) {
           var pubKeyLocation = Global
-              .fullDevicePubKeyPath; //path.join(keyLocation, pubKeyFileName);
+              .fullDevicePubKeyPath;
           var docLIst = [
             pubKeyLocation,
             Global.fullDeviceDBPath,
@@ -437,11 +436,12 @@ class _SplashScreenState extends State<SplashScreen> {
           for (int i = 0; i < 3; i++) {
             await checkFilesExistV2(docLIst[i], Global.files_list_names[i],
                 Global.files_list_types[i]).onError((error, stackTrace) {
-              if (kDebugMode) {
+
                 print("Tis but a scratch");
 
               print(error);
-              print(stackTrace); }
+              print(stackTrace);
+              googleIsDoingSomething(false);
             }).whenComplete(() {
               if (kDebugMode) {
                 print("${Global.files_list_types[i]} check complete.");
