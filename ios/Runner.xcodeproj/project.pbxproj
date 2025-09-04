@@ -15,11 +15,11 @@
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		CA13971B2E5D363C00B6212E /* CoreMLManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA13971A2E5D363C00B6212E /* CoreMLManager.swift */; };
 		CA99999A2E2427F400664353 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CA9999992E2427F400664353 /* GoogleService-Info.plist */; };
-		CAF6453F2E62825000A2AB95 /* vocab_content.txt in Resources */ = {isa = PBXBuildFile; fileRef = CAF6453C2E62824F00A2AB95 /* vocab_content.txt */; };
-		CAF645402E62825000A2AB95 /* ml_definitions2.json in Resources */ = {isa = PBXBuildFile; fileRef = CAF6453B2E62824F00A2AB95 /* ml_definitions2.json */; };
-		CAF645412E62825000A2AB95 /* vocab_keywords.txt in Resources */ = {isa = PBXBuildFile; fileRef = CAF6453D2E62824F00A2AB95 /* vocab_keywords.txt */; };
-		CAF645422E62825000A2AB95 /* vocab_medication.txt in Resources */ = {isa = PBXBuildFile; fileRef = CAF6453E2E62824F00A2AB95 /* vocab_medication.txt */; };
-		CAF645432E62825000A2AB95 /* ADHD_Predictor.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = CAF6453A2E62824F00A2AB95 /* ADHD_Predictor.mlpackage */; };
+		CAF176DF2E69116300489E18 /* vocab_medication.txt in Resources */ = {isa = PBXBuildFile; fileRef = CAF176DE2E69116300489E18 /* vocab_medication.txt */; };
+		CAF176E02E69116300489E18 /* vocab_keywords.txt in Resources */ = {isa = PBXBuildFile; fileRef = CAF176DD2E69116300489E18 /* vocab_keywords.txt */; };
+		CAF176E12E69116300489E18 /* ml_definitions2.json in Resources */ = {isa = PBXBuildFile; fileRef = CAF176DB2E69116300489E18 /* ml_definitions2.json */; };
+		CAF176E22E69116300489E18 /* vocab_content.txt in Resources */ = {isa = PBXBuildFile; fileRef = CAF176DC2E69116300489E18 /* vocab_content.txt */; };
+		CAF176E32E69116300489E18 /* ADHD_Predictor.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = CAF176DA2E69116300489E18 /* ADHD_Predictor.mlpackage */; };
 		E7EFE013ED85872BEDD7CA36 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D256D6B4260B1D8702371EC /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
 
@@ -57,11 +57,11 @@
 		CA538D0E2E63243100230F77 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		CA9999992E2427F400664353 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CAA865532908C44E00F97E14 /* RunnerRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RunnerRelease.entitlements; sourceTree = "<group>"; };
-		CAF6453A2E62824F00A2AB95 /* ADHD_Predictor.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = ADHD_Predictor.mlpackage; sourceTree = "<group>"; };
-		CAF6453B2E62824F00A2AB95 /* ml_definitions2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ml_definitions2.json; sourceTree = "<group>"; };
-		CAF6453C2E62824F00A2AB95 /* vocab_content.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = vocab_content.txt; sourceTree = "<group>"; };
-		CAF6453D2E62824F00A2AB95 /* vocab_keywords.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = vocab_keywords.txt; sourceTree = "<group>"; };
-		CAF6453E2E62824F00A2AB95 /* vocab_medication.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = vocab_medication.txt; sourceTree = "<group>"; };
+		CAF176DA2E69116300489E18 /* ADHD_Predictor.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = ADHD_Predictor.mlpackage; sourceTree = "<group>"; };
+		CAF176DB2E69116300489E18 /* ml_definitions2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ml_definitions2.json; sourceTree = "<group>"; };
+		CAF176DC2E69116300489E18 /* vocab_content.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = vocab_content.txt; sourceTree = "<group>"; };
+		CAF176DD2E69116300489E18 /* vocab_keywords.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = vocab_keywords.txt; sourceTree = "<group>"; };
+		CAF176DE2E69116300489E18 /* vocab_medication.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = vocab_medication.txt; sourceTree = "<group>"; };
 		EEADB6D1EF08C8341E7D0D83 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -120,6 +120,11 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				CAF176DA2E69116300489E18 /* ADHD_Predictor.mlpackage */,
+				CAF176DB2E69116300489E18 /* ml_definitions2.json */,
+				CAF176DC2E69116300489E18 /* vocab_content.txt */,
+				CAF176DD2E69116300489E18 /* vocab_keywords.txt */,
+				CAF176DE2E69116300489E18 /* vocab_medication.txt */,
 				CAA865532908C44E00F97E14 /* RunnerRelease.entitlements */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
@@ -130,11 +135,6 @@
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 				CA13971A2E5D363C00B6212E /* CoreMLManager.swift */,
-				CAF6453A2E62824F00A2AB95 /* ADHD_Predictor.mlpackage */,
-				CAF6453B2E62824F00A2AB95 /* ml_definitions2.json */,
-				CAF6453C2E62824F00A2AB95 /* vocab_content.txt */,
-				CAF6453D2E62824F00A2AB95 /* vocab_keywords.txt */,
-				CAF6453E2E62824F00A2AB95 /* vocab_medication.txt */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -215,12 +215,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
+				CAF176DF2E69116300489E18 /* vocab_medication.txt in Resources */,
+				CAF176E02E69116300489E18 /* vocab_keywords.txt in Resources */,
+				CAF176E12E69116300489E18 /* ml_definitions2.json in Resources */,
+				CAF176E22E69116300489E18 /* vocab_content.txt in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
 				CA99999A2E2427F400664353 /* GoogleService-Info.plist in Resources */,
-				CAF6453F2E62825000A2AB95 /* vocab_content.txt in Resources */,
-				CAF645402E62825000A2AB95 /* ml_definitions2.json in Resources */,
-				CAF645412E62825000A2AB95 /* vocab_keywords.txt in Resources */,
-				CAF645422E62825000A2AB95 /* vocab_medication.txt in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
 			);
@@ -326,7 +326,7 @@
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 				CA13971B2E5D363C00B6212E /* CoreMLManager.swift in Sources */,
-				CAF645432E62825000A2AB95 /* ADHD_Predictor.mlpackage in Sources */,
+				CAF176E32E69116300489E18 /* ADHD_Predictor.mlpackage in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
