@@ -48,7 +48,7 @@ dependencies:
   path:
   path_provider:
   awesome_notifications:
-  syncfusion_flutter_charts: 29.2.9
+  syncfusion_flutter_charts: 
   sleek_circular_slider: ^2.0.1
   flutter_launcher_icons: ^0.14.3
   flutter_email_sender: ^7.0.0

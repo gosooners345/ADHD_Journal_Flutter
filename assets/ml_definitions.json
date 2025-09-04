@@ -18,6 +18,6 @@
     "medication_sequence_length": 16,
     "RATING_MIN": 0,
     "RATING_MAX": 100,
-    "SLEEP_MIN": 70.0,
-    "SLEEP_MAX": 70.0
+    "SLEEP_MIN": 10.0,
+    "SLEEP_MAX": 100.0
 }
