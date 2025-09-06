@@ -221,6 +221,7 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
                       sources: '',
                       symptoms: '',
                       tags: '',
+                      medication: '',
                       rating: 0.0,
                       media: Uint8List(0),
                       success: false,

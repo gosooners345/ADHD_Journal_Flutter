@@ -77,7 +77,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
  String sleepInfo='';
  double sleepRating=0.0;
  String medicationInfo='';
- TextEditingController medicationTextController=TextEditingController();
+ //TextEditingController medicationTextController=TextEditingController();
 // Add these controllers at the top of your _NewComposeRecordsWidgetState class
   final TextEditingController _symptomController = TextEditingController(); // For keywords
   final TextEditingController _contentController = TextEditingController(); // For main content (already there, ensure it's used)
@@ -854,10 +854,12 @@ print(_lastmodelprediction);
                   // labelText: 'What do you want to call this?'
                   hintText: "Enter your medication here."),
               textCapitalization: TextCapitalization.sentences,
-              controller: medicationTextController,
+              controller: medicationController,
               onChanged: (text) {
-                super.widget.record.medication = text;
-                //_onInputChanged();
+
+                setState(() {
+                  medicationInfo = text;
+                });
               },
             ),)
         ],),swapper),
@@ -1183,11 +1185,13 @@ print(_lastmodelprediction);
                          //labelText: '',
                         hintText: "Enter your medication here."),
                     textCapitalization: TextCapitalization.sentences,
-                    controller: medicationTextController,
+                    controller: medicationController,
                     onChanged: (text) {
-                      medicationTextController.text = text;
-                      super.widget.record.medication = text;
-                      //_onInputChanged();
+                      setState(() {
+
+                        medicationInfo = text;
+                      });
+
                     },
                   ),),
 
@@ -1364,6 +1368,7 @@ print(_lastmodelprediction);
 
   ///Saves the record in the database
   Future<void> _saveRecord(RecordsBloc recordsBloc) async {
+    print("Medication is :"+medicationController.text);
     super.widget.record.timeUpdated = DateTime.now();
     if (customDate != super.widget.record.timeCreated) {
       super.widget.record.timeCreated = customDate;
@@ -1375,7 +1380,7 @@ print(_lastmodelprediction);
     super.widget.record.sources = sourceController.text;
     super.widget.record.tags = tagsController.text;
     super.widget.record.sleep = sleepRating;
-    super.widget.record.medication = medicationTextController.text;
+    super.widget.record.medication = medicationController.text;
     // Ensure these are also set for the record object being saved, if they are meant to persist
     super.widget.record.rating = _currentRating;
 
@@ -1418,13 +1423,14 @@ print(_lastmodelprediction);
 
   //Loads an already existing record in the database
   void loadRecord() {
+    print("Medication is :"+super.widget.record.medication);
     titleController.text = super.widget.record.title;
     contentController.text = super.widget.record.content; // Use _contentController for loading
     emotionsController.text = super.widget.record.emotions;
     sourceController.text = super.widget.record.sources;
     tagsController.text = super.widget.record.tags;
     symptomCoverText = super.widget.record.symptoms; // Or appropriate field for keywords
-    medicationTextController.text = super.widget.record.medication;
+    medicationController.text = super.widget.record.medication;
     sleepRating = super.widget.record.sleep;
     _currentRating = super.widget.record.rating;
 

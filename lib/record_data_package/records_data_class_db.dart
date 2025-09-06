@@ -16,14 +16,14 @@ class Records implements Comparable {
   String tags;
   double rating;
   bool success;
- String medication="";
+ String medication;
  double sleep=0.0;
   DateTime timeCreated;
   DateTime timeUpdated;
 Uint8List media = Uint8List(0);
   Records(
       { sleep=0.0,
-        medication ="",
+        required this. medication ,
         required this.id,
       required this.title,
       required this.content,
@@ -37,6 +37,7 @@ Uint8List media = Uint8List(0);
       required this.timeCreated,
       required this.timeUpdated,
 
+
       }
   );
 
@@ -45,10 +46,10 @@ Uint8List media = Uint8List(0);
   @override
   String toString() {
     return 'Title: $title \r\nDetails: $content \r\nEmotions: $emotions\r\nSources: $sources'
-        '\r\nSymptoms: $symptoms\r\nRating: $rating\r\nTime Created: $timeCreated\r\n'//'Medication: $medication\r\nSleep: $sleep\r\n'
+        '\r\nSymptoms: $symptoms\r\nRating: $rating\r\nTime Created: $timeCreated\r\n' 'Medication: $medication\r\nSleep: $sleep\r\n'
         'Time Updated: $timeUpdated';
   }
-
+//Important for record loading
   Map<String, Object> toMapForDB() {
     return {
       'id': id,

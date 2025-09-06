@@ -33,7 +33,7 @@ class RecordsDB {
       password: dbPassword,
       onCreate: (database, version) {
         return database.execute(
-            'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT,symptoms TEXT,rating DOUBLE, tags TEXT,success INT,time_updated INT, time_created INT, media BLOB, sleep DOUBLE, medication TEXT)');
+            'CREATE TABLE records(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title TEXT, content TEXT, emotions TEXT, sources TEXT,symptoms TEXT,rating DOUBLE, tags TEXT,success INT,time_updated INT, time_created INT, media BLOB, sleep DOUBLE, medication TEXT )');
       },
       onUpgrade: (database, oldVersion, newVersion) async {
         if(oldVersion <= 6){
