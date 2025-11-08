@@ -34,11 +34,9 @@ class CardListItem extends StatelessWidget {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
-          child: Image.network(
-            'https://docs.flutter.dev/cookbook'
-                '/img-files/effects/split-check/Food1.jpg',
-            fit: BoxFit.cover,
-          ),
+          child: Text('Loading'),
+
+
         ),
       ),
     );
