@@ -8,7 +8,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../adhd_machine_learning/prediction_ui_state.dart';
-import '../main.dart';
 import 'package:flutter/material.dart';
 import '../project_resources/project_utils.dart';
 import '../tokenizer.dart';
@@ -26,8 +25,7 @@ import 'package:adhd_journal_flutter/project_resources/debouncer_utility.dart';
 
 class NewComposeRecordsWidget extends StatefulWidget {
   const NewComposeRecordsWidget(
-      {Key? key, required this.record, required this.id, required this.title})
-      : super(key: key);
+      {super.key, required this.record, required this.id, required this.title});
   final Records record;
   final String title;
   final int id;
@@ -51,9 +49,9 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
   late SwitchListTile successSwitch;
   final PageController _pageController = PageController();
   //Prediction stuff
-  var _predictionStatus = PredictionIdle;
-  Map<String,double>_predictionResults={};
-  String _predictionError='';
+  final _predictionStatus = PredictionIdle;
+  final Map<String,double>_predictionResults={};
+  final String _predictionError='';
 
 
   double? currentPage = 0;
@@ -480,7 +478,7 @@ void _onInputChanged() {
       tags: tagsController.text,         // Use text from controller
       // Dummy values for the fields that are part of the model's LABEL, not its input.
       rating: _currentRating,
-      success: widget.record.success!=null ? widget.record.success! : false,
+      success: widget.record.success,
       timeCreated: DateTime.now(),
       timeUpdated: DateTime.now(),
       media: pictureBytes,
@@ -947,7 +945,7 @@ print(_lastmodelprediction);
                     _onInputChanged();
                   },
                   title: successStateWidget,
-                  activeColor: Color(swapper.isColorSeed),
+                  activeThumbColor: Color(swapper.isColorSeed),
                 ),
               ),
                if (_livePrediction != null)
@@ -1244,7 +1242,7 @@ print(_lastmodelprediction);
                         _updateSuccessUI(value);
                       },
                       title: successStateWidget,
-                      activeColor: Color(swapper.isColorSeed),
+                      activeThumbColor: Color(swapper.isColorSeed),
                     )),
                 const SizedBox(
                   height: 40,
@@ -1368,7 +1366,7 @@ print(_lastmodelprediction);
 
   ///Saves the record in the database
   Future<void> _saveRecord(RecordsBloc recordsBloc) async {
-    print("Medication is :"+medicationController.text);
+    print("Medication is :${medicationController.text}");
     super.widget.record.timeUpdated = DateTime.now();
     if (customDate != super.widget.record.timeCreated) {
       super.widget.record.timeCreated = customDate;
@@ -1423,7 +1421,7 @@ print(_lastmodelprediction);
 
   //Loads an already existing record in the database
   void loadRecord() {
-    print("Medication is :"+super.widget.record.medication);
+    print("Medication is :${super.widget.record.medication}");
     titleController.text = super.widget.record.title;
     contentController.text = super.widget.record.content; // Use _contentController for loading
     emotionsController.text = super.widget.record.emotions;
@@ -1518,7 +1516,7 @@ print(_lastmodelprediction);
       } else {
         print('No image selected');
       }
-    } on Exception catch (e) {
+    } on Exception {
       print("Image selection failed");
     }
   }
@@ -1547,20 +1545,18 @@ print(_lastmodelprediction);
         );
       }
     );
-    if (picked != null ) {
-      setState(() {
-        customDate =DateTime(
-            picked.year,
-            picked.month,
-            picked.day,
-            pickedTime!.hour,
-            pickedTime.minute,
+    setState(() {
+      customDate =DateTime(
+          picked.year,
+          picked.month,
+          picked.day,
+          pickedTime!.hour,
+          pickedTime.minute,
 
-        );
-        super.widget.record.timeCreated = customDate;
-      });
+      );
+      super.widget.record.timeCreated = customDate;
+    });
     }
-  }
   void showMessage(String message) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
@@ -1579,7 +1575,7 @@ class RecordsScreenNotifier extends ChangeNotifier {
   // --- STATE PROPERTIES ---
 
   /// The list of records to be displayed.
-  List<Records> _records = [];
+  final List<Records> _records = [];
   List<Records> get records => _records;
 
   /// The current state of the prediction process.

@@ -1,4 +1,3 @@
-import 'dart:async';
 
 import 'package:adhd_journal_flutter/ui_components/record_view_card_class.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
@@ -15,7 +14,7 @@ import '../records_compose_components/new_compose_records_screen.dart';
 import '../ui_components/loading_card_widget.dart';
 
 class RecordDisplayWidget extends StatefulWidget {
-  const RecordDisplayWidget({Key? key}) : super(key: key);
+  const RecordDisplayWidget({super.key});
 
   @override
   State<RecordDisplayWidget> createState() => RecordDisplayWidgetState();
@@ -58,14 +57,6 @@ late RecordsBloc recordsBloc;
 
 
 
-  @override
-  dispose() {
-
-
-    super.dispose();
-
-
-  }
 
   /// Sorts the list based on what the user prefers to see.
 

@@ -325,9 +325,8 @@ return tempRatings;
                               },
                                   // Allows for the touch zone to reach the end of the widget
                                   child:
-                                  Container(height: double.infinity, width: 40,
-                                    child: Align(child: nextArrowIcon,
-                                      alignment: Alignment.center,),
+                                  SizedBox(height: double.infinity, width: 40,
+                                    child: Align(alignment: Alignment.center,child: nextArrowIcon,),
                                   ))),
                         // Page indicator
                         Align(

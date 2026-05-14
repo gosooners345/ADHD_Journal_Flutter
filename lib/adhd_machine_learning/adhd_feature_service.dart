@@ -2,7 +2,6 @@
 import 'dart:convert';
 import 'dart:math';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/services.dart' show rootBundle, MethodChannel, PlatformException;
 import 'package:adhd_journal_flutter/record_data_package/records_data_class_db.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
@@ -386,15 +385,8 @@ if(kDebugMode) {
         }
         return {};
       }
-      final Map<String, List<double>>? typedOutputMap = rawOutput
+      final Map<String, List<double>> typedOutputMap = rawOutput
           .map((key, value) => MapEntry(key.toString(), (value as List<dynamic>).cast<double>()));
-
-      if (typedOutputMap == null) {
-        if (kDebugMode) {
-          print("❌ Failed to cast native output map.");
-        }
-        return {};
-      }
       final List<double>? successProbabilities = typedOutputMap['success_probabilities'];
       final List<double>? dayTypeProbabilities = typedOutputMap['day_type_probabilities'];
       if (successProbabilities == null || dayTypeProbabilities == null) {

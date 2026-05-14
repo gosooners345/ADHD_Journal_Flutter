@@ -1,6 +1,5 @@
 import 'package:adhd_journal_flutter/app_start_package/login_screen_file.dart';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
-import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,10 +8,9 @@ import '../app_start_package/splash_screendart.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../backup_providers/google_drive_backup_class.dart';
 import '../project_resources/global_vars_andpaths.dart';
-import '../project_resources/project_strings_file.dart';
 
 class OnBoardingWidget extends StatefulWidget {
-  const OnBoardingWidget({Key? key}) : super(key: key);
+  const OnBoardingWidget({super.key});
 
   @override
   State<OnBoardingWidget> createState() => _OnBoardingWidgetState();

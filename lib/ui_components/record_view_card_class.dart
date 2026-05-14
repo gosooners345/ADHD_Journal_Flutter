@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../record_data_package/records_data_class_db.dart';
 
 class RecordCardViewWidget extends StatefulWidget {
-  const RecordCardViewWidget({Key? key, required this.record}) : super(key: key);
+  const RecordCardViewWidget({super.key, required this.record});
   final Records record;
 
   @override

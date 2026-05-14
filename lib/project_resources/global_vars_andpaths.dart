@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:adhd_journal_flutter/adhd_machine_learning/adhd_feature_service.dart';
 import 'package:adhd_journal_flutter/adhd_machine_learning/personalization_data.dart';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
@@ -492,24 +491,20 @@ static late final AdhdMlService adhdMlService;
        print ("Database is ready");
        personalizationService = PersonalizationService();
 print("ML Service is ready");
-       if(directory==null){
-         throw Exception('Directory is null');
-       } else {
-         // Variable below can be used to target journal, but we're keeping that on its own code for
-         //readability
-         appDocumentsDirectoryPath = directory.path;
-         docsLocation = directory.path;
-         dbLocation = join (await sqlCipher.getDatabasesPath(),databaseName);
+       // Variable below can be used to target journal, but we're keeping that on its own code for
+       //readability
+       appDocumentsDirectoryPath = directory.path;
+       docsLocation = directory.path;
+       dbLocation = join (await sqlCipher.getDatabasesPath(),databaseName);
 dbPath = await sqlCipher.getDatabasesPath();
-         if(kDebugMode){
-          print("Global variables initialized, anything that needs more than a single class should be started here except for Google Drive");
-         }
+       if(kDebugMode){
+        print("Global variables initialized, anything that needs more than a single class should be started here except for Google Drive");
+       }
 
 isInitialized=true;
 return true;
 
-       }
-     } catch (e,s){
+          } catch (e,s){
        if (kDebugMode) {
          print("Global:$e");
          print("Global:$s");

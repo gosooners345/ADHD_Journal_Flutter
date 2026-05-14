@@ -18,7 +18,7 @@ import 'login_screen_file.dart';
 // Splash Screen Class for application. This page will need examined for performance improvement potential
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key, this.swapper}) : super(key: key);
+  const SplashScreen({super.key, this.swapper});
   final ThemeSwap? swapper;
 
   @override
@@ -343,7 +343,6 @@ class _SplashScreenState extends State<SplashScreen> {
     newDBPW = newVals[1];
     newHint = newVals[2];
     newEnabled = newVals[3] == "true" ? true : false;
-    ;
     newGreeting = newVals[4];
     newColorSeed = int.parse(newVals[5]);
     if (kDebugMode) {

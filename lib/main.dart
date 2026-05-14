@@ -9,7 +9,6 @@ import 'package:adhd_journal_flutter/settings_tutorials/backup_and_sync_help.dar
 import 'package:adhd_journal_flutter/ui/dashboard_stats_display_widget.dart';
 import 'package:adhd_journal_flutter/records_stream_package/records_bloc_class.dart';
 import 'package:adhd_journal_flutter/settings.dart';
-import 'package:adhd_journal_flutter/settings_link_page/helpful_links.dart';
 import 'package:adhd_journal_flutter/settings_tutorials/compose_tutorial.dart';
 import 'package:adhd_journal_flutter/settings_tutorials/dashboard_help.dart';
 import 'package:adhd_journal_flutter/settings_tutorials/sort_and_filter_help.dart';
@@ -36,7 +35,7 @@ int id = 0;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationController.initializeLocalNotifications();
-  _initMLServiceinBG();
+    _initMLServiceinBG();
   runApp(
       MultiProvider(providers: [
        ChangeNotifierProvider<ThemeSwap>(

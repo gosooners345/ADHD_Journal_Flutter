@@ -20,9 +20,9 @@ import 'dart:io';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({
-    Key? key,
+    super.key,
     required this.swapper,
-  }) : super(key: key);
+  });
   final ThemeSwap? swapper;
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -409,7 +409,7 @@ break;
               print(error);
               print(stackTrace);
             }).whenComplete(() {
-              print(Global.files_list_types[i] + " check complete.");
+              print("${Global.files_list_types[i]} check complete.");
               googleIsDoingSomething(false);
             });
             googleIsDoingSomething(false);
@@ -442,9 +442,7 @@ fileCheckCompleted=true;
 // in case Splash Screen doesn't load things in time because it moves so fast.
   void loadStateStuff() async {
 
-    if(Global.prefs == null){
-      Global.prefs = await SharedPreferences.getInstance();
-    }
+    Global.prefs ??= await SharedPreferences.getInstance();
     passwordEnabled = Global.prefs.getBool('passwordEnabled') ?? true;
     greeting = Global.prefs.getString("greeting") ?? '';
     loginGreeting = await  getGreeting();
@@ -482,9 +480,7 @@ fileCheckCompleted=true;
   }
   void reloadStateStuff() async {
 loggedInState=false;
-    if(Global.prefs == null){
-      Global.prefs = await SharedPreferences.getInstance();
-    }
+    Global.prefs ??= await SharedPreferences.getInstance();
     passwordEnabled = Global.prefs.getBool('passwordEnabled') ?? true;
     greeting = Global.prefs.getString("greeting") ?? '';
     loginGreeting = await  getGreeting();

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class TutorialHelpScreen extends StatelessWidget {
-  const TutorialHelpScreen({Key? key}) : super(key: key);
+  const TutorialHelpScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -12,7 +12,6 @@ import 'package:googleapis_auth/googleapis_auth.dart' as auth show AuthClient;
 import '../project_resources/global_vars_andpaths.dart';
 import 'dart:convert' as convert;
 import '../exceptions/primaryexceptions.dart';
-import 'package:crypto/crypto.dart' as crypto;
 
 class GoogleDrive {
   String fileID = "";
@@ -167,9 +166,6 @@ class GoogleDrive {
   // Double check to see if this method is doing it's job properly, method checks file age on device vs. Drive.
   //Improvements here could be using file IDs and SHA256 checking
   Future<bool> checkFileAge(String fileName, String directoryName) async {
-    if (drive == null) {
-      initVariables();
-    }
     try {
       File file = File(directoryName);
       if (file.existsSync() == true) {
@@ -233,14 +229,6 @@ class GoogleDrive {
   /// If file doesn't exist, check cloud, if false there, that file needs created.
   /// Update recommended: Use an await method with a completer type function (delay further execution until completion)
   Future<bool> isLocalFileNewer(String driveFileName, String localFile) async {
-    if (drive == null) {
-     await initVariables();
-      if (drive == null) {
-        throw GoogleAuthException(
-            "Drive API is inaccessible or cannot be initialized");
-      }
-      return false;
-    }
     File localFileObject = File(localFile);
     if (!await localFileObject.exists()) {
       if (kDebugMode) {
@@ -261,7 +249,7 @@ class GoogleDrive {
     final driveListing = await drive.files.list(
         q: query, $fields: "files(id, name,createdTime,modifiedTime)");
     final driveFiles = driveListing.files;
-    if (driveFiles!.isEmpty || driveFiles == null) {
+    if (driveFiles!.isEmpty) {
       if (kDebugMode) {
         print("File does not exist on Google Drive");
       }
@@ -306,9 +294,6 @@ class GoogleDrive {
 
   ///If multiple versions exist, then delete the older copies
   Future<bool> checkForOutdatedFiles(String fileName) async {
-    if (drive == null) {
-    await  initVariables();
-    }
     if (appfolderID == null) {
      await initV2();
 
@@ -331,9 +316,6 @@ class GoogleDrive {
 
 
   Future<bool> checkForFile(String fileName) async {
-    if (drive == null) {
-    await  initVariables();
-    }
     if (appfolderID == null) {
      await initV2();
     }
@@ -368,7 +350,7 @@ class GoogleDrive {
         );
         files = queryDrive.files;
         print("${files!.length} File(s) found");
-        if (files!.isEmpty) {
+        if (files.isEmpty) {
           return false;
         } else {
           return true;
@@ -414,7 +396,7 @@ class GoogleDrive {
     final files = queryDrive.files;
 
     //int? queryCt = files?.length;
-    if(files!=null && files!.isNotEmpty ){
+    if(files!=null && files.isNotEmpty ){
       ga.File newestFile = files.first;
       String? newFileID = newestFile.id;
       ga.Media file = await drive.files.get(
@@ -432,7 +414,7 @@ class GoogleDrive {
             print("Task Completed, File stored at ${savedFile.path}");
           }
           downloadCompleter.complete();
-        }catch(e,s) {
+        }catch(e) {
           if (kDebugMode) print("Error writing file: $e");
           downloadCompleter.completeError(e);
         }},

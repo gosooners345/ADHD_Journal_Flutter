@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:adhd_journal_flutter/app_start_package/login_screen_file.dart';
 import 'package:flutter/foundation.dart';
-import 'package:path/path.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart' as sqlCipher;
 import 'package:flutter/services.dart';
 

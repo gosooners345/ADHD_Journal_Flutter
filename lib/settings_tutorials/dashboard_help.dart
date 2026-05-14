@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../project_resources/project_colors.dart';
 
 class DashboardHelp extends StatelessWidget {
-  const DashboardHelp({Key? key}) : super(key: key);
+  const DashboardHelp({super.key});
 
   @override
   Widget build(BuildContext context) {

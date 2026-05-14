@@ -57,7 +57,7 @@ class RecordsBloc {
 
       if(kDebugMode){
         print("Records added to the stream sink (${records.length})");
-        print('RecordsBloc getRecords: this instance hash: ${this.hashCode}');
+        print('RecordsBloc getRecords: this instance hash: $hashCode');
 
       }
        if (kDebugMode) {
@@ -79,7 +79,7 @@ class RecordsBloc {
       if (kDebugMode) {
         print(maxID);
       }
-    } catch (e,s){
+    } catch (e){
       if(kDebugMode){
         print("Error in getRecords: $e");
       }
@@ -166,16 +166,16 @@ print(s);
 // Section testing the record List management:
   static const platform =   MethodChannel('com.activitylogger.release1/ADHDJournal');
 
-   StreamController<List<RecordRatingStats>> _ratingsController = StreamController<List<RecordRatingStats>>.broadcast(sync: false);
+   final StreamController<List<RecordRatingStats>> _ratingsController = StreamController<List<RecordRatingStats>>.broadcast(sync: false);
    Stream<List<RecordRatingStats>> get ratingsStuffs => _ratingsController.stream;
 
-   StreamController<List<RecordDataStats>> _successController = StreamController<List<RecordDataStats>>.broadcast(sync: false);
+   final StreamController<List<RecordDataStats>> _successController = StreamController<List<RecordDataStats>>.broadcast(sync: false);
    Stream<List<RecordDataStats>> get successStuffs => _successController.stream;
 
-   StreamController<List<RecordDataStats>> _symptomController = StreamController<List<RecordDataStats>>.broadcast(sync: false);
+   final StreamController<List<RecordDataStats>> _symptomController = StreamController<List<RecordDataStats>>.broadcast(sync: false);
    Stream<List<RecordDataStats>> get symptomStuffs => _symptomController.stream;
 
-   StreamController<List<RecordDataStats>> _emotionController = StreamController<List<RecordDataStats>>.broadcast(sync: false);
+   final StreamController<List<RecordDataStats>> _emotionController = StreamController<List<RecordDataStats>>.broadcast(sync: false);
    Stream<List<RecordDataStats>> get emotionStuffs => _emotionController.stream;
 
 
@@ -235,7 +235,7 @@ print(s);
     List<String> emotionCounts = List.empty(growable: true);
     List<RecordDataStats> emotionList = List.empty(growable: true);
 
-    var countMap = Map();
+    var countMap = {};
     for (Records record in _recordHolder) {
       emotionCounts.addAll(record.emotions.split(','));
     }
@@ -260,7 +260,7 @@ print(s);
     countMap['Physically tired'] = 0;
 
     // This will iterate through the list to get the quantity of each specific element in the emotion list.
-    emotionCounts.forEach((element) {
+    for (var element in emotionCounts) {
       var sanitizedElement = element.trimLeft().trimRight().toLowerCase();
 
       if (Global.anger_emotion_cluster.contains(sanitizedElement)) {
@@ -306,7 +306,7 @@ print(s);
       } else {
         countMap[sanitizedElement]++;
       }
-    });
+    }
     // Take the map and convert it into an object that we can use for graphing
     countMap.forEach((key, value) {
       emotionList.add(RecordDataStats(key, double.tryParse(value.toString())!));
@@ -321,12 +321,12 @@ print(s);
    Future<List<RecordDataStats>> _getSymptomCounts(List<Records> currentRecords) async {
     List<String> symptomCounts = List.empty(growable: true);
     List<RecordDataStats> symptomList = List.empty(growable: true);
-    var countMap = Map();
-    _recordHolder.forEach((element) {
+    var countMap = {};
+    for (var element in _recordHolder) {
       symptomCounts.addAll(element.symptoms.split(','));
-    });
+    }
 
-    symptomCounts.forEach((element) {
+    for (var element in symptomCounts) {
       var sanitizedElement = element.trimLeft().trimRight().toLowerCase();
 
       if (!countMap.containsKey(sanitizedElement)) {
@@ -334,7 +334,7 @@ print(s);
       } else {
         countMap[sanitizedElement]++;
       }
-    });
+    }
     countMap.forEach((key, value) {
       symptomList.add(RecordDataStats(key, double.tryParse(value.toString())!));
     });

@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../project_resources/project_colors.dart';
 
 class BackupAndSyncdHelp extends StatelessWidget {
-  const BackupAndSyncdHelp({Key? key}) : super(key: key);
+  const BackupAndSyncdHelp({super.key});
 
   @override
   Widget build(BuildContext context) {

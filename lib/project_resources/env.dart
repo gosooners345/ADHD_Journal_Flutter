@@ -1,6 +1,5 @@
 import 'package:envied/src/envied_base.dart';
 import 'package:envied/envied.dart';
-import 'package:envied_generator/envied_generator.dart';
 part 'env.g.dart';
 @Envied(path:"keys.env",allowOptionalFields: true)
 abstract class Env{

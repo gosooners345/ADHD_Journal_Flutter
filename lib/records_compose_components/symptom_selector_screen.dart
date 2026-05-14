@@ -4,11 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../project_resources/global_vars_andpaths.dart';
 
-import '../project_resources/project_strings_file.dart';
 import '../project_resources/project_utils.dart';
 
 class SymptomSelectorScreen extends StatefulWidget {
-  SymptomSelectorScreen({Key? key, required this.symptoms}) : super(key: key);
+  SymptomSelectorScreen({super.key, required this.symptoms});
   String symptoms;
 
   @override

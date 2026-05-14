@@ -1,9 +1,7 @@
-import 'dart:io';
 import 'package:adhd_journal_flutter/project_resources/global_vars_andpaths.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'notifications_packages/notification_controller.dart';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
-import 'package:adhd_journal_flutter/project_resources/project_strings_file.dart';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_review/in_app_review.dart';
 //import 'package:launch_review/launch_review.dart';
@@ -15,7 +13,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'app_start_package/login_screen_file.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+  const SettingsPage({super.key});
 
   @override
   State<SettingsPage> createState() => _SettingsPage();
@@ -703,7 +701,7 @@ final InAppReview inAppReview = InAppReview.instance;
     final Email email = Email(
         subject: "Bugs and Feature Request for ADHD Journal version $buildInfo",
         body: '',
-        recipients: ['boomersooner12345@gmail.com'],
+        recipients: ['developer@adhdjournalapp.com'],
         isHTML: false);
     await FlutterEmailSender.send(email);
   }
