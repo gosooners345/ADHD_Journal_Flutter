@@ -469,10 +469,45 @@ static  const String link_additudemag_website = 'https://www.additudemag.com/';
         "Sign into the linked Google Account and delete the Journals folder from your Google Drive. \r\n "
         "Once these two steps are completed, you will no longer sync to the cloud. This can be re-enabled at any time by toggling the Backup & Sync option in settings."
   ];
-static const List<String> composeHelpStrings=[];
-  static const List<String> dashboardHelpStrings=[];
-  static const List<String> searchSortHelpStrings=[];
-  static const List<String> smartJournalHelpStrings=[];
+static const List<String> composeHelpStrings=[
+  "Here is how the journal entry creation process works:",
+  "Title Page", "This is where you name your journal entry, give it a short or long name.",
+  "Time Page", "The default behavior of the journal is to use the timestamp from when the journal entry was entered. You can change this here by changing the date and time to accurately reflect when this event took place.",
+  "Event Description", "Describe what happened, be as detailed as you would like. You can even enter thoughts here if desired.",
+  "Emotions", "As someone with ADHD, emotional regulation can be a challenge and can sometimes play a significant role in life\'s events. You can describe how you are feeling about things here.",
+  'Influences', "You can list what influenced things going on in this entry. It can be internal, external, other circumstantial things, etc.",
+  "Symptom Selection Screen", "This list is a collection of different ADHD symptoms observed in the world at large that have a short description of what it means. Select any that go along with this, or even select positive things."
+      "\r\n This is sorted by intensity and/or whether it\'s a positive or negative symptom. Please feel free to reach out if you have any suggestions to improve this.",
+  'Sleep Rating', 'Sometimes sleep plays a major role in decisions made in life. This screen offers you the opportunity to rate how you slept the night before and its based on an 8hr. sleep duration.',
+  'Medication','This is for those who use medication to treat their ADHD. You can leave this blank if you\'d like.',
+    'Tags','This allows you to attach tags to a journal entry for easier searching later if you need to reference something.',
+  'Event Rating', 'This screen allows you to rate the event itself on whether it went well, or however you see fit. It is not a one-size-fits-all type scale because we experience things differently as human beings.',
+  'Success/Fail','This screen allows you to rate how YOU managed the situation or event listed in this entry. This should be linked to your symptom management, but is subjective to you.',
+  'Camera Screen', 'You can attach a picture to describe or enhance the entry to give it further meaning. This allows you to attach photos from your gallery or to take a fresh pic. \r\nThis lives in the journal and can significantly affect performance when syncing between devices.',
+  'Entry Review', "Review your journal entry for accuracy and hit save when completed.",
+  'Smarter Journal Prediction', 'This is an experimental feature that uses machine learning from pretrained data and attempts to guess where your entry will likely fall in regards to sleep, success/fail, event rating. This data does not leave your device whatsoever and you can choose to opt-in to experiment with this feature. \r\n'
+      'This feature is turned off by default because privacy matters most here. Any guesses may likely fall incorrect due how we are as human beings.\r\n'
+      'Please let me know if the feature is worth integrating or not.'
+
+];
+  static const List<String> dashboardHelpStrings=["This screen displays your journal stats on cards based on several factors: Event Ratings, Symptom collection and frequency, Emotional Frequency (What you put in the emotions field), Success/Fail percentages (Subjective to you), and more.",
+  "Summary Card", "This card shows you a high-level overview of general trends within the journal on how you are managing your ADHD symptoms. This also shows you the most recent symptoms affecting you from your last journal entry. The rating is based on the average compared over the lifetime of the journal. ",
+  'Journal Entry Ratings Card','This card displays all of your ratings over the lifetime of the journal sorted by date from most recent to the beginning. ',
+  'Success/Fail Card','This card shows you the percentage of success and fail ratings you\'ve marked in your journal. This will shift more as you add entries.',
+  'Emotion Data Card','This card shows you the frequency of different types of emotions based on category. If you believe that there is a category missing, please use the email developer button within the settings screen to request more be added.',
+  "Symptom Data Card","This card shows you the frequency of different ADHD Symptoms across all of your journal entries. If you think more should be added, please feel free to contact the developer by selecting the email button on the settings screen.",
+  'Sleep and Medication card', 'This card will be added in future updates.'];
+  static const List<String> searchSortHelpStrings=[
+    "Search and sort through your journal entries if you are looking for specific things.", "Sort Function", "The sort icon sits at the top of the Home Screen next to the Search icon. This allows you to sort journal entries by alphabetical order, date created, rating score, and most recent. Sorting order defaults to most recent entries modified/created.",
+    'Search Function', "Searching for specific items is easy and can be done by using tapping the magnifying glass at the top of the screen. This will search your journal entries for most relevant information."
+  ];
+  static const List<String> smartJournalHelpStrings=["The Smart Journal feature is in alpha testing phase currently, this feature will be released as an OPT-IN only feature.",
+      "Smarter Journal is an alpha, opt‑in feature that uses on‑device machine learning to predict likely outcomes for your journal entries. The model was trained only on the developer’s personal journal data and runs locally on your device — no cloud compute is used for making predictions.  \r\nWhat this means for you:"
+  "\r\n Opt in only: You must enable the feature to use it.\r\n Local processing: Predictions are generated on your device; nothing is sent to external servers for inference.\r\n"
+  "Limited training data: The model was trained with the developer’s own entries, so results may be experimental and will improve only as the feature matures.",
+"  Privacy and expectations","Because the feature is in alpha, predictions may be imperfect. Use them as suggestions, not definitive outcomes.\r\n"
+  "The app does not use cloud computing for prediction, but please review the app’s privacy settings before enabling any experimental features."
+   ];
   //Application DB Handling and Other prefs handling internal variables.
 static String appDocumentsDirectoryPath = '';
 static String dbLocation = "";

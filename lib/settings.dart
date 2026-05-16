@@ -542,6 +542,7 @@ final InAppReview inAppReview = InAppReview.instance;
             spacer,
             // Smart Journal Feature Switch, Users can turn this on or off. The app must support unloading this at user request. This is Opt-In
             SwitchListTile(
+
               value: Global.userMLPreference,
               onChanged: (bool value) {
                 Global.userMLPreference= value;
@@ -555,13 +556,13 @@ final InAppReview inAppReview = InAppReview.instance;
                       print("Smart Journal  is $value");
                     }
                     // show dialog explaining the feature and also add a section in help describing this.
-                    getDriveAgent();
+                    //getDriveAgent();
                   } else if (value == false) {
                     brainIcon = Icon(
                       Symbols.cognition_2_sharp,
                       color: Colors.grey,
                     );
-                    syncTextLabelText = "Smart Journal features are disabled";
+                    smartJournalText = "Smart Journal features are disabled";
                     Global.prefs.setBool('smartJournal', value);
                     print("Smart Journal features are $value");
                   }

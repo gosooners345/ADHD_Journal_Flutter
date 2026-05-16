@@ -173,7 +173,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
   
 
 
-//Prediction Methods
+/*//Prediction Methods
   Future<void> _runPrediction() async {
     // Gather all text inputs
     String keywordText = emotionsController.text.trim();
@@ -257,13 +257,13 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
       });
       showMessage(_livePrediction!);
     }
-  }
+  }*/
 
 
 
 
 
-
+/*
   Uint8List convertBytestoList(dynamic bytedata) {
     if (bytedata != null) {
       Uint8List list = Uint8List.fromList(bytedata);
@@ -271,7 +271,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
     } else {
       return Uint8List(0);
     }
-  }
+  }*/
 
   DateTime customDate = DateTime.now();
 
@@ -300,7 +300,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
   }
 
 //Predictive advice
-  String _getPredictionAdvice(String label) {
+/*  String _getPredictionAdvice(String label) {
     print(label);
     switch (label) {
       case 'peak_performance_day':
@@ -322,7 +322,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
       default:
         return 'Insight: Your entry is being analyzed.';
     }
-  }
+  }*/
   ///Camera Code - Don't Touch
   Future<void> initializeCamera() async{
     setState(() {
@@ -464,56 +464,56 @@ void _onInputChanged() {
     //_predictOutcome();
     //});
   }
-  Future<void> _predictOutcome() async {
+ // Future<void> _predictOutcome() async {
 
 
     // 1. Create a temporary Records object from current UI state
     // Ensure all fields used for prediction are included.
-    final tempRecord = Records(
+//    final tempRecord = Records(
       //id: super.widget.record.id,
-      title: titleController.text,
-      content: contentController.text,
-      emotions: emotionsController.text, // Use text from controller
-      symptoms: widget.record.symptoms,  // Use the record's current symptoms string
-      tags: tagsController.text,         // Use text from controller
+//      title: titleController.text,
+  //    content: contentController.text,
+    //  emotions: emotionsController.text, // Use text from controller
+      //symptoms: widget.record.symptoms,  // Use the record's current symptoms string
+//      tags: tagsController.text,         // Use text from controller
       // Dummy values for the fields that are part of the model's LABEL, not its input.
-      rating: _currentRating,
-      success: widget.record.success,
-      timeCreated: DateTime.now(),
-      timeUpdated: DateTime.now(),
-      media: pictureBytes,
-      sources: sourceController.text,
-      id: widget.record.id,
-      sleep: sleepRating,
-      medication: widget.record.medication,
+      //rating: _currentRating,
+//      success: widget.record.success,
+      //timeCreated: DateTime.now(),
+//      timeUpdated: DateTime.now(),
+      //media: pictureBytes,
+//      sources: sourceController.text,
+//      id: widget.record.id,
+//      sleep: sleepRating,
+//      medication: widget.record.medication,
 
-    );
+  //  );
 
     // 2. Run the prediction
-    final predictions = await Global.adhdMlService.predictRecord(tempRecord); // Changed to predictRecord
-_lastmodelprediction = predictions;
-print(_lastmodelprediction);
+    //final predictions = await Global.adhdMlService.predictRecord(tempRecord); // Changed to predictRecord
+//_lastmodelprediction = predictions;
+//print(_lastmodelprediction);
     // 3. Find the most likely outcome
-    if (predictions.isNotEmpty) {
-      final topPrediction = predictions.entries.reduce((a, b) => a.value > b.value ? a : b);
+  //  if (predictions.isNotEmpty) {
+      //final topPrediction = predictions.entries.reduce((a, b) => a.value > b.value ? a : b);
 
       // Get the advice/explanation for the prediction
-      final advice = _getPredictionAdvice(topPrediction.key);
-      final String confidence = (topPrediction.value * 100).toStringAsFixed(1);
+      //final advice = _getPredictionAdvice(topPrediction.key);
+      //final String confidence = (topPrediction.value * 100).toStringAsFixed(1);
       // 4. Update the UI state with the result
-      setState(() {
-        _livePrediction = "Predicted Day Type: '${topPrediction.key}'\n$advice ($confidence% confidence)";
-        showMessage(_livePrediction!);
-      });
-    } else {
-      setState(() {
-        _livePrediction = null; // Clear if no prediction is made (e.g., empty input)
-      });
-      print("Live Prediction is null");
-    return;
-    }
+     // setState(() {
+     //   _livePrediction = "Predicted Day Type: '${topPrediction.key}'\n$advice ($confidence% confidence)";
+      //  showMessage(_livePrediction!);
+     // });
+//    } else {
+  //    setState(() {
+      //  _livePrediction = null; // Clear if no prediction is made (e.g., empty input)
+    //  });
+      //print("Live Prediction is null");
+    //return;
+    //}
 
-  }
+  //}
 
 ///UI Updating code
   void _updateRatingUI (double newRating){
@@ -623,34 +623,7 @@ print(_lastmodelprediction);
             duration: const Duration(milliseconds: 100), curve: Curves.easeIn);
       },
       children: [
-        ///When the event took place if not recently 1.
-        uiCard(
-            Column(children: [
-              const Padding(
-                  padding: EdgeInsets.all(10),
-                  child: Center(
-                      child: Text("When did this event take place?",
-                          style: TextStyle(fontSize: 20)))),
-              const SizedBox(
-                height: 10,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child:
-                Card(child: ListTile(leading: const Icon(Icons.calendar_today),
-                    title: Text(
-                      "Date: ${customDate.month}/${customDate.day}/${customDate
-                          .year}\r\n Time: ${customDate.hour}:${customDate.minute.toString().padLeft(2, '0')}", style: const TextStyle(fontSize: 20),),
-                    onTap: () async {
-                      selectDate(context);
-                    }),
-
-                ),
-              ),
-            ]),
-            swapper),
-
-        /// Title 2.
+        /// Title 1.
         uiCard(
             Column(children: [
               const Padding(
@@ -682,6 +655,34 @@ print(_lastmodelprediction);
               ),
             ]),
             swapper),
+
+        ///When the event took place if not recently 2.
+        uiCard(
+            Column(children: [
+              const Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Center(
+                      child: Text("When did this event take place?",
+                          style: TextStyle(fontSize: 20)))),
+              const SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child:
+                Card(child: ListTile(leading: const Icon(Icons.calendar_today),
+                    title: Text(
+                      "Date: ${customDate.month}/${customDate.day}/${customDate
+                          .year}\r\n Time: ${customDate.hour}:${customDate.minute.toString().padLeft(2, '0')}", style: const TextStyle(fontSize: 20),),
+                    onTap: () async {
+                      selectDate(context);
+                    }),
+
+                ),
+              ),
+            ]),
+            swapper),
+
 
        //Content 3.
         uiCard(

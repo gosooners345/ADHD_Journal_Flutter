@@ -60,6 +60,17 @@ class TutorialHelpScreen extends StatelessWidget {
                 Navigator.pushNamed(context, '/backuphelp');
               },
             ),
+            Divider(
+              height: 1.0,
+              thickness: 0.5,
+              color: Color(swapper.isColorSeed),
+            ),
+            ListTile(
+              title: const Text('What is Smarter Journal and how does it work?'),
+              onTap: () {
+                Navigator.pushNamed(context, '/aihelp');
+              },
+            ),
           ],
         ),
       );
