@@ -455,6 +455,24 @@ static  const String link_additudemag_website = 'https://www.additudemag.com/';
     'broken'
   ];
 
+  static const List<String> backupSyncStrings =[
+    "This guide should help you clear up any confusion about how the backup and sync function works.",
+    'To enable Backup & Sync, tap Sign in to Drive on the login screen. '
+        '\r\nChoose the Google account you want to use and grant the requested permissions. '
+        '\r\nMake sure to approve any unchecked permissions so the app can write to its designated Drive folder and store your journal in the cloud.',
+    'Data Security', 'We encrypt your passwords and other sensitive information using RSA encryption while your journal data is encrypted with AES-256 bit encryption. \r\n'
+        'The encryption keys are stored in the same Google Drive folder as your journal and related files, so you can access that folder to back up your journal to your computer. '
+        'Keep your Google account secure. If your Gmail is compromised, your backed-up data could also be at risk.'
+        ' \r\n',"Privacy Choices", "If you choose to no longer use the backup & sync service built into the app, you can safely turn it off in the application on the device you're currently using.\r\n"
+        "First, head to settings, and click the Backup and Sync option. This will turn off syncing for the device. You will have to do the same for each device linked to your journal.\r\n"
+        "To prevent future syncing between your devices and your Google Drive account, you will need to log into the Google Drive app or on a browser navigate to drive.google.com. \r\n"
+        "Sign into the linked Google Account and delete the Journals folder from your Google Drive. \r\n "
+        "Once these two steps are completed, you will no longer sync to the cloud. This can be re-enabled at any time by toggling the Backup & Sync option in settings."
+  ];
+static const List<String> composeHelpStrings=[];
+  static const List<String> dashboardHelpStrings=[];
+  static const List<String> searchSortHelpStrings=[];
+  static const List<String> smartJournalHelpStrings=[];
   //Application DB Handling and Other prefs handling internal variables.
 static String appDocumentsDirectoryPath = '';
 static String dbLocation = "";

@@ -35,7 +35,8 @@ target 'Runner' do
   pod 'SQLite.swift/SQLCipher', '~> 0.13.3'
   pod 'GTMSessionFetcher', :modular_headers => true
   pod 'Firebase/Messaging'
-  
+  #pod 'TensorFlowLiteSwift'
+
   # Add the necessary TensorFlow Litepods for your native implementation
   
 

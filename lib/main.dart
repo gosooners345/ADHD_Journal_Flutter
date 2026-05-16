@@ -14,6 +14,7 @@ import 'package:adhd_journal_flutter/settings_tutorials/dashboard_help.dart';
 import 'package:adhd_journal_flutter/settings_tutorials/sort_and_filter_help.dart';
 import 'package:adhd_journal_flutter/settings_tutorials/tutorial_help_guide.dart';
 import 'package:adhd_journal_flutter/app_start_package/splash_screendart.dart';
+import 'package:adhd_journal_flutter/ui_components/helppage_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'adhd_machine_learning/adhd_feature_service.dart';
@@ -120,12 +121,13 @@ class MyAppState extends State<MyApp> {
         '/fail': (context) => LoginScreen(
               swapper: swapper,
             ),
-        '/composehelp': (context) => ComposeHelpWidget(),
+        '/composehelp': (context) => HelpPageWidget(title: "Compose Journal Entries", helpPageInfo: Global.composeHelpStrings),
         '/tutorials': (context) => TutorialHelpScreen(),
-        '/dashboardhelp': (context) => DashboardHelp(),
-        '/searchhelp': (context) => SortHelp(),
+        '/dashboardhelp': (context) => HelpPageWidget(title: "Dashboard Screen", helpPageInfo: Global.dashboardHelpStrings),
+        '/searchhelp': (context) => HelpPageWidget(title: "Search & Sort Functions", helpPageInfo: Global.searchSortHelpStrings),
+        '/aihelp':(context)=>HelpPageWidget(title: "Smart Journal Help", helpPageInfo: Global.smartJournalHelpStrings),
         //'/resources': (context) => HelpfulLinksWidget(),
-        '/backuphelp': (context) => BackupAndSyncdHelp(),
+        '/backuphelp': (context) => HelpPageWidget(title: "Backup and Sync Help", helpPageInfo: Global.backupSyncStrings),
       },
     );
   }
