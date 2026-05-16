@@ -4,6 +4,7 @@ import 'notifications_packages/notification_controller.dart';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_review/in_app_review.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 //import 'package:launch_review/launch_review.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter/material.dart';
@@ -35,17 +36,23 @@ final InAppReview inAppReview = InAppReview.instance;
   String greetingValue = '';
   Text passwordLabelWidget = const Text('');
   Text syncTextWidget = const Text('');
+  Text smartJournalTextWidget = const Text('');
   late SwitchListTile passwordEnabledTile;
   String notifyText = '';
 
   //Visual changes based on parameter values
   String passwordLabelText = 'Password Enabled';
   String syncTextLabelText = "Turn backup on/off";
+  String smartJournalText = "Turn on/off Smart Journal features";
   late Icon lockIcon;
   Icon syncIcon = Icon(
     Icons.sync,
     color: Color(colorSeed),
   );
+
+  Icon brainIcon = Icon(Symbols.cognition_2_sharp,
+    color: Colors.grey,);
+
 
   // Convenience Widget for spacing and alignment
   SizedBox spacer = const SizedBox(height: 16, width: 8);
@@ -525,6 +532,54 @@ final InAppReview inAppReview = InAppReview.instance;
                 );
               },
             ),
+            //AI Section
+            spacer,
+            Divider(
+              height: 1.0,
+              thickness: 0.5,
+              color: Color(swapper.isColorSeed),
+            ),
+            spacer,
+            // Smart Journal Feature Switch, Users can turn this on or off. The app must support unloading this at user request. This is Opt-In
+            SwitchListTile(
+              value: Global.userMLPreference,
+              onChanged: (bool value) {
+                Global.userMLPreference= value;
+                Global.userMLPreference = value;
+                setState(() {
+                  if (value == true) {
+                    brainIcon = Icon(Symbols.cognition_2_sharp,color: Color(colorSeed),);
+                   smartJournalText = "Smart Journal features are active.";
+                    Global.prefs.setBool('smartJournal', value);
+                    if (kDebugMode) {
+                      print("Smart Journal  is $value");
+                    }
+                    // show dialog explaining the feature and also add a section in help describing this.
+                    getDriveAgent();
+                  } else if (value == false) {
+                    brainIcon = Icon(
+                      Symbols.cognition_2_sharp,
+                      color: Colors.grey,
+                    );
+                    syncTextLabelText = "Smart Journal features are disabled";
+                    Global.prefs.setBool('smartJournal', value);
+                    print("Smart Journal features are $value");
+                  }
+                  smartJournalTextWidget = Text(smartJournalText);
+                });
+              },
+              title: smartJournalTextWidget,
+              secondary: brainIcon,
+            ),
+            spacer,
+            Divider(
+              height: 2.0,
+              thickness: 2.0,
+              color: Color(swapper.isColorSeed),
+            ),
+
+
+
             spacer,
             Divider(
               height: 1.0,
@@ -709,6 +764,10 @@ final InAppReview inAppReview = InAppReview.instance;
 //Onedrive agent method needed
   void getDriveAgent() async {
     Global.googleDrive.client = await Global.googleDrive.getHttpClient();
+  }
+
+  void showMLDialog(String message){
+
   }
 
   void showMessage(String message) {

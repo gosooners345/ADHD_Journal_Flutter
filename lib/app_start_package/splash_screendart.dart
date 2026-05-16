@@ -175,7 +175,8 @@ class _SplashScreenState extends State<SplashScreen> {
         }
         if (Global.userActiveBackup == true) {
           Global.googleDrive.initVariables();
-        } else {
+        }
+        else {
           if (kDebugMode) {
             print(
                 "Google Drive backups aren't activated. User can activate them upon sign in or upon setup");
@@ -211,7 +212,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (kDebugMode) {
       print("Loading Prefs");
     }
-
+//Load Password & Hint
     var tempHint = await Global.encryptedSharedPrefs.getString(
         'passwordHint') ?? "";
     userPassword = await Global.encryptedSharedPrefs.getString('loginPassword');
@@ -285,12 +286,19 @@ class _SplashScreenState extends State<SplashScreen> {
     }
 
     passwordHint = await Global.encryptedSharedPrefs.getString('passwordHint');
+    //Load Greeting
     greeting = Global.prefs.getString('greeting') ?? '';
+    //Load App Theme Color
     colorSeed = Global.prefs.getInt("apptheme") ?? AppColors.mainAppColor.value;
+    //Is password enabled
     passwordEnabled = Global.prefs.getBool('passwordEnabled') ?? true;
+    //Are Notifications enabled
     notificationsAllowed = Global.prefs.getBool('notifications') ?? false;
+    //Password checker
     isPasswordChecked = passwordEnabled;
 // Give option to work around if user doesn't want to use Google Drive before publishing update
+   // This preference will NOT be synced at this time. It may be later.
+    Global.userMLPreference = Global.prefs.getBool('smartJournal') ?? false;
 
   }
 
@@ -349,6 +357,7 @@ class _SplashScreenState extends State<SplashScreen> {
       print("Changing Values");
     }
     appStatus.value = "Updating Preferences";
+    //Password updating - Critical feature
     if (newLoginPW != userPassword || newDBPW != dbPassword) {
       try {
         final testDB = await openDatabase(
@@ -395,10 +404,12 @@ class _SplashScreenState extends State<SplashScreen> {
       passwordEnabled = newEnabled;
       await Global.prefs.setBool('passwordEnabled', passwordEnabled);
     }
+    //Update Greeting
     if (greeting != newGreeting) {
       greeting = newGreeting;
       Global.prefs.setString('greeting', greeting);
     }
+    //Update app theme
     if (colorSeed != dlColorSeed) {
       colorSeed = dlColorSeed;
       Global.prefs.setInt('apptheme', colorSeed);
@@ -406,6 +417,8 @@ class _SplashScreenState extends State<SplashScreen> {
         super.widget.swapper?.themeColor = colorSeed;
       });
     }
+
+
     await Global.encryptedSharedPrefs.reload();
     Global.prefs.reload();
     prefsUpdated.complete();
@@ -497,8 +510,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   /// This method is responsible for checking the status of files and age of data on both sides.
-  Future<void> checkFilesExistV2(String localFileName, String remoteFileName,
-      String fileType) async {
+  Future<void> checkFilesExistV2(String localFileName, String remoteFileName, String fileType) async  {
     var fileChecker = ManagedFile(localFileName, remoteFileName);
     //Check for existence of files and age.
     print("Checking $fileType");

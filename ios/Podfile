@@ -36,9 +36,8 @@ target 'Runner' do
   pod 'GTMSessionFetcher', :modular_headers => true
   pod 'Firebase/Messaging'
   
-  # Add the necessary TensorFlow Lite pods for your native implementation
-  pod 'TensorFlowLiteSwift'
-  pod 'TensorFlowLiteSelectTfOps'
+  # Add the necessary TensorFlow Litepods for your native implementation
+  
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
@@ -57,16 +56,16 @@ post_install do |installer|
 
     # --- FIX FOR TENSORFLOWLITESELECTTFOPS ---
     # Find the specific pod target that's causing the issue.
-    if target.name == 'TensorFlowLiteSelectTfOps'
-      target.build_configurations.each do |config|
+   # if target.name == 'TensorFlowLiteSelectTfOps'
+    #  target.build_configurations.each do |config|
         # Get the existing linker flags.
-        flags = config.build_settings['OTHER_LDFLAGS'] ||= ['$(inherited)']
+    #    flags = config.build_settings['OTHER_LDFLAGS'] ||= ['$(inherited)']
         # Remove any flags that contain the problematic '-force_load'.
-        flags.reject! { |flag| flag.include?('-force_load') }
+   #     flags.reject! { |flag| flag.include?('-force_load') }
         # Update the build settings with the cleaned flags.
-        config.build_settings['OTHER_LDFLAGS'] = flags
-      end
-    end
+  #      config.build_settings['OTHER_LDFLAGS'] = flags
+ #     end
+ #   end
     # --- END OF FIX ---
 
     # Your custom preprocessor definitions

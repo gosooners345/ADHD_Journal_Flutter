@@ -35,6 +35,8 @@ int id = 0;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationController.initializeLocalNotifications();
+  //The following will be reintroduced whenever the best training model is ready to go
+  //App will not run this at this time. Will need to redo all training and "Classifying of words"
   //  _initMLServiceinBG();
   runApp(
       MultiProvider(providers: [
@@ -152,7 +154,6 @@ class ADHDJournalAppHPState extends State<ADHDJournalApp> {
     super.initState();
     title = 'Home';
     try {
-   //   recordsBloc = RecordsBloc();
       buildInfo = packInfo.version;
       requestStoragePermission();
 

@@ -2,12 +2,13 @@ import 'package:adhd_journal_flutter/adhd_machine_learning/adhd_feature_service.
 import 'package:adhd_journal_flutter/adhd_machine_learning/personalization_data.dart';
 import 'package:adhd_journal_flutter/project_resources/project_colors.dart';
 import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart';
+import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart' as sqlCipher;
-
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../adhd_machine_learning/personalization_service.dart';
 import '../app_start_package/login_screen_file.dart';
 import '../backup_providers/google_drive_backup_class.dart';
@@ -158,13 +159,14 @@ static EncryptedSharedPreferences encryptedSharedPrefs = EncryptedSharedPreferen
  //manage Google Drive instance here. save the numerous calls.
   static GoogleDrive googleDrive = GoogleDrive();
 static bool userActiveBackup = false;
+static bool userMLPreference = false;
   // Manage preference sync and upload.
   static PreferenceBackupAndEncrypt preferenceBackupAndEncrypt =
   PreferenceBackupAndEncrypt();
   //manage login button
   static LoginButtonReady readyButton = LoginButtonReady();
 
-
+//static const Symbols brainIcon = Symbols.cognition_2_sharp;
 
 
 static  const String link_how_to_ADHD_YT = 'https://www.youtube.com/c/HowtoADHD';

@@ -17,7 +17,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:adhd_journal_flutter/project_resources/global_vars_andpaths.dart';
 // ML Stuff
-//import 'package:adhd_journal_flutter/adhd_machine_learning/adhd_feature_service.dart';
+import 'package:adhd_journal_flutter/adhd_machine_learning/adhd_feature_service.dart';
 //import 'package:adhd_journal_flutter/project_resources/debouncer_utility.dart';
 
 //import 'package:bitmap/bitmap.dart';

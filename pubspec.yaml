@@ -78,6 +78,7 @@ dependencies:
   meta: any
   intl: any
   collection: any
+  material_symbols_icons: ^4.2928.1
 flutter_icons:
   image_path_android: "images/appicon_appstore.png"
   image_path_ios: "images/appicon_appstore.png"

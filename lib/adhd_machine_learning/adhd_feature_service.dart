@@ -468,7 +468,8 @@ else {
           'medication': Int32List.fromList(medication),
         };
         return await _predictWithTFLite(
-          inputs:inputs);//keywords:  Int32List.fromList(keywords), content: Int32List.fromList(content), medication: Int32List.fromList(medication), rating: Float32List.fromList(rating), sleep:Float32List.fromList(sleep) );
+          inputs:inputs);
+        //keywords:  Int32List.fromList(keywords), content: Int32List.fromList(content), medication: Int32List.fromList(medication), rating: Float32List.fromList(rating), sleep:Float32List.fromList(sleep) );
       }
       else{
         return {};
