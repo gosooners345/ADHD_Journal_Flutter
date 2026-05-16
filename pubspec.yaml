@@ -69,7 +69,8 @@ dependencies:
   connectivity_plus: ^6.0.5
   extension_google_sign_in_as_googleapis_auth:
   permission_handler:
-  tflite_flutter:
+  #tflite_flutter:
+  flutter_litert:
 
  # tflite_flutter_helper_plus:
   #google_ml_kit:

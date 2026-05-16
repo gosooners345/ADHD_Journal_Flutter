@@ -12,8 +12,11 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.StandardMethodCodec
-import org.tensorflow.lite.Interpreter
-import org.tensorflow.lite.flex.FlexDelegate
+
+//import com.google.ai.edge.litert.Interpreter
+//import com.google.ai.edge.litert.InterpreterApi
+//import com.google.ai.edge.litert.InterpreterFactory
+//import com.google.ai.edge.litert.Interpreter.Options
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
 import java.lang.Exception
@@ -23,7 +26,7 @@ import java.nio.ByteOrder
 import java.nio.MappedByteBuffer
 import java.lang.SecurityException
 import java.nio.channels.FileChannel
-
+ //import org.tensorflow.lite.flex.FlexDelegate
 class MainActivity : FlutterActivity() {
     private val CHANNEL = "com.activitylogger.release1/ADHDJournal"
 
@@ -32,8 +35,8 @@ class MainActivity : FlutterActivity() {
     }
 
     private lateinit var channel: MethodChannel
-    private var flexDelegate: FlexDelegate? = null
-    private var interpreter: org.tensorflow.lite.Interpreter? = null
+   // private var flexDelegate: com.google.ai.edge.litert.FlexDelegate? = null
+    //private var interpreter: com.google.ai.edge.litert.Interpreter? = null
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -44,14 +47,14 @@ class MainActivity : FlutterActivity() {
 
         channel.setMethodCallHandler { call, result ->
             when (call.method) {
-                "initFlexInterpreter" -> {
-                    setupInterpreter(result)
+  /*              "initFlexInterpreter" -> {
+                   // setupInterpreter(result)
                    // setupInterpreterWithFlex(result)
                 }
                 //Created Predict method to keep code cleaner
                 "predict" -> {
                     predict(call.arguments, result)
-                    /*if (interpreter == null) {
+                    *//*if (interpreter == null) {
                         result.error("NOT_INITIALIZED", "Interpreter is not ready.", null)
                         return@setMethodCallHandler
                     }
@@ -158,14 +161,14 @@ class MainActivity : FlutterActivity() {
 
                     } catch (e: Exception) {
                         result.error("PREDICTION_FAILED", "Native prediction failed", e.localizedMessage)
-                    }*/
+                    }*//*
                 }
 
 
                 "closeInterpreter" -> {
                     closeInterpreter()
                     result.success(true)
-                }
+                }*/
                 "openCamera" -> {
                     val intent = Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE)
                     try {
@@ -181,7 +184,7 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-
+/*
     private fun setupInterpreter(result: MethodChannel.Result) {
         if (interpreter != null) {
             Log.d("MainActivity", "Interpreter already initialized. Skipping.")
@@ -197,7 +200,7 @@ class MainActivity : FlutterActivity() {
             Log.e("MainActivity", "A critical error occurred during interpreter creation.", e)
             result.error("INIT_FAILED", "A critical error occurred during interpreter creation.", e.localizedMessage)
         }
-    }
+    }*/
     private fun createFloatBuffer(data: FloatArray): ByteBuffer =
         ByteBuffer.allocateDirect(data.size * java.lang.Float.BYTES)
             .order(ByteOrder.nativeOrder())
@@ -215,7 +218,7 @@ class MainActivity : FlutterActivity() {
             }
 
 
-    private fun logTensorDetails() {
+   /* private fun logTensorDetails() {
         if (interpreter == null) return
         Log.d("MainActivity", "--- TFLite Model Tensor Details ---")
         val inputCount = interpreter!!.inputTensorCount
@@ -234,7 +237,7 @@ class MainActivity : FlutterActivity() {
     private fun invalidArg(result: MethodChannel.Result, key: String): Nothing {
         result.error("INVALID_ARG_$key", "Missing or invalid '$key'.", null)
         throw IllegalArgumentException("Missing or invalid '$key'")
-    }
+    }*/
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
@@ -258,7 +261,7 @@ class MainActivity : FlutterActivity() {
             }
         }
     }
-    private fun predict(arguments: Any?, result: MethodChannel.Result) {
+ /*   private fun predict(arguments: Any?, result: MethodChannel.Result) {
         // 1) Check interpreter
         interpreter ?: run {
             result.error("NOT_INITIALIZED", "Interpreter is not ready.", null)
@@ -337,7 +340,9 @@ class MainActivity : FlutterActivity() {
             Log.e("PredictDebug", "Prediction failed", e)
             result.error("PREDICTION_FAILED", "Native prediction failed", e.localizedMessage)
         }
-    }
+    }*/
+
+
  /*   private fun predict(arguments: Any?, result: MethodChannel.Result){
     if (interpreter == null) {
         result.error("NOT_INITIALIZED", "Interpreter is not ready.", null)
@@ -448,7 +453,7 @@ try {
     }
 
 */
-    private fun initInterpreterWithFlex(assetModelName: String): Boolean {
+   /* private fun initInterpreterWithFlex(assetModelName: String): Boolean {
         // If able to load, then this will be true
         val model = loadModelFromAssets(assetModelName)
             if(model==null){
@@ -457,10 +462,10 @@ try {
             }
         try {
             // Using the nested Options class, as you confirmed works.
-            val options = org.tensorflow.lite.Interpreter.Options()
+            val options = Interpreter.Options()
             flexDelegate = FlexDelegate()
             options.addDelegate(flexDelegate)
-            interpreter = org.tensorflow.lite.Interpreter(model, options)
+            interpreter = Interpreter(model, options)
             
             // --- ADD THIS DIAGNOSTIC CODE ---
             Log.d("MainActivity", "--- TFLite Model Input Tensor Details ---")
@@ -504,13 +509,13 @@ try {
 
 
 
-    }
+    }*/
 
     override fun onDestroy() {
         super.onDestroy()
-        closeInterpreter()
+     //   closeInterpreter()
     }
-    private data class OutInfo(
+  /*  private data class OutInfo(
         val name: String,
         val index: Int,
         val count: Int,
@@ -522,5 +527,5 @@ try {
         flexDelegate?.close()
         flexDelegate = null
         Log.d("MainActivity", "Interpreter closed.")
-    }
+    }*/
 }

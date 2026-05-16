@@ -17,8 +17,8 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:adhd_journal_flutter/project_resources/global_vars_andpaths.dart';
 // ML Stuff
-import 'package:adhd_journal_flutter/adhd_machine_learning/adhd_feature_service.dart';
-import 'package:adhd_journal_flutter/project_resources/debouncer_utility.dart';
+//import 'package:adhd_journal_flutter/adhd_machine_learning/adhd_feature_service.dart';
+//import 'package:adhd_journal_flutter/project_resources/debouncer_utility.dart';
 
 //import 'package:bitmap/bitmap.dart';
 
@@ -48,10 +48,10 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
   late TextEditingController tagsController;
   late SwitchListTile successSwitch;
   final PageController _pageController = PageController();
-  //Prediction stuff
-  final _predictionStatus = PredictionIdle;
-  final Map<String,double>_predictionResults={};
-  final String _predictionError='';
+  //Prediction stuff - reimplement when model is retrained with newer stuff
+  //final _predictionStatus = PredictionIdle;
+ // final Map<String,double>_predictionResults={};
+  //final String _predictionError='';
 
 
   double? currentPage = 0;
@@ -83,7 +83,7 @@ class _NewComposeRecordsWidgetState extends State<NewComposeRecordsWidget> {
 
 
   //final AdhdMlService _inferenceService = AdhdMlService();
-  final Debouncer _debouncer = Debouncer(milliseconds: 700); // Adjust debounce time as needed
+  //final Debouncer _debouncer = Debouncer(milliseconds: 700); // Adjust debounce time as needed
 
   String? _livePrediction;
   Map<String,double>? _lastmodelprediction;
@@ -459,10 +459,10 @@ print("NATIVE > DART: ERROR - Bytes from native are ALREADY INVALID: $e");
 //ML Code
 void _onInputChanged() {
     print("Debug #5, Bouncer will bounce.");
-    _debouncer.run(() {
-    _runPrediction();
-    _predictOutcome();
-    });
+    //_debouncer.run(() {
+    //_runPrediction();
+    //_predictOutcome();
+    //});
   }
   Future<void> _predictOutcome() async {
 
@@ -1351,7 +1351,7 @@ print(_lastmodelprediction);
 
   @override
   void dispose() {
-    _debouncer.dispose();
+    //_debouncer.dispose();
     _symptomController.dispose();
     _contentController.dispose(); // Already here, ensure it's the one used for prediction
     titleController.dispose();
@@ -1565,12 +1565,12 @@ print(_lastmodelprediction);
 
 
 class RecordsScreenNotifier extends ChangeNotifier {
-  final AdhdMlService _adhdMlService;
+ // final AdhdMlService _adhdMlService;
 
-  RecordsScreenNotifier(this._adhdMlService) {
+  //RecordsScreenNotifier(this._adhdMlService) {
     // You can load initial data here if needed.
-    // E.g., fetchRecords();
-  }
+    // E.g., fetchRecords()/;
+  //}
 
   // --- STATE PROPERTIES ---
 
@@ -1585,7 +1585,7 @@ class RecordsScreenNotifier extends ChangeNotifier {
   // --- BUSINESS LOGIC ---
 
   /// Runs a prediction for a given record by calling the ML service.
-  Future<void> runPredictionForRecord(Records record) async {
+/*  Future<void> runPredictionForRecord(Records record) async {
     // Prevent starting a new prediction if one is already in progress.
     if (_predictionState is PredictionLoading) return;
 
@@ -1615,5 +1615,5 @@ class RecordsScreenNotifier extends ChangeNotifier {
   void resetPredictionState() {
     _predictionState = PredictionIdle();
     notifyListeners();
-  }
+  }*/
 }

@@ -4,7 +4,8 @@ import 'dart:math';
 import 'dart:io';
 import 'package:flutter/services.dart' show rootBundle, MethodChannel, PlatformException;
 import 'package:adhd_journal_flutter/record_data_package/records_data_class_db.dart';
-import 'package:tflite_flutter/tflite_flutter.dart';
+import 'package:flutter_litert/flutter_litert.dart';
+
 import '../project_resources/global_vars_andpaths.dart';
 import 'package:flutter/foundation.dart';
 
