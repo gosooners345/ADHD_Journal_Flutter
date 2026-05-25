@@ -70,7 +70,7 @@ dependencies:
   extension_google_sign_in_as_googleapis_auth:
   permission_handler:
   #tflite_flutter:
-  flutter_litert:
+ # flutter_litert:
 
  # tflite_flutter_helper_plus:
   #google_ml_kit:

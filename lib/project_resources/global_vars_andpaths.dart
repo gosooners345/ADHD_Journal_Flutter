@@ -536,15 +536,15 @@ static const String PLATFORMCHANNEL_PATH = "com.activitylogger.release1/ADHDJour
    static bool passwordRequired=false;
    static bool isInitialized = false;
    static int colorSeed=AppColors.mainAppColor.value;
-static late final AdhdMlService adhdMlService;
-  static late final PersonalizationService personalizationService;
+//static late final AdhdMlService adhdMlService;
+  //static late final PersonalizationService personalizationService;
    // Handles paths so the app can simply load the files
    static Future<bool> initializeAppPaths() async{
      try{
        final directory = await getApplicationDocumentsDirectory();
        await PersonalizationDbHelper.instance.database;
        print ("Database is ready");
-       personalizationService = PersonalizationService();
+       //personalizationService = PersonalizationService();
 print("ML Service is ready");
        // Variable below can be used to target journal, but we're keeping that on its own code for
        //readability

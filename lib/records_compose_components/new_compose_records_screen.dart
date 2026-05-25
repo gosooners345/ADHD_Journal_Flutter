@@ -1384,14 +1384,14 @@ void _onInputChanged() {
     super.widget.record.rating = _currentRating;
 
     //Test prediction logic
-    if(_lastmodelprediction!=null){
+  /*  if(_lastmodelprediction!=null){
       print("Calling learning function before saving...");
       await Global.personalizationService.learnFromCorrection(
         modelPrediction: _lastmodelprediction!,
         userProvidedSuccess: super.widget.record.success,
         record: super.widget.record,
       );
-    }
+    }*/
 
 
 

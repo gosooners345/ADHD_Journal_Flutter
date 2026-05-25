@@ -533,7 +533,7 @@ final InAppReview inAppReview = InAppReview.instance;
               },
             ),
             //AI Section
-            spacer,
+           /* spacer,
             Divider(
               height: 1.0,
               thickness: 0.5,
@@ -581,7 +581,7 @@ final InAppReview inAppReview = InAppReview.instance;
 
 
 
-            spacer,
+           */ spacer,
             Divider(
               height: 1.0,
               thickness: 0.5,

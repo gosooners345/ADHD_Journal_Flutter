@@ -48,7 +48,7 @@ Future<void> main() async {
       child: MyApp(),)
   );
 }
-Future<void> _initMLServiceinBG() async{
+/*Future<void> _initMLServiceinBG() async{
   try{
     print("Beginning ADHD Journal ML Service Initialization");
     Global.adhdMlService = AdhdMlService();
@@ -64,7 +64,7 @@ Future<void> _initMLServiceinBG() async{
 } catch(e){
     print("MAIN: ML Service initialization failed in background.");
   }
-}
+}*/
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
